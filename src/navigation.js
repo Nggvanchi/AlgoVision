@@ -22,12 +22,15 @@ export function initNavigation(document) {
   const navItems = document.querySelectorAll('.nav-item')
   const algorithmSection = document.querySelector('.algorithm-section')
   const searchSection = document.querySelector('#search-section')
-  const visualizerSection = document.querySelector('.visualizer-section')
+  const visualizerSection = document.querySelector(
+    'main > .visualizer-section:not(#search-section):not(#category-placeholder):not(#array-section):not(#stack-section):not(#structure-library)',
+  )
   const categoryPlaceholder = document.querySelector(
     '#category-placeholder',
   )
   const arraySection = document.querySelector('#array-section')
   const stackSection = document.querySelector('#stack-section')
+  const structureLibrary = document.querySelector('#structure-library')
 
   const placeholderTitle = document.querySelector('#placeholder-title')
   const placeholderDescription = document.querySelector(
@@ -39,8 +42,6 @@ export function initNavigation(document) {
   const placeholderCardDescription = document.querySelector(
     '#placeholder-card-description',
   )
-
-  const structureLibrary = document.querySelector('#structure-library')
 
   let currentPage = 'sorting'
 
@@ -65,13 +66,9 @@ export function initNavigation(document) {
     algorithmSection.hidden = !isSortingPage
     visualizerSection.hidden = !isSortingPage
     searchSection.hidden = !isSearchingPage
-
     categoryPlaceholder.hidden = true
 
-    if (structureLibrary) {
-      structureLibrary.hidden = !isStructuresPage
-    }
-
+    structureLibrary.hidden = !isStructuresPage
     arraySection.hidden = true
     stackSection.hidden = true
 
@@ -94,11 +91,7 @@ export function initNavigation(document) {
     })
   })
 
-  const structureCards = document.querySelectorAll(
-    '[data-structure-target]',
-  )
-
-  structureCards.forEach((card) => {
+  document.querySelectorAll('[data-structure-target]').forEach((card) => {
     card.addEventListener('click', () => {
       if (currentPage !== 'structures') return
 
@@ -107,12 +100,8 @@ export function initNavigation(document) {
       if (target === 'array') {
         structureLibrary.hidden = true
         arraySection.hidden = false
-        stackSection.hidden = true
-      }
-
-      if (target === 'stack') {
+      } else if (target === 'stack') {
         structureLibrary.hidden = true
-        arraySection.hidden = true
         stackSection.hidden = false
       }
     })
