@@ -310,11 +310,17 @@ app.innerHTML = `
             <button class="control-button" id="search-reset" type="button">
               Đặt lại
             </button>
+
             <button class="control-button" id="search-next" type="button">
               Bước tiếp theo
             </button>
+
             <button class="primary-button" id="search-run" type="button">
               Chạy tìm kiếm
+            </button>
+
+            <button class="control-button" id="search-pause" type="button" disabled>
+              Tạm dừng
             </button>
           </div>
 
@@ -438,6 +444,7 @@ const searchSpeedValue = document.querySelector('#search-speed-value')
 const searchResult = document.querySelector('#search-result')
 const searchNextButton = document.querySelector('#search-next')
 const searchRunButton = document.querySelector('#search-run')
+const searchPauseButton = document.querySelector('#search-pause')
 const searchCompareButton = document.querySelector('#search-compare')
 const searchComparison = document.querySelector('#search-comparison')
 const comparisonArray = document.querySelector('#comparison-array')
@@ -462,6 +469,7 @@ let searchIndex = 0
 let searchCount = 0
 let searchFinished = false
 let searchTimer = null
+let searchPaused = false
 let searchLeft = 0
 let searchRight = -1
 let searchMid = -1
@@ -511,6 +519,9 @@ function renderSearchArray() {
 
 function resetSearch() {
   stopSearchAnimation()
+  searchPaused = false
+  searchPauseButton.disabled = true
+  searchPauseButton.textContent = 'Tạm dừng'
 
   searchIndex = 0
   searchCount = 0
@@ -532,6 +543,21 @@ function stopSearchAnimation() {
   if (searchTimer !== null) {
     clearInterval(searchTimer)
     searchTimer = null
+  }
+}
+
+function toggleSearchPause() {
+  if (searchFinished) return
+
+  if (searchTimer !== null) {
+    stopSearchAnimation()
+    searchPaused = true
+    searchPauseButton.textContent = 'Tiếp tục'
+    return
+  }
+
+  if (searchPaused) {
+    runSearchAnimation()
   }
 }
 
@@ -634,6 +660,10 @@ function searchNextStep() {
 function runSearchAnimation() {
   if (searchFinished || searchTimer !== null) return
 
+  searchPaused = false
+  searchPauseButton.textContent = 'Tạm dừng'
+  searchPauseButton.disabled = false
+
   const speed = Number(searchSpeedInput.value)
 
   searchTimer = setInterval(() => {
@@ -641,6 +671,9 @@ function runSearchAnimation() {
 
     if (searchFinished) {
       stopSearchAnimation()
+      searchPaused = false
+      searchPauseButton.disabled = true
+      searchPauseButton.textContent = 'Tạm dừng'
     }
   }, speed)
 }
@@ -727,6 +760,7 @@ document.querySelector('#search-reset').addEventListener('click', resetSearch)
 
 searchNextButton.addEventListener('click', searchNextStep)
 searchRunButton.addEventListener('click', runSearchAnimation)
+searchPauseButton.addEventListener('click', toggleSearchPause)
 
 searchCompareButton.addEventListener('click', () => {
   if (searchComparison.hidden) {
