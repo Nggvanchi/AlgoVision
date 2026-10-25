@@ -270,6 +270,19 @@ app.innerHTML = `
             </button>
           </div>
 
+          <div class="search-speed-control">
+            <label for="search-speed">Tốc độ chạy</label>
+            <input
+              type="range"
+              id="search-speed"
+              min="100"
+              max="1000"
+              step="100"
+              value="600"
+            />
+            <span id="search-speed-value">600 ms</span>
+          </div>
+
           <div id="search-comparison" class="search-comparison" hidden>
             <h3>Kết quả so sánh</h3>
             <p id="comparison-array"></p>
@@ -420,6 +433,8 @@ const searchTargetInput = document.querySelector('#search-target')
 const searchAlgorithmSelect = document.querySelector('#search-algorithm')
 const searchMessage = document.querySelector('#search-message')
 const searchComparisons = document.querySelector('#search-comparisons')
+const searchSpeedInput = document.querySelector('#search-speed')
+const searchSpeedValue = document.querySelector('#search-speed-value')
 const searchResult = document.querySelector('#search-result')
 const searchNextButton = document.querySelector('#search-next')
 const searchRunButton = document.querySelector('#search-run')
@@ -431,6 +446,16 @@ const linearPosition = document.querySelector('#linear-position')
 const binaryComparisons = document.querySelector('#binary-comparisons')
 const binaryPosition = document.querySelector('#binary-position')
 const comparisonConclusion = document.querySelector('#comparison-conclusion')
+
+searchSpeedInput.addEventListener('input', () => {
+  searchSpeedValue.textContent = `${searchSpeedInput.value} ms`
+
+  if (searchTimer !== null) {
+    stopSearchAnimation()
+    runSearchAnimation()
+  }
+})
+
 
 let searchNumbers = []
 let searchIndex = 0
@@ -609,13 +634,15 @@ function searchNextStep() {
 function runSearchAnimation() {
   if (searchFinished || searchTimer !== null) return
 
+  const speed = Number(searchSpeedInput.value)
+
   searchTimer = setInterval(() => {
     searchNextStep()
 
     if (searchFinished) {
       stopSearchAnimation()
     }
-  }, 600)
+  }, speed)
 }
 
 function compareSearchAlgorithms() {
@@ -664,8 +691,7 @@ function compareSearchAlgorithms() {
     }
   }
 
-  comparisonArray.textContent =
-    `Mảng được sắp xếp: ${sortedNumbers.join(', ')}`
+  comparisonArray.textContent = `Mảng đã sắp xếp (đánh số vị trí từ 1): ${sortedNumbers.join(', ')}`
 
   linearComparisons.textContent = linearCount
   binaryComparisons.textContent = binaryCount
@@ -701,13 +727,14 @@ document.querySelector('#search-reset').addEventListener('click', resetSearch)
 
 searchNextButton.addEventListener('click', searchNextStep)
 searchRunButton.addEventListener('click', runSearchAnimation)
+
 searchCompareButton.addEventListener('click', () => {
-  if (searchComparisonSection.hidden) {
+  if (searchComparison.hidden) {
     compareSearchAlgorithms()
-    searchComparisonSection.hidden = false
+    searchComparison.hidden = false
     searchCompareButton.textContent = 'Ẩn bảng so sánh'
   } else {
-    searchComparisonSection.hidden = true
+    searchComparison.hidden = true
     searchCompareButton.textContent = 'So sánh thuật toán'
   }
 })
@@ -734,7 +761,6 @@ const comparisonCount = document.querySelector('#comparison-count')
 const swapCount = document.querySelector('#swap-count')
 const stepCount = document.querySelector('#step-count')
 const simulationMessage = document.querySelector('#simulation-message')
-const searchComparisonSection = document.querySelector('#search-comparison')
 
 let numbers = []
 let steps = []
@@ -964,7 +990,6 @@ speedControl.addEventListener('change', () => {
 })
 
 document.querySelector('#start-button').addEventListener('click', createNewArray)
-searchAlgorithmSelect.addEventListener('change', createSearchArray)
 arraySize.addEventListener('change', createNewArray)
 
 createNewArray()
