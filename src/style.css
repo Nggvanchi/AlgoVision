@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
 
 :root {
@@ -1113,4 +1112,71 @@ button:disabled {
   .comparison-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.search-speed-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.search-speed-control label {
+  font-size: 14px;
+}
+
+.search-speed-control input[type="range"] {
+  width: 150px;
+  accent-color: var(--accent-color, #6366f1);
+  cursor: pointer;
+}
+
+#search-speed-value {
+  min-width: 65px;
+  font-size: 13px;
+  color: var(--text-secondary, #9ca3af);
+}
+
+.search-cell.is-eliminated {
+  opacity: 0.4;
+  filter: grayscale(1);
+  border-style: dashed;
+}
+
+.search-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-top: 16px;
+  margin-bottom: 20px;
+}
+
+.search-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary, #9ca3af);
+}
+
+.search-legend-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  background: #64748b;
+}
+
+.search-legend-dot.is-current {
+  background: #f59e0b;
+}
+
+.search-legend-dot.is-eliminated {
+  background: #64748b;
+  opacity: 0.4;
+}
+
+.search-legend-dot.is-found {
+  background: #22c55e;
 }

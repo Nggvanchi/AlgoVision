@@ -501,12 +501,16 @@ function renderSearchArray() {
 
     if (index === searchFoundIndex) {
       cell.classList.add('is-found')
-    } else if (!searchFinished) {
-      if (isBinarySearch && index === searchMid) {
-        cell.classList.add('is-current')
-      } else if (!isBinarySearch && index === searchIndex) {
-        cell.classList.add('is-current')
+    } else if (!searchFinished && isBinarySearch && index === searchMid) {
+      cell.classList.add('is-current')
+    } else if (!searchFinished && !isBinarySearch && index === searchIndex) {
+      cell.classList.add('is-current')
+    } else if (isBinarySearch && searchFoundIndex === -1) {
+      if (searchLeft > searchRight || index < searchLeft || index > searchRight) {
+        cell.classList.add('is-eliminated')
       }
+    } else if (!isBinarySearch && searchFoundIndex === -1 && index < searchIndex) {
+      cell.classList.add('is-eliminated')
     }
 
     searchArrayElement.appendChild(cell)
