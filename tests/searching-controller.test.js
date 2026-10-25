@@ -424,3 +424,109 @@ test('Searching không chạy tự động khi ô mục tiêu để trống', as
     cleanup()
   }
 })
+
+test('Linear Search tìm thấy mục tiêu trong mảng một phần tử', async () => {
+  const { window, document, cleanup } = await setupSearching({
+    initialNumbers: [42],
+  })
+
+  try {
+    const searchAlgorithm = document.querySelector('#search-algorithm')
+    const searchTarget = document.querySelector('#search-target')
+
+    searchAlgorithm.value = 'linear'
+    searchAlgorithm.dispatchEvent(new window.Event('change', { bubbles: true }))
+
+    searchTarget.value = '42'
+    searchTarget.dispatchEvent(new window.Event('change', { bubbles: true }))
+
+    document.querySelector('#search-next').click()
+
+    assert.equal(document.querySelectorAll('#search-array .search-cell').length, 1)
+    assert.equal(document.querySelector('#search-comparisons').textContent, '1')
+    assert.equal(document.querySelector('#search-result').textContent, 'Tìm thấy tại vị trí 1.')
+    assert.equal(document.querySelector('#search-array .search-cell.is-found').textContent, '42')
+    assert.equal(document.querySelector('#search-next').disabled, true)
+  } finally {
+    cleanup()
+  }
+})
+
+test('Linear Search không tìm thấy mục tiêu trong mảng một phần tử', async () => {
+  const { window, document, cleanup } = await setupSearching({
+    initialNumbers: [42],
+  })
+
+  try {
+    const searchAlgorithm = document.querySelector('#search-algorithm')
+    const searchTarget = document.querySelector('#search-target')
+
+    searchAlgorithm.value = 'linear'
+    searchAlgorithm.dispatchEvent(new window.Event('change', { bubbles: true }))
+
+    searchTarget.value = '99'
+    searchTarget.dispatchEvent(new window.Event('change', { bubbles: true }))
+
+    document.querySelector('#search-next').click()
+
+    assert.equal(document.querySelector('#search-comparisons').textContent, '1')
+    assert.equal(document.querySelector('#search-result').textContent, 'Không tìm thấy giá trị.')
+    assert.equal(document.querySelector('#search-array .search-cell.is-found'), null)
+    assert.equal(document.querySelector('#search-next').disabled, true)
+  } finally {
+    cleanup()
+  }
+})
+
+test('Binary Search tìm thấy mục tiêu trong mảng một phần tử', async () => {
+  const { window, document, cleanup } = await setupSearching({
+    initialNumbers: [42],
+  })
+
+  try {
+    const searchAlgorithm = document.querySelector('#search-algorithm')
+    const searchTarget = document.querySelector('#search-target')
+
+    searchAlgorithm.value = 'binary'
+    searchAlgorithm.dispatchEvent(new window.Event('change', { bubbles: true }))
+
+    searchTarget.value = '42'
+    searchTarget.dispatchEvent(new window.Event('change', { bubbles: true }))
+
+    document.querySelector('#search-next').click()
+
+    assert.equal(document.querySelectorAll('#search-array .search-cell').length, 1)
+    assert.equal(document.querySelector('#search-comparisons').textContent, '1')
+    assert.equal(document.querySelector('#search-result').textContent, 'Tìm thấy tại vị trí 1.')
+    assert.equal(document.querySelector('#search-array .search-cell.is-found').textContent, '42')
+    assert.equal(document.querySelector('#search-next').disabled, true)
+  } finally {
+    cleanup()
+  }
+})
+
+test('Binary Search không tìm thấy mục tiêu trong mảng một phần tử', async () => {
+  const { window, document, cleanup } = await setupSearching({
+    initialNumbers: [42],
+  })
+
+  try {
+    const searchAlgorithm = document.querySelector('#search-algorithm')
+    const searchTarget = document.querySelector('#search-target')
+
+    searchAlgorithm.value = 'binary'
+    searchAlgorithm.dispatchEvent(new window.Event('change', { bubbles: true }))
+
+    searchTarget.value = '99'
+    searchTarget.dispatchEvent(new window.Event('change', { bubbles: true }))
+
+    document.querySelector('#search-next').click()
+
+    assert.equal(document.querySelector('#search-comparisons').textContent, '1')
+    assert.equal(document.querySelector('#search-result').textContent, 'Không tìm thấy giá trị.')
+    assert.equal(document.querySelector('#search-array .search-cell.is-found'), null)
+    assert.equal(document.querySelector('#search-next').disabled, true)
+  } finally {
+    cleanup()
+  }
+})
