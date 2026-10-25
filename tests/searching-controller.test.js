@@ -532,45 +532,318 @@ test('Binary Search không tìm thấy mục tiêu trong mảng một phần t�
 })
 
 test('chuyển sang Binary Search sẽ sắp xếp lại mảng và reset trạng thái', async () => {
-  const { document, cleanup } = await setupSearching({
+  const { window, document, cleanup } = await setupSearching({
     initialNumbers: [40, 10, 30, 20],
   })
 
   try {
-    const algorithmSelect = document.querySelector(
-      '#search-algorithm',
-    )
+    const algorithmSelect = document.querySelector('#search-algorithm')
     const targetInput = document.querySelector('#search-target')
     const nextButton = document.querySelector('#search-next')
     const comparisons = document.querySelector('#search-comparisons')
     const result = document.querySelector('#search-result')
-    const cells = () => [
-      ...document.querySelectorAll('.search-cell'),
-    ].map((cell) => Number(cell.textContent))
 
-    assert.deepEqual(cells(), [40, 10, 30, 20])
+    const getNumbers = () =>
+      [...document.querySelectorAll('#search-array .search-cell')]
+        .map((cell) => Number(cell.textContent))
 
-    targetInput.value = '30'
+    assert.deepEqual(getNumbers(), [40, 10, 30, 20])
+
+    targetInput.value = '40'
+    targetInput.dispatchEvent(
+      new window.Event('change', { bubbles: true }),
+    )
+
+    nextButton.click()
+
+    assert.equal(comparisons.textContent, '1')
+    assert.equal(result.textContent, 'Tìm thấy tại vị trí 1.')
+
+    algorithmSelect.value = 'binary'
+    algorithmSelect.dispatchEvent(
+      new window.Event('change', { bubbles: true }),
+    )
+
+    assert.deepEqual(getNumbers(), [10, 20, 30, 40])
+    assert.equal(comparisons.textContent, '0')
+    assert.equal(result.textContent, 'Chưa có kết quả.')
+    assert.equal(nextButton.disabled, false)
+  } finally {
+    cleanup()
+  }
+})
+
+test('Searching bắt đầu chạy và tạm dừng đúng trạng thái nút', async () => {
+  const { document, cleanup } = await setupSearching({
+    initialNumbers: [10, 20, 30, 40],
+  })
+
+  try {
+    const targetInput = document.querySelector('#search-target')
+    const runButton = document.querySelector('#search-run')
+    const pauseButton = document.querySelector('#search-pause')
+    const nextButton = document.querySelector('#search-next')
+    const comparisons = document.querySelector('#search-comparisons')
+
+    targetInput.value = '40'
     targetInput.dispatchEvent(
       new document.defaultView.Event('change', {
         bubbles: true,
       }),
     )
 
-    nextButton.click()
+    runButton.click()
 
-    assert.equal(comparisons.textContent, '1')
+    assert.equal(runButton.disabled, true)
+    assert.equal(nextButton.disabled, true)
+    assert.equal(pauseButton.disabled, false)
 
-    algorithmSelect.value = 'binary'
-    algorithmSelect.dispatchEvent(
+    pauseButton.click()
+
+    assert.equal(runButton.disabled, false)
+    assert.equal(nextButton.disabled, false)
+    assert.equal(pauseButton.disabled, true)
+    assert.equal(comparisons.textContent, '0')
+  } finally {
+    cleanup()
+  }
+})
+
+test('Searching có thể tiếp tục chạy sau khi tạm dừng', async () => {
+  const { document, cleanup } = await setupSearching({
+    initialNumbers: [10, 20, 30, 40],
+  })
+
+  try {
+    const targetInput = document.querySelector('#search-target')
+    const runButton = document.querySelector('#search-run')
+    const pauseButton = document.querySelector('#search-pause')
+    const nextButton = document.querySelector('#search-next')
+
+    targetInput.value = '40'
+    targetInput.dispatchEvent(
       new document.defaultView.Event('change', {
         bubbles: true,
       }),
     )
 
-    assert.deepEqual(cells(), [10, 20, 30, 40])
+    runButton.click()
+    pauseButton.click()
+
+    assert.equal(pauseButton.disabled, true)
+    assert.equal(runButton.disabled, false)
+
+    runButton.click()
+
+    assert.equal(runButton.disabled, true)
+    assert.equal(nextButton.disabled, true)
+    assert.equal(pauseButton.disabled, false)
+
+    pauseButton.click()
+
+    assert.equal(pauseButton.disabled, true)
+    assert.equal(runButton.disabled, false)
+  } finally {
+    cleanup()
+  }
+})
+
+
+test('Reset giữ nguyên mảng và xóa trạng thái tìm kiếm', async () => {
+  const { document, cleanup } = await setupSearching({
+    initialNumbers: [10, 20, 30, 40],
+  })
+
+  try {
+    const targetInput = document.querySelector('#search-target')
+    const resetButton = document.querySelector('#search-reset')
+    const nextButton = document.querySelector('#search-next')
+    const comparisons = document.querySelector('#search-comparisons')
+    const result = document.querySelector('#search-result')
+
+    const getNumbers = () =>
+      [...document.querySelectorAll('#search-array .search-cell')]
+        .map((cell) => Number(cell.textContent))
+
+    targetInput.value = '10'
+    targetInput.dispatchEvent(
+      new document.defaultView.Event('change', { bubbles: true }),
+    )
+
+    nextButton.click()
+
+    assert.equal(comparisons.textContent, '1')
+    assert.equal(result.textContent, 'Tìm thấy tại vị trí 1.')
+
+    resetButton.click()
+
+    assert.deepEqual(getNumbers(), [10, 20, 30, 40])
     assert.equal(comparisons.textContent, '0')
     assert.equal(result.textContent, 'Chưa có kết quả.')
+    assert.equal(nextButton.disabled, false)
+    assert.equal(
+      document.querySelector('#search-array .is-found'),
+      null,
+    )
+  } finally {
+    cleanup()
+  }
+})
+
+test('Tạo mảng mới đặt lại bộ đếm và kết quả tìm kiếm', async () => {
+  const { document, cleanup } = await setupSearching()
+
+  try {
+    const targetInput = document.querySelector('#search-target')
+    const newArrayButton = document.querySelector('#search-new-array')
+    const nextButton = document.querySelector('#search-next')
+    const comparisons = document.querySelector('#search-comparisons')
+    const result = document.querySelector('#search-result')
+
+    const firstCell = document.querySelector('#search-array .search-cell')
+
+    targetInput.value = firstCell.textContent
+    targetInput.dispatchEvent(
+      new document.defaultView.Event('change', { bubbles: true }),
+    )
+
+    nextButton.click()
+
+    assert.equal(comparisons.textContent, '1')
+    assert.equal(result.textContent, 'Tìm thấy tại vị trí 1.')
+
+    newArrayButton.click()
+
+    assert.equal(
+      document.querySelectorAll('#search-array .search-cell').length,
+      12,
+    )
+    assert.equal(comparisons.textContent, '0')
+    assert.equal(result.textContent, 'Chưa có kết quả.')
+    assert.equal(nextButton.disabled, false)
+    assert.equal(
+      document.querySelector('#search-array .is-found'),
+      null,
+    )
+  } finally {
+    cleanup()
+  }
+})
+
+test('Searching cập nhật nhãn khi thay đổi tốc độ', async () => {
+  const { document, cleanup } = await setupSearching()
+
+  try {
+    const speedInput = document.querySelector('#search-speed')
+    const speedValue = document.querySelector('#search-speed-value')
+
+    speedInput.value = '200'
+    speedInput.dispatchEvent(
+      new document.defaultView.Event('input', { bubbles: true }),
+    )
+
+    assert.equal(speedValue.textContent, '200 ms')
+  } finally {
+    cleanup()
+  }
+})
+
+test('Searching khởi động lại khi thay đổi tốc độ trong lúc chạy', async () => {
+  const { document, cleanup } = await setupSearching({
+    initialNumbers: [10, 20, 30, 40],
+  })
+
+  try {
+    const targetInput = document.querySelector('#search-target')
+    const speedInput = document.querySelector('#search-speed')
+    const runButton = document.querySelector('#search-run')
+    const pauseButton = document.querySelector('#search-pause')
+    const nextButton = document.querySelector('#search-next')
+
+    targetInput.value = '40'
+    targetInput.dispatchEvent(
+      new document.defaultView.Event('change', { bubbles: true }),
+    )
+
+    runButton.click()
+
+    assert.equal(runButton.disabled, true)
+    assert.equal(pauseButton.disabled, false)
+
+    speedInput.value = '200'
+    speedInput.dispatchEvent(
+      new document.defaultView.Event('input', { bubbles: true }),
+    )
+
+    assert.equal(runButton.disabled, true)
+    assert.equal(nextButton.disabled, true)
+    assert.equal(pauseButton.disabled, false)
+
+    pauseButton.click()
+
+    assert.equal(runButton.disabled, false)
+    assert.equal(nextButton.disabled, false)
+    assert.equal(pauseButton.disabled, true)
+  } finally {
+    cleanup()
+  }
+})
+
+test('Searching không thực hiện bước tiếp theo khi mục tiêu không phải số', async () => {
+  const { document, cleanup } = await setupSearching({
+    initialNumbers: [10, 20, 30, 40],
+  })
+
+  try {
+    const targetInput = document.querySelector('#search-target')
+    const nextButton = document.querySelector('#search-next')
+    const comparisons = document.querySelector('#search-comparisons')
+    const message = document.querySelector('#search-message')
+
+    targetInput.value = 'abc'
+    targetInput.dispatchEvent(
+      new document.defaultView.Event('change', { bubbles: true }),
+    )
+
+    nextButton.click()
+
+    assert.equal(comparisons.textContent, '0')
+    assert.equal(
+      message.textContent,
+      'Vui lòng nhập một giá trị số hợp lệ.',
+    )
+    assert.equal(nextButton.disabled, false)
+  } finally {
+    cleanup()
+  }
+})
+
+test('Searching không chạy tự động khi mục tiêu là Infinity', async () => {
+  const { document, cleanup } = await setupSearching({
+    initialNumbers: [10, 20, 30, 40],
+  })
+
+  try {
+    const targetInput = document.querySelector('#search-target')
+    const runButton = document.querySelector('#search-run')
+    const pauseButton = document.querySelector('#search-pause')
+    const comparisons = document.querySelector('#search-comparisons')
+    const message = document.querySelector('#search-message')
+
+    targetInput.value = 'Infinity'
+    targetInput.dispatchEvent(
+      new document.defaultView.Event('change', { bubbles: true }),
+    )
+
+    runButton.click()
+
+    assert.equal(comparisons.textContent, '0')
+    assert.equal(
+      message.textContent,
+      'Vui lòng nhập một giá trị số hợp lệ trước khi tìm kiếm.',
+    )
+    assert.equal(runButton.disabled, false)
+    assert.equal(pauseButton.disabled, true)
   } finally {
     cleanup()
   }
