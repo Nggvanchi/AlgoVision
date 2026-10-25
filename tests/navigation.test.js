@@ -1,4 +1,3 @@
-
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { Window } from 'happy-dom'
@@ -26,6 +25,7 @@ test('điều hướng hoạt động đúng giữa ba mục chính', () => {
     const categoryPlaceholder = document.querySelector(
       '#category-placeholder',
     )
+    const arraySection = document.querySelector('#array-section')
 
     const sortingNav = document.querySelector(
       '.nav-item[data-page="sorting"]',
@@ -37,44 +37,41 @@ test('điều hướng hoạt động đúng giữa ba mục chính', () => {
       '.nav-item[data-page="structures"]',
     )
 
+    assert.ok(arraySection, 'Array Visualizer phải tồn tại trong HTML')
+
+    // Trang Sorting
     assert.equal(algorithmSection.hidden, false)
     assert.equal(visualizerSection.hidden, false)
     assert.equal(searchSection.hidden, true)
+    assert.equal(arraySection.hidden, true)
     assert.equal(categoryPlaceholder.hidden, true)
 
+    // Chuyển sang Searching
     searchingNav.click()
 
     assert.equal(searchSection.hidden, false)
     assert.equal(algorithmSection.hidden, true)
     assert.equal(visualizerSection.hidden, true)
+    assert.equal(arraySection.hidden, true)
     assert.equal(categoryPlaceholder.hidden, true)
     assert.equal(searchingNav.classList.contains('active'), true)
 
+    // Chuyển sang Cấu trúc dữ liệu
     structuresNav.click()
 
-    assert.equal(categoryPlaceholder.hidden, false)
+    assert.equal(arraySection.hidden, false)
+    assert.equal(categoryPlaceholder.hidden, true)
     assert.equal(searchSection.hidden, true)
     assert.equal(algorithmSection.hidden, true)
     assert.equal(structuresNav.classList.contains('active'), true)
-    assert.equal(
-      document.querySelector('#placeholder-title').textContent,
-      'Cấu trúc dữ liệu',
-    )
-    assert.equal(
-    document.querySelector('#placeholder-description').textContent,
-    'Khám phá cách tổ chức, lưu trữ và thao tác với dữ liệu.',
-    )
 
-    assert.equal(
-    document.querySelector('#placeholder-card-title').textContent,
-    'Array, Stack, Queue, Linked List, Tree và Graph',
-    )
-
+    // Chuyển trở lại Sorting
     sortingNav.click()
 
     assert.equal(algorithmSection.hidden, false)
     assert.equal(visualizerSection.hidden, false)
     assert.equal(searchSection.hidden, true)
+    assert.equal(arraySection.hidden, true)
     assert.equal(categoryPlaceholder.hidden, true)
     assert.equal(sortingNav.classList.contains('active'), true)
   } finally {

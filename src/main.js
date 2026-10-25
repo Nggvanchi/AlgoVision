@@ -1,8 +1,8 @@
-
 import './style.css'
 import { initSearching } from './searching.js'
 import { initSorting } from './sorting.js'
 import { initNavigation } from './navigation.js'
+import { initArray } from './array.js'
 
 const app = document.querySelector('#app')
 
@@ -21,3 +21,4 @@ await loadAppTemplate()
 initNavigation(document)
 initSorting()
 initSearching()
+initArray()

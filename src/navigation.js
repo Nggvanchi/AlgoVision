@@ -30,6 +30,7 @@ export function initNavigation(document) {
   const categoryPlaceholder = document.querySelector(
     '#category-placeholder',
   )
+  const arraySection = document.querySelector('#array-section')
 
   const placeholderTitle = document.querySelector('#placeholder-title')
   const placeholderDescription = document.querySelector(
@@ -59,7 +60,10 @@ export function initNavigation(document) {
       algorithmSection.hidden = !isSortingPage
       visualizerSection.hidden = !isSortingPage
       searchSection.hidden = !isSearchingPage
-      categoryPlaceholder.hidden = !isStructuresPage
+      arraySection.hidden = !isStructuresPage
+
+      // Array Visualizer thay thế placeholder cũ.
+      categoryPlaceholder.hidden = true
 
       if (isStructuresPage) {
         placeholderTitle.textContent = page.title

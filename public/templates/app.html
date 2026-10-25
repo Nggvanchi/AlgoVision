@@ -403,6 +403,82 @@
     </div>
     </section>
 
+    <section class="visualizer-section" id="array-section" hidden>
+      <div class="section-heading">
+        <div>
+          <h3>Array Visualizer</h3>
+          <p>
+            Khám phá cách truy cập, thêm, chèn, xóa và tìm kiếm phần tử trong mảng.
+          </p>
+        </div>
+        <span class="visualizer-tag">DATA STRUCTURES</span>
+      </div>
+
+      <div class="array-panel">
+        <div class="array-panel-heading">
+          <div>
+            <h4>Mảng hiện tại</h4>
+            <p>Mỗi ô tương ứng với một phần tử và một index.</p>
+          </div>
+          <button type="button" id="array-reset" class="control-button">
+            Khôi phục
+          </button>
+        </div>
+
+        <div id="array-visualizer" class="array-visualizer"
+             aria-label="Các phần tử trong mảng"></div>
+
+        <p id="array-status" class="array-status" role="status" aria-live="polite">
+          Array Visualizer đã sẵn sàng.
+        </p>
+      </div>
+
+      <div class="array-operations">
+        <article class="array-operation-card">
+          <h4>Thêm phần tử</h4>
+          <p>Thêm một giá trị vào cuối mảng.</p>
+          <label for="array-value">Giá trị</label>
+          <input id="array-value" type="number" step="any"
+                 placeholder="Ví dụ: 60" />
+          <button type="button" id="array-append" class="control-button">
+            Thêm vào cuối
+          </button>
+        </article>
+
+        <article class="array-operation-card">
+          <h4>Chèn phần tử</h4>
+          <p>Chèn giá trị tại index được chọn.</p>
+          <label for="array-index">Index</label>
+          <input id="array-index" type="number" step="1"
+                 placeholder="Ví dụ: 2" />
+          <button type="button" id="array-insert" class="control-button">
+            Chèn phần tử
+          </button>
+        </article>
+
+        <article class="array-operation-card">
+          <h4>Xóa phần tử</h4>
+          <p>Xóa phần tử tại index được chọn.</p>
+          <label for="array-remove-index">Index cần xóa</label>
+          <input id="array-remove-index" type="number" step="1"
+                 placeholder="Ví dụ: 1" />
+          <button type="button" id="array-remove" class="control-button">
+            Xóa phần tử
+          </button>
+        </article>
+
+        <article class="array-operation-card">
+          <h4>Tìm kiếm</h4>
+          <p>Tìm index đầu tiên chứa giá trị cần tìm.</p>
+          <label for="array-target">Giá trị cần tìm</label>
+          <input id="array-target" type="number" step="any"
+                 placeholder="Ví dụ: 30" />
+          <button type="button" id="array-find" class="control-button">
+            Tìm kiếm
+          </button>
+        </article>
+      </div>
+    </section>
     <footer class="page-footer">
     <span>AlgoVision · Dự án học tập cá nhân</span>
     <span>Được xây dựng với JavaScript</span>
