@@ -530,3 +530,48 @@ test('Binary Search không tìm thấy mục tiêu trong mảng một phần t�
     cleanup()
   }
 })
+
+test('chuyển sang Binary Search sẽ sắp xếp lại mảng và reset trạng thái', async () => {
+  const { document, cleanup } = await setupSearching({
+    initialNumbers: [40, 10, 30, 20],
+  })
+
+  try {
+    const algorithmSelect = document.querySelector(
+      '#search-algorithm',
+    )
+    const targetInput = document.querySelector('#search-target')
+    const nextButton = document.querySelector('#search-next')
+    const comparisons = document.querySelector('#search-comparisons')
+    const result = document.querySelector('#search-result')
+    const cells = () => [
+      ...document.querySelectorAll('.search-cell'),
+    ].map((cell) => Number(cell.textContent))
+
+    assert.deepEqual(cells(), [40, 10, 30, 20])
+
+    targetInput.value = '30'
+    targetInput.dispatchEvent(
+      new document.defaultView.Event('change', {
+        bubbles: true,
+      }),
+    )
+
+    nextButton.click()
+
+    assert.equal(comparisons.textContent, '1')
+
+    algorithmSelect.value = 'binary'
+    algorithmSelect.dispatchEvent(
+      new document.defaultView.Event('change', {
+        bubbles: true,
+      }),
+    )
+
+    assert.deepEqual(cells(), [10, 20, 30, 40])
+    assert.equal(comparisons.textContent, '0')
+    assert.equal(result.textContent, 'Chưa có kết quả.')
+  } finally {
+    cleanup()
+  }
+})
