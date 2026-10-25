@@ -701,7 +701,16 @@ document.querySelector('#search-reset').addEventListener('click', resetSearch)
 
 searchNextButton.addEventListener('click', searchNextStep)
 searchRunButton.addEventListener('click', runSearchAnimation)
-searchCompareButton.addEventListener('click', compareSearchAlgorithms)
+searchCompareButton.addEventListener('click', () => {
+  if (searchComparisonSection.hidden) {
+    compareSearchAlgorithms()
+    searchComparisonSection.hidden = false
+    searchCompareButton.textContent = 'Ẩn bảng so sánh'
+  } else {
+    searchComparisonSection.hidden = true
+    searchCompareButton.textContent = 'So sánh thuật toán'
+  }
+})
 
 searchTargetInput.addEventListener('change', resetSearch)
 searchAlgorithmSelect.addEventListener('change', createSearchArray)
@@ -725,6 +734,7 @@ const comparisonCount = document.querySelector('#comparison-count')
 const swapCount = document.querySelector('#swap-count')
 const stepCount = document.querySelector('#step-count')
 const simulationMessage = document.querySelector('#simulation-message')
+const searchComparisonSection = document.querySelector('#search-comparison')
 
 let numbers = []
 let steps = []
