@@ -16,6 +16,8 @@ export function initSearching() {
   const searchNextButton = document.querySelector('#search-next')
   const searchRunButton = document.querySelector('#search-run')
   const searchPauseButton = document.querySelector('#search-pause')
+  const searchNewArrayButton = document.querySelector('#search-new-array')
+  const searchResetButton = document.querySelector('#search-reset')
   const searchCompareButton = document.querySelector('#search-compare')
   const searchComparison = document.querySelector('#search-comparison')
   const comparisonArray = document.querySelector('#comparison-array')
@@ -149,13 +151,17 @@ export function initSearching() {
         index === searchIndex
       ) {
         cell.classList.add('is-current')
-      } else if (
-        binary &&
-        (index < searchLeft || index > searchRight)
-      ) {
+      } else if (binary && (index < searchLeft || index > searchRight)) {
         cell.classList.add('is-eliminated')
       } else if (!binary && index < searchIndex) {
-        cell.classList.add('is-eliminated')
+        cell.classList.add('is-checked')
+      } else if (
+        !binary &&
+        searchFinished &&
+        searchFoundIndex === -1 &&
+        index < searchNumbers.length
+      ) {
+        cell.classList.add('is-checked')
       }
 
       searchArrayElement.appendChild(cell)
@@ -439,6 +445,10 @@ export function initSearching() {
     stopSearchAnimation()
     renderSearchArray()
   })
+
+  searchNewArrayButton?.addEventListener('click', createSearchArray)
+
+  searchResetButton?.addEventListener('click', resetSearch)
 
   searchTargetInput.addEventListener('change', resetSearch)
 

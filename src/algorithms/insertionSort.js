@@ -5,6 +5,7 @@ export function generateInsertionSortSteps(inputArray) {
 
   let comparisons = 0
   let swaps = 0
+  let shifts = 0
 
   steps.push({
     array: [...array],
@@ -13,6 +14,7 @@ export function generateInsertionSortSteps(inputArray) {
     sortedIndices: array.length > 0 ? [0] : [],
     comparisons,
     swaps,
+    shifts,
     message: 'Bắt đầu Insertion Sort. Phần tử đầu tiên được xem là đoạn đã sắp xếp.',
   })
 
@@ -30,6 +32,7 @@ export function generateInsertionSortSteps(inputArray) {
         sortedIndices: Array.from({ length: i }, (_, index) => index),
         comparisons,
         swaps,
+        shifts,
         message: `So sánh ${array[j]} với giá trị cần chèn ${key}.`,
       })
 
@@ -38,15 +41,16 @@ export function generateInsertionSortSteps(inputArray) {
       }
 
       array[j + 1] = array[j]
-      swaps++
+      shifts++
 
       steps.push({
         array: [...array],
         comparing: [j, j + 1],
-        swapped: [j, j + 1],
+        swapped: [],
         sortedIndices: [],
         comparisons,
         swaps,
+        shifts,
         message: `Dời ${array[j]} sang phải để tạo chỗ chèn ${key}.`,
       })
 
@@ -62,6 +66,7 @@ export function generateInsertionSortSteps(inputArray) {
       sortedIndices: Array.from({ length: i + 1 }, (_, index) => index),
       comparisons,
       swaps,
+      shifts,
       message: `Chèn ${key} vào vị trí ${j + 2}. Đoạn đầu tiên đã có thứ tự.`,
     })
   }
@@ -73,6 +78,7 @@ export function generateInsertionSortSteps(inputArray) {
     sortedIndices: array.map((_, index) => index),
     comparisons,
     swaps,
+    shifts,
     message: 'Hoàn thành! Mảng đã được sắp xếp theo thứ tự tăng dần.',
     finished: true,
   })
