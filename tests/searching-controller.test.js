@@ -360,3 +360,67 @@ test('Binary Search tìm thấy mục tiêu khi có phần tử trùng lặp', a
     cleanup()
   }
 })
+
+test('Searching không chạy bước tiếp theo khi ô mục tiêu để trống', async () => {
+  const { window, document, cleanup } = await setupSearching()
+
+  try {
+    const searchTarget = document.querySelector('#search-target')
+    const searchNextButton = document.querySelector('#search-next')
+    const searchMessage = document.querySelector('#search-message')
+    const searchComparisons = document.querySelector('#search-comparisons')
+    const searchResult = document.querySelector('#search-result')
+
+    searchTarget.value = ''
+    searchTarget.dispatchEvent(
+      new window.Event('change', { bubbles: true }),
+    )
+
+    searchNextButton.click()
+
+    assert.equal(
+      searchMessage.textContent,
+      'Vui lòng nhập một giá trị số hợp lệ.',
+    )
+
+    assert.equal(searchComparisons.textContent, '0')
+    assert.equal(searchResult.textContent, 'Chưa có kết quả.')
+    assert.equal(searchNextButton.disabled, false)
+
+    assert.equal(
+      document.querySelector('#search-array .search-cell.is-found'),
+      null,
+    )
+  } finally {
+    cleanup()
+  }
+})
+
+test('Searching không chạy tự động khi ô mục tiêu để trống', async () => {
+  const { window, document, cleanup } = await setupSearching()
+
+  try {
+    const searchTarget = document.querySelector('#search-target')
+    const searchRunButton = document.querySelector('#search-run')
+    const searchMessage = document.querySelector('#search-message')
+    const searchComparisons = document.querySelector('#search-comparisons')
+
+    searchTarget.value = ''
+    searchTarget.dispatchEvent(
+      new window.Event('change', { bubbles: true }),
+    )
+
+    searchRunButton.click()
+
+    assert.equal(
+      searchMessage.textContent,
+      'Vui lòng nhập một giá trị số hợp lệ trước khi tìm kiếm.',
+    )
+
+    assert.equal(searchComparisons.textContent, '0')
+    assert.equal(searchRunButton.disabled, false)
+    assert.equal(document.querySelector('#search-pause').disabled, true)
+  } finally {
+    cleanup()
+  }
+})
