@@ -3,6 +3,7 @@ import { initSearching } from './searching.js'
 import { initSorting } from './sorting.js'
 import { initNavigation } from './navigation.js'
 import { initArray } from './array.js'
+import { initStack } from './stack.js'
 
 const app = document.querySelector('#app')
 
@@ -22,3 +23,4 @@ initNavigation(document)
 initSorting()
 initSearching()
 initArray()
+initStack()

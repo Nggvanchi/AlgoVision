@@ -1,4 +1,3 @@
-
 const pages = {
   sorting: {
     title: 'Thuật toán sắp xếp',
@@ -15,10 +14,7 @@ const pages = {
   structures: {
     title: 'Cấu trúc dữ liệu',
     description:
-      'Khám phá cách tổ chức, lưu trữ và thao tác với dữ liệu.',
-    cardTitle: 'Array, Stack, Queue, Linked List, Tree và Graph',
-    cardDescription:
-      'Các cấu trúc dữ liệu sẽ được bổ sung theo từng giai đoạn, kèm thao tác thêm, xóa, tìm kiếm và hình minh họa trực quan.',
+      'Chọn một cấu trúc dữ liệu để khám phá cách hoạt động.',
   },
 }
 
@@ -31,6 +27,7 @@ export function initNavigation(document) {
     '#category-placeholder',
   )
   const arraySection = document.querySelector('#array-section')
+  const stackSection = document.querySelector('#stack-section')
 
   const placeholderTitle = document.querySelector('#placeholder-title')
   const placeholderDescription = document.querySelector(
@@ -43,34 +40,91 @@ export function initNavigation(document) {
     '#placeholder-card-description',
   )
 
+  const structureLibrary = document.querySelector('#structure-library')
+
+  let currentPage = 'sorting'
+
+  function showPage(pageName) {
+    const page = pages[pageName]
+
+    if (!page) return
+
+    currentPage = pageName
+
+    navItems.forEach((item) => {
+      item.classList.toggle(
+        'active',
+        item.dataset.page === pageName,
+      )
+    })
+
+    const isSortingPage = pageName === 'sorting'
+    const isSearchingPage = pageName === 'searching'
+    const isStructuresPage = pageName === 'structures'
+
+    algorithmSection.hidden = !isSortingPage
+    visualizerSection.hidden = !isSortingPage
+    searchSection.hidden = !isSearchingPage
+
+    categoryPlaceholder.hidden = true
+
+    if (structureLibrary) {
+      structureLibrary.hidden = !isStructuresPage
+    }
+
+    arraySection.hidden = true
+    stackSection.hidden = true
+
+    if (isSearchingPage) {
+      placeholderTitle.textContent = page.title
+      placeholderDescription.textContent = page.description
+      placeholderCardTitle.textContent = page.cardTitle
+      placeholderCardDescription.textContent = page.cardDescription
+    }
+
+    if (isStructuresPage) {
+      placeholderTitle.textContent = page.title
+      placeholderDescription.textContent = page.description
+    }
+  }
+
   navItems.forEach((item) => {
     item.addEventListener('click', () => {
-      const page = pages[item.dataset.page]
+      showPage(item.dataset.page)
+    })
+  })
 
-      if (!page) return
+  const structureCards = document.querySelectorAll(
+    '[data-structure-target]',
+  )
 
-      navItems.forEach((navItem) => {
-        navItem.classList.toggle('active', navItem === item)
-      })
+  structureCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      if (currentPage !== 'structures') return
 
-      const isSortingPage = item.dataset.page === 'sorting'
-      const isSearchingPage = item.dataset.page === 'searching'
-      const isStructuresPage = item.dataset.page === 'structures'
+      const target = card.dataset.structureTarget
 
-      algorithmSection.hidden = !isSortingPage
-      visualizerSection.hidden = !isSortingPage
-      searchSection.hidden = !isSearchingPage
-      arraySection.hidden = !isStructuresPage
+      if (target === 'array') {
+        structureLibrary.hidden = true
+        arraySection.hidden = false
+        stackSection.hidden = true
+      }
 
-      // Array Visualizer thay thế placeholder cũ.
-      categoryPlaceholder.hidden = true
-
-      if (isStructuresPage) {
-        placeholderTitle.textContent = page.title
-        placeholderDescription.textContent = page.description
-        placeholderCardTitle.textContent = page.cardTitle
-        placeholderCardDescription.textContent = page.cardDescription
+      if (target === 'stack') {
+        structureLibrary.hidden = true
+        arraySection.hidden = true
+        stackSection.hidden = false
       }
     })
   })
+
+  document.querySelectorAll('[data-back-to-structures]').forEach(
+    (button) => {
+      button.addEventListener('click', () => {
+        showPage('structures')
+      })
+    },
+  )
+
+  showPage('sorting')
 }

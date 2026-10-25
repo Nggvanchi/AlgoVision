@@ -403,7 +403,70 @@
     </div>
     </section>
 
+    <section class="visualizer-section" id="structure-library" hidden>
+    <div class="section-heading">
+        <div>
+        <h3>Cấu trúc dữ liệu</h3>
+        <p>Chọn một cấu trúc để khám phá cách hoạt động.</p>
+        </div>
+        <span class="visualizer-tag">DATA STRUCTURES</span>
+    </div>
+
+    <div class="structure-grid">
+        <button
+        type="button"
+        class="structure-card"
+        data-structure-target="array"
+        >
+        <span class="structure-card-icon">[ ]</span>
+        <span class="structure-card-title">Array</span>
+        <span class="structure-card-description">
+            Tìm hiểu cách lưu trữ, truy cập, chèn và xóa phần tử theo index.
+        </span>
+        <span class="structure-card-link">Mở trình mô phỏng →</span>
+        </button>
+
+        <button
+        type="button"
+        class="structure-card"
+        data-structure-target="stack"
+        >
+        <span class="structure-card-icon">▤</span>
+        <span class="structure-card-title">Stack</span>
+        <span class="structure-card-description">
+            Khám phá nguyên tắc LIFO thông qua Push, Pop và Peek.
+        </span>
+        <span class="structure-card-link">Mở trình mô phỏng →</span>
+        </button>
+
+        <article class="structure-card structure-card-disabled">
+        <span class="structure-card-icon">↔</span>
+        <span class="structure-card-title">Queue</span>
+        <span class="structure-card-description">
+            Tìm hiểu nguyên tắc FIFO của cấu trúc hàng đợi.
+        </span>
+        <span class="structure-card-link">Sẽ phát triển sau</span>
+        </article>
+
+        <article class="structure-card structure-card-disabled">
+        <span class="structure-card-icon">⛓</span>
+        <span class="structure-card-title">Linked List</span>
+        <span class="structure-card-description">
+            Khám phá cách các nút dữ liệu liên kết với nhau.
+        </span>
+        <span class="structure-card-link">Sẽ phát triển sau</span>
+        </article>
+    </div>
+    </section>
+
     <section class="visualizer-section" id="array-section" hidden>
+        <button
+            type="button"
+            class="back-button"
+            data-back-to-structures
+            >
+            ← Quay lại cấu trúc dữ liệu
+        </button>
       <div class="section-heading">
         <div>
           <h3>Array Visualizer</h3>
@@ -479,6 +542,106 @@
         </article>
       </div>
     </section>
+    <section class="visualizer-section" id="stack-section" hidden>
+    <button
+        type="button"
+        class="back-button"
+        data-back-to-structures
+        >
+        ← Quay lại cấu trúc dữ liệu
+    </button>
+    <div class="section-heading">
+        <div>
+        <h3>Stack Visualizer</h3>
+        <p>
+            Khám phá cách ngăn xếp hoạt động theo nguyên tắc
+            LIFO (Last In, First Out).
+        </p>
+        </div>
+        <span class="visualizer-tag">DATA STRUCTURES</span>
+    </div>
+
+    <div class="stack-panel">
+        <div class="stack-panel-heading">
+        <div>
+            <h4>Ngăn xếp hiện tại</h4>
+            <p>Phần tử trên cùng là TOP, nơi thực hiện Push và Pop.</p>
+        </div>
+        <button
+            type="button"
+            id="stack-reset"
+            class="control-button"
+        >
+            Khôi phục
+        </button>
+        </div>
+
+        <div
+        id="stack-visualizer"
+        class="stack-visualizer"
+        aria-label="Các phần tử trong Stack"
+        ></div>
+
+        <p
+        id="stack-status"
+        class="array-status"
+        role="status"
+        aria-live="polite"
+        >
+        Stack Visualizer đã sẵn sàng.
+        </p>
+    </div>
+
+    <div class="stack-operations">
+        <article class="array-operation-card">
+        <h4>Push — Thêm phần tử</h4>
+        <p>Thêm một giá trị lên đỉnh Stack.</p>
+
+        <label for="stack-value">Giá trị</label>
+        <input
+            id="stack-value"
+            type="number"
+            step="any"
+            placeholder="Ví dụ: 40"
+        />
+
+        <button
+            type="button"
+            id="stack-push"
+            class="control-button"
+        >
+            Push
+        </button>
+        </article>
+
+        <article class="array-operation-card">
+        <h4>Pop — Xóa phần tử</h4>
+        <p>Lấy phần tử trên đỉnh ra khỏi Stack.</p>
+
+        <button
+            type="button"
+            id="stack-pop"
+            class="control-button"
+        >
+            Pop
+        </button>
+        </article>
+
+        <article class="array-operation-card">
+        <h4>Peek — Xem đỉnh</h4>
+        <p>Đọc giá trị trên đỉnh mà không xóa nó.</p>
+
+        <button
+            type="button"
+            id="stack-peek"
+            class="control-button"
+        >
+            Peek
+        </button>
+        </article>
+    </div>
+    </section>
+
     <footer class="page-footer">
     <span>AlgoVision · Dự án học tập cá nhân</span>
     <span>Được xây dựng với JavaScript</span>
