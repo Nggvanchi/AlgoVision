@@ -1,5 +1,4 @@
-
-export function initSearching() {
+export function initSearching(options = {}) {
   const searchArrayElement = document.querySelector('#search-array')
   const searchRangePanel = document.querySelector('#search-range-panel')
   const searchLeftValue = document.querySelector('#search-left-value')
@@ -46,7 +45,11 @@ export function initSearching() {
     return
   }
 
-  let searchNumbers = []
+  const initialNumbers = options.initialNumbers
+
+  let searchNumbers = Array.isArray(initialNumbers)
+    ? [...initialNumbers]
+    : []
   let searchIndex = 0
   let searchCount = 0
   let searchFinished = false
@@ -222,9 +225,13 @@ export function initSearching() {
   function createSearchArray() {
     stopSearchAnimation()
 
-    searchNumbers = Array.from({ length: 12 }, () =>
-      Math.floor(Math.random() * 91) + 10,
-    )
+    if (Array.isArray(initialNumbers)) {
+      searchNumbers = [...initialNumbers]
+    } else {
+      searchNumbers = Array.from({ length: 12 }, () =>
+        Math.floor(Math.random() * 91) + 10,
+      )
+    }
 
     if (isBinarySearch()) {
       searchNumbers.sort((a, b) => a - b)
