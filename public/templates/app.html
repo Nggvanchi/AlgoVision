@@ -1,0 +1,402 @@
+    <div class="app-layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">A</div>
+        <div>
+          <h1>AlgoVision</h1>
+          <p>Algorithm Visualizer</p>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <p class="section-label">KHÁM PHÁ</p>
+
+        <button class="nav-item active" data-page="sorting">
+          <span class="nav-icon">↕</span>
+          <span>Sắp xếp</span>
+        </button>
+
+        <button class="nav-item" data-page="searching">
+          <span class="nav-icon">⌕</span>
+          <span>Tìm kiếm</span>
+        </button>
+
+        <button class="nav-item" data-page="structures">
+          <span class="nav-icon">▤</span>
+          <span>Cấu trúc dữ liệu</span>
+        </button>
+      </div>
+
+      <div class="sidebar-bottom">
+        <p>PHIÊN BẢN</p>
+        <span>AlgoVision 0.1.0</span>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <p class="breadcrumb">Không gian học tập / <strong>Trực quan hóa</strong></p>
+        </div>
+        <span class="status-badge">
+          <span class="status-dot"></span>
+          Đang phát triển
+        </span>
+      </header>
+
+      <section class="page-heading">
+        <p class="eyebrow">HỌC THUẬT TOÁN TRỰC QUAN</p>
+        <h2>Hiểu thuật toán qua từng bước.</h2>
+        <p class="page-description">
+          Quan sát cách dữ liệu thay đổi và khám phá logic phía sau mỗi thuật toán.
+        </p>
+      </section>
+
+      <section class="algorithm-section">
+        <div class="section-heading">
+          <div>
+            <h3>Thuật toán sắp xếp</h3>
+            <p>Chọn một thuật toán để bắt đầu tìm hiểu.</p>
+          </div>
+          <span class="count-label">03 THUẬT TOÁN</span>
+        </div>
+
+        <div class="algorithm-grid">
+          <button class="algorithm-card selected" data-algorithm="bubble">
+            <div class="card-top">
+              <span class="algorithm-symbol">↔</span>
+              <span class="difficulty easy">CƠ BẢN</span>
+            </div>
+            <h4>Bubble Sort</h4>
+            <p>So sánh các phần tử liền kề và đổi chỗ khi cần thiết.</p>
+            <div class="card-footer">
+              <span>Độ phức tạp trung bình</span>
+              <code>O(n²)</code>
+            </div>
+          </button>
+
+          <button class="algorithm-card" data-algorithm="selection">
+            <div class="card-top">
+              <span class="algorithm-symbol">↓</span>
+              <span class="difficulty easy">CƠ BẢN</span>
+            </div>
+            <h4>Selection Sort</h4>
+            <p>Tìm phần tử nhỏ nhất rồi đưa về đúng vị trí.</p>
+            <div class="card-footer">
+              <span>Độ phức tạp trung bình</span>
+              <code>O(n²)</code>
+            </div>
+          </button>
+
+          <button class="algorithm-card" data-algorithm="insertion">
+            <div class="card-top">
+              <span class="algorithm-symbol">↳</span>
+              <span class="difficulty medium">TRUNG BÌNH</span>
+            </div>
+            <h4>Insertion Sort</h4>
+            <p>Chèn từng phần tử vào vị trí phù hợp trong phần đã sắp xếp.</p>
+            <div class="card-footer">
+              <span>Độ phức tạp trung bình</span>
+              <code>O(n²)</code>
+            </div>
+          </button>
+        </div>
+      </section>
+
+      <section class="visualizer-section">
+        <div class="section-heading">
+          <div>
+            <h3>Khu vực mô phỏng</h3>
+            <p>Không gian trực quan hóa sẽ được phát triển ở bước tiếp theo.</p>
+          </div>
+          <span class="visualizer-tag">PREVIEW</span>
+        </div>
+
+        <div class="visualizer-placeholder">
+          <div class="visualizer-heading">
+            <div>
+              <h4 id="visualizer-title">Mảng dữ liệu</h4>
+              <p id="visualizer-description">
+                Tạo mảng ngẫu nhiên để chuẩn bị mô phỏng thuật toán.
+              </p>
+            </div>
+            <span class="array-count" id="array-count">12 phần tử</span>
+          </div>
+
+          <div class="array-toolbar">
+            <label class="size-control" for="array-size">
+              Số phần tử
+              <select id="array-size">
+                <option value="8">8</option>
+                <option value="12" selected>12</option>
+                <option value="16">16</option>
+                <option value="20">20</option>
+                <option value="24">24</option>
+              </select>
+            </label>
+
+            <button class="primary-button" id="start-button" type="button">
+              <span>↻</span>
+              Tạo mảng mới
+            </button>
+          </div>
+
+          <div class="array-bars" id="array-bars" role="img" aria-label="Biểu đồ các giá trị trong mảng"></div>
+          
+          <div class="simulation-controls">
+            <button class="control-button" id="reset-sort" type="button">
+              Đặt lại
+            </button>
+
+            <button class="control-button" id="previous-step" type="button" disabled>
+              ← Bước trước
+            </button>
+
+            <button class="control-button" id="step-sort" type="button">
+              Bước tiếp theo →
+            </button>
+
+            <button class="primary-button" id="run-sort" type="button">
+              Chạy Bubble Sort
+            </button>
+
+            <button class="control-button" id="pause-sort" type="button" disabled>
+              Tạm dừng
+            </button>
+
+            <label class="speed-control" for="sort-speed">
+              Tốc độ
+              <select id="sort-speed">
+                <option value="1200">Chậm</option>
+                <option value="650" selected>Vừa</option>
+                <option value="250">Nhanh</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="simulation-stats">
+            <div class="stat-card">
+              <span>Số lần so sánh</span>
+              <strong id="comparison-count">0</strong>
+            </div>
+
+            <div class="stat-card">
+              <span>Số lần đổi chỗ</span>
+              <strong id="swap-count">0</strong>
+            </div>
+
+            <div class="stat-card">
+              <span>Tiến trình</span>
+              <strong id="step-count">0 / 0</strong>
+            </div>
+          </div>
+
+          <p class="simulation-message" id="simulation-message" aria-live="polite">
+            Sẵn sàng bắt đầu mô phỏng.
+          </p>
+          
+          <div class="complexity-panel">
+            <div class="complexity-heading">
+              <h4>Phân tích thuật toán</h4>
+              <span> BUBBLE SORT </span>
+            </div>
+
+            <div class="complexity-grid">
+              <div class="complexity-card">
+                <span>Trường hợp tốt nhất</span>
+                <strong>O(n)</strong>
+                <p>Khi mảng đã được sắp xếp và thuật toán dừng sớm.</p>
+              </div>
+
+              <div class="complexity-card">
+                <span>Trung bình và xấu nhất</span>
+                <strong>O(n²)</strong>
+                <p>Có thể phải so sánh nhiều cặp phần tử.</p>
+              </div>
+
+              <div class="complexity-card">
+                <span>Bộ nhớ phụ của thuật toán</span>
+                <strong>O(1)</strong>
+                <p>Không tính bộ nhớ dùng để lưu lịch sử mô phỏng.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="array-legend">
+            <span><i class="legend-dot"></i> Giá trị trong mảng</span>
+            <span id="array-range">Giá trị từ 10 đến 100</span>
+          </div>
+        </div>
+
+      </section>
+       
+      <section class="visualizer-section" id="search-section" hidden>
+        <div class="section-heading">
+          <div>
+            <h3>Linear Search</h3>
+            <p>Tìm một giá trị bằng cách kiểm tra lần lượt từng phần tử.</p>
+          </div>
+          <span class="visualizer-tag">O(n)</span>
+        </div>
+
+        <div class="visualizer-placeholder">
+          <div class="search-toolbar">
+            <label for="search-target">Giá trị cần tìm</label>
+            <input
+              id="search-target"
+              type="number"
+              min="10"
+              max="100"
+              value="50"
+            />
+            <label for="search-algorithm">Thuật toán</label>
+            <select id="search-algorithm">
+              <option value="linear">Linear Search</option>
+              <option value="binary">Binary Search</option>
+            </select>
+            <button class="primary-button" id="search-new-array" type="button">
+              Tạo mảng mới
+            </button>
+            <button class="primary-button" id="search-compare" type="button">
+              So sánh thuật toán
+            </button>
+          </div>
+
+          <div class="search-speed-control">
+            <label for="search-speed">Tốc độ chạy</label>
+            <input
+              type="range"
+              id="search-speed"
+              min="100"
+              max="1000"
+              step="100"
+              value="600"
+            />
+            <span id="search-speed-value">600 ms</span>
+          </div>
+
+          <div id="search-comparison" class="search-comparison" hidden>
+            <h3>Kết quả so sánh</h3>
+            <p id="comparison-array"></p>
+
+            <div class="comparison-grid">
+              <div class="comparison-card">
+                <h4>Linear Search</h4>
+                <p>Số lần so sánh: <strong id="linear-comparisons">0</strong></p>
+                <p>Vị trí tìm thấy: <strong id="linear-position">Chưa có</strong></p>
+              </div>
+
+              <div class="comparison-card">
+                <h4>Binary Search</h4>
+                <p>Số lần so sánh: <strong id="binary-comparisons">0</strong></p>
+                <p>Vị trí tìm thấy: <strong id="binary-position">Chưa có</strong></p>
+              </div>
+            </div>
+
+            <p id="comparison-conclusion"></p>
+          </div>
+
+          <div class="search-array" id="search-array"></div>
+       
+          <div class="search-range-panel" id="search-range-panel" hidden>
+            <h4>Phạm vi tìm kiếm Binary Search</h4>
+
+            <div class="search-range-stats">
+              <div class="search-range-item">
+                <span>Left</span>
+                <strong id="search-left-value">1</strong>
+              </div>
+
+              <div class="search-range-item">
+                <span>Mid</span>
+                <strong id="search-mid-value">Chưa xác định</strong>
+              </div>
+
+              <div class="search-range-item">
+                <span>Right</span>
+                <strong id="search-right-value">12</strong>
+              </div>
+            </div>
+
+            <p id="search-range-message" aria-live="polite">
+              Nhấn Bước tiếp theo để bắt đầu.
+            </p>
+          </div>
+              
+          <div class="search-legend">
+            <span>
+              <i class="search-legend-dot is-current"></i>
+              Đang kiểm tra
+            </span>
+
+            <span>
+              <i class="search-legend-dot is-eliminated"></i>
+              Đã loại bỏ
+            </span>
+
+            <span>
+              <i class="search-legend-dot is-found"></i>
+              Tìm thấy
+            </span>
+          </div>
+
+          <div class="simulation-controls">
+            <button class="control-button" id="search-reset" type="button">
+              Đặt lại
+            </button>
+
+            <button class="control-button" id="search-next" type="button">
+              Bước tiếp theo
+            </button>
+
+            <button class="primary-button" id="search-run" type="button">
+              Chạy tìm kiếm
+            </button>
+
+            <button class="control-button" id="search-pause" type="button" disabled>
+              Tạm dừng
+            </button>
+          </div>
+
+          <p class="simulation-message" id="search-message" aria-live="polite">
+            Nhập giá trị rồi bắt đầu tìm kiếm.
+          </p>
+
+          <div class="simulation-stats">
+            <div class="stat-card">
+              <span>Số lần kiểm tra</span>
+              <strong id="search-comparisons">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>Vị trí tìm thấy</span>
+              <strong id="search-result">Chưa có</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="visualizer-section" id="category-placeholder" hidden>
+        <div class="section-heading">
+          <div>
+            <h3 id="placeholder-title">Cấu trúc dữ liệu</h3>
+            <p id="placeholder-description">
+              Khám phá cách tổ chức và thao tác với dữ liệu.
+            </p>
+          </div>
+          <span class="visualizer-tag">SẮP RA MẮT</span>
+        </div>
+
+        <div class="visualizer-placeholder category-preview">
+          <h4 id="placeholder-card-title">Các cấu trúc dữ liệu cơ bản</h4>
+          <p id="placeholder-card-description">
+            Array, Stack, Queue, Linked List, Tree và Graph sẽ được bổ sung.
+          </p>
+        </div>
+      </section>
+      
+      <footer class="page-footer">
+        <span>AlgoVision · Dự án học tập cá nhân</span>
+        <span>Được xây dựng với JavaScript</span>
+      </footer>
+    </main>
+  </div>
