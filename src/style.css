@@ -1180,3 +1180,57 @@ button:disabled {
 .search-legend-dot.is-found {
   background: #22c55e;
 }
+
+.search-range-panel {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid var(--border-color, #374151);
+  border-radius: 12px;
+  background: var(--surface-secondary, #111827);
+}
+
+.search-range-panel h4 {
+  margin: 0 0 14px;
+  font-size: 15px;
+}
+
+.search-range-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.search-range-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--surface-color, #1f2937);
+}
+
+.search-range-item span {
+  color: var(--text-secondary, #9ca3af);
+  font-size: 13px;
+}
+
+.search-range-item strong {
+  font-size: 20px;
+}
+
+#search-range-message {
+  margin: 14px 0 0;
+  color: var(--text-secondary, #9ca3af);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+@media (max-width: 480px) {
+  .search-range-stats {
+    gap: 8px;
+  }
+
+  .search-range-item {
+    padding: 10px;
+  }
+}

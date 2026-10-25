@@ -305,6 +305,48 @@ app.innerHTML = `
           </div>
 
           <div class="search-array" id="search-array"></div>
+       
+          <div class="search-range-panel" id="search-range-panel" hidden>
+            <h4>Phạm vi tìm kiếm Binary Search</h4>
+
+            <div class="search-range-stats">
+              <div class="search-range-item">
+                <span>Left</span>
+                <strong id="search-left-value">1</strong>
+              </div>
+
+              <div class="search-range-item">
+                <span>Mid</span>
+                <strong id="search-mid-value">Chưa xác định</strong>
+              </div>
+
+              <div class="search-range-item">
+                <span>Right</span>
+                <strong id="search-right-value">12</strong>
+              </div>
+            </div>
+
+            <p id="search-range-message" aria-live="polite">
+              Nhấn Bước tiếp theo để bắt đầu.
+            </p>
+          </div>
+              
+          <div class="search-legend">
+            <span>
+              <i class="search-legend-dot is-current"></i>
+              Đang kiểm tra
+            </span>
+
+            <span>
+              <i class="search-legend-dot is-eliminated"></i>
+              Đã loại bỏ
+            </span>
+
+            <span>
+              <i class="search-legend-dot is-found"></i>
+              Tìm thấy
+            </span>
+          </div>
 
           <div class="simulation-controls">
             <button class="control-button" id="search-reset" type="button">
@@ -435,6 +477,11 @@ document.querySelectorAll('.nav-item').forEach((item) => {
 })
 
 const searchArrayElement = document.querySelector('#search-array')
+const searchRangePanel = document.querySelector('#search-range-panel')
+const searchLeftValue = document.querySelector('#search-left-value')
+const searchMidValue = document.querySelector('#search-mid-value')
+const searchRightValue = document.querySelector('#search-right-value')
+const searchRangeMessage = document.querySelector('#search-range-message')
 const searchTargetInput = document.querySelector('#search-target')
 const searchAlgorithmSelect = document.querySelector('#search-algorithm')
 const searchMessage = document.querySelector('#search-message')
@@ -519,6 +566,42 @@ function renderSearchArray() {
   searchComparisons.textContent = searchCount
   searchNextButton.disabled = searchFinished
   searchRunButton.disabled = searchFinished
+  renderSearchRange()
+}
+
+function renderSearchRange() {
+  const isBinarySearch = searchAlgorithmSelect.value === 'binary'
+
+  searchRangePanel.hidden = !isBinarySearch
+
+  if (!isBinarySearch) {
+    return
+  }
+
+  searchLeftValue.textContent =
+    searchLeft <= searchRight ? String(searchLeft + 1) : '—'
+
+  searchMidValue.textContent =
+    searchMid >= 0 ? String(searchMid + 1) : 'Chưa xác định'
+
+  searchRightValue.textContent =
+    searchLeft <= searchRight ? String(searchRight + 1) : '—'
+
+  if (searchFinished && searchFoundIndex !== -1) {
+    searchRangeMessage.textContent =
+      `Đã tìm thấy giá trị tại vị trí ${searchFoundIndex + 1}.`
+  } else if (searchFinished) {
+    searchRangeMessage.textContent =
+      'Phạm vi tìm kiếm đã hết. Không tìm thấy giá trị cần tìm.'
+  } else if (searchMid === -1) {
+    searchRangeMessage.textContent =
+      'Chưa kiểm tra phần tử nào. Nhấn Bước tiếp theo để bắt đầu.'
+  } else {
+    searchRangeMessage.textContent =
+      `Đang xét vị trí ${searchMid + 1}. ` +
+      `Phạm vi tìm kiếm hiện tại từ vị trí ${searchLeft + 1} ` +
+      `đến vị trí ${searchRight + 1}.`
+  }
 }
 
 function resetSearch() {
