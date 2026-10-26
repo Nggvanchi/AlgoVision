@@ -164,3 +164,66 @@ test('Insertion Sort: bước cuối đánh dấu toàn bộ phần tử đã s�
   assert.deepEqual(finalStep.sortedIndices, [0, 1, 2, 3])
   assert.equal(finalStep.finished, true)
 })
+
+test('Insertion Sort: thông báo đúng khi mảng rỗng', () => {
+  const steps = generateInsertionSortSteps([])
+  const finalStep = steps[steps.length - 1]
+
+  assert.deepEqual(finalStep.array, [])
+  assert.deepEqual(finalStep.sortedIndices, [])
+  assert.equal(finalStep.finished, true)
+  assert.equal(
+    finalStep.message,
+    'Mảng rỗng, không có phần tử cần sắp xếp.',
+  )
+})
+
+test('Insertion Sort: thông báo đúng khi mảng có một phần tử', () => {
+  const steps = generateInsertionSortSteps([7])
+  const finalStep = steps[steps.length - 1]
+
+  assert.deepEqual(finalStep.array, [7])
+  assert.deepEqual(finalStep.sortedIndices, [0])
+  assert.equal(finalStep.finished, true)
+  assert.equal(
+    finalStep.message,
+    'Mảng chỉ có một phần tử nên đã được sắp xếp.',
+  )
+})
+
+for (const algorithm of [
+  {
+    name: 'Bubble Sort',
+    generateSteps: generateBubbleSortSteps,
+  },
+  {
+    name: 'Selection Sort',
+    generateSteps: generateSelectionSortSteps,
+  },
+]) {
+  test(`${algorithm.name}: thông báo đúng khi mảng rỗng`, () => {
+    const steps = algorithm.generateSteps([])
+    const finalStep = steps[steps.length - 1]
+
+    assert.deepEqual(finalStep.array, [])
+    assert.deepEqual(finalStep.sortedIndices, [])
+    assert.equal(finalStep.finished, true)
+    assert.equal(
+      finalStep.message,
+      'Mảng rỗng, không có phần tử cần sắp xếp.',
+    )
+  })
+
+  test(`${algorithm.name}: thông báo đúng khi mảng có một phần tử`, () => {
+    const steps = algorithm.generateSteps([7])
+    const finalStep = steps[steps.length - 1]
+
+    assert.deepEqual(finalStep.array, [7])
+    assert.deepEqual(finalStep.sortedIndices, [0])
+    assert.equal(finalStep.finished, true)
+    assert.equal(
+      finalStep.message,
+      'Mảng chỉ có một phần tử nên đã được sắp xếp.',
+    )
+  })
+}

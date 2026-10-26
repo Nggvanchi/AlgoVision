@@ -80,7 +80,12 @@ export function generateBubbleSortSteps(inputArray) {
     sortedIndices: array.map((_, index) => index),
     comparisons,
     swaps,
-    message: 'Hoàn thành! Mảng đã được sắp xếp theo thứ tự tăng dần.',
+    message: 
+      array.length === 0
+        ? 'Mảng rỗng, không có phần tử cần sắp xếp.'
+        : array.length === 1
+          ? 'Mảng chỉ có một phần tử nên đã được sắp xếp.'
+          : 'Hoàn thành! Mảng đã được sắp xếp theo thứ tự tăng dần.',
     finished: true,
   })
 

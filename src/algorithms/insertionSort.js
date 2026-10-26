@@ -71,6 +71,14 @@ export function generateInsertionSortSteps(inputArray) {
     })
   }
 
+  let completionMessage = 'Hoàn thành! Mảng đã được sắp xếp theo thứ tự tăng dần.'
+
+  if (array.length === 0) {
+    completionMessage = 'Mảng rỗng, không có phần tử cần sắp xếp.'
+  } else if (array.length === 1) {
+    completionMessage = 'Mảng chỉ có một phần tử nên đã được sắp xếp.'
+  }
+
   steps.push({
     array: [...array],
     comparing: [],
@@ -79,7 +87,7 @@ export function generateInsertionSortSteps(inputArray) {
     comparisons,
     swaps,
     shifts,
-    message: 'Hoàn thành! Mảng đã được sắp xếp theo thứ tự tăng dần.',
+    message: completionMessage,
     finished: true,
   })
 

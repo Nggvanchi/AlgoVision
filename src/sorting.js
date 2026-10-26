@@ -239,10 +239,11 @@ export function initSorting() {
 
     complexityTitle.textContent = config.name.toUpperCase()
 
-    if (complexityCards.length >= 3) {
+    if (complexityCards.length >= 4) {
       complexityCards[0].textContent = config.best
       complexityCards[1].textContent = config.average
-      complexityCards[2].textContent = config.space
+      complexityCards[2].textContent = config.worst
+      complexityCards[3].textContent = config.space
     }
 
     createNewArray()
