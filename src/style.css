@@ -15,6 +15,7 @@
   --border: #292c3a;
   --text: #e8eaf2;
   --muted: #9298ad;
+  --text-muted: var(--muted);
   --purple: #9b82ff;
   --purple-dark: #7456e8;
 
@@ -487,7 +488,7 @@ button:disabled {
 
   .sidebar-section {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 6px;
   }
 
@@ -1068,18 +1069,6 @@ button:disabled {
   border-radius: 8px;
   font-weight: 600;
   transition: background-color 0.2s, border-color 0.2s;
-}
-
-.search-cell.is-current {
-  background: #fef3c7;
-  border-color: #d97706;
-  color: #92400e;
-}
-
-.search-cell.is-found {
-  background: #dcfce7;
-  border-color: #16a34a;
-  color: #166534;
 }
 
 .search-comparison {
@@ -2133,4 +2122,193 @@ button.structure-card:focus-visible,
   border-color: var(--purple);
   background: var(--panel-hover);
   color: var(--text);
+}
+
+/* Dashboard */
+
+.dashboard-section {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  padding-top: 28px;
+}
+
+.dashboard-hero {
+  padding: 28px 0 8px;
+}
+
+.dashboard-hero h2 {
+  max-width: 720px;
+  margin: 14px 0 18px;
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+
+.dashboard-description {
+  max-width: 760px;
+  margin: 0 0 24px;
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.dashboard-primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border: 1px solid var(--purple);
+  border-radius: 10px;
+  background: var(--purple);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.dashboard-primary-button:hover {
+  transform: translateY(-2px);
+  opacity: 0.92;
+}
+
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.dashboard-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+}
+
+button.dashboard-card {
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease,
+    transform 0.2s ease;
+}
+
+button.dashboard-card:hover {
+  border-color: var(--purple);
+  background: var(--panel-hover);
+  transform: translateY(-3px);
+}
+
+.dashboard-card-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--purple);
+  font-size: 22px;
+}
+
+.dashboard-card-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.dashboard-card-description {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.dashboard-card-link {
+  margin-top: 4px;
+  color: var(--purple);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dashboard-card-upcoming {
+  opacity: 0.8;
+}
+
+.dashboard-card-status {
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.dashboard-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+}
+
+.dashboard-progress h3 {
+  margin: 12px 0;
+  font-size: 21px;
+}
+
+.dashboard-progress p:not(.eyebrow) {
+  max-width: 760px;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.dashboard-progress-icon {
+  flex-shrink: 0;
+  color: var(--purple);
+  font-size: 28px;
+}
+
+@media (max-width: 700px) {
+  .dashboard-section {
+    gap: 28px;
+    padding-top: 18px;
+  }
+
+  .dashboard-hero {
+    padding-top: 16px;
+  }
+
+  .dashboard-hero h2 {
+    font-size: 30px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-card {
+    padding: 18px;
+  }
+
+  .dashboard-progress {
+    align-items: flex-start;
+    padding: 18px;
+  }
 }

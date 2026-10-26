@@ -10,8 +10,13 @@
 
     <div class="sidebar-section">
     <p class="section-label">KHÁM PHÁ</p>
+    
+    <button class="nav-item" data-page="dashboard">
+        <span class="nav-icon">⌂</span>
+        <span>Tổng quan</span>
+    </button>
 
-    <button class="nav-item active" data-page="sorting">
+    <button class="nav-item" data-page="sorting">
         <span class="nav-icon">↕</span>
         <span>Sắp xếp</span>
     </button>
@@ -43,6 +48,98 @@
         Đang phát triển
     </span>
     </header>
+    
+    <section id="dashboard-section" class="dashboard-section" hidden>
+        <div class="dashboard-hero">
+            <p class="eyebrow">KHÔNG GIAN HỌC TẬP DSA</p>
+            <h2>Hiểu thuật toán.<br> Làm chủ cấu trúc dữ liệu.</h2>
+            <p class="dashboard-description">
+                Khám phá cách thuật toán hoạt động qua từng bước,
+                thực hành với dữ liệu trực quan và xây dựng nền tảng
+                tư duy giải quyết vấn đề.
+            </p>
+            <button
+                class="dashboard-primary-button"
+                data-dashboard-target="sorting"
+            >
+                Bắt đầu học
+                <span aria-hidden="true">→</span>
+            </button>
+        </div>
+
+        <section class="dashboard-content">
+            <div class="section-heading">
+                <div>
+                    <h3>Khám phá kiến thức</h3>
+                    <p>Chọn một chủ đề để bắt đầu thực hành.</p>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <button
+                    class="dashboard-card"
+                    data-dashboard-target="sorting"
+                >
+                    <span class="dashboard-card-icon">↕</span>
+                    <span class="dashboard-card-title">Sắp xếp</span>
+                    <span class="dashboard-card-description">
+                        Tìm hiểu cách sắp xếp dữ liệu và so sánh
+                        hiệu quả giữa các thuật toán.
+                    </span>
+                    <span class="dashboard-card-link">Khám phá →</span>
+                </button>
+
+                <button
+                    class="dashboard-card"
+                    data-dashboard-target="searching"
+                >
+                    <span class="dashboard-card-icon">⌕</span>
+                    <span class="dashboard-card-title">Tìm kiếm</span>
+                    <span class="dashboard-card-description">
+                        Quan sát cách thuật toán tìm kiếm xác định
+                        vị trí của một phần tử.
+                    </span>
+                    <span class="dashboard-card-link">Khám phá →</span>
+                </button>
+
+                <button
+                    class="dashboard-card"
+                    data-dashboard-target="structures"
+                >
+                    <span class="dashboard-card-icon">▤</span>
+                    <span class="dashboard-card-title">Cấu trúc dữ liệu</span>
+                    <span class="dashboard-card-description">
+                        Thực hành với Array, Stack, Queue và
+                        Linked List qua các thao tác thực tế.
+                    </span>
+                    <span class="dashboard-card-link">Khám phá →</span>
+                </button>
+
+                <article class="dashboard-card dashboard-card-upcoming">
+                    <span class="dashboard-card-icon">{ }</span>
+                    <span class="dashboard-card-title">Thuật toán nâng cao</span>
+                    <span class="dashboard-card-description">
+                        Định hướng học Đệ quy, Chia để trị,
+                        Quay lui và Quy hoạch động.
+                    </span>
+                    <span class="dashboard-card-status">Sẽ phát triển</span>
+                </article>
+            </div>
+        </section>
+
+        <section class="dashboard-progress">
+            <div>
+                <p class="eyebrow">LỘ TRÌNH HỌC TẬP</p>
+                <h3>Theo dõi hành trình của bạn</h3>
+                <p>
+                    Khu vực này sẽ được phát triển để ghi nhận
+                    chủ đề đã học, bài tập đã hoàn thành và tiến độ
+                    của từng nhóm kiến thức.
+                </p>
+            </div>
+            <span class="dashboard-progress-icon" aria-hidden="true">↗</span>
+        </section>
+    </section>
 
     <section class="page-heading">
     <p class="eyebrow">HỌC THUẬT TOÁN TRỰC QUAN</p>
