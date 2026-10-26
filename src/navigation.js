@@ -1,3 +1,4 @@
+
 const pages = {
   sorting: {
     title: 'Thuật toán sắp xếp',
@@ -23,13 +24,14 @@ export function initNavigation(document) {
   const algorithmSection = document.querySelector('.algorithm-section')
   const searchSection = document.querySelector('#search-section')
   const visualizerSection = document.querySelector(
-    'main > .visualizer-section:not(#search-section):not(#category-placeholder):not(#array-section):not(#stack-section):not(#structure-library)',
+    'main > .visualizer-section:not(#search-section):not(#category-placeholder):not(#structure-library):not(#array-section):not(#stack-section):not(#linked-list-section)',
   )
   const categoryPlaceholder = document.querySelector(
     '#category-placeholder',
   )
   const arraySection = document.querySelector('#array-section')
   const stackSection = document.querySelector('#stack-section')
+  const linkedListSection = document.querySelector('#linked-list-section')
   const structureLibrary = document.querySelector('#structure-library')
 
   const placeholderTitle = document.querySelector('#placeholder-title')
@@ -71,6 +73,7 @@ export function initNavigation(document) {
     structureLibrary.hidden = !isStructuresPage
     arraySection.hidden = true
     stackSection.hidden = true
+    linkedListSection.hidden = true
 
     if (isSearchingPage) {
       placeholderTitle.textContent = page.title
@@ -103,6 +106,9 @@ export function initNavigation(document) {
       } else if (target === 'stack') {
         structureLibrary.hidden = true
         stackSection.hidden = false
+      } else if (target === 'linked-list') {
+        structureLibrary.hidden = true
+        linkedListSection.hidden = false
       }
     })
   })

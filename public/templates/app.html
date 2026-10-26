@@ -440,22 +440,26 @@
         </button>
 
         <article class="structure-card structure-card-disabled">
-        <span class="structure-card-icon">↔</span>
-        <span class="structure-card-title">Queue</span>
-        <span class="structure-card-description">
-            Tìm hiểu nguyên tắc FIFO của cấu trúc hàng đợi.
-        </span>
-        <span class="structure-card-link">Sẽ phát triển sau</span>
+            <span class="structure-card-icon">↔</span>
+            <span class="structure-card-title">Queue</span>
+            <span class="structure-card-description">
+                Tìm hiểu nguyên tắc FIFO của cấu trúc hàng đợi.
+            </span>
+            <span class="structure-card-link">Sẽ phát triển sau</span>
         </article>
 
-        <article class="structure-card structure-card-disabled">
-        <span class="structure-card-icon">⛓</span>
-        <span class="structure-card-title">Linked List</span>
-        <span class="structure-card-description">
-            Khám phá cách các nút dữ liệu liên kết với nhau.
-        </span>
-        <span class="structure-card-link">Sẽ phát triển sau</span>
-        </article>
+        <button
+            type="button"
+            class="structure-card"
+            data-structure-target="linked-list">
+            <span class="structure-card-icon">⛓</span>
+            <span class="structure-card-title">Linked List</span>
+            <span class="structure-card-description">
+                Khám phá cách các nút dữ liệu liên kết với nhau,
+                cùng thao tác thêm, chèn, xóa và tìm kiếm.
+            </span>
+            <span class="structure-card-link">Mở trình mô phỏng →</span>
+        </button>
     </div>
     </section>
 
@@ -634,12 +638,153 @@
         <button
             type="button"
             id="stack-peek"
-            class="control-button"
-        >
+            class="control-button">
             Peek
         </button>
         </article>
     </div>
+
+    </section>
+        <section class="visualizer-section" id="linked-list-section" hidden>
+        <button
+            type="button"
+            class="back-button"
+            data-back-to-structures
+        >
+            ← Quay lại cấu trúc dữ liệu
+        </button>
+
+        <div class="section-heading">
+            <div>
+                <h3>Singly Linked List Visualizer</h3>
+                <p>
+                    Khám phá danh sách liên kết đơn thông qua các thao tác
+                    thêm đầu, thêm cuối, chèn, xóa và tìm kiếm.
+                </p>
+            </div>
+            <span class="visualizer-tag">DATA STRUCTURES</span>
+        </div>
+
+        <div class="linked-list-panel">
+            <div class="linked-list-panel-heading">
+                <div>
+                    <h4>Danh sách hiện tại</h4>
+                    <p>
+                        Mỗi nút gồm giá trị và liên kết next đến nút tiếp theo.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    id="linked-list-reset"
+                    class="control-button"
+                >
+                    Khôi phục
+                </button>
+            </div>
+
+            <div
+                id="linked-list-visualizer"
+                class="linked-list-visualizer"
+                aria-label="Các nút trong danh sách liên kết đơn"
+            ></div>
+
+            <p
+                id="linked-list-status"
+                class="array-status"
+                role="status"
+                aria-live="polite"
+            >
+                Linked List Visualizer đã sẵn sàng.
+            </p>
+        </div>
+
+        <div class="linked-list-operations">
+            <article class="array-operation-card">
+                <h4>Thêm đầu hoặc cuối</h4>
+                <p>Thêm một nút vào đầu hoặc cuối danh sách.</p>
+
+                <label for="linked-list-value">Giá trị</label>
+                <input
+                    id="linked-list-value"
+                    type="number"
+                    step="any"
+                    placeholder="Ví dụ: 40"
+                />
+
+                <button
+                    type="button"
+                    id="linked-list-prepend"
+                    class="control-button"
+                >
+                    Thêm vào đầu
+                </button>
+
+                <button
+                    type="button"
+                    id="linked-list-append"
+                    class="control-button"
+                >
+                    Thêm vào cuối
+                </button>
+            </article>
+
+            <article class="array-operation-card">
+                <h4>Chèn theo vị trí</h4>
+                <p>Chèn một nút tại index được chọn.</p>
+
+                <label for="linked-list-index">Index</label>
+                <input
+                    id="linked-list-index"
+                    type="number"
+                    step="1"
+                    min="0"
+                    placeholder="Ví dụ: 1"
+                />
+
+                <button
+                    type="button"
+                    id="linked-list-insert"
+                    class="control-button"
+                >
+                    Chèn phần tử
+                </button>
+            </article>
+
+            <article class="array-operation-card">
+                <h4>Xóa theo vị trí</h4>
+                <p>Xóa nút tại index được chọn.</p>
+
+                <button
+                    type="button"
+                    id="linked-list-remove"
+                    class="control-button"
+                >
+                    Xóa phần tử
+                </button>
+            </article>
+
+            <article class="array-operation-card">
+                <h4>Tìm kiếm</h4>
+                <p>Tìm vị trí đầu tiên chứa giá trị cần tìm.</p>
+
+                <label for="linked-list-target">Giá trị cần tìm</label>
+                <input
+                    id="linked-list-target"
+                    type="number"
+                    step="any"
+                    placeholder="Ví dụ: 20"
+                />
+
+                <button
+                    type="button"
+                    id="linked-list-find"
+                    class="control-button"
+                >
+                    Tìm kiếm
+                </button>
+            </article>
+        </div>
     </section>
 
     <footer class="page-footer">
