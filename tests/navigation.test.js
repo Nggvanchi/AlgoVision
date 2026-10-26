@@ -19,6 +19,9 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
     document.body.innerHTML = template
     initNavigation(document)
 
+    const dashboardSection = document.querySelector('#dashboard-section')
+    const dashboardNav = document.querySelector('.nav-item[data-page="dashboard"]')
+    const pageHeading = document.querySelector('.page-heading')
     const algorithmSection = document.querySelector('.algorithm-section')
     const searchAlgorithmLibrary = document.querySelector(
       '#search-algorithm-library',
@@ -55,9 +58,16 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
     assert.ok(linkedListSection,'Linked List Visualizer phải tồn tại trong HTML',)
     assert.ok(queueSection,'Queue Visualizer phải tồn tại trong HTML',)
     assert.ok(structureLibrary,'Thư viện cấu trúc dữ liệu phải tồn tại trong HTML',)
+    // Trang Dashboard hiển thị mặc định
+    assert.ok(dashboardSection, 'Dashboard phải tồn tại trong HTML')
+    assert.ok(dashboardNav, 'Nút Tổng quan phải tồn tại trong HTML')
+    assert.ok(pageHeading, 'Tiêu đề trang phải tồn tại trong HTML')
 
-    // Trang Sorting
-    assert.equal(algorithmSection.hidden, false)
+    assert.equal(dashboardSection.hidden, false)
+    assert.equal(pageHeading.hidden, true)
+    assert.equal(dashboardNav.classList.contains('active'), true)
+
+    assert.equal(algorithmSection.hidden, true)
     assert.equal(visualizerSection.hidden, true)
     assert.equal(searchAlgorithmLibrary.hidden, true)
     assert.equal(searchSection.hidden, true)
@@ -67,6 +77,19 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
     assert.equal(queueSection.hidden, true)
     assert.equal(linkedListSection.hidden, true)
     assert.equal(categoryPlaceholder.hidden, true)
+
+    // Chuyển từ Dashboard sang trang Sorting
+    dashboardSection
+      .querySelector('[data-dashboard-target="sorting"]')
+      ?.click()
+
+    assert.equal(dashboardSection.hidden, true)
+    assert.equal(pageHeading.hidden, false)
+    assert.equal(algorithmSection.hidden, false)
+    assert.equal(visualizerSection.hidden, true)
+    assert.equal(dashboardNav.classList.contains('active'), false)
+    assert.equal(sortingNav.classList.contains('active'), true)
+    
     // Mở Bubble Sort
     document.querySelector('[data-algorithm="bubble"]').click()
 
