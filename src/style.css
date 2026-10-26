@@ -2127,3 +2127,37 @@ button.structure-card:focus-visible,
     padding: 14px;
   }
 }
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.back-button:hover {
+  border-color: var(--purple);
+  background: var(--panel-hover);
+  color: var(--text);
+}
+
+.algorithm-card {
+  text-align: left;
+  cursor: pointer;
+}
+
+.algorithm-card.selected {
+  border-color: var(--purple);
+}

@@ -104,6 +104,12 @@
     </section>
 
     <section class="visualizer-section">
+    <button
+        type="button"
+        class="back-button"
+        data-back-to-sorting-algorithms>
+        ← Quay lại danh sách thuật toán
+    </button>
     <div class="section-heading">
         <div>
         <h3>Khu vực mô phỏng</h3>
@@ -276,7 +282,59 @@
 
     </section>
 
+    <section class="algorithm-section" id="search-algorithm-library" hidden>
+    <div class="section-heading">
+        <div>
+        <h3>Thuật toán tìm kiếm</h3>
+        <p>Chọn một thuật toán để khám phá cách hoạt động.</p>
+        </div>
+        <span class="count-label">02 THUẬT TOÁN</span>
+    </div>
+
+    <div class="algorithm-grid">
+        <button
+        type="button"
+        class="algorithm-card"
+        data-search-algorithm="linear"
+        >
+        <div class="card-top">
+            <span class="algorithm-symbol">⌕</span>
+            <span class="difficulty easy">CƠ BẢN</span>
+        </div>
+        <h4>Linear Search</h4>
+        <p>Kiểm tra lần lượt từng phần tử cho đến khi tìm thấy giá trị cần tìm.</p>
+        <div class="card-footer">
+            <span>Độ phức tạp trung bình</span>
+            <code>O(n)</code>
+        </div>
+        </button>
+
+        <button
+        type="button"
+        class="algorithm-card"
+        data-search-algorithm="binary"
+        >
+        <div class="card-top">
+            <span class="algorithm-symbol">⌘</span>
+            <span class="difficulty medium">TRUNG BÌNH</span>
+        </div>
+        <h4>Binary Search</h4>
+        <p>Chia đôi phạm vi tìm kiếm trên mảng đã được sắp xếp.</p>
+        <div class="card-footer">
+            <span>Độ phức tạp trung bình</span>
+            <code>O(log n)</code>
+        </div>
+        </button>
+    </div>
+    </section>
+
     <section class="visualizer-section" id="search-section" hidden>
+    <button
+        type="button"
+        class="back-button"
+        data-back-to-search-algorithms>
+        ← Quay lại danh sách thuật toán
+    </button>
     <div class="section-heading">
         <div>
         <h3>Linear Search</h3>

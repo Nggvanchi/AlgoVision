@@ -20,6 +20,13 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
     initNavigation(document)
 
     const algorithmSection = document.querySelector('.algorithm-section')
+    const searchAlgorithmLibrary = document.querySelector(
+      '#search-algorithm-library',
+    )
+    assert.ok(
+      searchAlgorithmLibrary,
+      'Thư viện thuật toán tìm kiếm phải tồn tại trong HTML',
+    )
     const visualizerSection = document.querySelector(
       'main > .visualizer-section:not(#search-section):not(#category-placeholder):not(#structure-library):not(#array-section):not(#stack-section):not(#queue-section):not(#linked-list-section)',
     )
@@ -51,7 +58,8 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
 
     // Trang Sorting
     assert.equal(algorithmSection.hidden, false)
-    assert.equal(visualizerSection.hidden, false)
+    assert.equal(visualizerSection.hidden, true)
+    assert.equal(searchAlgorithmLibrary.hidden, true)
     assert.equal(searchSection.hidden, true)
     assert.equal(structureLibrary.hidden, true)
     assert.equal(arraySection.hidden, true)
@@ -59,11 +67,25 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
     assert.equal(queueSection.hidden, true)
     assert.equal(linkedListSection.hidden, true)
     assert.equal(categoryPlaceholder.hidden, true)
+    // Mở Bubble Sort
+    document.querySelector('[data-algorithm="bubble"]').click()
 
-    // Chuyển sang Searching
+    assert.equal(algorithmSection.hidden, true)
+    assert.equal(visualizerSection.hidden, false)
+
+    // Quay lại danh sách thuật toán sắp xếp
+    visualizerSection
+      .querySelector('[data-back-to-sorting-algorithms]')
+      .click()
+
+    assert.equal(algorithmSection.hidden, false)
+    assert.equal(visualizerSection.hidden, true)
+
+    // Chuyển sang thư viện thuật toán tìm kiếm
     searchingNav.click()
 
-    assert.equal(searchSection.hidden, false)
+    assert.equal(searchAlgorithmLibrary.hidden, false)
+    assert.equal(searchSection.hidden, true)
     assert.equal(algorithmSection.hidden, true)
     assert.equal(visualizerSection.hidden, true)
     assert.equal(structureLibrary.hidden, true)
@@ -73,6 +95,20 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
     assert.equal(linkedListSection.hidden, true)
     assert.equal(categoryPlaceholder.hidden, true)
     assert.equal(searchingNav.classList.contains('active'), true)
+
+    // Mở Binary Search
+    document.querySelector('[data-search-algorithm="binary"]').click()
+
+    assert.equal(searchAlgorithmLibrary.hidden, true)
+    assert.equal(searchSection.hidden, false)
+
+    // Quay lại thư viện thuật toán tìm kiếm
+    searchSection
+      .querySelector('[data-back-to-search-algorithms]')
+      .click()
+
+    assert.equal(searchAlgorithmLibrary.hidden, false)
+    assert.equal(searchSection.hidden, true)
 
     // Chuyển sang thư viện cấu trúc dữ liệu
     structuresNav.click()
@@ -179,7 +215,8 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
     sortingNav.click()
 
     assert.equal(algorithmSection.hidden, false)
-    assert.equal(visualizerSection.hidden, false)
+    assert.equal(visualizerSection.hidden, true)
+    assert.equal(searchAlgorithmLibrary.hidden, true)
     assert.equal(searchSection.hidden, true)
     assert.equal(structureLibrary.hidden, true)
     assert.equal(arraySection.hidden, true)

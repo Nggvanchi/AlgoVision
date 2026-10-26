@@ -277,10 +277,9 @@ export function initSorting() {
     selectedAlgorithm = algorithm
 
     algorithmCards.forEach((card) => {
-      card.classList.toggle(
-        'selected',
-        card.dataset.algorithm === selectedAlgorithm,
-      )
+      card.addEventListener('click', () => {
+        selectAlgorithm(card.dataset.algorithm)
+      })
     })
 
     const config = algorithmConfig[selectedAlgorithm]
