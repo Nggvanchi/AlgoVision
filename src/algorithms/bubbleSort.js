@@ -80,7 +80,7 @@ export function generateBubbleSortSteps(inputArray) {
     sortedIndices: array.map((_, index) => index),
     comparisons,
     swaps,
-    message: 
+    message:
       array.length === 0
         ? 'Mảng rỗng, không có phần tử cần sắp xếp.'
         : array.length === 1
