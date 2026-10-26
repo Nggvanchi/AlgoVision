@@ -439,14 +439,17 @@
         <span class="structure-card-link">Mở trình mô phỏng →</span>
         </button>
 
-        <article class="structure-card structure-card-disabled">
+        <button
+            type="button"
+            class="structure-card"
+            data-structure-target="queue">
             <span class="structure-card-icon">↔</span>
             <span class="structure-card-title">Queue</span>
             <span class="structure-card-description">
-                Tìm hiểu nguyên tắc FIFO của cấu trúc hàng đợi.
+                Khám phá nguyên tắc FIFO thông qua Enqueue, Dequeue và Front.
             </span>
-            <span class="structure-card-link">Sẽ phát triển sau</span>
-        </article>
+            <span class="structure-card-link">Mở trình mô phỏng →</span>
+        </button>
 
         <button
             type="button"
@@ -550,8 +553,7 @@
     <button
         type="button"
         class="back-button"
-        data-back-to-structures
-        >
+        data-back-to-structures>
         ← Quay lại cấu trúc dữ liệu
     </button>
     <div class="section-heading">
@@ -574,8 +576,7 @@
         <button
             type="button"
             id="stack-reset"
-            class="control-button"
-        >
+            class="control-button">
             Khôi phục
         </button>
         </div>
@@ -590,8 +591,7 @@
         id="stack-status"
         class="array-status"
         role="status"
-        aria-live="polite"
-        >
+        aria-live="polite">
         Stack Visualizer đã sẵn sàng.
         </p>
     </div>
@@ -606,14 +606,12 @@
             id="stack-value"
             type="number"
             step="any"
-            placeholder="Ví dụ: 40"
-        />
+            placeholder="Ví dụ: 40"/>
 
         <button
             type="button"
             id="stack-push"
-            class="control-button"
-        >
+            class="control-button">
             Push
         </button>
         </article>
@@ -625,8 +623,7 @@
         <button
             type="button"
             id="stack-pop"
-            class="control-button"
-        >
+            class="control-button">
             Pop
         </button>
         </article>
@@ -645,6 +642,100 @@
     </div>
 
     </section>
+        <section class="visualizer-section" id="queue-section" hidden>
+            <button
+                type="button"
+                class="back-button"
+                data-back-to-structures>
+                ← Quay lại cấu trúc dữ liệu
+            </button>
+
+            <div class="visualizer-header">
+                <span class="visualizer-tag">DATA STRUCTURES</span>
+                <h2>Queue Visualizer</h2>
+                <p>
+                    Mô phỏng cấu trúc hàng đợi theo nguyên tắc FIFO
+                    (First In, First Out).
+                </p>
+            </div>
+
+            <section class="queue-panel">
+                <div class="queue-panel-heading">
+                    <div>
+                        <h4>Mô phỏng hàng đợi</h4>
+                        <p>
+                            Phần tử được thêm vào REAR và lấy ra từ FRONT.
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    id="queue-visualizer"
+                    class="queue-visualizer"
+                    aria-live="polite"></div>
+
+                <p id="queue-status" class="queue-status" role="status">
+                </p>
+            </section>
+
+            <div class="queue-operations">
+                <article class="array-operation-card">
+                    <h4>Enqueue — Thêm phần tử</h4>
+                    <p>Thêm một giá trị vào cuối hàng đợi.</p>
+
+                    <label for="queue-value">Giá trị cần thêm</label>
+                    <input
+                        id="queue-value"
+                        type="number"
+                        step="any"
+                        placeholder="Ví dụ: 40"/>
+
+                    <button
+                        type="button"
+                        id="queue-enqueue"
+                        class="control-button">
+                        Enqueue
+                    </button>
+                </article>
+
+                <article class="array-operation-card">
+                    <h4>Dequeue — Lấy phần tử</h4>
+                    <p>Lấy và loại bỏ phần tử ở đầu hàng đợi.</p>
+
+                    <button
+                        type="button"
+                        id="queue-dequeue"
+                        class="control-button">
+                        Dequeue
+                    </button>
+                </article>
+
+                <article class="array-operation-card">
+                    <h4>Front — Xem phần tử đầu</h4>
+                    <p>Xem giá trị đầu hàng đợi mà không xóa nó.</p>
+
+                    <button
+                        type="button"
+                        id="queue-front"
+                        class="control-button">
+                        Front
+                    </button>
+                </article>
+
+                <article class="array-operation-card">
+                    <h4>Reset — Khôi phục</h4>
+                    <p>Đưa hàng đợi về dữ liệu ban đầu.</p>
+
+                    <button
+                        type="button"
+                        id="queue-reset"
+                        class="control-button">
+                        Reset
+                    </button>
+                </article>
+            </div>
+        </section>
+
         <section class="visualizer-section" id="linked-list-section" hidden>
         <button
             type="button"

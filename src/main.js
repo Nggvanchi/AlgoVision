@@ -4,6 +4,7 @@ import { initSorting } from './sorting.js'
 import { initNavigation } from './navigation.js'
 import { initArray } from './array.js'
 import { initStack } from './stack.js'
+import { initQueue } from './queue.js'
 import { initLinkedList } from './linked-list.js'
 
 const app = document.querySelector('#app')
@@ -25,4 +26,5 @@ initSorting()
 initSearching()
 initArray()
 initStack()
+initQueue(document)
 initLinkedList(document)

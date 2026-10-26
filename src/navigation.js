@@ -24,13 +24,14 @@ export function initNavigation(document) {
   const algorithmSection = document.querySelector('.algorithm-section')
   const searchSection = document.querySelector('#search-section')
   const visualizerSection = document.querySelector(
-    'main > .visualizer-section:not(#search-section):not(#category-placeholder):not(#structure-library):not(#array-section):not(#stack-section):not(#linked-list-section)',
+    'main > .visualizer-section:not(#search-section):not(#category-placeholder):not(#structure-library):not(#array-section):not(#stack-section):not(#queue-section):not(#linked-list-section)',
   )
   const categoryPlaceholder = document.querySelector(
     '#category-placeholder',
   )
   const arraySection = document.querySelector('#array-section')
   const stackSection = document.querySelector('#stack-section')
+  const queueSection = document.querySelector('#queue-section')
   const linkedListSection = document.querySelector('#linked-list-section')
   const structureLibrary = document.querySelector('#structure-library')
 
@@ -73,6 +74,7 @@ export function initNavigation(document) {
     structureLibrary.hidden = !isStructuresPage
     arraySection.hidden = true
     stackSection.hidden = true
+    queueSection.hidden = true
     linkedListSection.hidden = true
 
     if (isSearchingPage) {
@@ -106,6 +108,9 @@ export function initNavigation(document) {
       } else if (target === 'stack') {
         structureLibrary.hidden = true
         stackSection.hidden = false
+      } else if (target === 'queue') {
+        structureLibrary.hidden = true
+        queueSection.hidden = false
       } else if (target === 'linked-list') {
         structureLibrary.hidden = true
         linkedListSection.hidden = false
