@@ -1,5 +1,6 @@
 // Sinh các bước Linear Search. Target được chốt một lần khi sinh bước.
-// Mỗi bước sau bước đầu tương ứng đúng một phép so sánh.
+// Mỗi bước sau bước đầu là một phép so sánh, riêng bước kết luận "không tìm thấy" thì không.
+// index là con trỏ tới phần tử sẽ xét tiếp; currentIndex là phần tử vừa so sánh.
 export function generateLinearSearchSteps(numbers, target) {
   const steps = []
   let comparisons = 0
@@ -12,6 +13,10 @@ export function generateLinearSearchSteps(numbers, target) {
     comparisons,
     foundIndex: -1,
     finished: false,
+    target,
+    // Phần tử vừa so sánh; null ở bước đầu và bước kết luận "không tìm thấy".
+    currentIndex: null,
+    currentValue: null,
     ...fields,
   })
 
@@ -33,6 +38,8 @@ export function generateLinearSearchSteps(numbers, target) {
     if (currentValue === target) {
       steps.push(createStep({
         index: i,
+        currentIndex: i,
+        currentValue,
         foundIndex: i,
         finished: true,
         message: `Đã tìm thấy ${target} tại vị trí ${i + 1}.`,
@@ -43,6 +50,8 @@ export function generateLinearSearchSteps(numbers, target) {
 
     steps.push(createStep({
       index: i + 1,
+      currentIndex: i,
+      currentValue,
       message: `${currentValue} khác ${target}. Chuyển sang phần tử tiếp theo.`,
     }))
   }

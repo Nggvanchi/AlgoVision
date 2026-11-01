@@ -158,3 +158,59 @@ test('Binary Search: mảng một phần tử không chứa mục tiêu có bư�
   assert.equal(steps[2].finished, true)
   assert.equal(steps[2].comparisons, 1)
 })
+
+// --- D: dữ liệu bước thay cho việc đọc số trong message ---
+
+function forEachSearchCase(run) {
+  for (const generate of [generateLinearSearchSteps, generateBinarySearchSteps]) {
+    for (const numbers of arrays) {
+      for (const target of getTargets(numbers)) {
+        run({ generate, numbers, target, steps: generate(numbers, target) })
+      }
+    }
+  }
+}
+
+test('mọi bước tìm kiếm đều lưu target đã chốt', () => {
+  forEachSearchCase(({ target, steps }) => {
+    steps.forEach((step) => assert.equal(step.target, target))
+  })
+})
+
+test('bước so sánh lưu currentIndex và currentValue của phần tử vừa so sánh', () => {
+  forEachSearchCase(({ generate, numbers, target, steps }) => {
+    steps.forEach((step, index) => {
+      const label = `${generate.name} [${numbers}] / ${target}, bước ${index}`
+      const isComparison = index > 0 && step.comparisons > steps[index - 1].comparisons
+
+      if (!isComparison) {
+        // Bước 0 và bước kết luận "không tìm thấy" không xét phần tử nào.
+        assert.equal(step.currentIndex, null, label)
+        assert.equal(step.currentValue, null, label)
+        return
+      }
+
+      const expectedIndex =
+        generate === generateBinarySearchSteps ? step.mid : step.comparisons - 1
+
+      assert.equal(step.currentIndex, expectedIndex, label)
+      assert.equal(step.currentValue, numbers[expectedIndex], label)
+    })
+  })
+})
+
+test('Linear Search: currentIndex là phần tử vừa so sánh, index giữ nghĩa con trỏ kế tiếp', () => {
+  const step = generateLinearSearchSteps(oneToNine, 80)[1]
+
+  assert.equal(step.currentIndex, 0)
+  assert.equal(step.currentValue, 10)
+  assert.equal(step.index, 1)
+})
+
+test('Binary Search [10..90] tìm 95: bước áp chót xét A[8] = 90', () => {
+  const steps = generateBinarySearchSteps(oneToNine, 95)
+
+  assert.equal(steps.at(-2).currentIndex, 8)
+  assert.equal(steps.at(-2).currentValue, 90)
+  assert.equal(steps.at(-1).currentIndex, null)
+})

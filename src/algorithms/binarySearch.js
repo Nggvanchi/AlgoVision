@@ -1,5 +1,6 @@
 // Sinh các bước Binary Search trên mảng đã sắp xếp tăng dần.
-// Target được chốt một lần khi sinh bước; mỗi bước sau bước đầu là một phép so sánh.
+// Target được chốt một lần khi sinh bước; mỗi bước sau bước đầu là một phép so sánh,
+// riêng bước kết luận "không tìm thấy" thì không.
 export function generateBinarySearchSteps(numbers, target) {
   const steps = []
   let comparisons = 0
@@ -15,6 +16,10 @@ export function generateBinarySearchSteps(numbers, target) {
     comparisons,
     foundIndex: -1,
     finished: false,
+    target,
+    // Phần tử vừa so sánh; null ở bước đầu và bước kết luận "không tìm thấy".
+    currentIndex: null,
+    currentValue: null,
     ...fields,
   })
 
@@ -37,6 +42,8 @@ export function generateBinarySearchSteps(numbers, target) {
 
     if (currentValue === target) {
       steps.push(createStep({
+        currentIndex: mid,
+        currentValue,
         foundIndex: mid,
         finished: true,
         message: `Đã tìm thấy ${target} tại vị trí ${mid + 1}.`,
@@ -55,7 +62,7 @@ export function generateBinarySearchSteps(numbers, target) {
       message = `${currentValue} lớn hơn ${target}. Tiếp tục tìm ở nửa bên trái.`
     }
 
-    steps.push(createStep({ message }))
+    steps.push(createStep({ currentIndex: mid, currentValue, message }))
   }
 
   steps.push(createStep({
