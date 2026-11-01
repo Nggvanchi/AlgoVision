@@ -751,7 +751,7 @@ test('Searching cập nhật nhãn khi thay đổi tốc độ', async () => {
   }
 })
 
-test('Searching khởi động lại khi thay đổi tốc độ trong lúc chạy', async () => {
+test('Searching vẫn chạy và giữ trạng thái nút khi thay đổi tốc độ trong lúc chạy', async () => {
   const { document, cleanup } = await setupSearching({
     initialNumbers: [10, 20, 30, 40],
   })
