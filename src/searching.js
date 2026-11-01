@@ -1,7 +1,7 @@
 import { createSimulationController } from './simulation-controller.js'
 import { generateLinearSearchSteps, linearSearchPseudocode } from './algorithms/linearSearch.js'
 import { generateBinarySearchSteps, binarySearchPseudocode } from './algorithms/binarySearch.js'
-import { renderPseudocode } from './pseudocode-view.js'
+import { renderPseudocode, highlightPseudocodeLine } from './pseudocode-view.js'
 
 // Big-O và mô tả phải khớp generator: so sánh được đếm ở mỗi lần xét A[i] hoặc A[mid].
 const searchAlgorithmInfo = {
@@ -57,6 +57,8 @@ export function initSearching(options = {}) {
   const searchSpeedInput = document.querySelector('#search-speed')
   const searchSpeedValue = document.querySelector('#search-speed-value')
   const searchResult = document.querySelector('#search-result')
+  const searchTargetValue = document.querySelector('#search-target-value')
+  const searchCurrentValue = document.querySelector('#search-current-value')
   const searchNextButton = document.querySelector('#search-next')
   const searchPreviousButton = document.querySelector('#search-previous')
   const searchRunButton = document.querySelector('#search-run')
@@ -163,6 +165,10 @@ export function initSearching(options = {}) {
       comparisons: 0,
       foundIndex: -1,
       finished: false,
+      target: null,
+      currentIndex: null,
+      currentValue: null,
+      pseudocodeLine: null,
       message: IDLE_MESSAGE,
     }
   }
@@ -286,10 +292,29 @@ export function initSearching(options = {}) {
     }
   }
 
+  // Đọc từ dữ liệu bước (target đã chốt), không đọc lại ô nhập.
+  function renderStepValues(step) {
+    if (searchTargetValue) {
+      searchTargetValue.textContent = step.target === null ? '—' : String(step.target)
+    }
+
+    if (searchCurrentValue) {
+      searchCurrentValue.textContent =
+        step.currentIndex === null
+          ? '—'
+          : `${step.currentValue} (vị trí ${step.currentIndex + 1})`
+    }
+  }
+
   function renderSearch({ step = createIdleStep(), controls }) {
     renderSearchArray(step)
     renderSearchRange(step)
     renderSearchResult(step)
+    renderStepValues(step)
+
+    if (learningPseudocode) {
+      highlightPseudocodeLine(learningPseudocode, step.pseudocodeLine)
+    }
 
     searchComparisons.textContent = String(step.comparisons)
     searchMessage.textContent = step.message

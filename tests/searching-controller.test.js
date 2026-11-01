@@ -1244,3 +1244,127 @@ test('đổi lại Linear Search thì Learning Panel quay về nội dung Linear
     cleanup()
   }
 })
+
+// --- Searching: tô mã giả và hiển thị mục tiêu / giá trị đang xét từ dữ liệu bước ---
+
+function getSearchActiveLines(document) {
+  return [...document.querySelectorAll('#search-learning-pseudocode .pseudocode-line.is-active')].map(
+    (line) => ({ line: Number(line.dataset.line), ariaCurrent: line.getAttribute('aria-current') }),
+  )
+}
+
+function getSearchStepInfo(document) {
+  return {
+    target: document.querySelector('#search-target-value').textContent,
+    current: document.querySelector('#search-current-value').textContent,
+  }
+}
+
+function lockTarget(document, value) {
+  const input = document.querySelector('#search-target')
+
+  input.value = value
+  input.dispatchEvent(new document.defaultView.Event('change', { bubbles: true }))
+}
+
+const nineNumbers = [10, 20, 30, 40, 50, 60, 70, 80, 90]
+
+test('Linear Search tô dòng mã giả và hiển thị giá trị đang xét theo từng bước', async () => {
+  const { document, cleanup } = await setupSearching({ initialNumbers: nineNumbers })
+
+  try {
+    selectSearchAlgorithm(document, 'linear')
+    lockTarget(document, '95')
+
+    const next = document.querySelector('#search-next')
+
+    assert.deepEqual(getSearchActiveLines(document), [])
+    assert.deepEqual(getSearchStepInfo(document), { target: '—', current: '—' })
+
+    next.click()
+    assert.deepEqual(getSearchActiveLines(document), [{ line: 2, ariaCurrent: 'step' }])
+    assert.deepEqual(getSearchStepInfo(document), { target: '95', current: '10 (vị trí 1)' })
+
+    for (let i = 1; i < nineNumbers.length; i++) next.click()
+    assert.deepEqual(getSearchActiveLines(document), [{ line: 2, ariaCurrent: 'step' }])
+    assert.deepEqual(getSearchStepInfo(document), { target: '95', current: '90 (vị trí 9)' })
+
+    next.click()
+    assert.deepEqual(getSearchActiveLines(document), [{ line: 4, ariaCurrent: 'step' }])
+    assert.deepEqual(getSearchStepInfo(document), { target: '95', current: '—' })
+
+    document.querySelector('#search-previous').click()
+    assert.deepEqual(getSearchActiveLines(document), [{ line: 2, ariaCurrent: 'step' }])
+  } finally {
+    cleanup()
+  }
+})
+
+test('Binary Search [42] tìm 99 tô dòng 7 rồi dòng 10', async () => {
+  const { document, cleanup } = await setupSearching({ initialNumbers: [42] })
+
+  try {
+    selectSearchAlgorithm(document, 'binary')
+    lockTarget(document, '99')
+
+    const next = document.querySelector('#search-next')
+
+    next.click()
+    assert.deepEqual(getSearchActiveLines(document), [{ line: 7, ariaCurrent: 'step' }])
+    assert.deepEqual(getSearchStepInfo(document), { target: '99', current: '42 (vị trí 1)' })
+
+    next.click()
+    assert.deepEqual(getSearchActiveLines(document), [{ line: 10, ariaCurrent: 'step' }])
+  } finally {
+    cleanup()
+  }
+})
+
+test('gõ mục tiêu mới hoặc Đặt lại thì bỏ tô mã giả và xóa mục tiêu đã chốt', async () => {
+  const { document, cleanup } = await setupSearching({ initialNumbers: nineNumbers })
+
+  try {
+    selectSearchAlgorithm(document, 'linear')
+    lockTarget(document, '30')
+    document.querySelector('#search-next').click()
+    assert.equal(getSearchActiveLines(document).length, 1)
+
+    const input = document.querySelector('#search-target')
+    input.value = '3'
+    input.dispatchEvent(new document.defaultView.Event('input', { bubbles: true }))
+
+    assert.deepEqual(getSearchActiveLines(document), [])
+    assert.deepEqual(getSearchStepInfo(document), { target: '—', current: '—' })
+
+    lockTarget(document, '30')
+    document.querySelector('#search-next').click()
+    document.querySelector('#search-reset').click()
+
+    assert.deepEqual(getSearchActiveLines(document), [])
+    assert.deepEqual(getSearchStepInfo(document), { target: '—', current: '—' })
+  } finally {
+    cleanup()
+  }
+})
+
+test('Searching chạy tự động thì dòng được tô đi theo từng tick', async () => {
+  const scheduler = createFakeScheduler()
+  const { document, cleanup } = await setupSearching({ initialNumbers: nineNumbers, scheduler })
+
+  try {
+    selectSearchAlgorithm(document, 'binary')
+    lockTarget(document, '20')
+    document.querySelector('#search-run').click()
+
+    const speed = Number(document.querySelector('#search-speed').value)
+
+    scheduler.advance(speed)
+    assert.deepEqual(getSearchActiveLines(document), [{ line: 9, ariaCurrent: 'step' }])
+
+    scheduler.advance(speed)
+    assert.deepEqual(getSearchActiveLines(document), [{ line: 5, ariaCurrent: 'step' }])
+    assert.deepEqual(getSearchStepInfo(document), { target: '20', current: '20 (vị trí 2)' })
+  } finally {
+    cleanup()
+  }
+})
