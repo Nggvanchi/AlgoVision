@@ -393,3 +393,14 @@ test('Insertion Sort: bước so sánh, dời, chèn trỏ đúng dòng mã gi�
     })
   }
 })
+
+test('Bubble Sort: bước break đánh dấu toàn mảng đã sắp xếp', () => {
+  // Một lượt không đổi chỗ chứng minh mọi cặp liền kề đã đúng thứ tự.
+  for (const input of [[10, 20, 30, 40, 50], [50, 20, 40, 10, 30]]) {
+    const breakStep = generateBubbleSortSteps(input).find(
+      (step) => getLineText(bubbleSortPseudocode, step) === 'break',
+    )
+
+    assert.deepEqual(breakStep.sortedIndices, [0, 1, 2, 3, 4], `[${input}]`)
+  }
+})

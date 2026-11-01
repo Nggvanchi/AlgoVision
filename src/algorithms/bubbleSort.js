@@ -81,7 +81,8 @@ export function generateBubbleSortSteps(inputArray) {
       array: [...array],
       comparing: [],
       swapped: [],
-      sortedIndices: getSortedTail(i + 1),
+      // Lượt không đổi chỗ chứng minh mọi cặp liền kề đúng thứ tự: cả mảng đã sắp xếp.
+      sortedIndices: getSortedTail(hasSwapped ? i + 1 : array.length),
       comparisons,
       swaps,
       pseudocodeLine: hasSwapped ? LINE.CHECK_SWAPPED : LINE.BREAK,
