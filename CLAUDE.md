@@ -64,17 +64,17 @@ pnpm dev        # chạy thử trên trình duyệt
 4. Checklist để người dùng tự kiểm tra trên trình duyệt (`pnpm dev`).
 5. Vấn đề còn tồn tại, đề xuất cho giai đoạn sau.
 
-## Trạng thái hiện tại (cập nhật 2026-11-01)
+## Trạng thái hiện tại (cập nhật 2026-11-02)
 
-- `main` = `a9fce5d` (Merge PR #2, giai đoạn 4).
-- Branch `feat/simulation-controls` (giai đoạn 5) đã xong và đã push, CHỜ người dùng tạo/review PR.
-  Kết quả: 191/191 test pass (baseline 140), build OK, `git diff --check` sạch.
-- Môi trường: Windows, `core.autocrlf=true` + `.gitattributes` (`* text=auto eol=lf`), mọi file text là LF.
+- `main` = `c4890d5` (Merge PR #3, giai đoạn 5). Baseline: 191/191 test pass, build OK.
+- Đang làm giai đoạn 6 trên branch `feat/learning-panel`.
+- Máy phát triển: Windows và Ubuntu (repo trên phân vùng NTFS, `core.filemode=false`).
+- Windows: `core.autocrlf=true` + `.gitattributes` (`* text=auto eol=lf`), mọi file text là LF.
 - `.claude/settings.json` (đã commit) chặn bằng deny rule cho cả Bash và PowerShell: force push, push lên `main`,
   `reset --hard`, `clean`, `merge`, `--no-verify`. Rule khớp theo chữ của lệnh, không chặn được dạng `git -C . clean`.
   `.claude/settings.local.json` đã nằm trong `.gitignore`.
 
-## Giai đoạn 5: Chuẩn hóa Simulation Controls (đã xong, chờ merge)
+## Giai đoạn 5: Chuẩn hóa Simulation Controls (đã merge, PR #3)
 
 ### Lỗi đã sửa (mỗi lỗi có test ĐỎ → XANH)
 - **A** `sorting.js`: `selectAlgorithm()` đăng ký thêm listener mỗi lần chạy, listener nhân đôi sau mỗi click;
