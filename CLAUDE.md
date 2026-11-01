@@ -57,59 +57,56 @@ pnpm dev        # chạy thử trên trình duyệt
 
 ## Trạng thái hiện tại (cập nhật 2026-11-01)
 
-- `main` = `a9fce5d` (Merge PR #2, giai đoạn 4). Baseline trên `main`: 140/140 test pass, build OK.
-- Đang ở branch `feat/simulation-controls`. File `.gitattributes` (`* text=auto eol=lf`) đã staged nhưng CHƯA commit
-  (commit trên Linux thất bại do thiếu git user.name/email). Đây là commit đầu tiên cần làm:
-  `chore: Chuẩn hóa ký tự xuống dòng LF cho toàn dự án`.
-- Trước đây working tree từng bị đổi sang CRLF; nội dung đã xác minh giống hệt bản commit.
+- `main` = `a9fce5d` (Merge PR #2, giai đoạn 4).
+- Branch `feat/simulation-controls` (giai đoạn 5) đã xong và đã push, CHỜ người dùng tạo/review PR.
+  Kết quả: 191/191 test pass (baseline 140), build OK, `git diff --check` sạch.
+- Môi trường: Windows, `core.autocrlf=true` + `.gitattributes` (`* text=auto eol=lf`), mọi file text là LF.
+- `.claude/settings.json` (đã commit) chặn bằng deny rule cho cả Bash và PowerShell: force push, push lên `main`,
+  `reset --hard`, `clean`, `merge`, `--no-verify`. Rule khớp theo chữ của lệnh, không chặn được dạng `git -C . clean`.
+  `.claude/settings.local.json` đã nằm trong `.gitignore`.
 
-## Giai đoạn 5: Chuẩn hóa Simulation Controls (đang làm)
+## Giai đoạn 5: Chuẩn hóa Simulation Controls (đã xong, chờ merge)
 
-### Đã xác minh bằng chạy thử (Chromium + Node), cần xác nhận lại bằng test của dự án
+### Lỗi đã sửa (mỗi lỗi có test ĐỎ → XANH)
+- **A** `sorting.js`: `selectAlgorithm()` đăng ký thêm listener mỗi lần chạy, listener nhân đôi sau mỗi click;
+  selector bắt nhầm thẻ Searching → chỉ đăng ký một lần trong `initSorting()`, selector `.algorithm-card[data-algorithm]`.
+- **B** class `selected` của thẻ Sorting không cập nhật → toggle trong `selectAlgorithm()`.
+- **C** `getTarget()` đọc lại ở mỗi bước → generator chốt target trong mảng bước. Thêm phương án B: sự kiện
+  `input` của `#search-target` reset mô phỏng giống `change` (đang gõ là về idle, bước 0).
+  Thông báo kết quả lấy target từ `step.message`; `getTarget()` chỉ được gọi trong `prepareSteps()` và phần So sánh.
+- **D** kéo slider tốc độ làm hủy/tạo lại `setInterval` → controller đọc `getDelay()` ở mỗi tick.
+- **E** mô phỏng chạy ngầm khi rời màn hình → `navigation.js` phát `algovision:viewchange`
+  (`detail.page`); Sorting/Searching tự `pause()` khi visualizer bị ẩn.
+- **F/G** tiêu đề, mô tả, Big-O và thẻ `selected` của Searching đồng bộ với dropdown.
 
-- **Lỗi A (nghiêm trọng)** `sorting.js`: `selectAlgorithm()` gọi `addEventListener` cho các thẻ mỗi lần chạy,
-  trong khi `initSorting()` cũng đăng ký ở cuối hàm. Listener nhân đôi mỗi click (2, 4, 8... 512 sau 8 click),
-  `createNewArray()` chạy 2^k lần mỗi click. Selector `.algorithm-card` còn bắt nhầm 2 thẻ Searching.
-- **Lỗi B** `sorting.js`: class `selected` của thẻ Sorting không bao giờ được cập nhật (`navigation.js` chỉ toggle thẻ Searching).
-  Test hiện tại pass chỉ vì class được viết cứng trong HTML.
-- **Lỗi C** `searching.js`: `getTarget()` được đọc lại ở MỖI bước; chỉ sự kiện `change` mới reset. Gõ mục tiêu mới giữa chừng
-  (chưa blur) làm kết quả sai. Mảng [10..90], tìm 80, bước 1, đổi thành 20:
-  Binary Search báo "Không tìm thấy 20 trong mảng." (đã loại nửa trái khi còn tìm 80);
-  Linear Search báo "Đã tìm thấy 20 tại vị trí 2." nhưng bộ đếm so sánh trộn số lần của cả hai mục tiêu.
-- **Lỗi D** `searching.js`: mỗi sự kiện `input` của slider tốc độ hủy và tạo lại `setInterval`; kéo slider liên tục thì animation đứng yên.
-- **Lỗi E**: mô phỏng tiếp tục chạy ngầm khi rời màn hình (đổi trang hoặc bấm Back) ở cả Sorting và Searching.
-- **Lỗi F** `searching.js`/`app.html`: tiêu đề và tag Big-O của `#search-section` viết cứng "Linear Search / O(n)", không đổi khi chọn Binary Search.
-- **Lỗi G**: đổi dropdown `#search-algorithm` không đồng bộ class `selected` của thẻ Searching.
-- Lệch đặc tả: Sorting dùng state `'ready'` (không phải `idle`) và vẫn `'ready'` sau khi bấm Next; Run kiêm Resume;
-  Run bị khóa sau `completed` (phải Reset); Searching không có Previous Step và không có lịch sử bước.
+### Kiến trúc mới
+- `src/simulation-controller.js`:
+  `createSimulationController({ getDelay, onChange?, scheduler? })` → `{ load, run, pause, next, previous, reset, getSnapshot }`;
+  `getSnapshot()` → `{ state, stepIndex, stepCount, step, controls }`; `getControlState(state, stepIndex)` là hàm thuần.
+  Một `timerId` duy nhất, chuỗi `setTimeout`, mọi đường dừng qua `stopTimer()`.
+- Bảng nút (Sorting và Searching dùng chung):
 
-### Đã kiểm tra và KHÔNG phải lỗi
-- Không rò rỉ timer: số timer đang sống luôn ≤ 1 qua Run×5, đổi tốc độ, Pause, hoàn thành.
-- Linear/Binary Search đúng trên 618 trường hợp ngẫu nhiên và biên (rỗng, 1 phần tử, trùng, không tìm thấy).
-- 3 hàm sinh bước Sorting đúng trên 3000 mảng ngẫu nhiên; Big-O hiển thị khớp code
-  (n=24: Bubble/Insertion 23 so sánh khi đã sắp xếp, 276 khi đảo ngược; Selection luôn 276).
+  | State | Run (nhãn) | Pause | Next | Prev | Reset |
+  |---|---|---|---|---|---|
+  | idle | bật ("Chạy …") | tắt | bật | tắt | bật |
+  | running | tắt | bật | tắt | tắt | bật |
+  | paused | bật ("Tiếp tục") | tắt | bật | bật nếu bước > 0 | bật |
+  | completed | bật ("Chạy lại", từ đầu) | tắt | tắt | bật nếu bước > 0 | bật |
 
-### Kế hoạch commit trên `feat/simulation-controls`
-0. `chore: Chuẩn hóa ký tự xuống dòng LF cho toàn dự án` — `.gitattributes` (đã staged).
-1. `fix: Sửa lỗi nhân bản sự kiện khi chọn thuật toán sắp xếp` — sửa A, B.
-   - Selector thành `.algorithm-card[data-algorithm]`; trong `selectAlgorithm()` thay vòng `addEventListener` bằng
-     `card.classList.toggle('selected', card.dataset.algorithm === algorithm)`. GIỮ vòng đăng ký listener ở cuối `initSorting()`.
-   - Test: helper `withSortingDom`; spy `t.mock.method(Math, 'random')`: mỗi click thẻ phải gọi đúng `#array-size` lần
-     (mặc định 12; trước khi sửa là 24, 48...); test `.selected` khớp thuật toán và tiêu đề.
-2. `fix: Đồng bộ tiêu đề và thẻ thuật toán tìm kiếm` — sửa F, G. Thêm `id` cho tiêu đề/tag trong `app.html`;
-   `searching.js` cập nhật tiêu đề, Big-O (Linear O(n), Binary O(log n)) và thẻ `selected` khi dropdown đổi.
-   Giữ nguyên phần toggle trong `navigation.js` (test navigation có thể phụ thuộc vào nó).
-3. `feat: Thêm bộ điều khiển mô phỏng dùng chung` — `src/simulation-controller.js` (~80 dòng, hàm thuần):
-   state `idle | running | paused | completed`; chuỗi `setTimeout` đọc `getDelay()` mỗi tick (đổi tốc độ không tạo lại timer);
-   một `timerId` duy nhất, mọi đường dừng qua `stopTimer()`; scheduler inject được; test riêng với fake scheduler.
-   Bảng nút: idle (Run, Next, Reset) · running (Pause, Reset) · paused (Resume, Next, Prev nếu bước > 0, Reset) ·
-   completed (Run = chạy lại từ đầu, Prev, Reset).
-4. `refactor: Dùng bộ điều khiển mô phỏng cho Sorting` — giữ `algorithmConfig`, `renderArray`;
-   nút Run đổi nhãn theo state ("Chạy …" / "Tiếp tục" / "Chạy lại").
-5. `feat: Chuyển Searching sang mô hình bước và thêm Bước trước` — `src/algorithms/linearSearch.js`, `binarySearch.js`
-   sinh bước, chốt target một lần khi sinh bước (sửa C); dùng controller (sửa D); thêm nút Bước trước. 24 test Searching cũ phải pass.
-6. `feat: Tạm dừng mô phỏng khi rời khỏi màn hình` — `navigation.js` phát `CustomEvent('algovision:viewchange')`;
-   Sorting/Searching tự pause (không reset) khi visualizer bị ẩn (sửa E).
+- `src/algorithms/linearSearch.js`, `binarySearch.js`: sinh bước `{ index, mid, left, right, comparisons, foundIndex, finished, message }`;
+  bước 0 là trạng thái đầu, mỗi bước sau là một phép so sánh. Searching sinh bước lần đầu bấm Next/Run;
+  Reset/đổi mục tiêu/đổi thuật toán/mảng mới bỏ các bước cũ (`load([])`).
+- `initSorting(options)` và `initSearching(options)` nhận `options.scheduler`.
+
+### Quy ước test
+- `tests/helpers/fake-scheduler.js`: scheduler với thời gian ảo (`advance(ms)`, `pendingCount`, `cancelCount`, `scheduledDelays`).
+  Thư mục `tests/helpers/` không bị `node --test` quét.
+- Khi cần chứng minh lỗi trên code chưa inject được scheduler, dùng `t.mock.timers` của `node:test`.
+- Helper DOM (`withSortingDom`, `setupSearching`, `withApp`) dọn timer trong `finally` để test đỏ không làm treo tiến trình.
+
+### Còn tồn tại
+- Click thẻ thuật toán Sorting luôn tạo mảng mới (hành vi có từ trước).
+- Chưa kiểm tra giao diện nút `#search-previous` trên trình duyệt thật.
 
 ## Roadmap sau giai đoạn 5 (chỉ làm khi được đồng ý)
 6. Learning Panel: theory, pseudocode highlight theo bước, giải thích từng bước, Big-O khớp code.
