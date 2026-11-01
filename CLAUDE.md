@@ -46,6 +46,7 @@ pnpm dev        # chạy thử trên trình duyệt
 - `git add` theo tên file cụ thể, không `git add .`.
 - Mỗi commit một mục đích. Commit message: Conventional Commits, tiếng Việt có dấu (vd: `fix: Sửa lỗi nhân bản sự kiện khi chọn thuật toán sắp xếp`).
 - File dùng LF (đã có `.gitattributes`).
+- Không thêm dòng Co-Authored-By hay 'Generated with Claude Code' vào commit message hoặc mô tả PR.
 
 ### Code và test
 - Cải tiến trên kiến trúc hiện tại. Không viết lại module đang chạy, không đổi framework, không thêm dependency.
