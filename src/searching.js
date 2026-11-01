@@ -415,6 +415,13 @@ export function initSearching(options = {}) {
 
   searchTargetInput.addEventListener('change', resetSearch)
 
+  // Rời màn hình mô phỏng thì tạm dừng (giữ nguyên bước hiện tại).
+  document.addEventListener('algovision:viewchange', () => {
+    if (searchArrayElement.closest('[hidden]')) {
+      simulation.pause()
+    }
+  })
+
   searchAlgorithmSelect.addEventListener('change', () => {
     renderAlgorithmInfo()
     createSearchArray()

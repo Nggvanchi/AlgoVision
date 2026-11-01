@@ -278,5 +278,12 @@ export function initSorting(options = {}) {
   startButton.addEventListener('click', createNewArray)
   arraySize.addEventListener('change', createNewArray)
 
+  // Rời màn hình mô phỏng thì tạm dừng (giữ nguyên bước hiện tại).
+  document.addEventListener('algovision:viewchange', () => {
+    if (arrayBars.closest('[hidden]')) {
+      simulation.pause()
+    }
+  })
+
   selectAlgorithm(selectedAlgorithm)
 }
