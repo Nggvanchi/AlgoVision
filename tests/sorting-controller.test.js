@@ -272,10 +272,74 @@ test('mã giả trên Learning Panel lấy từ cùng nguồn với pseudocodeLi
     for (const { key } of sortingAlgorithms) {
       clickSortingCard(document, key)
 
-      assert.equal(
-        document.querySelector('#learning-pseudocode').textContent,
-        pseudocodeByAlgorithm[key].join('\n'),
+      // Mỗi dòng mã giả là một phần tử riêng để tô được theo pseudocodeLine.
+      assert.deepEqual(
+        [...document.querySelectorAll('#learning-pseudocode .pseudocode-line')].map(
+          (line) => line.textContent,
+        ),
+        pseudocodeByAlgorithm[key],
       )
     }
+  })
+})
+
+function getActivePseudocodeLines(document) {
+  return [...document.querySelectorAll('#learning-pseudocode .pseudocode-line.is-active')].map(
+    (line) => ({ line: Number(line.dataset.line), ariaCurrent: line.getAttribute('aria-current') }),
+  )
+}
+
+test('Sorting tô dòng mã giả theo bước khi bấm Next, Previous và Đặt lại', async (t) => {
+  // Mọi giá trị bằng nhau: Bubble Sort chỉ so sánh rồi dừng sớm, các bước hoàn toàn xác định.
+  t.mock.method(Math, 'random', () => 0.5)
+
+  await withSortingDom(({ document }) => {
+    clickSortingCard(document, 'bubble')
+
+    const size = Number(document.querySelector('#array-size').value)
+    const next = document.querySelector('#step-sort')
+
+    assert.deepEqual(getActivePseudocodeLines(document), [], 'bước 0 không tô dòng nào')
+
+    next.click()
+    assert.deepEqual(getActivePseudocodeLines(document), [{ line: 4, ariaCurrent: 'step' }])
+
+    for (let i = 1; i < size; i++) next.click()
+    assert.deepEqual(getActivePseudocodeLines(document), [{ line: 8, ariaCurrent: 'step' }])
+
+    document.querySelector('#previous-step').click()
+    assert.deepEqual(getActivePseudocodeLines(document), [{ line: 4, ariaCurrent: 'step' }])
+
+    document.querySelector('#reset-sort').click()
+    assert.deepEqual(getActivePseudocodeLines(document), [])
+  })
+})
+
+test('Sorting chạy tự động thì dòng được tô đi theo từng tick', async () => {
+  const scheduler = createFakeScheduler()
+
+  await withSortingDom(({ document }) => {
+    clickSortingCard(document, 'insertion')
+    document.querySelector('#run-sort').click()
+
+    const speed = Number(document.querySelector('#sort-speed').value)
+
+    scheduler.advance(speed)
+
+    // Bước 1 của Insertion Sort luôn là phép so sánh đầu tiên (dòng 4), bất kể dữ liệu.
+    assert.deepEqual(getActivePseudocodeLines(document), [{ line: 4, ariaCurrent: 'step' }])
+  }, { scheduler })
+})
+
+test('đổi thuật toán Sorting vẽ lại mã giả và bỏ tô dòng cũ', async () => {
+  await withSortingDom(({ document }) => {
+    clickSortingCard(document, 'bubble')
+    document.querySelector('#step-sort').click()
+    assert.equal(getActivePseudocodeLines(document).length, 1)
+
+    clickSortingCard(document, 'selection')
+
+    assert.equal(document.querySelectorAll('#learning-pseudocode .pseudocode-line').length, 7)
+    assert.deepEqual(getActivePseudocodeLines(document), [])
   })
 })

@@ -19,6 +19,9 @@
   --purple: #9b82ff;
   --purple-dark: #7456e8;
 
+  /* Màu trạng thái "đang xét": cột đang so sánh và dòng mã giả đang thực thi. */
+  --state-active: #f6c76a;
+
   --border-color: var(--border);
   --card-background: var(--panel);
   --text-secondary: var(--muted);
@@ -787,8 +790,8 @@ button:disabled {
 
 /* Màu của các trạng thái trong Bubble Sort */
 .array-bar.is-comparing {
-  border-color: #f6c76a;
-  background: linear-gradient(180deg, #f6c76a, #c58a31);
+  border-color: var(--state-active);
+  background: linear-gradient(180deg, var(--state-active), #c58a31);
 }
 
 .array-bar.is-swapped {
@@ -2078,11 +2081,30 @@ button.structure-card:focus-visible,
 }
 
 .learning-block pre code {
+  /* Rộng bằng dòng dài nhất để nền dòng được tô phủ hết vùng cuộn ngang của pre. */
+  display: block;
+  width: max-content;
+  min-width: 100%;
   color: #c8bbff;
   font-family: Consolas, 'Courier New', monospace;
   font-size: 12px;
   line-height: 1.8;
   white-space: pre;
+}
+
+.pseudocode-line {
+  display: block;
+  padding: 0 8px 0 6px;
+  border-left: 3px solid transparent;
+  border-radius: 4px;
+}
+
+/* Không chỉ dựa vào màu: thêm vạch trái và chữ đậm; trình đọc màn hình dùng aria-current. */
+.pseudocode-line.is-active {
+  border-left-color: var(--state-active);
+  background: color-mix(in srgb, var(--state-active) 16%, transparent);
+  color: var(--text);
+  font-weight: 700;
 }
 
 @media (max-width: 700px) {

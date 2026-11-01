@@ -3,6 +3,7 @@ import { generateBubbleSortSteps, bubbleSortPseudocode } from './algorithms/bubb
 import { generateSelectionSortSteps, selectionSortPseudocode } from './algorithms/selectionSort.js'
 import { generateInsertionSortSteps, insertionSortPseudocode } from './algorithms/insertionSort.js'
 import { createSimulationController } from './simulation-controller.js'
+import { renderPseudocode, highlightPseudocodeLine } from './pseudocode-view.js'
 
 export function initSorting(options = {}) {
   const arrayBars = document.querySelector('#array-bars')
@@ -190,6 +191,7 @@ export function initSorting(options = {}) {
     }
 
     renderBars(step)
+    highlightPseudocodeLine(learningPseudocode, step.pseudocodeLine)
 
     comparisonCount.textContent = step.comparisons
     swapCount.textContent = step.swaps
@@ -228,7 +230,7 @@ export function initSorting(options = {}) {
     visualizerDescription.textContent = config.description
 
     learningDescription.textContent = config.learningDescription
-    learningPseudocode.textContent = config.pseudocode.join('\n')
+    renderPseudocode(learningPseudocode, config.pseudocode)
     learningAdvantages.textContent = config.advantages
     learningDisadvantages.textContent = config.disadvantages
 
