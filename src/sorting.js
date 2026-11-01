@@ -167,15 +167,20 @@ export function initSorting(options = {}) {
       bar.style.height = `${number}%`
       bar.dataset.index = index
 
-      if (currentStep.comparing.includes(index)) {
+      const isComparing = currentStep.comparing.includes(index)
+      const isSwapped = currentStep.swapped.includes(index)
+
+      if (isComparing) {
         bar.classList.add('is-comparing')
       }
 
-      if (currentStep.swapped.includes(index)) {
+      if (isSwapped) {
         bar.classList.add('is-swapped')
       }
 
-      if (currentStep.sortedIndices.includes(index)) {
+      // Trạng thái hành động ưu tiên hơn trạng thái nền: Insertion Sort so sánh A[j]
+      // ngay trong vùng đã sắp xếp, nếu thêm is-sorted thì màu xanh che mất màu so sánh.
+      if (currentStep.sortedIndices.includes(index) && !isComparing && !isSwapped) {
         bar.classList.add('is-sorted')
       }
 

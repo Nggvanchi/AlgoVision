@@ -361,3 +361,17 @@ test('chọn thuật toán Sorting không ghi đè bảng Big-O của Searching'
     assert.equal(document.querySelector('#search-complexity-title').textContent, 'LINEAR SEARCH')
   })
 })
+
+test('cột đang so sánh trong vùng đã sắp xếp vẫn hiển thị trạng thái so sánh (Insertion Sort)', async () => {
+  await withSortingDom(({ document }) => {
+    clickSortingCard(document, 'insertion')
+    document.querySelector('#step-sort').click()
+
+    // Bước 1: so sánh A[0] với key; A[0] nằm trong vùng đã sắp xếp [0].
+    const bar = document.querySelector('.array-bar[data-index="0"]')
+
+    assert.equal(bar.classList.contains('is-comparing'), true)
+    // CSS khai báo is-sorted sau is-comparing: có cả hai class thì màu xanh che màu so sánh.
+    assert.equal(bar.classList.contains('is-sorted'), false)
+  })
+})
