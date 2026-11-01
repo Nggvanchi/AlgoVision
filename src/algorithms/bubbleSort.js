@@ -6,6 +6,10 @@ export function generateBubbleSortSteps(inputArray) {
   let comparisons = 0
   let swaps = 0
 
+  // Sau lượt thứ count, count phần tử cuối mảng đã đúng vị trí.
+  const getSortedTail = (count) =>
+    Array.from({ length: count }, (_, offset) => array.length - count + offset)
+
   steps.push({
     array: [...array],
     comparing: [],
@@ -26,7 +30,7 @@ export function generateBubbleSortSteps(inputArray) {
         array: [...array],
         comparing: [j, j + 1],
         swapped: [],
-        sortedIndices: [],
+        sortedIndices: getSortedTail(i),
         comparisons,
         swaps,
         message: `So sánh ${array[j]} và ${array[j + 1]}.`,
@@ -44,7 +48,7 @@ export function generateBubbleSortSteps(inputArray) {
           array: [...array],
           comparing: [j, j + 1],
           swapped: [j, j + 1],
-          sortedIndices: [],
+          sortedIndices: getSortedTail(i),
           comparisons,
           swaps,
           message: `Đổi chỗ ${array[j + 1]} và ${array[j]} vì thứ tự chưa đúng.`,
@@ -52,17 +56,11 @@ export function generateBubbleSortSteps(inputArray) {
       }
     }
 
-    const sortedIndices = []
-
-    for (let k = array.length - i - 1; k < array.length; k++) {
-      sortedIndices.push(k)
-    }
-
     steps.push({
       array: [...array],
       comparing: [],
       swapped: [],
-      sortedIndices,
+      sortedIndices: getSortedTail(i + 1),
       comparisons,
       swaps,
       message: `Kết thúc lượt ${i + 1}. Phần tử lớn nhất của phần chưa sắp xếp đã về đúng vị trí.`,

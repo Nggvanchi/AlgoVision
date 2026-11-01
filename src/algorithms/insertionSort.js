@@ -47,7 +47,7 @@ export function generateInsertionSortSteps(inputArray) {
         array: [...array],
         comparing: [j, j + 1],
         swapped: [],
-        sortedIndices: [],
+        sortedIndices: Array.from({ length: i }, (_, index) => index),
         comparisons,
         swaps,
         shifts,

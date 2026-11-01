@@ -227,3 +227,26 @@ for (const algorithm of [
     )
   })
 }
+// Vùng đã sắp xếp chỉ được mở rộng: mất chỉ số ở bước giữa làm cột xanh nhấp nháy trên giao diện.
+const sortedRegionInputs = [
+  [50, 20, 40, 10, 30],
+  [30, 20, 10],
+  [5, 2, 8, 1, 3],
+  [4, 2, 4, 1, 2],
+  [1, 2, 3, 4, 5],
+]
+
+for (const algorithm of algorithms) {
+  test(`${algorithm.name}: vùng đã sắp xếp của mỗi bước chứa vùng của bước trước`, () => {
+    for (const input of sortedRegionInputs) {
+      const steps = algorithm.generateSteps(input)
+
+      for (let index = 1; index < steps.length; index++) {
+        const current = new Set(steps[index].sortedIndices)
+        const lost = steps[index - 1].sortedIndices.filter((sortedIndex) => !current.has(sortedIndex))
+
+        assert.deepEqual(lost, [], `[${input}] bước ${index}: ${steps[index].message}`)
+      }
+    }
+  })
+}
