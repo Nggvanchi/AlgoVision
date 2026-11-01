@@ -1,6 +1,20 @@
 // Sinh các bước Linear Search. Target được chốt một lần khi sinh bước.
 // Mỗi bước sau bước đầu là một phép so sánh, riêng bước kết luận "không tìm thấy" thì không.
 // index là con trỏ tới phần tử sẽ xét tiếp; currentIndex là phần tử vừa so sánh.
+// Mã giả hiển thị trên Learning Panel; pseudocodeLine của mỗi bước đếm từ 1 theo mảng này.
+export const linearSearchPseudocode = [
+  'for i = 0 to n - 1',
+  '    if A[i] == target',
+  '        return i',
+  'return -1',
+]
+
+const LINE = {
+  COMPARE: 2,
+  FOUND: 3,
+  NOT_FOUND: 4,
+}
+
 export function generateLinearSearchSteps(numbers, target) {
   const steps = []
   let comparisons = 0
@@ -17,6 +31,7 @@ export function generateLinearSearchSteps(numbers, target) {
     // Phần tử vừa so sánh; null ở bước đầu và bước kết luận "không tìm thấy".
     currentIndex: null,
     currentValue: null,
+    pseudocodeLine: null,
     ...fields,
   })
 
@@ -25,6 +40,7 @@ export function generateLinearSearchSteps(numbers, target) {
   if (numbers.length === 0) {
     steps.push(createStep({
       finished: true,
+      pseudocodeLine: LINE.NOT_FOUND,
       message: `Không tìm thấy ${target} trong mảng.`,
     }))
 
@@ -42,6 +58,7 @@ export function generateLinearSearchSteps(numbers, target) {
         currentValue,
         foundIndex: i,
         finished: true,
+        pseudocodeLine: LINE.FOUND,
         message: `Đã tìm thấy ${target} tại vị trí ${i + 1}.`,
       }))
 
@@ -52,6 +69,7 @@ export function generateLinearSearchSteps(numbers, target) {
       index: i + 1,
       currentIndex: i,
       currentValue,
+      pseudocodeLine: LINE.COMPARE,
       message: `${currentValue} khác ${target}. Chuyển sang phần tử tiếp theo.`,
     }))
   }
@@ -59,6 +77,7 @@ export function generateLinearSearchSteps(numbers, target) {
   steps.push(createStep({
     index: numbers.length,
     finished: true,
+    pseudocodeLine: LINE.NOT_FOUND,
     message: `Không tìm thấy ${target} trong mảng.`,
   }))
 

@@ -1,8 +1,13 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import { generateLinearSearchSteps } from '../src/algorithms/linearSearch.js'
-import { generateBinarySearchSteps } from '../src/algorithms/binarySearch.js'
+// Namespace import: thiếu một export chỉ ra undefined và làm đỏ đúng test liên quan,
+// thay vì làm cả file không nạp được.
+import * as linearSearchModule from '../src/algorithms/linearSearch.js'
+import * as binarySearchModule from '../src/algorithms/binarySearch.js'
+
+const { generateLinearSearchSteps, linearSearchPseudocode } = linearSearchModule
+const { generateBinarySearchSteps, binarySearchPseudocode } = binarySearchModule
 
 // Tập dữ liệu nhỏ nhưng đủ phủ: rỗng, 1 phần tử, chẵn/lẻ, có trùng lặp.
 const arrays = [
@@ -213,4 +218,109 @@ test('Binary Search [10..90] tìm 95: bước áp chót xét A[8] = 90', () => {
   assert.equal(steps.at(-2).currentIndex, 8)
   assert.equal(steps.at(-2).currentValue, 90)
   assert.equal(steps.at(-1).currentIndex, null)
+})
+
+// --- pseudocodeLine: mỗi bước trỏ đúng một dòng mã giả ---
+
+function getSearchLineText(lines, step) {
+  return lines[step.pseudocodeLine - 1]?.trim()
+}
+
+function getExpectedSearchLine(generate, step) {
+  const binary = generate === generateBinarySearchSteps
+
+  if (step.finished && step.foundIndex === -1) return 'return -1'
+  if (step.finished) return binary ? 'return mid' : 'return i'
+  if (!binary) return 'if A[i] == target'
+
+  return step.currentValue < step.target ? 'left = mid + 1' : 'right = mid - 1'
+}
+
+test('bước tìm kiếm trỏ đúng dòng mã giả theo nhánh thực tế', () => {
+  forEachSearchCase(({ generate, numbers, target, steps }) => {
+    const lines = generate === generateBinarySearchSteps ? binarySearchPseudocode : linearSearchPseudocode
+
+    assert.equal(steps[0].pseudocodeLine, null)
+
+    steps.slice(1).forEach((step, offset) => {
+      assert.equal(
+        getSearchLineText(lines, step),
+        getExpectedSearchLine(generate, step),
+        `${generate.name} [${numbers}] / ${target}, bước ${offset + 1}`,
+      )
+    })
+  })
+})
+
+test('Binary Search [42] tìm 99: 42 < 99 nên bước so sánh trỏ dòng 7, kết luận dòng 10', () => {
+  const steps = generateBinarySearchSteps([42], 99)
+
+  assert.deepEqual(steps.map((step) => step.pseudocodeLine), [null, 7, 10])
+  assert.equal(getSearchLineText(binarySearchPseudocode, steps[1]), 'left = mid + 1')
+})
+
+test('Binary Search [10..90] tìm 95: bước áp chót dòng 7, bước cuối dòng 10 và không tăng comparisons', () => {
+  const steps = generateBinarySearchSteps(oneToNine, 95)
+
+  assert.equal(steps.at(-2).pseudocodeLine, 7)
+  assert.equal(steps.at(-2).currentIndex, 8)
+  assert.equal(steps.at(-1).pseudocodeLine, 10)
+  assert.equal(steps.at(-1).comparisons, steps.at(-2).comparisons)
+})
+
+test('Linear Search [10..90] tìm 95: lần so sánh cuối dòng 2, kết luận dòng 4', () => {
+  const steps = generateLinearSearchSteps(oneToNine, 95)
+
+  assert.equal(steps.at(-2).pseudocodeLine, 2)
+  assert.equal(steps.at(-2).currentValue, 90)
+  assert.equal(steps.at(-1).pseudocodeLine, 4)
+})
+
+test('linearSearch.js và binarySearch.js export mảng mã giả', () => {
+  for (const [name, lines, length] of [
+    ['linearSearchPseudocode', linearSearchPseudocode, 4],
+    ['binarySearchPseudocode', binarySearchPseudocode, 10],
+  ]) {
+    assert.ok(Array.isArray(lines), `${name} phải là mảng`)
+    assert.equal(lines.length, length, name)
+    lines.forEach((line) => assert.ok(typeof line === 'string' && line.trim() !== '', name))
+  }
+})
+
+function getSearchTrace(lines, steps) {
+  return steps.map((step) => [step.pseudocodeLine, step.pseudocodeLine === null ? null : getSearchLineText(lines, step)])
+}
+
+test('Binary Search: nhánh tìm thấy trỏ dòng 5, nhánh A[mid] > target trỏ dòng 9', () => {
+  // [10..90] tìm 20: mid = 4 (50 > 20) → right = mid - 1, rồi mid = 1 trúng.
+  assert.deepEqual(getSearchTrace(binarySearchPseudocode, generateBinarySearchSteps(oneToNine, 20)), [
+    [null, null],
+    [9, 'right = mid - 1'],
+    [5, 'return mid'],
+  ])
+
+  // [10..90] tìm 50: trúng ngay mid đầu tiên.
+  assert.deepEqual(getSearchTrace(binarySearchPseudocode, generateBinarySearchSteps(oneToNine, 50)), [
+    [null, null],
+    [5, 'return mid'],
+  ])
+})
+
+test('Linear Search: nhánh tìm thấy trỏ dòng 3', () => {
+  assert.deepEqual(getSearchTrace(linearSearchPseudocode, generateLinearSearchSteps(oneToNine, 20)), [
+    [null, null],
+    [2, 'if A[i] == target'],
+    [3, 'return i'],
+  ])
+})
+
+test('mảng rỗng: bước 0 không tô dòng nào, bước kết luận trỏ return -1', () => {
+  assert.deepEqual(getSearchTrace(linearSearchPseudocode, generateLinearSearchSteps([], 10)), [
+    [null, null],
+    [4, 'return -1'],
+  ])
+  assert.deepEqual(getSearchTrace(binarySearchPseudocode, generateBinarySearchSteps([], 10)), [
+    [null, null],
+    [10, 'return -1'],
+  ])
 })
