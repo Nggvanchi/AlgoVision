@@ -434,10 +434,10 @@
     </button>
     <div class="section-heading">
         <div>
-        <h3>Linear Search</h3>
-        <p>Tìm một giá trị bằng cách kiểm tra lần lượt từng phần tử.</p>
+        <h3 id="search-title">Linear Search</h3>
+        <p id="search-description">Tìm một giá trị bằng cách kiểm tra lần lượt từng phần tử.</p>
         </div>
-        <span class="visualizer-tag">O(n)</span>
+        <span class="visualizer-tag" id="search-complexity">O(n)</span>
     </div>
 
     <div class="visualizer-placeholder">
@@ -548,6 +548,10 @@
         <div class="simulation-controls">
         <button class="control-button" id="search-reset" type="button">
             Đặt lại
+        </button>
+
+        <button class="control-button" id="search-previous" type="button" disabled>
+            ← Bước trước
         </button>
 
         <button class="control-button" id="search-next" type="button">

@@ -1,4 +1,25 @@
+import { createSimulationController } from './simulation-controller.js'
+import { generateLinearSearchSteps } from './algorithms/linearSearch.js'
+import { generateBinarySearchSteps } from './algorithms/binarySearch.js'
+
+const searchAlgorithmInfo = {
+  linear: {
+    name: 'Linear Search',
+    description: 'Tìm một giá trị bằng cách kiểm tra lần lượt từng phần tử.',
+    complexity: 'O(n)',
+  },
+  binary: {
+    name: 'Binary Search',
+    description: 'Tìm một giá trị bằng cách chia đôi phạm vi tìm kiếm trên mảng đã sắp xếp.',
+    complexity: 'O(log n)',
+  },
+}
+
 export function initSearching(options = {}) {
+  const searchTitle = document.querySelector('#search-title')
+  const searchDescription = document.querySelector('#search-description')
+  const searchComplexity = document.querySelector('#search-complexity')
+  const searchAlgorithmCards = document.querySelectorAll('[data-search-algorithm]')
   const searchArrayElement = document.querySelector('#search-array')
   const searchRangePanel = document.querySelector('#search-range-panel')
   const searchLeftValue = document.querySelector('#search-left-value')
@@ -13,6 +34,7 @@ export function initSearching(options = {}) {
   const searchSpeedValue = document.querySelector('#search-speed-value')
   const searchResult = document.querySelector('#search-result')
   const searchNextButton = document.querySelector('#search-next')
+  const searchPreviousButton = document.querySelector('#search-previous')
   const searchRunButton = document.querySelector('#search-run')
   const searchPauseButton = document.querySelector('#search-pause')
   const searchNewArrayButton = document.querySelector('#search-new-array')
@@ -34,6 +56,7 @@ export function initSearching(options = {}) {
     searchComparisons,
     searchSpeedInput,
     searchNextButton,
+    searchPreviousButton,
     searchRunButton,
     searchPauseButton,
   ]
@@ -45,19 +68,25 @@ export function initSearching(options = {}) {
     return
   }
 
+
+  const DEFAULT_SPEED = 600
+  const IDLE_MESSAGE = 'Nhập giá trị cần tìm, sau đó bắt đầu mô phỏng.'
+  const stepGenerators = {
+    linear: generateLinearSearchSteps,
+    binary: generateBinarySearchSteps,
+  }
+
   const initialNumbers = options.initialNumbers
 
   let searchNumbers = Array.isArray(initialNumbers)
     ? [...initialNumbers]
     : []
-  let searchIndex = 0
-  let searchCount = 0
-  let searchFinished = false
-  let searchTimer = null
-  let searchLeft = 0
-  let searchRight = -1
-  let searchMid = -1
-  let searchFoundIndex = -1
+
+  const simulation = createSimulationController({
+    getDelay: getSearchDelay,
+    onChange: renderSearch,
+    scheduler: options.scheduler,
+  })
 
   function isBinarySearch() {
     return searchAlgorithmSelect.value === 'binary'
@@ -75,16 +104,48 @@ export function initSearching(options = {}) {
     return Number.isFinite(target) ? target : null
   }
 
-  function stopSearchAnimation() {
-    if (searchTimer !== null) {
-      clearInterval(searchTimer)
-      searchTimer = null
-    }
+  // Đọc tốc độ ở mỗi tick nên kéo thanh tốc độ không tạo lại timer.
+  function getSearchDelay() {
+    const speed = Number(searchSpeedInput.value)
 
-    searchPauseButton.disabled = true
+    return Number.isFinite(speed) && speed > 0 ? speed : DEFAULT_SPEED
   }
 
-  function renderSearchRange() {
+  function getRunLabel(runMode) {
+    if (runMode === 'resume') return 'Tiếp tục'
+    if (runMode === 'restart') return 'Chạy lại'
+
+    return 'Chạy tìm kiếm'
+  }
+
+  // Trạng thái hiển thị khi chưa sinh bước (chưa chốt mục tiêu).
+  function createIdleStep() {
+    return {
+      index: 0,
+      mid: -1,
+      left: 0,
+      right: searchNumbers.length - 1,
+      comparisons: 0,
+      foundIndex: -1,
+      finished: false,
+      message: IDLE_MESSAGE,
+    }
+  }
+
+  function renderAlgorithmInfo() {
+    const algorithm = isBinarySearch() ? 'binary' : 'linear'
+    const info = searchAlgorithmInfo[algorithm]
+
+    if (searchTitle) searchTitle.textContent = info.name
+    if (searchDescription) searchDescription.textContent = info.description
+    if (searchComplexity) searchComplexity.textContent = info.complexity
+
+    searchAlgorithmCards.forEach((card) => {
+      card.classList.toggle('selected', card.dataset.searchAlgorithm === algorithm)
+    })
+  }
+
+  function renderSearchRange(step) {
     if (!searchRangePanel) {
       return
     }
@@ -96,135 +157,106 @@ export function initSearching(options = {}) {
       return
     }
 
+    const hasRange = step.left <= step.right
+
     if (searchLeftValue) {
-      searchLeftValue.textContent =
-        searchLeft <= searchRight ? String(searchLeft + 1) : '—'
+      searchLeftValue.textContent = hasRange ? String(step.left + 1) : '—'
     }
 
     if (searchMidValue) {
       searchMidValue.textContent =
-        searchMid >= 0 ? String(searchMid + 1) : 'Chưa xác định'
+        step.mid >= 0 ? String(step.mid + 1) : 'Chưa xác định'
     }
 
     if (searchRightValue) {
-      searchRightValue.textContent =
-        searchLeft <= searchRight ? String(searchRight + 1) : '—'
+      searchRightValue.textContent = hasRange ? String(step.right + 1) : '—'
     }
 
     if (!searchRangeMessage) {
       return
     }
 
-    if (searchFinished && searchFoundIndex !== -1) {
+    if (step.finished && step.foundIndex !== -1) {
       searchRangeMessage.textContent =
-        `Đã tìm thấy giá trị tại vị trí ${searchFoundIndex + 1}.`
-    } else if (searchFinished) {
+        `Đã tìm thấy giá trị tại vị trí ${step.foundIndex + 1}.`
+    } else if (step.finished) {
       searchRangeMessage.textContent =
         'Đã hết phạm vi tìm kiếm. Không tìm thấy giá trị cần tìm.'
-    } else if (searchMid === -1) {
+    } else if (step.mid === -1) {
       searchRangeMessage.textContent =
         'Chưa kiểm tra phần tử nào. Nhấn Bước tiếp theo để bắt đầu.'
     } else {
       searchRangeMessage.textContent =
-        `Đang xét phần tử ở vị trí ${searchMid + 1}.`
+        `Đang xét phần tử ở vị trí ${step.mid + 1}.`
     }
   }
 
-  function renderSearchArray() {
+  function getCellClass(step, index, binary) {
+    if (index === step.foundIndex) return 'is-found'
+    if (!step.finished && binary && index === step.mid) return 'is-current'
+    if (!step.finished && !binary && index === step.index) return 'is-current'
+    if (binary && (index < step.left || index > step.right)) return 'is-eliminated'
+    if (!binary && index < step.index) return 'is-checked'
+    if (!binary && step.finished && step.foundIndex === -1) return 'is-checked'
+
+    return null
+  }
+
+  function renderSearchArray(step) {
     searchArrayElement.innerHTML = ''
 
     const binary = isBinarySearch()
 
     searchNumbers.forEach((number, index) => {
       const cell = document.createElement('div')
+      const cellClass = getCellClass(step, index, binary)
+
       cell.className = 'search-cell'
       cell.textContent = String(number)
 
-      if (index === searchFoundIndex) {
-        cell.classList.add('is-found')
-      } else if (
-        !searchFinished &&
-        binary &&
-        index === searchMid
-      ) {
-        cell.classList.add('is-current')
-      } else if (
-        !searchFinished &&
-        !binary &&
-        index === searchIndex
-      ) {
-        cell.classList.add('is-current')
-      } else if (binary && (index < searchLeft || index > searchRight)) {
-        cell.classList.add('is-eliminated')
-      } else if (!binary && index < searchIndex) {
-        cell.classList.add('is-checked')
-      } else if (
-        !binary &&
-        searchFinished &&
-        searchFoundIndex === -1 &&
-        index < searchNumbers.length
-      ) {
-        cell.classList.add('is-checked')
+      if (cellClass) {
+        cell.classList.add(cellClass)
       }
 
       searchArrayElement.appendChild(cell)
     })
-
-    searchComparisons.textContent = String(searchCount)
-
-    const isRunning = searchTimer !== null
-
-    searchNextButton.disabled = searchFinished || isRunning
-    searchRunButton.disabled = searchFinished || isRunning
-    searchPauseButton.disabled = !isRunning
-
-    renderSearchRange()
   }
 
-  function renderSearchMessage() {
-    if (searchFinished) {
-      if (searchFoundIndex !== -1) {
-        searchMessage.textContent =
-          `Đã tìm thấy ${getTarget()} tại vị trí ${searchFoundIndex + 1}.`
-      } else {
-        searchMessage.textContent =
-          `Không tìm thấy ${getTarget()} trong mảng.`
-      }
+  function renderSearchResult(step) {
+    if (!searchResult) {
+      return
     }
 
-    if (searchResult) {
-      searchResult.textContent = searchFinished
-        ? searchFoundIndex !== -1
-          ? `Tìm thấy tại vị trí ${searchFoundIndex + 1}.`
-          : 'Không tìm thấy giá trị.'
-        : 'Chưa có kết quả.'
-    }
-  }
-
-  function resetSearch() {
-    stopSearchAnimation()
-
-    searchIndex = 0
-    searchCount = 0
-    searchFinished = false
-    searchLeft = 0
-    searchRight = searchNumbers.length - 1
-    searchMid = -1
-    searchFoundIndex = -1
-
-    searchMessage.textContent =
-      'Nhập giá trị cần tìm, sau đó bắt đầu mô phỏng.'
-
-    if (searchResult) {
+    if (!step.finished) {
       searchResult.textContent = 'Chưa có kết quả.'
+    } else if (step.foundIndex !== -1) {
+      searchResult.textContent = `Tìm thấy tại vị trí ${step.foundIndex + 1}.`
+    } else {
+      searchResult.textContent = 'Không tìm thấy giá trị.'
     }
+  }
 
-    renderSearchArray()
+  function renderSearch({ step = createIdleStep(), controls }) {
+    renderSearchArray(step)
+    renderSearchRange(step)
+    renderSearchResult(step)
+
+    searchComparisons.textContent = String(step.comparisons)
+    searchMessage.textContent = step.message
+
+    searchRunButton.textContent = getRunLabel(controls.runMode)
+    searchRunButton.disabled = !controls.run
+    searchPauseButton.disabled = !controls.pause
+    searchNextButton.disabled = !controls.next
+    searchPreviousButton.disabled = !controls.previous
+  }
+
+  // Bỏ các bước cũ; lần Next/Run tiếp theo sẽ đọc lại mục tiêu.
+  function resetSearch() {
+    simulation.load([])
   }
 
   function createSearchArray() {
-    stopSearchAnimation()
-
     if (Array.isArray(initialNumbers)) {
       searchNumbers = [...initialNumbers]
     } else {
@@ -240,113 +272,41 @@ export function initSearching(options = {}) {
     resetSearch()
   }
 
-  function finishSearch(foundIndex = -1) {
-    searchFoundIndex = foundIndex
-    searchFinished = true
-
-    stopSearchAnimation()
-    renderSearchArray()
-    renderSearchMessage()
-  }
-
-  function showNextSearchStep() {
-    if (searchFinished) {
-      stopSearchAnimation()
-      return
+  // Chốt mục tiêu một lần khi sinh bước; trả về false nếu mục tiêu không hợp lệ.
+  function prepareSteps() {
+    if (simulation.getSnapshot().stepCount > 0) {
+      return true
     }
 
     const target = getTarget()
 
     if (target === null) {
-      stopSearchAnimation()
-      searchMessage.textContent =
-        'Vui lòng nhập một giá trị số hợp lệ.'
+      return false
+    }
+
+    const generateSteps = stepGenerators[isBinarySearch() ? 'binary' : 'linear']
+    simulation.load(generateSteps(searchNumbers, target))
+
+    return true
+  }
+
+  function showNextSearchStep() {
+    if (!prepareSteps()) {
+      searchMessage.textContent = 'Vui lòng nhập một giá trị số hợp lệ.'
       return
     }
 
-    if (searchNumbers.length === 0) {
-      finishSearch()
-      return
-    }
-
-    if (isBinarySearch()) {
-      if (searchLeft > searchRight) {
-        finishSearch()
-        return
-      }
-
-      searchMid = Math.floor((searchLeft + searchRight) / 2)
-
-      const currentValue = searchNumbers[searchMid]
-      searchCount++
-
-      if (currentValue === target) {
-        finishSearch(searchMid)
-        return
-      }
-
-      if (currentValue < target) {
-        searchMessage.textContent =
-          `${currentValue} nhỏ hơn ${target}. Tiếp tục tìm ở nửa bên phải.`
-
-        searchLeft = searchMid + 1
-      } else {
-        searchMessage.textContent =
-          `${currentValue} lớn hơn ${target}. Tiếp tục tìm ở nửa bên trái.`
-
-        searchRight = searchMid - 1
-      }
-
-      if (searchLeft > searchRight) {
-        finishSearch()
-        return
-      }
-    } else {
-      if (searchIndex >= searchNumbers.length) {
-        finishSearch()
-        return
-      }
-
-      const currentValue = searchNumbers[searchIndex]
-      searchCount++
-
-      if (currentValue === target) {
-        finishSearch(searchIndex)
-        return
-      }
-
-      searchMessage.textContent =
-        `${currentValue} khác ${target}. Chuyển sang phần tử tiếp theo.`
-
-      searchIndex++
-
-      if (searchIndex >= searchNumbers.length) {
-        finishSearch()
-        return
-      }
-    }
-
-    renderSearchArray()
+    simulation.next()
   }
 
   function runSearchAnimation() {
-    if (searchFinished || searchTimer !== null) {
-      return
-    }
-
-    if (getTarget() === null) {
+    if (!prepareSteps()) {
       searchMessage.textContent =
         'Vui lòng nhập một giá trị số hợp lệ trước khi tìm kiếm.'
       return
     }
 
-    searchPauseButton.disabled = false
-
-    searchTimer = setInterval(() => {
-      showNextSearchStep()
-    }, Number(searchSpeedInput.value))
-
-    renderSearchArray()
+    simulation.run()
   }
 
   function compareSearchAlgorithms() {
@@ -445,30 +405,34 @@ export function initSearching(options = {}) {
   }
 
   searchNextButton.addEventListener('click', showNextSearchStep)
-
+  searchPreviousButton.addEventListener('click', simulation.previous)
   searchRunButton.addEventListener('click', runSearchAnimation)
-
-  searchPauseButton.addEventListener('click', () => {
-    stopSearchAnimation()
-    renderSearchArray()
-  })
+  searchPauseButton.addEventListener('click', simulation.pause)
 
   searchNewArrayButton?.addEventListener('click', createSearchArray)
 
   searchResetButton?.addEventListener('click', resetSearch)
 
+  // Ô mục tiêu luôn khớp với mô phỏng: gõ (input) hay rời ô (change) đều về ban đầu.
+  // Các bước đã sinh vẫn giữ target đã chốt nên không phụ thuộc vào ô nhập.
+  searchTargetInput.addEventListener('input', resetSearch)
   searchTargetInput.addEventListener('change', resetSearch)
 
-  searchAlgorithmSelect.addEventListener('change', createSearchArray)
+  // Rời màn hình mô phỏng thì tạm dừng (giữ nguyên bước hiện tại).
+  document.addEventListener('algovision:viewchange', () => {
+    if (searchArrayElement.closest('[hidden]')) {
+      simulation.pause()
+    }
+  })
+
+  searchAlgorithmSelect.addEventListener('change', () => {
+    renderAlgorithmInfo()
+    createSearchArray()
+  })
 
   searchSpeedInput.addEventListener('input', () => {
     if (searchSpeedValue) {
       searchSpeedValue.textContent = `${searchSpeedInput.value} ms`
-    }
-
-    if (searchTimer !== null) {
-      stopSearchAnimation()
-      runSearchAnimation()
     }
   })
 
@@ -500,5 +464,6 @@ export function initSearching(options = {}) {
     searchSpeedValue.textContent = `${searchSpeedInput.value} ms`
   }
 
+  renderAlgorithmInfo()
   createSearchArray()
 }

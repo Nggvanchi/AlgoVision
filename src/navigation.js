@@ -64,9 +64,25 @@ export function initNavigation(document) {
     })
   }
 
+  // Báo cho các module mô phỏng biết màn hình vừa đổi để tự tạm dừng nếu bị ẩn.
+  function notifyViewChange() {
+    const CustomEventClass = document.defaultView?.CustomEvent ?? CustomEvent
+
+    document.dispatchEvent(
+      new CustomEventClass('algovision:viewchange', {
+        detail: { page: currentPage },
+      }),
+    )
+  }
+
   function showPage(pageName) {
     if (!pages[pageName]) return
 
+    renderPage(pageName)
+    notifyViewChange()
+  }
+
+  function renderPage(pageName) {
     currentPage = pageName
 
     hideAllSections()
@@ -109,6 +125,7 @@ export function initNavigation(document) {
 
     sortingLibrary.hidden = true
     sortingVisualizer.hidden = false
+    notifyViewChange()
   }
 
   function showSortingLibrary() {
@@ -116,6 +133,7 @@ export function initNavigation(document) {
 
     sortingVisualizer.hidden = true
     sortingLibrary.hidden = false
+    notifyViewChange()
   }
 
   function showSearchingDetail() {
@@ -123,6 +141,7 @@ export function initNavigation(document) {
 
     searchLibrary.hidden = true
     searchVisualizer.hidden = false
+    notifyViewChange()
   }
 
   function showSearchingLibrary() {
@@ -130,6 +149,7 @@ export function initNavigation(document) {
 
     searchVisualizer.hidden = true
     searchLibrary.hidden = false
+    notifyViewChange()
   }
 
   navItems.forEach((item) => {
@@ -190,6 +210,7 @@ export function initNavigation(document) {
       stackSection.hidden = target !== 'stack'
       queueSection.hidden = target !== 'queue'
       linkedListSection.hidden = target !== 'linked-list'
+      notifyViewChange()
     })
   })
 

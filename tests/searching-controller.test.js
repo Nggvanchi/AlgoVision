@@ -2,6 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { Window } from 'happy-dom'
 import { readFile } from 'node:fs/promises'
+import { createFakeScheduler } from './helpers/fake-scheduler.js'
 
 const templatePath = new URL(
   '../public/templates/app.html',
@@ -31,6 +32,8 @@ async function setupSearching(options = {}) {
       window,
       document,
       cleanup() {
+        // Dừng timer còn sống (nếu có) để test lỗi không làm treo tiến trình.
+        document.querySelector('#search-pause')?.click()
         window.happyDOM.abort()
 
         if (previousDocument === undefined) {
@@ -748,7 +751,7 @@ test('Searching cập nhật nhãn khi thay đổi tốc độ', async () => {
   }
 })
 
-test('Searching khởi động lại khi thay đổi tốc độ trong lúc chạy', async () => {
+test('Searching vẫn chạy và giữ trạng thái nút khi thay đổi tốc độ trong lúc chạy', async () => {
   const { document, cleanup } = await setupSearching({
     initialNumbers: [10, 20, 30, 40],
   })
@@ -844,6 +847,307 @@ test('Searching không chạy tự động khi mục tiêu là Infinity', async 
     )
     assert.equal(runButton.disabled, false)
     assert.equal(pauseButton.disabled, true)
+  } finally {
+    cleanup()
+  }
+})
+
+function selectSearchAlgorithm(document, algorithm) {
+  const select = document.querySelector('#search-algorithm')
+
+  select.value = algorithm
+  select.dispatchEvent(
+    new document.defaultView.Event('change', { bubbles: true }),
+  )
+}
+
+function getSelectedSearchCards(document) {
+  return [
+    ...document.querySelectorAll('[data-search-algorithm].selected'),
+  ].map((card) => card.dataset.searchAlgorithm)
+}
+
+test('tiêu đề và Big-O của Searching khớp với thuật toán trong dropdown', async () => {
+  const { document, cleanup } = await setupSearching()
+
+  try {
+    const title = document.querySelector('#search-title')
+    const complexity = document.querySelector('#search-complexity')
+
+    selectSearchAlgorithm(document, 'binary')
+
+    assert.equal(title?.textContent, 'Binary Search')
+    assert.equal(complexity?.textContent, 'O(log n)')
+
+    selectSearchAlgorithm(document, 'linear')
+
+    assert.equal(title?.textContent, 'Linear Search')
+    assert.equal(complexity?.textContent, 'O(n)')
+  } finally {
+    cleanup()
+  }
+})
+
+test('đổi dropdown đồng bộ thẻ thuật toán tìm kiếm được chọn', async () => {
+  const { document, cleanup } = await setupSearching()
+
+  try {
+    assert.deepEqual(getSelectedSearchCards(document), ['linear'])
+
+    selectSearchAlgorithm(document, 'binary')
+    assert.deepEqual(getSelectedSearchCards(document), ['binary'])
+
+    selectSearchAlgorithm(document, 'linear')
+    assert.deepEqual(getSelectedSearchCards(document), ['linear'])
+  } finally {
+    cleanup()
+  }
+})
+
+function setSearchTarget(document, value, eventType = 'change') {
+  const input = document.querySelector('#search-target')
+
+  input.value = value
+  input.dispatchEvent(
+    new document.defaultView.Event(eventType, { bubbles: true }),
+  )
+}
+
+function clickNextUntilDisabled(document, maxClicks = 50) {
+  const nextButton = document.querySelector('#search-next')
+
+  for (let i = 0; i < maxClicks && !nextButton.disabled; i++) {
+    nextButton.click()
+  }
+}
+
+const SORTED_NUMBERS = [10, 20, 30, 40, 50, 60, 70, 80, 90]
+
+for (const algorithm of ['binary', 'linear']) {
+  test(`${algorithm}: mục tiêu được chốt khi sinh bước, đổi giá trị ô nhập không kèm sự kiện không ảnh hưởng`, async () => {
+    const { document, cleanup } = await setupSearching({
+      initialNumbers: SORTED_NUMBERS,
+    })
+
+    try {
+      selectSearchAlgorithm(document, algorithm)
+      setSearchTarget(document, '80')
+
+      document.querySelector('#search-next').click()
+
+      // Giá trị đổi mà không có sự kiện nào (vd: script/autofill).
+      document.querySelector('#search-target').value = '20'
+      clickNextUntilDisabled(document)
+
+      const expectedComparisons = algorithm === 'binary' ? '3' : '8'
+
+      assert.equal(
+        document.querySelector('#search-message').textContent,
+        'Đã tìm thấy 80 tại vị trí 8.',
+      )
+      assert.equal(
+        document.querySelector('#search-result').textContent,
+        'Tìm thấy tại vị trí 8.',
+      )
+      assert.equal(
+        document.querySelector('#search-comparisons').textContent,
+        expectedComparisons,
+      )
+    } finally {
+      cleanup()
+    }
+  })
+
+  test(`${algorithm}: gõ mục tiêu mới khi đang tạm dừng đưa mô phỏng về ban đầu`, async () => {
+    const { document, cleanup } = await setupSearching({
+      initialNumbers: SORTED_NUMBERS,
+    })
+
+    try {
+      selectSearchAlgorithm(document, algorithm)
+      setSearchTarget(document, '80')
+
+      document.querySelector('#search-next').click()
+      assert.equal(document.querySelector('#search-comparisons').textContent, '1')
+      assert.equal(document.querySelector('#search-previous').disabled, false)
+
+      // Chỉ phát input (người dùng đang gõ, chưa rời ô nhập).
+      setSearchTarget(document, '20', 'input')
+
+      assert.equal(document.querySelector('#search-comparisons').textContent, '0')
+      assert.equal(document.querySelector('#search-result').textContent, 'Chưa có kết quả.')
+      assert.equal(
+        document.querySelector('#search-message').textContent,
+        'Nhập giá trị cần tìm, sau đó bắt đầu mô phỏng.',
+      )
+      assert.equal(document.querySelector('#search-previous').disabled, true)
+      assert.equal(document.querySelector('#search-next').disabled, false)
+      assert.equal(document.querySelector('#search-run').textContent.trim(), 'Chạy tìm kiếm')
+    } finally {
+      cleanup()
+    }
+  })
+
+  test(`${algorithm}: gõ mục tiêu mới khi đang chạy dừng timer và về ban đầu`, async () => {
+    const scheduler = createFakeScheduler()
+    const { document, cleanup } = await setupSearching({
+      initialNumbers: SORTED_NUMBERS,
+      scheduler,
+    })
+
+    try {
+      selectSearchAlgorithm(document, algorithm)
+      setSearchTarget(document, '80')
+
+      document.querySelector('#search-run').click()
+      scheduler.advance(600)
+      assert.equal(document.querySelector('#search-comparisons').textContent, '1')
+
+      setSearchTarget(document, '20', 'input')
+
+      assert.equal(scheduler.pendingCount, 0)
+      assert.equal(document.querySelector('#search-comparisons').textContent, '0')
+      assert.equal(document.querySelector('#search-pause').disabled, true)
+      assert.equal(document.querySelector('#search-run').textContent.trim(), 'Chạy tìm kiếm')
+    } finally {
+      cleanup()
+    }
+  })
+
+  test(`${algorithm}: sau khi gõ mục tiêu mới, bộ đếm chỉ tính cho mục tiêu mới`, async () => {
+    const { document, cleanup } = await setupSearching({
+      initialNumbers: SORTED_NUMBERS,
+    })
+
+    try {
+      selectSearchAlgorithm(document, algorithm)
+      setSearchTarget(document, '80')
+
+      document.querySelector('#search-next').click()
+      setSearchTarget(document, '20', 'input')
+      clickNextUntilDisabled(document)
+
+      assert.equal(
+        document.querySelector('#search-message').textContent,
+        'Đã tìm thấy 20 tại vị trí 2.',
+      )
+      assert.equal(document.querySelector('#search-comparisons').textContent, '2')
+    } finally {
+      cleanup()
+    }
+  })
+}
+
+test('kéo thanh tốc độ liên tục không làm mô phỏng Searching đứng yên', async (t) => {
+  t.mock.timers.enable({ apis: ['setInterval', 'setTimeout'] })
+
+  const { document, cleanup } = await setupSearching({
+    initialNumbers: SORTED_NUMBERS,
+  })
+
+  try {
+    const speedInput = document.querySelector('#search-speed')
+
+    speedInput.value = '600'
+    setSearchTarget(document, '90')
+    document.querySelector('#search-run').click()
+
+    // 10 sự kiện input, mỗi sự kiện cách nhau 200ms: tổng 2000ms với tốc độ 600ms.
+    for (let i = 0; i < 10; i++) {
+      t.mock.timers.tick(200)
+      speedInput.dispatchEvent(
+        new document.defaultView.Event('input', { bubbles: true }),
+      )
+    }
+
+    assert.equal(
+      document.querySelector('#search-comparisons').textContent,
+      '3',
+    )
+  } finally {
+    cleanup()
+  }
+})
+
+test('Searching có nút Bước trước quay lại bước đã xem', async () => {
+  const { document, cleanup } = await setupSearching({
+    initialNumbers: SORTED_NUMBERS,
+  })
+
+  try {
+    const previousButton = document.querySelector('#search-previous')
+    const comparisons = document.querySelector('#search-comparisons')
+
+    assert.ok(previousButton, 'thiếu nút #search-previous')
+    assert.equal(previousButton.disabled, true)
+
+    selectSearchAlgorithm(document, 'linear')
+    setSearchTarget(document, '40')
+
+    document.querySelector('#search-next').click()
+    document.querySelector('#search-next').click()
+    assert.equal(comparisons.textContent, '2')
+    assert.equal(previousButton.disabled, false)
+
+    previousButton.click()
+    assert.equal(comparisons.textContent, '1')
+
+    previousButton.click()
+    assert.equal(comparisons.textContent, '0')
+    assert.equal(previousButton.disabled, true)
+  } finally {
+    cleanup()
+  }
+})
+
+test('Bước trước từ kết quả cuối mở lại nút Bước tiếp theo', async () => {
+  const { document, cleanup } = await setupSearching({
+    initialNumbers: SORTED_NUMBERS,
+  })
+
+  try {
+    selectSearchAlgorithm(document, 'linear')
+    setSearchTarget(document, '10')
+
+    document.querySelector('#search-next').click()
+    assert.equal(document.querySelector('#search-next').disabled, true)
+
+    document.querySelector('#search-previous').click()
+
+    assert.equal(document.querySelector('#search-next').disabled, false)
+    assert.equal(document.querySelector('#search-result').textContent, 'Chưa có kết quả.')
+  } finally {
+    cleanup()
+  }
+})
+
+test('Searching chạy hết thì nút Run thành Chạy lại và chạy lại từ đầu', async () => {
+  const scheduler = createFakeScheduler()
+  const { document, cleanup } = await setupSearching({
+    initialNumbers: SORTED_NUMBERS,
+    scheduler,
+  })
+
+  try {
+    const runButton = document.querySelector('#search-run')
+    const comparisons = document.querySelector('#search-comparisons')
+
+    selectSearchAlgorithm(document, 'linear')
+    setSearchTarget(document, '30')
+
+    runButton.click()
+    scheduler.advance(600 * 3)
+
+    assert.equal(comparisons.textContent, '3')
+    assert.equal(runButton.textContent.trim(), 'Chạy lại')
+    assert.equal(runButton.disabled, false)
+    assert.equal(scheduler.pendingCount, 0)
+
+    runButton.click()
+    assert.equal(comparisons.textContent, '0')
+
+    scheduler.advance(600)
+    assert.equal(comparisons.textContent, '1')
   } finally {
     cleanup()
   }

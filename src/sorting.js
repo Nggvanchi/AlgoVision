@@ -2,8 +2,9 @@
 import { generateBubbleSortSteps } from './algorithms/bubbleSort.js'
 import { generateSelectionSortSteps } from './algorithms/selectionSort.js'
 import { generateInsertionSortSteps } from './algorithms/insertionSort.js'
+import { createSimulationController } from './simulation-controller.js'
 
-export function initSorting() {
+export function initSorting(options = {}) {
   const arrayBars = document.querySelector('#array-bars')
   const arraySize = document.querySelector('#array-size')
   const arrayCount = document.querySelector('#array-count')
@@ -24,7 +25,7 @@ export function initSorting() {
   const stepCount = document.querySelector('#step-count')
   const simulationMessage = document.querySelector('#simulation-message')
 
-  const algorithmCards = document.querySelectorAll('.algorithm-card')
+  const algorithmCards = document.querySelectorAll('.algorithm-card[data-algorithm]')
   const complexityTitle = document.querySelector('.complexity-heading span')
   const complexityCards = document.querySelectorAll('.complexity-card strong')
   
@@ -136,21 +137,29 @@ export function initSorting() {
     },
   }
 
+  const DEFAULT_SPEED = 650
+
   let numbers = []
-  let steps = []
-  let currentStepIndex = 0
-  let animationTimer = null
-  let simulationState = 'ready'
-  let animationSpeed = Number(speedControl.value) || 650
   let selectedAlgorithm = 'bubble'
 
-  function stopAnimation(nextState = 'paused') {
-    if (animationTimer !== null) {
-      clearInterval(animationTimer)
-      animationTimer = null
-    }
+  const simulation = createSimulationController({
+    getDelay: getAnimationDelay,
+    onChange: renderSimulation,
+    scheduler: options.scheduler,
+  })
 
-    simulationState = nextState
+  // Đọc tốc độ ở mỗi tick nên đổi tốc độ không cần tạo lại timer.
+  function getAnimationDelay() {
+    const speed = Number(speedControl.value)
+
+    return Number.isFinite(speed) && speed > 0 ? speed : DEFAULT_SPEED
+  }
+
+  function getRunLabel(runMode) {
+    if (runMode === 'resume') return 'Tiếp tục'
+    if (runMode === 'restart') return 'Chạy lại'
+
+    return `Chạy ${algorithmConfig[selectedAlgorithm].name}`
   }
 
   function generateArray(size) {
@@ -163,13 +172,7 @@ export function initSorting() {
     return result
   }
 
-  function renderArray() {
-    const currentStep = steps[currentStepIndex]
-
-    if (!currentStep) {
-      return
-    }
-
+  function renderBars(currentStep) {
     arrayBars.innerHTML = ''
 
     currentStep.array.forEach((number, index) => {
@@ -198,75 +201,33 @@ export function initSorting() {
       bar.appendChild(value)
       arrayBars.appendChild(bar)
     })
+  }
 
-    comparisonCount.textContent = currentStep.comparisons
-    swapCount.textContent = currentStep.swaps
-    shiftCount.textContent = currentStep.shifts ?? 0
-    stepCount.textContent = `${currentStepIndex + 1} / ${steps.length}`
-    simulationMessage.textContent = currentStep.message
+  function renderSimulation({ step, stepIndex, stepCount: totalSteps, controls }) {
+    if (!step) {
+      return
+    }
+
+    renderBars(step)
+
+    comparisonCount.textContent = step.comparisons
+    swapCount.textContent = step.swaps
+    shiftCount.textContent = step.shifts ?? 0
+    stepCount.textContent = `${stepIndex + 1} / ${totalSteps}`
+    simulationMessage.textContent = step.message
     arrayCount.textContent = `${numbers.length} phần tử`
 
-    const isRunning = simulationState === 'running'
-    const isCompleted =
-      simulationState === 'completed' || Boolean(currentStep.finished)
-
-    runButton.disabled = isRunning || isCompleted
-    pauseButton.disabled = !isRunning
-    stepButton.disabled = isRunning || isCompleted
-    previousButton.disabled = isRunning || currentStepIndex === 0
+    runButton.textContent = getRunLabel(controls.runMode)
+    runButton.disabled = !controls.run
+    pauseButton.disabled = !controls.pause
+    stepButton.disabled = !controls.next
+    previousButton.disabled = !controls.previous
+    resetButton.disabled = !controls.reset
   }
 
   function createNewArray() {
-    stopAnimation('ready')
-
     numbers = generateArray(Number(arraySize.value))
-    steps = algorithmConfig[selectedAlgorithm].generateSteps(numbers)
-    currentStepIndex = 0
-
-    renderArray()
-  }
-
-  function showNextStep() {
-    if (simulationState === 'running' && animationTimer === null) {
-      return
-    }
-
-    if (currentStepIndex >= steps.length - 1) {
-      stopAnimation('completed')
-      renderArray()
-      return
-    }
-
-    currentStepIndex++
-
-    if (steps[currentStepIndex].finished) {
-      stopAnimation('completed')
-    }
-
-    renderArray()
-  }
-
-  function startAnimation() {
-    if (
-      simulationState === 'running' ||
-      simulationState === 'completed' ||
-      steps.length === 0
-    ) {
-      return
-    }
-
-    simulationState = 'running'
-    renderArray()
-
-    animationTimer = setInterval(() => {
-      showNextStep()
-    }, animationSpeed)
-  }
-
-  function resetSimulation() {
-    stopAnimation('ready')
-    currentStepIndex = 0
-    renderArray()
+    simulation.load(algorithmConfig[selectedAlgorithm].generateSteps(numbers))
   }
 
   function selectAlgorithm(algorithm) {
@@ -277,17 +238,14 @@ export function initSorting() {
     selectedAlgorithm = algorithm
 
     algorithmCards.forEach((card) => {
-      card.addEventListener('click', () => {
-        selectAlgorithm(card.dataset.algorithm)
-      })
+      card.classList.toggle('selected', card.dataset.algorithm === algorithm)
     })
 
     const config = algorithmConfig[selectedAlgorithm]
 
     visualizerTitle.textContent = config.name
     visualizerDescription.textContent = config.description
-    runButton.textContent = `Chạy ${config.name}`
-    
+
     learningDescription.textContent = config.learningDescription
     learningPseudocode.textContent = config.pseudocode
     learningAdvantages.textContent = config.advantages
@@ -311,65 +269,21 @@ export function initSorting() {
     })
   })
 
-  runButton.addEventListener('click', startAnimation)
-
-  pauseButton.addEventListener('click', () => {
-    if (simulationState !== 'running') {
-      return
-    }
-
-    stopAnimation('paused')
-    renderArray()
-  })
-
-  stepButton.addEventListener('click', () => {
-    if (simulationState === 'running' || simulationState === 'completed') {
-      return
-    }
-
-    showNextStep()
-  })
-
-  resetButton.addEventListener('click', resetSimulation)
-
-  previousButton.addEventListener('click', () => {
-    if (
-      simulationState === 'running' ||
-      currentStepIndex === 0
-    ) {
-      return
-    }
-
-    if (simulationState === 'completed') {
-      simulationState = 'paused'
-    }
-
-    currentStepIndex--
-    renderArray()
-  })
-
-  speedControl.addEventListener('change', () => {
-    const newSpeed = Number(speedControl.value)
-
-    if (!Number.isFinite(newSpeed) || newSpeed <= 0) {
-      return
-    }
-
-    animationSpeed = newSpeed
-
-    if (simulationState === 'running') {
-      if (animationTimer !== null) {
-        clearInterval(animationTimer)
-      }
-
-      animationTimer = setInterval(() => {
-        showNextStep()
-      }, animationSpeed)
-    }
-  })
+  runButton.addEventListener('click', simulation.run)
+  pauseButton.addEventListener('click', simulation.pause)
+  stepButton.addEventListener('click', simulation.next)
+  previousButton.addEventListener('click', simulation.previous)
+  resetButton.addEventListener('click', simulation.reset)
 
   startButton.addEventListener('click', createNewArray)
   arraySize.addEventListener('change', createNewArray)
+
+  // Rời màn hình mô phỏng thì tạm dừng (giữ nguyên bước hiện tại).
+  document.addEventListener('algovision:viewchange', () => {
+    if (arrayBars.closest('[hidden]')) {
+      simulation.pause()
+    }
+  })
 
   selectAlgorithm(selectedAlgorithm)
 }
