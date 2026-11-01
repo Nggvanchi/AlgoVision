@@ -1179,3 +1179,68 @@ test('Searching chạy hết thì nút Run thành Chạy lại và chạy lại 
     cleanup()
   }
 })
+
+// --- Learning Panel của Searching ---
+
+function getSearchComplexity(document) {
+  return ['best', 'average', 'worst', 'space'].map(
+    (name) => document.querySelector(`#search-complexity-${name}`).textContent,
+  )
+}
+
+function getSearchPseudocodeLines(document) {
+  return [...document.querySelectorAll('#search-learning-pseudocode .pseudocode-line')].map(
+    (line) => line.textContent,
+  )
+}
+
+test('Learning Panel Searching hiển thị lý thuyết và Big-O của Linear Search', async () => {
+  const { linearSearchPseudocode } = await import('../src/algorithms/linearSearch.js')
+  const { window, document, cleanup } = await setupSearching()
+
+  try {
+    selectSearchAlgorithm(document, 'linear')
+
+    assert.equal(document.querySelector('#search-complexity-title').textContent, 'LINEAR SEARCH')
+    assert.deepEqual(getSearchComplexity(document), ['O(1)', 'O(n)', 'O(n)', 'O(1)'])
+    assert.deepEqual(getSearchPseudocodeLines(document), linearSearchPseudocode)
+    assert.match(document.querySelector('#search-learning-description').textContent, /xuất hiện đầu tiên/)
+    assert.match(document.querySelector('#search-learning-advantages').textContent, /không cần mảng đã sắp xếp/i)
+    assert.notEqual(document.querySelector('#search-learning-disadvantages').textContent, '')
+  } finally {
+    cleanup()
+  }
+})
+
+test('Learning Panel Searching hiển thị lý thuyết và Big-O của Binary Search', async () => {
+  const { binarySearchPseudocode } = await import('../src/algorithms/binarySearch.js')
+  const { window, document, cleanup } = await setupSearching()
+
+  try {
+    selectSearchAlgorithm(document, 'binary')
+
+    assert.equal(document.querySelector('#search-complexity-title').textContent, 'BINARY SEARCH')
+    assert.deepEqual(getSearchComplexity(document), ['O(1)', 'O(log n)', 'O(log n)', 'O(1)'])
+    assert.deepEqual(getSearchPseudocodeLines(document), binarySearchPseudocode)
+    assert.match(document.querySelector('#search-learning-description').textContent, /đã sắp xếp/)
+    // Có phần tử trùng thì Binary Search có thể trả về bất kỳ vị trí khớp nào.
+    assert.match(document.querySelector('#search-learning-disadvantages').textContent, /bất kỳ vị trí/)
+    assert.match(document.querySelector('#search-learning-advantages').textContent, /⌊log₂ n⌋ \+ 1/)
+  } finally {
+    cleanup()
+  }
+})
+
+test('đổi lại Linear Search thì Learning Panel quay về nội dung Linear', async () => {
+  const { window, document, cleanup } = await setupSearching()
+
+  try {
+    selectSearchAlgorithm(document, 'binary')
+    selectSearchAlgorithm(document, 'linear')
+
+    assert.equal(document.querySelector('#search-complexity-title').textContent, 'LINEAR SEARCH')
+    assert.equal(getSearchPseudocodeLines(document).length, 4)
+  } finally {
+    cleanup()
+  }
+})

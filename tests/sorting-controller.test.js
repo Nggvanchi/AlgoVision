@@ -343,3 +343,21 @@ test('đổi thuật toán Sorting vẽ lại mã giả và bỏ tô dòng cũ',
     assert.deepEqual(getActivePseudocodeLines(document), [])
   })
 })
+
+test('chọn thuật toán Sorting không ghi đè bảng Big-O của Searching', async () => {
+  await withSortingDom(({ document }) => {
+    const searchCells = () =>
+      [...document.querySelectorAll('#search-complexity-panel .complexity-card strong')].map(
+        (cell) => cell.textContent,
+      )
+    const before = searchCells()
+
+    for (const { key } of sortingAlgorithms) {
+      clickSortingCard(document, key)
+    }
+
+    assert.equal(before.length, 4)
+    assert.deepEqual(searchCells(), before)
+    assert.equal(document.querySelector('#search-complexity-title').textContent, 'LINEAR SEARCH')
+  })
+})

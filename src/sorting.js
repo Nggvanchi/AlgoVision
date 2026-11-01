@@ -27,8 +27,10 @@ export function initSorting(options = {}) {
   const simulationMessage = document.querySelector('#simulation-message')
 
   const algorithmCards = document.querySelectorAll('.algorithm-card[data-algorithm]')
-  const complexityTitle = document.querySelector('.complexity-heading span')
-  const complexityCards = document.querySelectorAll('.complexity-card strong')
+  // Searching cũng có bảng Big-O cùng class: chỉ tìm trong section của Sorting.
+  const sortingSection = arrayBars?.closest('.visualizer-section') ?? document
+  const complexityTitle = sortingSection.querySelector('.complexity-heading span')
+  const complexityCards = sortingSection.querySelectorAll('.complexity-card strong')
   
   const learningDescription = document.querySelector('#learning-description')
   const learningPseudocode = document.querySelector('#learning-pseudocode')
