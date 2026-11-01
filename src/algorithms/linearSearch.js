@@ -37,16 +37,6 @@ export function generateLinearSearchSteps(numbers, target) {
 
   steps.push(createStep({ message: `Bắt đầu tìm ${target}.` }))
 
-  if (numbers.length === 0) {
-    steps.push(createStep({
-      finished: true,
-      pseudocodeLine: LINE.NOT_FOUND,
-      message: `Không tìm thấy ${target} trong mảng.`,
-    }))
-
-    return steps
-  }
-
   for (let i = 0; i < numbers.length; i++) {
     const currentValue = numbers[i]
     comparisons++

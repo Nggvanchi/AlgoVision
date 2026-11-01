@@ -47,16 +47,6 @@ export function generateBinarySearchSteps(numbers, target) {
 
   steps.push(createStep({ message: `Bắt đầu tìm ${target}.` }))
 
-  if (numbers.length === 0) {
-    steps.push(createStep({
-      finished: true,
-      pseudocodeLine: LINE.NOT_FOUND,
-      message: `Không tìm thấy ${target} trong mảng.`,
-    }))
-
-    return steps
-  }
-
   while (left <= right) {
     mid = Math.floor((left + right) / 2)
 
