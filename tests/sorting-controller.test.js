@@ -3,6 +3,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { Window } from 'happy-dom'
 import { readFile } from 'node:fs/promises'
+import { createFakeScheduler } from './helpers/fake-scheduler.js'
 
 const templatePath = new URL(
   '../public/templates/app.html',
@@ -17,7 +18,7 @@ const sortingAlgorithms = [
   { key: 'insertion', name: 'Insertion Sort' },
 ]
 
-async function withSortingDom(run) {
+async function withSortingDom(run, options = {}) {
   const window = new Window()
   const { document } = window
 
@@ -32,10 +33,12 @@ async function withSortingDom(run) {
   try {
     const { initSorting } = await import('../src/sorting.js')
 
-    initSorting()
+    initSorting(options)
 
     await run({ document, window })
   } finally {
+    // Dừng mọi timer còn sống để test lỗi không làm treo tiến trình.
+    document.querySelector('#reset-sort')?.click()
     window.happyDOM.abort()
 
     if (previousDocument === undefined) {
@@ -112,4 +115,132 @@ test('thẻ thuật toán sắp xếp được chọn khớp với tiêu đề m
       assert.equal(visualizerTitle.textContent, name)
     }
   })
+})
+
+function getSortingControls(document) {
+  return {
+    run: document.querySelector('#run-sort'),
+    pause: document.querySelector('#pause-sort'),
+    next: document.querySelector('#step-sort'),
+    previous: document.querySelector('#previous-step'),
+    reset: document.querySelector('#reset-sort'),
+    speed: document.querySelector('#sort-speed'),
+    stepCount: document.querySelector('#step-count'),
+  }
+}
+
+function getTotalSteps(stepCount) {
+  return Number(stepCount.textContent.split('/')[1])
+}
+
+test('nút Run hiển thị tên thuật toán đang chọn khi chưa chạy', async () => {
+  await withSortingDom(({ document }) => {
+    const { run } = getSortingControls(document)
+
+    assert.equal(run.textContent, 'Chạy Bubble Sort')
+
+    clickSortingCard(document, 'insertion')
+    assert.equal(run.textContent, 'Chạy Insertion Sort')
+  })
+})
+
+test('Bước tiếp theo từ đầu chuyển sang tạm dừng: Run thành Tiếp tục', async () => {
+  await withSortingDom(({ document }) => {
+    const controls = getSortingControls(document)
+
+    controls.next.click()
+
+    assert.equal(controls.stepCount.textContent.startsWith('2 / '), true)
+    assert.equal(controls.run.textContent, 'Tiếp tục')
+    assert.equal(controls.run.disabled, false)
+    assert.equal(controls.previous.disabled, false)
+    assert.equal(controls.pause.disabled, true)
+  })
+})
+
+test('Run tự chạy theo scheduler và khóa đúng các nút khi đang chạy', async () => {
+  const scheduler = createFakeScheduler()
+
+  await withSortingDom(({ document }) => {
+    const controls = getSortingControls(document)
+
+    controls.run.click()
+
+    assert.equal(controls.run.disabled, true)
+    assert.equal(controls.next.disabled, true)
+    assert.equal(controls.previous.disabled, true)
+    assert.equal(controls.pause.disabled, false)
+    assert.equal(controls.reset.disabled, false)
+
+    scheduler.advance(650)
+    assert.equal(controls.stepCount.textContent.startsWith('2 / '), true)
+
+    controls.pause.click()
+    assert.equal(controls.run.textContent, 'Tiếp tục')
+    assert.equal(scheduler.pendingCount, 0)
+  }, { scheduler })
+})
+
+test('chạy hết các bước thì Run thành Chạy lại và chạy lại từ đầu', async () => {
+  const scheduler = createFakeScheduler()
+
+  await withSortingDom(({ document }) => {
+    const controls = getSortingControls(document)
+    const totalSteps = getTotalSteps(controls.stepCount)
+
+    controls.run.click()
+    scheduler.advance(650 * totalSteps)
+
+    assert.equal(controls.stepCount.textContent, `${totalSteps} / ${totalSteps}`)
+    assert.equal(controls.run.textContent, 'Chạy lại')
+    assert.equal(controls.run.disabled, false)
+    assert.equal(controls.next.disabled, true)
+    assert.equal(controls.previous.disabled, false)
+    assert.equal(scheduler.pendingCount, 0)
+
+    controls.run.click()
+    assert.equal(controls.stepCount.textContent, `1 / ${totalSteps}`)
+
+    scheduler.advance(650)
+    assert.equal(controls.stepCount.textContent, `2 / ${totalSteps}`)
+  }, { scheduler })
+})
+
+test('đổi tốc độ khi đang chạy không tạo lại timer, áp dụng từ bước sau', async () => {
+  const scheduler = createFakeScheduler()
+
+  await withSortingDom(({ document }) => {
+    const controls = getSortingControls(document)
+
+    controls.run.click()
+
+    controls.speed.value = '250'
+    controls.speed.dispatchEvent(
+      new document.defaultView.Event('change', { bubbles: true }),
+    )
+
+    scheduler.advance(650)
+    scheduler.advance(250)
+
+    assert.equal(controls.stepCount.textContent.startsWith('3 / '), true)
+    assert.deepEqual(scheduler.scheduledDelays.slice(0, 3), [650, 250, 250])
+    assert.equal(scheduler.cancelCount, 0)
+  }, { scheduler })
+})
+
+test('Đặt lại khi đang chạy dừng timer và quay về bước đầu', async () => {
+  const scheduler = createFakeScheduler()
+
+  await withSortingDom(({ document }) => {
+    const controls = getSortingControls(document)
+
+    controls.run.click()
+    scheduler.advance(650 * 3)
+    controls.reset.click()
+
+    assert.equal(controls.stepCount.textContent.startsWith('1 / '), true)
+    assert.equal(controls.run.textContent, 'Chạy Bubble Sort')
+    assert.equal(controls.previous.disabled, true)
+    assert.equal(scheduler.pendingCount, 0)
+  }, { scheduler })
 })
