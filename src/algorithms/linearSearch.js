@@ -65,12 +65,16 @@ export function generateLinearSearchSteps(numbers, target) {
       return steps
     }
 
+    const isLastElement = i === numbers.length - 1
+
     steps.push(createStep({
       index: i + 1,
       currentIndex: i,
       currentValue,
       pseudocodeLine: LINE.COMPARE,
-      message: `${currentValue} khác ${target}. Chuyển sang phần tử tiếp theo.`,
+      message: isLastElement
+        ? `${currentValue} khác ${target}. Đã xét hết mảng.`
+        : `${currentValue} khác ${target}. Chuyển sang phần tử tiếp theo.`,
     }))
   }
 

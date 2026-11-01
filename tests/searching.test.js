@@ -324,3 +324,36 @@ test('mảng rỗng: bước 0 không tô dòng nào, bước kết luận trỏ
     [10, 'return -1'],
   ])
 })
+
+// --- Message bước so sánh cuối khi phạm vi tìm kiếm đã hết ---
+
+test('Binary Search: bước so sánh làm phạm vi rỗng nêu left > right, không nói "Tiếp tục tìm"', () => {
+  // Nhánh A[mid] < target (tìm 95) và nhánh A[mid] > target (tìm 5).
+  for (const target of [95, 5]) {
+    const steps = generateBinarySearchSteps(oneToNine, target)
+    const lastComparison = steps.at(-2)
+
+    assert.ok(lastComparison.left > lastComparison.right)
+    assert.doesNotMatch(lastComparison.message, /Tiếp tục tìm/, `tìm ${target}`)
+    assert.match(lastComparison.message, /left > right/, `tìm ${target}`)
+    assert.match(lastComparison.message, /phạm vi tìm kiếm đã rỗng/, `tìm ${target}`)
+
+    // Các bước so sánh trước đó vẫn còn phạm vi nên giữ message cũ.
+    steps.slice(1, -2).forEach((step) => {
+      assert.match(step.message, /Tiếp tục tìm ở nửa bên (phải|trái)\.$/)
+    })
+  }
+})
+
+test('Linear Search: bước so sánh phần tử cuối nêu đã xét hết mảng, không nói "phần tử tiếp theo"', () => {
+  const steps = generateLinearSearchSteps(oneToNine, 95)
+  const lastComparison = steps.at(-2)
+
+  assert.equal(lastComparison.currentIndex, oneToNine.length - 1)
+  assert.doesNotMatch(lastComparison.message, /phần tử tiếp theo/)
+  assert.match(lastComparison.message, /xét hết mảng/)
+
+  steps.slice(1, -2).forEach((step) => {
+    assert.match(step.message, /Chuyển sang phần tử tiếp theo\.$/)
+  })
+})

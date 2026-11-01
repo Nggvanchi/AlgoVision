@@ -76,18 +76,26 @@ export function generateBinarySearchSteps(numbers, target) {
       return steps
     }
 
-    let message
+    let comparison
+    let nextHalf
     let pseudocodeLine
 
     if (currentValue < target) {
       left = mid + 1
       pseudocodeLine = LINE.MOVE_LEFT_BOUND
-      message = `${currentValue} nhỏ hơn ${target}. Tiếp tục tìm ở nửa bên phải.`
+      comparison = `${currentValue} nhỏ hơn ${target}.`
+      nextHalf = 'Tiếp tục tìm ở nửa bên phải.'
     } else {
       right = mid - 1
       pseudocodeLine = LINE.MOVE_RIGHT_BOUND
-      message = `${currentValue} lớn hơn ${target}. Tiếp tục tìm ở nửa bên trái.`
+      comparison = `${currentValue} lớn hơn ${target}.`
+      nextHalf = 'Tiếp tục tìm ở nửa bên trái.'
     }
+
+    // Sau lần cập nhật cuối, phạm vi có thể đã rỗng: không còn nửa nào để tìm tiếp.
+    const message = left > right
+      ? `${comparison} Sau khi cập nhật, left > right nên phạm vi tìm kiếm đã rỗng.`
+      : `${comparison} ${nextHalf}`
 
     steps.push(createStep({ currentIndex: mid, currentValue, pseudocodeLine, message }))
   }
