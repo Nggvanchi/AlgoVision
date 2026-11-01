@@ -41,21 +41,17 @@ export function generateLinearSearchSteps(numbers, target) {
       return steps
     }
 
-    if (i === numbers.length - 1) {
-      steps.push(createStep({
-        index: numbers.length,
-        finished: true,
-        message: `Không tìm thấy ${target} trong mảng.`,
-      }))
-
-      return steps
-    }
-
     steps.push(createStep({
       index: i + 1,
       message: `${currentValue} khác ${target}. Chuyển sang phần tử tiếp theo.`,
     }))
   }
+
+  steps.push(createStep({
+    index: numbers.length,
+    finished: true,
+    message: `Không tìm thấy ${target} trong mảng.`,
+  }))
 
   return steps
 }

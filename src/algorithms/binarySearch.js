@@ -55,17 +55,13 @@ export function generateBinarySearchSteps(numbers, target) {
       message = `${currentValue} lớn hơn ${target}. Tiếp tục tìm ở nửa bên trái.`
     }
 
-    if (left > right) {
-      steps.push(createStep({
-        finished: true,
-        message: `Không tìm thấy ${target} trong mảng.`,
-      }))
-
-      return steps
-    }
-
     steps.push(createStep({ message }))
   }
+
+  steps.push(createStep({
+    finished: true,
+    message: `Không tìm thấy ${target} trong mảng.`,
+  }))
 
   return steps
 }

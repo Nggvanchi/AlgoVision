@@ -214,6 +214,17 @@ test('Linear Search không tìm thấy mục tiêu', async () => {
       searchNextButton.click()
     }
 
+    // Sau lần so sánh cuối: đã đủ n phép so sánh nhưng chưa kết luận (bước riêng của dòng 2).
+    assert.equal(
+      document.querySelector('#search-comparisons').textContent,
+      String(numbers.length),
+    )
+    assert.equal(document.querySelector('#search-result').textContent, 'Chưa có kết quả.')
+    assert.equal(searchNextButton.disabled, false)
+
+    // Bước kết luận "không tìm thấy" (dòng 4) không tăng số phép so sánh.
+    searchNextButton.click()
+
     assert.equal(
       document.querySelector('#search-comparisons').textContent,
       String(numbers.length),
@@ -472,6 +483,14 @@ test('Linear Search không tìm thấy mục tiêu trong mảng một phần t�
 
     document.querySelector('#search-next').click()
 
+    // Sau lần so sánh duy nhất (dòng 2): chưa kết luận.
+    assert.equal(document.querySelector('#search-comparisons').textContent, '1')
+    assert.equal(document.querySelector('#search-result').textContent, 'Chưa có kết quả.')
+    assert.equal(document.querySelector('#search-next').disabled, false)
+
+    // Bước kết luận "không tìm thấy" không tăng số phép so sánh.
+    document.querySelector('#search-next').click()
+
     assert.equal(document.querySelector('#search-comparisons').textContent, '1')
     assert.equal(document.querySelector('#search-result').textContent, 'Không tìm thấy giá trị.')
     assert.equal(document.querySelector('#search-array .search-cell.is-found'), null)
@@ -523,6 +542,14 @@ test('Binary Search không tìm thấy mục tiêu trong mảng một phần t�
     searchTarget.value = '99'
     searchTarget.dispatchEvent(new window.Event('change', { bubbles: true }))
 
+    document.querySelector('#search-next').click()
+
+    // Sau lần so sánh duy nhất (dòng 7: left = mid + 1): chưa kết luận.
+    assert.equal(document.querySelector('#search-comparisons').textContent, '1')
+    assert.equal(document.querySelector('#search-result').textContent, 'Chưa có kết quả.')
+    assert.equal(document.querySelector('#search-next').disabled, false)
+
+    // Bước kết luận "không tìm thấy" không tăng số phép so sánh.
     document.querySelector('#search-next').click()
 
     assert.equal(document.querySelector('#search-comparisons').textContent, '1')
