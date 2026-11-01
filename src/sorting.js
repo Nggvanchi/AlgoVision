@@ -24,7 +24,7 @@ export function initSorting() {
   const stepCount = document.querySelector('#step-count')
   const simulationMessage = document.querySelector('#simulation-message')
 
-  const algorithmCards = document.querySelectorAll('.algorithm-card')
+  const algorithmCards = document.querySelectorAll('.algorithm-card[data-algorithm]')
   const complexityTitle = document.querySelector('.complexity-heading span')
   const complexityCards = document.querySelectorAll('.complexity-card strong')
   
@@ -277,9 +277,7 @@ export function initSorting() {
     selectedAlgorithm = algorithm
 
     algorithmCards.forEach((card) => {
-      card.addEventListener('click', () => {
-        selectAlgorithm(card.dataset.algorithm)
-      })
+      card.classList.toggle('selected', card.dataset.algorithm === algorithm)
     })
 
     const config = algorithmConfig[selectedAlgorithm]
