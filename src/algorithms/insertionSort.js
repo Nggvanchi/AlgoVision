@@ -1,3 +1,19 @@
+// Mã giả hiển thị trên Learning Panel; pseudocodeLine của mỗi bước đếm từ 1 theo mảng này.
+export const insertionSortPseudocode = [
+  'for i = 1 to n - 1',
+  '    key = A[i]',
+  '    j = i - 1',
+  '    while j >= 0 and A[j] > key',
+  '        A[j + 1] = A[j]',
+  '        j = j - 1',
+  '    A[j + 1] = key',
+]
+
+const LINE = {
+  COMPARE: 4,
+  SHIFT: 5,
+  INSERT: 7,
+}
 
 export function generateInsertionSortSteps(inputArray) {
   const array = [...inputArray]
@@ -16,6 +32,7 @@ export function generateInsertionSortSteps(inputArray) {
     swaps,
     shifts,
     key: null,
+    pseudocodeLine: null,
     message: 'Bắt đầu Insertion Sort. Phần tử đầu tiên được xem là đoạn đã sắp xếp.',
   })
 
@@ -36,6 +53,7 @@ export function generateInsertionSortSteps(inputArray) {
         swaps,
         shifts,
         key,
+        pseudocodeLine: LINE.COMPARE,
         message: `So sánh ${array[j]} với giá trị cần chèn ${key}.`,
       })
 
@@ -55,6 +73,7 @@ export function generateInsertionSortSteps(inputArray) {
         swaps,
         shifts,
         key,
+        pseudocodeLine: LINE.SHIFT,
         message: `Dời ${array[j]} sang phải để tạo chỗ chèn ${key}.`,
       })
 
@@ -72,6 +91,7 @@ export function generateInsertionSortSteps(inputArray) {
       swaps,
       shifts,
       key,
+      pseudocodeLine: LINE.INSERT,
       message: `Chèn ${key} vào vị trí ${j + 2}. Đoạn đầu tiên đã có thứ tự.`,
     })
   }
@@ -93,6 +113,7 @@ export function generateInsertionSortSteps(inputArray) {
     swaps,
     shifts,
     key: null,
+    pseudocodeLine: null,
     message: completionMessage,
     finished: true,
   })

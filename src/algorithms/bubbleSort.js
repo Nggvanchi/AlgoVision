@@ -1,3 +1,21 @@
+// Mã giả hiển thị trên Learning Panel; pseudocodeLine của mỗi bước đếm từ 1 theo mảng này.
+export const bubbleSortPseudocode = [
+  'for i = 0 to n - 2',
+  '    swapped = false',
+  '    for j = 0 to n - i - 2',
+  '        if A[j] > A[j + 1]',
+  '            swap(A[j], A[j + 1])',
+  '            swapped = true',
+  '    if swapped == false',
+  '        break',
+]
+
+const LINE = {
+  COMPARE: 4,
+  SWAP: 5,
+  CHECK_SWAPPED: 7,
+  BREAK: 8,
+}
 
 export function generateBubbleSortSteps(inputArray) {
   const array = [...inputArray]
@@ -17,6 +35,7 @@ export function generateBubbleSortSteps(inputArray) {
     sortedIndices: [],
     comparisons,
     swaps,
+    pseudocodeLine: null,
     message: 'Mảng ban đầu. Sẵn sàng bắt đầu Bubble Sort.',
   })
 
@@ -33,6 +52,7 @@ export function generateBubbleSortSteps(inputArray) {
         sortedIndices: getSortedTail(i),
         comparisons,
         swaps,
+        pseudocodeLine: LINE.COMPARE,
         message: `So sánh ${array[j]} và ${array[j + 1]}.`,
       })
 
@@ -51,6 +71,7 @@ export function generateBubbleSortSteps(inputArray) {
           sortedIndices: getSortedTail(i),
           comparisons,
           swaps,
+          pseudocodeLine: LINE.SWAP,
           message: `Đổi chỗ ${array[j + 1]} và ${array[j]} vì thứ tự chưa đúng.`,
         })
       }
@@ -63,7 +84,10 @@ export function generateBubbleSortSteps(inputArray) {
       sortedIndices: getSortedTail(i + 1),
       comparisons,
       swaps,
-      message: `Kết thúc lượt ${i + 1}. Phần tử lớn nhất của phần chưa sắp xếp đã về đúng vị trí.`,
+      pseudocodeLine: hasSwapped ? LINE.CHECK_SWAPPED : LINE.BREAK,
+      message: hasSwapped
+        ? `Kết thúc lượt ${i + 1}. Phần tử lớn nhất của phần chưa sắp xếp đã về đúng vị trí.`
+        : `Kết thúc lượt ${i + 1}. Không có lần đổi chỗ nào nên mảng đã có thứ tự, dừng sớm.`,
     })
 
     if (!hasSwapped) {
@@ -78,6 +102,7 @@ export function generateBubbleSortSteps(inputArray) {
     sortedIndices: array.map((_, index) => index),
     comparisons,
     swaps,
+    pseudocodeLine: null,
     message:
       array.length === 0
         ? 'Mảng rỗng, không có phần tử cần sắp xếp.'

@@ -257,3 +257,25 @@ test('ưu điểm Bubble Sort mô tả đúng cơ chế dừng sớm đã cài �
     assert.match(advantages, /O\(n\)/)
   })
 })
+
+test('mã giả trên Learning Panel lấy từ cùng nguồn với pseudocodeLine của generator', async () => {
+  const { bubbleSortPseudocode } = await import('../src/algorithms/bubbleSort.js')
+  const { selectionSortPseudocode } = await import('../src/algorithms/selectionSort.js')
+  const { insertionSortPseudocode } = await import('../src/algorithms/insertionSort.js')
+  const pseudocodeByAlgorithm = {
+    bubble: bubbleSortPseudocode,
+    selection: selectionSortPseudocode,
+    insertion: insertionSortPseudocode,
+  }
+
+  await withSortingDom(({ document }) => {
+    for (const { key } of sortingAlgorithms) {
+      clickSortingCard(document, key)
+
+      assert.equal(
+        document.querySelector('#learning-pseudocode').textContent,
+        pseudocodeByAlgorithm[key].join('\n'),
+      )
+    }
+  })
+})

@@ -1,7 +1,7 @@
 
-import { generateBubbleSortSteps } from './algorithms/bubbleSort.js'
-import { generateSelectionSortSteps } from './algorithms/selectionSort.js'
-import { generateInsertionSortSteps } from './algorithms/insertionSort.js'
+import { generateBubbleSortSteps, bubbleSortPseudocode } from './algorithms/bubbleSort.js'
+import { generateSelectionSortSteps, selectionSortPseudocode } from './algorithms/selectionSort.js'
+import { generateInsertionSortSteps, insertionSortPseudocode } from './algorithms/insertionSort.js'
 import { createSimulationController } from './simulation-controller.js'
 
 export function initSorting(options = {}) {
@@ -76,14 +76,7 @@ export function initSorting(options = {}) {
       space: 'O(1)',
       learningDescription:
         'So sánh hai phần tử liền kề và đổi chỗ nếu chúng sai thứ tự. Sau mỗi lượt, phần tử lớn nhất chưa được sắp xếp sẽ được đưa về cuối mảng.',
-      pseudocode: `for i = 0 to n - 2
-    swapped = false
-    for j = 0 to n - i - 2
-        if A[j] > A[j + 1]
-            swap(A[j], A[j + 1])
-            swapped = true
-    if swapped == false
-        break`,
+      pseudocode: bubbleSortPseudocode,
       advantages:
         'Dễ hiểu, dễ triển khai và ổn định vì chỉ đổi chỗ khi A[j] > A[j + 1]. Nhờ cờ swapped, thuật toán dừng sớm khi một lượt không có lần đổi chỗ nào, nên chỉ cần O(n) với mảng đã sắp xếp.',
       disadvantages:
@@ -100,13 +93,7 @@ export function initSorting(options = {}) {
       space: 'O(1)',
       learningDescription:
         'Chia mảng thành phần đã sắp xếp và chưa sắp xếp. Mỗi lượt tìm phần tử nhỏ nhất trong phần chưa sắp xếp rồi đổi chỗ với phần tử đầu tiên của phần đó.',
-      pseudocode: `for i = 0 to n - 2
-    minIndex = i
-    for j = i + 1 to n - 1
-        if A[j] < A[minIndex]
-            minIndex = j
-    if minIndex != i
-        swap(A[i], A[minIndex])`,
+      pseudocode: selectionSortPseudocode,
       advantages:
         'Dễ triển khai và thực hiện tối đa n - 1 lần đổi chỗ trong cách cài đặt thông thường.',
       disadvantages:
@@ -123,13 +110,7 @@ export function initSorting(options = {}) {
       space: 'O(1)',
       learningDescription:
         'Duy trì một đoạn đầu mảng đã được sắp xếp. Lấy phần tử tiếp theo, dịch các phần tử lớn hơn sang phải rồi chèn phần tử đó vào vị trí phù hợp.',
-      pseudocode: `for i = 1 to n - 1
-    key = A[i]
-    j = i - 1
-    while j >= 0 and A[j] > key
-        A[j + 1] = A[j]
-        j = j - 1
-    A[j + 1] = key`,
+      pseudocode: insertionSortPseudocode,
       advantages:
         'Hiệu quả với mảng nhỏ hoặc gần như đã được sắp xếp. Trong cách cài đặt thông thường, thuật toán có tính ổn định.',
       disadvantages:
@@ -247,7 +228,7 @@ export function initSorting(options = {}) {
     visualizerDescription.textContent = config.description
 
     learningDescription.textContent = config.learningDescription
-    learningPseudocode.textContent = config.pseudocode
+    learningPseudocode.textContent = config.pseudocode.join('\n')
     learningAdvantages.textContent = config.advantages
     learningDisadvantages.textContent = config.disadvantages
 
