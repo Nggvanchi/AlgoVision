@@ -214,6 +214,17 @@ test('Linear Search không tìm thấy mục tiêu', async () => {
       searchNextButton.click()
     }
 
+    // Sau lần so sánh cuối: đã đủ n phép so sánh nhưng chưa kết luận (bước riêng của dòng 2).
+    assert.equal(
+      document.querySelector('#search-comparisons').textContent,
+      String(numbers.length),
+    )
+    assert.equal(document.querySelector('#search-result').textContent, 'Chưa có kết quả.')
+    assert.equal(searchNextButton.disabled, false)
+
+    // Bước kết luận "không tìm thấy" (dòng 4) không tăng số phép so sánh.
+    searchNextButton.click()
+
     assert.equal(
       document.querySelector('#search-comparisons').textContent,
       String(numbers.length),
@@ -472,6 +483,14 @@ test('Linear Search không tìm thấy mục tiêu trong mảng một phần t�
 
     document.querySelector('#search-next').click()
 
+    // Sau lần so sánh duy nhất (dòng 2): chưa kết luận.
+    assert.equal(document.querySelector('#search-comparisons').textContent, '1')
+    assert.equal(document.querySelector('#search-result').textContent, 'Chưa có kết quả.')
+    assert.equal(document.querySelector('#search-next').disabled, false)
+
+    // Bước kết luận "không tìm thấy" không tăng số phép so sánh.
+    document.querySelector('#search-next').click()
+
     assert.equal(document.querySelector('#search-comparisons').textContent, '1')
     assert.equal(document.querySelector('#search-result').textContent, 'Không tìm thấy giá trị.')
     assert.equal(document.querySelector('#search-array .search-cell.is-found'), null)
@@ -523,6 +542,14 @@ test('Binary Search không tìm thấy mục tiêu trong mảng một phần t�
     searchTarget.value = '99'
     searchTarget.dispatchEvent(new window.Event('change', { bubbles: true }))
 
+    document.querySelector('#search-next').click()
+
+    // Sau lần so sánh duy nhất (dòng 7: left = mid + 1): chưa kết luận.
+    assert.equal(document.querySelector('#search-comparisons').textContent, '1')
+    assert.equal(document.querySelector('#search-result').textContent, 'Chưa có kết quả.')
+    assert.equal(document.querySelector('#search-next').disabled, false)
+
+    // Bước kết luận "không tìm thấy" không tăng số phép so sánh.
     document.querySelector('#search-next').click()
 
     assert.equal(document.querySelector('#search-comparisons').textContent, '1')
@@ -1148,6 +1175,195 @@ test('Searching chạy hết thì nút Run thành Chạy lại và chạy lại 
 
     scheduler.advance(600)
     assert.equal(comparisons.textContent, '1')
+  } finally {
+    cleanup()
+  }
+})
+
+// --- Learning Panel của Searching ---
+
+function getSearchComplexity(document) {
+  return ['best', 'average', 'worst', 'space'].map(
+    (name) => document.querySelector(`#search-complexity-${name}`).textContent,
+  )
+}
+
+function getSearchPseudocodeLines(document) {
+  return [...document.querySelectorAll('#search-learning-pseudocode .pseudocode-line')].map(
+    (line) => line.textContent,
+  )
+}
+
+test('Learning Panel Searching hiển thị lý thuyết và Big-O của Linear Search', async () => {
+  const { linearSearchPseudocode } = await import('../src/algorithms/linearSearch.js')
+  const { window, document, cleanup } = await setupSearching()
+
+  try {
+    selectSearchAlgorithm(document, 'linear')
+
+    assert.equal(document.querySelector('#search-complexity-title').textContent, 'LINEAR SEARCH')
+    assert.deepEqual(getSearchComplexity(document), ['O(1)', 'O(n)', 'O(n)', 'O(1)'])
+    assert.deepEqual(getSearchPseudocodeLines(document), linearSearchPseudocode)
+    assert.match(document.querySelector('#search-learning-description').textContent, /xuất hiện đầu tiên/)
+    assert.match(document.querySelector('#search-learning-advantages').textContent, /không cần mảng đã sắp xếp/i)
+    assert.notEqual(document.querySelector('#search-learning-disadvantages').textContent, '')
+  } finally {
+    cleanup()
+  }
+})
+
+test('Learning Panel Searching hiển thị lý thuyết và Big-O của Binary Search', async () => {
+  const { binarySearchPseudocode } = await import('../src/algorithms/binarySearch.js')
+  const { window, document, cleanup } = await setupSearching()
+
+  try {
+    selectSearchAlgorithm(document, 'binary')
+
+    assert.equal(document.querySelector('#search-complexity-title').textContent, 'BINARY SEARCH')
+    assert.deepEqual(getSearchComplexity(document), ['O(1)', 'O(log n)', 'O(log n)', 'O(1)'])
+    assert.deepEqual(getSearchPseudocodeLines(document), binarySearchPseudocode)
+    assert.match(document.querySelector('#search-learning-description').textContent, /đã sắp xếp/)
+    // Có phần tử trùng thì Binary Search có thể trả về bất kỳ vị trí khớp nào.
+    assert.match(document.querySelector('#search-learning-disadvantages').textContent, /bất kỳ vị trí/)
+    assert.match(document.querySelector('#search-learning-advantages').textContent, /⌊log₂ n⌋ \+ 1/)
+  } finally {
+    cleanup()
+  }
+})
+
+test('đổi lại Linear Search thì Learning Panel quay về nội dung Linear', async () => {
+  const { window, document, cleanup } = await setupSearching()
+
+  try {
+    selectSearchAlgorithm(document, 'binary')
+    selectSearchAlgorithm(document, 'linear')
+
+    assert.equal(document.querySelector('#search-complexity-title').textContent, 'LINEAR SEARCH')
+    assert.equal(getSearchPseudocodeLines(document).length, 4)
+  } finally {
+    cleanup()
+  }
+})
+
+// --- Searching: tô mã giả và hiển thị mục tiêu / giá trị đang xét từ dữ liệu bước ---
+
+function getSearchActiveLines(document) {
+  return [...document.querySelectorAll('#search-learning-pseudocode .pseudocode-line.is-active')].map(
+    (line) => ({ line: Number(line.dataset.line), ariaCurrent: line.getAttribute('aria-current') }),
+  )
+}
+
+function getSearchStepInfo(document) {
+  return {
+    target: document.querySelector('#search-target-value').textContent,
+    current: document.querySelector('#search-current-value').textContent,
+  }
+}
+
+function lockTarget(document, value) {
+  const input = document.querySelector('#search-target')
+
+  input.value = value
+  input.dispatchEvent(new document.defaultView.Event('change', { bubbles: true }))
+}
+
+const nineNumbers = [10, 20, 30, 40, 50, 60, 70, 80, 90]
+
+test('Linear Search tô dòng mã giả và hiển thị giá trị đang xét theo từng bước', async () => {
+  const { document, cleanup } = await setupSearching({ initialNumbers: nineNumbers })
+
+  try {
+    selectSearchAlgorithm(document, 'linear')
+    lockTarget(document, '95')
+
+    const next = document.querySelector('#search-next')
+
+    assert.deepEqual(getSearchActiveLines(document), [])
+    assert.deepEqual(getSearchStepInfo(document), { target: '—', current: '—' })
+
+    next.click()
+    assert.deepEqual(getSearchActiveLines(document), [{ line: 2, ariaCurrent: 'step' }])
+    assert.deepEqual(getSearchStepInfo(document), { target: '95', current: '10 (vị trí 1)' })
+
+    for (let i = 1; i < nineNumbers.length; i++) next.click()
+    assert.deepEqual(getSearchActiveLines(document), [{ line: 2, ariaCurrent: 'step' }])
+    assert.deepEqual(getSearchStepInfo(document), { target: '95', current: '90 (vị trí 9)' })
+
+    next.click()
+    assert.deepEqual(getSearchActiveLines(document), [{ line: 4, ariaCurrent: 'step' }])
+    assert.deepEqual(getSearchStepInfo(document), { target: '95', current: '—' })
+
+    document.querySelector('#search-previous').click()
+    assert.deepEqual(getSearchActiveLines(document), [{ line: 2, ariaCurrent: 'step' }])
+  } finally {
+    cleanup()
+  }
+})
+
+test('Binary Search [42] tìm 99 tô dòng 7 rồi dòng 10', async () => {
+  const { document, cleanup } = await setupSearching({ initialNumbers: [42] })
+
+  try {
+    selectSearchAlgorithm(document, 'binary')
+    lockTarget(document, '99')
+
+    const next = document.querySelector('#search-next')
+
+    next.click()
+    assert.deepEqual(getSearchActiveLines(document), [{ line: 7, ariaCurrent: 'step' }])
+    assert.deepEqual(getSearchStepInfo(document), { target: '99', current: '42 (vị trí 1)' })
+
+    next.click()
+    assert.deepEqual(getSearchActiveLines(document), [{ line: 10, ariaCurrent: 'step' }])
+  } finally {
+    cleanup()
+  }
+})
+
+test('gõ mục tiêu mới hoặc Đặt lại thì bỏ tô mã giả và xóa mục tiêu đã chốt', async () => {
+  const { document, cleanup } = await setupSearching({ initialNumbers: nineNumbers })
+
+  try {
+    selectSearchAlgorithm(document, 'linear')
+    lockTarget(document, '30')
+    document.querySelector('#search-next').click()
+    assert.equal(getSearchActiveLines(document).length, 1)
+
+    const input = document.querySelector('#search-target')
+    input.value = '3'
+    input.dispatchEvent(new document.defaultView.Event('input', { bubbles: true }))
+
+    assert.deepEqual(getSearchActiveLines(document), [])
+    assert.deepEqual(getSearchStepInfo(document), { target: '—', current: '—' })
+
+    lockTarget(document, '30')
+    document.querySelector('#search-next').click()
+    document.querySelector('#search-reset').click()
+
+    assert.deepEqual(getSearchActiveLines(document), [])
+    assert.deepEqual(getSearchStepInfo(document), { target: '—', current: '—' })
+  } finally {
+    cleanup()
+  }
+})
+
+test('Searching chạy tự động thì dòng được tô đi theo từng tick', async () => {
+  const scheduler = createFakeScheduler()
+  const { document, cleanup } = await setupSearching({ initialNumbers: nineNumbers, scheduler })
+
+  try {
+    selectSearchAlgorithm(document, 'binary')
+    lockTarget(document, '20')
+    document.querySelector('#search-run').click()
+
+    const speed = Number(document.querySelector('#search-speed').value)
+
+    scheduler.advance(speed)
+    assert.deepEqual(getSearchActiveLines(document), [{ line: 9, ariaCurrent: 'step' }])
+
+    scheduler.advance(speed)
+    assert.deepEqual(getSearchActiveLines(document), [{ line: 5, ariaCurrent: 'step' }])
+    assert.deepEqual(getSearchStepInfo(document), { target: '20', current: '20 (vị trí 2)' })
   } finally {
     cleanup()
   }

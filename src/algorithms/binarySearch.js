@@ -1,5 +1,27 @@
 // Sinh các bước Binary Search trên mảng đã sắp xếp tăng dần.
-// Target được chốt một lần khi sinh bước; mỗi bước sau bước đầu là một phép so sánh.
+// Target được chốt một lần khi sinh bước; mỗi bước sau bước đầu là một phép so sánh,
+// riêng bước kết luận "không tìm thấy" thì không.
+// Mã giả hiển thị trên Learning Panel; pseudocodeLine của mỗi bước đếm từ 1 theo mảng này.
+export const binarySearchPseudocode = [
+  'left = 0, right = n - 1',
+  'while left <= right',
+  '    mid = floor((left + right) / 2)',
+  '    if A[mid] == target',
+  '        return mid',
+  '    else if A[mid] < target',
+  '        left = mid + 1',
+  '    else',
+  '        right = mid - 1',
+  'return -1',
+]
+
+const LINE = {
+  FOUND: 5,
+  MOVE_LEFT_BOUND: 7,
+  MOVE_RIGHT_BOUND: 9,
+  NOT_FOUND: 10,
+}
+
 export function generateBinarySearchSteps(numbers, target) {
   const steps = []
   let comparisons = 0
@@ -15,19 +37,15 @@ export function generateBinarySearchSteps(numbers, target) {
     comparisons,
     foundIndex: -1,
     finished: false,
+    target,
+    // Phần tử vừa so sánh; null ở bước đầu và bước kết luận "không tìm thấy".
+    currentIndex: null,
+    currentValue: null,
+    pseudocodeLine: null,
     ...fields,
   })
 
   steps.push(createStep({ message: `Bắt đầu tìm ${target}.` }))
-
-  if (numbers.length === 0) {
-    steps.push(createStep({
-      finished: true,
-      message: `Không tìm thấy ${target} trong mảng.`,
-    }))
-
-    return steps
-  }
 
   while (left <= right) {
     mid = Math.floor((left + right) / 2)
@@ -37,35 +55,46 @@ export function generateBinarySearchSteps(numbers, target) {
 
     if (currentValue === target) {
       steps.push(createStep({
+        currentIndex: mid,
+        currentValue,
         foundIndex: mid,
         finished: true,
+        pseudocodeLine: LINE.FOUND,
         message: `Đã tìm thấy ${target} tại vị trí ${mid + 1}.`,
       }))
 
       return steps
     }
 
-    let message
+    let comparison
+    let nextHalf
+    let pseudocodeLine
 
     if (currentValue < target) {
       left = mid + 1
-      message = `${currentValue} nhỏ hơn ${target}. Tiếp tục tìm ở nửa bên phải.`
+      pseudocodeLine = LINE.MOVE_LEFT_BOUND
+      comparison = `${currentValue} nhỏ hơn ${target}.`
+      nextHalf = 'Tiếp tục tìm ở nửa bên phải.'
     } else {
       right = mid - 1
-      message = `${currentValue} lớn hơn ${target}. Tiếp tục tìm ở nửa bên trái.`
+      pseudocodeLine = LINE.MOVE_RIGHT_BOUND
+      comparison = `${currentValue} lớn hơn ${target}.`
+      nextHalf = 'Tiếp tục tìm ở nửa bên trái.'
     }
 
-    if (left > right) {
-      steps.push(createStep({
-        finished: true,
-        message: `Không tìm thấy ${target} trong mảng.`,
-      }))
+    // Sau lần cập nhật cuối, phạm vi có thể đã rỗng: không còn nửa nào để tìm tiếp.
+    const message = left > right
+      ? `${comparison} Sau khi cập nhật, left > right nên phạm vi tìm kiếm đã rỗng.`
+      : `${comparison} ${nextHalf}`
 
-      return steps
-    }
-
-    steps.push(createStep({ message }))
+    steps.push(createStep({ currentIndex: mid, currentValue, pseudocodeLine, message }))
   }
+
+  steps.push(createStep({
+    finished: true,
+    pseudocodeLine: LINE.NOT_FOUND,
+    message: `Không tìm thấy ${target} trong mảng.`,
+  }))
 
   return steps
 }

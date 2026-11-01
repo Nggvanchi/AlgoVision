@@ -1,8 +1,9 @@
 
-import { generateBubbleSortSteps } from './algorithms/bubbleSort.js'
-import { generateSelectionSortSteps } from './algorithms/selectionSort.js'
-import { generateInsertionSortSteps } from './algorithms/insertionSort.js'
+import { generateBubbleSortSteps, bubbleSortPseudocode } from './algorithms/bubbleSort.js'
+import { generateSelectionSortSteps, selectionSortPseudocode } from './algorithms/selectionSort.js'
+import { generateInsertionSortSteps, insertionSortPseudocode } from './algorithms/insertionSort.js'
 import { createSimulationController } from './simulation-controller.js'
+import { renderPseudocode, highlightPseudocodeLine } from './pseudocode-view.js'
 
 export function initSorting(options = {}) {
   const arrayBars = document.querySelector('#array-bars')
@@ -26,8 +27,10 @@ export function initSorting(options = {}) {
   const simulationMessage = document.querySelector('#simulation-message')
 
   const algorithmCards = document.querySelectorAll('.algorithm-card[data-algorithm]')
-  const complexityTitle = document.querySelector('.complexity-heading span')
-  const complexityCards = document.querySelectorAll('.complexity-card strong')
+  // Searching cũng có bảng Big-O cùng class: chỉ tìm trong section của Sorting.
+  const sortingSection = arrayBars?.closest('.visualizer-section') ?? document
+  const complexityTitle = sortingSection.querySelector('.complexity-heading span')
+  const complexityCards = sortingSection.querySelectorAll('.complexity-card strong')
   
   const learningDescription = document.querySelector('#learning-description')
   const learningPseudocode = document.querySelector('#learning-pseudocode')
@@ -76,16 +79,9 @@ export function initSorting(options = {}) {
       space: 'O(1)',
       learningDescription:
         'So sánh hai phần tử liền kề và đổi chỗ nếu chúng sai thứ tự. Sau mỗi lượt, phần tử lớn nhất chưa được sắp xếp sẽ được đưa về cuối mảng.',
-      pseudocode: `for i = 0 to n - 2
-    swapped = false
-    for j = 0 to n - i - 2
-        if A[j] > A[j + 1]
-            swap(A[j], A[j + 1])
-            swapped = true
-    if swapped == false
-        break`,
+      pseudocode: bubbleSortPseudocode,
       advantages:
-        'Dễ hiểu, dễ triển khai. Nếu có cơ chế dừng sớm, thuật toán đạt O(n) khi mảng đã được sắp xếp.',
+        'Dễ hiểu, dễ triển khai và ổn định vì chỉ đổi chỗ khi A[j] > A[j + 1]. Nhờ cờ swapped, thuật toán dừng sớm khi một lượt không có lần đổi chỗ nào, nên chỉ cần O(n) với mảng đã sắp xếp.',
       disadvantages:
         'Có thể cần nhiều phép so sánh và đổi chỗ khi dữ liệu lớn. Độ phức tạp trung bình và xấu nhất là O(n²).',
     },
@@ -100,13 +96,7 @@ export function initSorting(options = {}) {
       space: 'O(1)',
       learningDescription:
         'Chia mảng thành phần đã sắp xếp và chưa sắp xếp. Mỗi lượt tìm phần tử nhỏ nhất trong phần chưa sắp xếp rồi đổi chỗ với phần tử đầu tiên của phần đó.',
-      pseudocode: `for i = 0 to n - 2
-    minIndex = i
-    for j = i + 1 to n - 1
-        if A[j] < A[minIndex]
-            minIndex = j
-    if minIndex != i
-        swap(A[i], A[minIndex])`,
+      pseudocode: selectionSortPseudocode,
       advantages:
         'Dễ triển khai và thực hiện tối đa n - 1 lần đổi chỗ trong cách cài đặt thông thường.',
       disadvantages:
@@ -123,13 +113,7 @@ export function initSorting(options = {}) {
       space: 'O(1)',
       learningDescription:
         'Duy trì một đoạn đầu mảng đã được sắp xếp. Lấy phần tử tiếp theo, dịch các phần tử lớn hơn sang phải rồi chèn phần tử đó vào vị trí phù hợp.',
-      pseudocode: `for i = 1 to n - 1
-    key = A[i]
-    j = i - 1
-    while j >= 0 and A[j] > key
-        A[j + 1] = A[j]
-        j = j - 1
-    A[j + 1] = key`,
+      pseudocode: insertionSortPseudocode,
       advantages:
         'Hiệu quả với mảng nhỏ hoặc gần như đã được sắp xếp. Trong cách cài đặt thông thường, thuật toán có tính ổn định.',
       disadvantages:
@@ -183,15 +167,20 @@ export function initSorting(options = {}) {
       bar.style.height = `${number}%`
       bar.dataset.index = index
 
-      if (currentStep.comparing.includes(index)) {
+      const isComparing = currentStep.comparing.includes(index)
+      const isSwapped = currentStep.swapped.includes(index)
+
+      if (isComparing) {
         bar.classList.add('is-comparing')
       }
 
-      if (currentStep.swapped.includes(index)) {
+      if (isSwapped) {
         bar.classList.add('is-swapped')
       }
 
-      if (currentStep.sortedIndices.includes(index)) {
+      // Trạng thái hành động ưu tiên hơn trạng thái nền: Insertion Sort so sánh A[j]
+      // ngay trong vùng đã sắp xếp, nếu thêm is-sorted thì màu xanh che mất màu so sánh.
+      if (currentStep.sortedIndices.includes(index) && !isComparing && !isSwapped) {
         bar.classList.add('is-sorted')
       }
 
@@ -209,6 +198,7 @@ export function initSorting(options = {}) {
     }
 
     renderBars(step)
+    highlightPseudocodeLine(learningPseudocode, step.pseudocodeLine)
 
     comparisonCount.textContent = step.comparisons
     swapCount.textContent = step.swaps
@@ -247,7 +237,7 @@ export function initSorting(options = {}) {
     visualizerDescription.textContent = config.description
 
     learningDescription.textContent = config.learningDescription
-    learningPseudocode.textContent = config.pseudocode
+    renderPseudocode(learningPseudocode, config.pseudocode)
     learningAdvantages.textContent = config.advantages
     learningDisadvantages.textContent = config.disadvantages
 

@@ -2,9 +2,9 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import { generateBubbleSortSteps } from '../src/algorithms/bubbleSort.js'
-import { generateSelectionSortSteps } from '../src/algorithms/selectionSort.js'
-import { generateInsertionSortSteps } from '../src/algorithms/insertionSort.js'
+import { generateBubbleSortSteps, bubbleSortPseudocode } from '../src/algorithms/bubbleSort.js'
+import { generateSelectionSortSteps, selectionSortPseudocode } from '../src/algorithms/selectionSort.js'
+import { generateInsertionSortSteps, insertionSortPseudocode } from '../src/algorithms/insertionSort.js'
 
 const algorithms = [
   {
@@ -227,3 +227,180 @@ for (const algorithm of [
     )
   })
 }
+// Vùng đã sắp xếp chỉ được mở rộng: mất chỉ số ở bước giữa làm cột xanh nhấp nháy trên giao diện.
+const sortedRegionInputs = [
+  [50, 20, 40, 10, 30],
+  [30, 20, 10],
+  [5, 2, 8, 1, 3],
+  [4, 2, 4, 1, 2],
+  [1, 2, 3, 4, 5],
+]
+
+for (const algorithm of algorithms) {
+  test(`${algorithm.name}: vùng đã sắp xếp của mỗi bước chứa vùng của bước trước`, () => {
+    for (const input of sortedRegionInputs) {
+      const steps = algorithm.generateSteps(input)
+
+      for (let index = 1; index < steps.length; index++) {
+        const current = new Set(steps[index].sortedIndices)
+        const lost = steps[index - 1].sortedIndices.filter((sortedIndex) => !current.has(sortedIndex))
+
+        assert.deepEqual(lost, [], `[${input}] bước ${index}: ${steps[index].message}`)
+      }
+    }
+  })
+}
+
+// Bước so sánh nhận biết bằng cấu trúc dữ liệu: bộ đếm comparisons tăng so với bước trước.
+function getComparisonSteps(steps) {
+  return steps.filter((step, index) => index > 0 && step.comparisons > steps[index - 1].comparisons)
+}
+
+test('Insertion Sort: bước so sánh chỉ tô A[j] và lưu key trong dữ liệu bước', () => {
+  const steps = generateInsertionSortSteps([30, 20, 10])
+
+  // Sau lần dời đầu tiên của i = 2, cột j + 1 chứa bản sao 30 chứ không phải key 10.
+  assert.deepEqual(
+    getComparisonSteps(steps).map(({ comparing, key }) => ({ comparing, key })),
+    [
+      { comparing: [0], key: 20 },
+      { comparing: [1], key: 10 },
+      { comparing: [0], key: 10 },
+    ],
+  )
+})
+
+test('Insertion Sort: key là null ở bước đầu và bước hoàn thành', () => {
+  const steps = generateInsertionSortSteps([30, 20, 10])
+
+  assert.equal(steps[0].key, null)
+  assert.equal(steps.at(-1).key, null)
+})
+
+// --- Ánh xạ bước → dòng mã giả ---
+// Loại bước được nhận biết bằng bộ đếm (comparisons/swaps/shifts) chứ không đọc message.
+
+const pseudocodeCases = [
+  { name: 'Bubble Sort', generateSteps: generateBubbleSortSteps, lines: bubbleSortPseudocode },
+  { name: 'Selection Sort', generateSteps: generateSelectionSortSteps, lines: selectionSortPseudocode },
+  { name: 'Insertion Sort', generateSteps: generateInsertionSortSteps, lines: insertionSortPseudocode },
+]
+
+const pseudocodeInputs = [[], [7], [50, 20, 40, 10, 30], [30, 20, 10], [10, 20, 30], [4, 2, 4, 1, 2]]
+
+function getLineText(lines, step) {
+  return lines[step.pseudocodeLine - 1]?.trim()
+}
+
+function increased(steps, index, field) {
+  return index > 0 && (steps[index][field] ?? 0) > (steps[index - 1][field] ?? 0)
+}
+
+for (const { name, generateSteps, lines } of pseudocodeCases) {
+  test(`${name}: pseudocodeLine là null ở bước đầu, bước cuối và nằm trong mã giả ở các bước còn lại`, () => {
+    for (const input of pseudocodeInputs) {
+      const steps = generateSteps(input)
+
+      assert.equal(steps[0].pseudocodeLine, null)
+      assert.equal(steps.at(-1).pseudocodeLine, null)
+
+      steps.slice(1, -1).forEach((step) => {
+        assert.ok(
+          Number.isInteger(step.pseudocodeLine) &&
+            step.pseudocodeLine >= 1 &&
+            step.pseudocodeLine <= lines.length,
+          `[${input}] ${step.message}: ${step.pseudocodeLine}`,
+        )
+      })
+    }
+  })
+}
+
+test('Bubble Sort: bước so sánh, đổi chỗ, kết thúc lượt trỏ đúng dòng mã giả', () => {
+  for (const input of pseudocodeInputs) {
+    const steps = generateBubbleSortSteps(input)
+
+    steps.slice(1, -1).forEach((step, offset) => {
+      const index = offset + 1
+      const text = getLineText(bubbleSortPseudocode, step)
+
+      if (increased(steps, index, 'comparisons')) {
+        assert.equal(text, 'if A[j] > A[j + 1]')
+      } else if (increased(steps, index, 'swaps')) {
+        assert.equal(text, 'swap(A[j], A[j + 1])')
+      } else {
+        assert.ok(['if swapped == false', 'break'].includes(text), text)
+      }
+    })
+  }
+})
+
+test('Bubble Sort: lượt không đổi chỗ trỏ dòng break và báo dừng sớm', () => {
+  const steps = generateBubbleSortSteps([10, 20, 30, 40])
+  const breakSteps = steps.filter((step) => getLineText(bubbleSortPseudocode, step) === 'break')
+
+  assert.equal(breakSteps.length, 1)
+  assert.equal(breakSteps[0].comparisons, 3)
+  assert.match(breakSteps[0].message, /dừng sớm/)
+
+  // Lượt có đổi chỗ chỉ dừng ở dòng kiểm tra cờ, không trỏ break.
+  const swappedPassEnd = generateBubbleSortSteps([20, 10]).find(
+    (step) => getLineText(bubbleSortPseudocode, step) === 'if swapped == false',
+  )
+
+  assert.ok(swappedPassEnd)
+  assert.doesNotMatch(swappedPassEnd.message, /dừng sớm/)
+})
+
+test('Selection Sort: bước so sánh, cập nhật min, đổi chỗ trỏ đúng dòng mã giả', () => {
+  for (const input of pseudocodeInputs) {
+    const steps = generateSelectionSortSteps(input)
+
+    steps.slice(1, -1).forEach((step, offset) => {
+      const index = offset + 1
+      const text = getLineText(selectionSortPseudocode, step)
+
+      if (increased(steps, index, 'comparisons')) {
+        assert.equal(text, 'if A[j] < A[minIndex]')
+      } else if (increased(steps, index, 'swaps')) {
+        assert.equal(text, 'swap(A[i], A[minIndex])')
+      } else if (step.comparing.length > 0) {
+        assert.equal(text, 'minIndex = j')
+      } else {
+        // Bước chốt vị trí i: dòng 6 nếu không đổi chỗ, dòng 7 nếu bước trước vừa đổi chỗ.
+        const previousWasSwap = increased(steps, index - 1, 'swaps')
+        assert.equal(text, previousWasSwap ? 'swap(A[i], A[minIndex])' : 'if minIndex != i')
+      }
+    })
+  }
+})
+
+test('Insertion Sort: bước so sánh, dời, chèn trỏ đúng dòng mã giả', () => {
+  for (const input of pseudocodeInputs) {
+    const steps = generateInsertionSortSteps(input)
+
+    steps.slice(1, -1).forEach((step, offset) => {
+      const index = offset + 1
+      const text = getLineText(insertionSortPseudocode, step)
+
+      if (increased(steps, index, 'comparisons')) {
+        assert.equal(text, 'while j >= 0 and A[j] > key')
+      } else if (increased(steps, index, 'shifts')) {
+        assert.equal(text, 'A[j + 1] = A[j]')
+      } else {
+        assert.equal(text, 'A[j + 1] = key')
+      }
+    })
+  }
+})
+
+test('Bubble Sort: bước break đánh dấu toàn mảng đã sắp xếp', () => {
+  // Một lượt không đổi chỗ chứng minh mọi cặp liền kề đã đúng thứ tự.
+  for (const input of [[10, 20, 30, 40, 50], [50, 20, 40, 10, 30]]) {
+    const breakStep = generateBubbleSortSteps(input).find(
+      (step) => getLineText(bubbleSortPseudocode, step) === 'break',
+    )
+
+    assert.deepEqual(breakStep.sortedIndices, [0, 1, 2, 3, 4], `[${input}]`)
+  }
+})
