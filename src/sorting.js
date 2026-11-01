@@ -85,7 +85,7 @@ export function initSorting(options = {}) {
     if swapped == false
         break`,
       advantages:
-        'Dễ hiểu, dễ triển khai. Nếu có cơ chế dừng sớm, thuật toán đạt O(n) khi mảng đã được sắp xếp.',
+        'Dễ hiểu, dễ triển khai và ổn định vì chỉ đổi chỗ khi A[j] > A[j + 1]. Nhờ cờ swapped, thuật toán dừng sớm khi một lượt không có lần đổi chỗ nào, nên chỉ cần O(n) với mảng đã sắp xếp.',
       disadvantages:
         'Có thể cần nhiều phép so sánh và đổi chỗ khi dữ liệu lớn. Độ phức tạp trung bình và xấu nhất là O(n²).',
     },

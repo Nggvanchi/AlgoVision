@@ -244,3 +244,16 @@ test('Đặt lại khi đang chạy dừng timer và quay về bước đầu', 
     assert.equal(scheduler.pendingCount, 0)
   }, { scheduler })
 })
+
+test('ưu điểm Bubble Sort mô tả đúng cơ chế dừng sớm đã cài đặt', async () => {
+  await withSortingDom(({ document }) => {
+    clickSortingCard(document, 'bubble')
+
+    const advantages = document.querySelector('#learning-advantages').textContent
+
+    // Code có cờ hasSwapped nên không được viết như một điều kiện giả định.
+    assert.doesNotMatch(advantages, /Nếu có cơ chế dừng sớm/)
+    assert.match(advantages, /swapped/)
+    assert.match(advantages, /O\(n\)/)
+  })
+})
