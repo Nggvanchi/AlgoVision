@@ -16,9 +16,17 @@ pnpm dev        # chạy thử trên trình duyệt
 
 - `index.html` chỉ có `#app`; `src/main.js` fetch `public/templates/app.html` rồi gọi các hàm `init*`.
 - Module UI: `navigation.js`, `sorting.js`, `searching.js`, `array.js`, `stack.js`, `queue.js`, `linked-list.js`.
+- `src/simulation-controller.js`: bộ điều khiển mô phỏng dùng chung cho Sorting và Searching
+  (state `idle | running | paused | completed`, một timer duy nhất, scheduler inject được). Chi tiết API ở mục Giai đoạn 5.
+  `initSorting(options)` / `initSearching(options)` nhận `options.scheduler` và truyền vào controller.
 - `src/algorithms/*Sort.js`: hàm thuần sinh mảng bước `{ array, comparing, swapped, sortedIndices, comparisons, swaps, shifts?, message, finished? }`.
+- `src/algorithms/linearSearch.js`, `binarySearch.js`: hàm thuần `(numbers, target)` sinh mảng bước
+  `{ index, mid, left, right, comparisons, foundIndex, finished, message }`; target được chốt trong `message`.
+- Sự kiện `algovision:viewchange` (`CustomEvent` trên `document`, `detail.page`): `navigation.js` phát mỗi khi đổi trang
+  hoặc mở/đóng màn hình chi tiết; Sorting/Searching lắng nghe và tự `pause()` khi visualizer của mình bị ẩn.
 - `src/structures/*`: logic thuần của cấu trúc dữ liệu.
 - `tests/*.test.js`: Node Test Runner + happy-dom, nạp template thật từ `public/templates/app.html`.
+- `tests/helpers/fake-scheduler.js`: scheduler thời gian ảo cho test timer (không bị `node --test` quét).
 
 ## Quy tắc làm việc (bắt buộc)
 
