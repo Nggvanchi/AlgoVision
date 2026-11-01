@@ -924,7 +924,7 @@ function clickNextUntilDisabled(document, maxClicks = 50) {
 const SORTED_NUMBERS = [10, 20, 30, 40, 50, 60, 70, 80, 90]
 
 for (const algorithm of ['binary', 'linear']) {
-  test(`${algorithm}: gõ mục tiêu mới giữa chừng không làm sai lần tìm đang chạy`, async () => {
+  test(`${algorithm}: mục tiêu được chốt khi sinh bước, đổi giá trị ô nhập không kèm sự kiện không ảnh hưởng`, async () => {
     const { document, cleanup } = await setupSearching({
       initialNumbers: SORTED_NUMBERS,
     })
@@ -935,8 +935,8 @@ for (const algorithm of ['binary', 'linear']) {
 
       document.querySelector('#search-next').click()
 
-      // Người dùng gõ 20 nhưng chưa rời ô nhập (chưa có sự kiện change).
-      setSearchTarget(document, '20', 'input')
+      // Giá trị đổi mà không có sự kiện nào (vd: script/autofill).
+      document.querySelector('#search-target').value = '20'
       clickNextUntilDisabled(document)
 
       const expectedComparisons = algorithm === 'binary' ? '3' : '8'
@@ -953,6 +953,85 @@ for (const algorithm of ['binary', 'linear']) {
         document.querySelector('#search-comparisons').textContent,
         expectedComparisons,
       )
+    } finally {
+      cleanup()
+    }
+  })
+
+  test(`${algorithm}: gõ mục tiêu mới khi đang tạm dừng đưa mô phỏng về ban đầu`, async () => {
+    const { document, cleanup } = await setupSearching({
+      initialNumbers: SORTED_NUMBERS,
+    })
+
+    try {
+      selectSearchAlgorithm(document, algorithm)
+      setSearchTarget(document, '80')
+
+      document.querySelector('#search-next').click()
+      assert.equal(document.querySelector('#search-comparisons').textContent, '1')
+      assert.equal(document.querySelector('#search-previous').disabled, false)
+
+      // Chỉ phát input (người dùng đang gõ, chưa rời ô nhập).
+      setSearchTarget(document, '20', 'input')
+
+      assert.equal(document.querySelector('#search-comparisons').textContent, '0')
+      assert.equal(document.querySelector('#search-result').textContent, 'Chưa có kết quả.')
+      assert.equal(
+        document.querySelector('#search-message').textContent,
+        'Nhập giá trị cần tìm, sau đó bắt đầu mô phỏng.',
+      )
+      assert.equal(document.querySelector('#search-previous').disabled, true)
+      assert.equal(document.querySelector('#search-next').disabled, false)
+      assert.equal(document.querySelector('#search-run').textContent.trim(), 'Chạy tìm kiếm')
+    } finally {
+      cleanup()
+    }
+  })
+
+  test(`${algorithm}: gõ mục tiêu mới khi đang chạy dừng timer và về ban đầu`, async () => {
+    const scheduler = createFakeScheduler()
+    const { document, cleanup } = await setupSearching({
+      initialNumbers: SORTED_NUMBERS,
+      scheduler,
+    })
+
+    try {
+      selectSearchAlgorithm(document, algorithm)
+      setSearchTarget(document, '80')
+
+      document.querySelector('#search-run').click()
+      scheduler.advance(600)
+      assert.equal(document.querySelector('#search-comparisons').textContent, '1')
+
+      setSearchTarget(document, '20', 'input')
+
+      assert.equal(scheduler.pendingCount, 0)
+      assert.equal(document.querySelector('#search-comparisons').textContent, '0')
+      assert.equal(document.querySelector('#search-pause').disabled, true)
+      assert.equal(document.querySelector('#search-run').textContent.trim(), 'Chạy tìm kiếm')
+    } finally {
+      cleanup()
+    }
+  })
+
+  test(`${algorithm}: sau khi gõ mục tiêu mới, bộ đếm chỉ tính cho mục tiêu mới`, async () => {
+    const { document, cleanup } = await setupSearching({
+      initialNumbers: SORTED_NUMBERS,
+    })
+
+    try {
+      selectSearchAlgorithm(document, algorithm)
+      setSearchTarget(document, '80')
+
+      document.querySelector('#search-next').click()
+      setSearchTarget(document, '20', 'input')
+      clickNextUntilDisabled(document)
+
+      assert.equal(
+        document.querySelector('#search-message').textContent,
+        'Đã tìm thấy 20 tại vị trí 2.',
+      )
+      assert.equal(document.querySelector('#search-comparisons').textContent, '2')
     } finally {
       cleanup()
     }

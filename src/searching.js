@@ -413,6 +413,9 @@ export function initSearching(options = {}) {
 
   searchResetButton?.addEventListener('click', resetSearch)
 
+  // Ô mục tiêu luôn khớp với mô phỏng: gõ (input) hay rời ô (change) đều về ban đầu.
+  // Các bước đã sinh vẫn giữ target đã chốt nên không phụ thuộc vào ô nhập.
+  searchTargetInput.addEventListener('input', resetSearch)
   searchTargetInput.addEventListener('change', resetSearch)
 
   // Rời màn hình mô phỏng thì tạm dừng (giữ nguyên bước hiện tại).
