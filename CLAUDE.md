@@ -19,14 +19,33 @@ pnpm dev        # chạy thử trên trình duyệt
 - `src/simulation-controller.js`: bộ điều khiển mô phỏng dùng chung cho Sorting và Searching
   (state `idle | running | paused | completed`, một timer duy nhất, scheduler inject được). Chi tiết API ở mục Giai đoạn 5.
   `initSorting(options)` / `initSearching(options)` nhận `options.scheduler` và truyền vào controller.
-- `src/algorithms/*Sort.js`: hàm thuần sinh mảng bước `{ array, comparing, swapped, sortedIndices, comparisons, swaps, shifts?, message, finished? }`.
+- `src/algorithms/*Sort.js`: hàm thuần sinh mảng bước
+  `{ array, comparing, swapped, sortedIndices, comparisons, swaps, shifts?, key?, pseudocodeLine, message, finished? }`
+  (`shifts`, `key` chỉ có ở Insertion Sort; `key` là null ở bước đầu và bước cuối).
 - `src/algorithms/linearSearch.js`, `binarySearch.js`: hàm thuần `(numbers, target)` sinh mảng bước
-  `{ index, mid, left, right, comparisons, foundIndex, finished, message }`; target được chốt trong `message`.
+  `{ index, mid, left, right, comparisons, foundIndex, finished, target, currentIndex, currentValue, pseudocodeLine, message }`.
+  `currentIndex`/`currentValue` là phần tử vừa so sánh (Linear = i, Binary = mid), null ở bước 0 và bước kết luận
+  "không tìm thấy". `index` của Linear giữ nghĩa con trỏ tới phần tử sẽ xét tiếp (= currentIndex + 1).
+- Mỗi file `src/algorithms/*.js` export mảng mã giả (`bubbleSortPseudocode`, …, `binarySearchPseudocode`) và dùng hằng
+  `LINE` nội bộ. `pseudocodeLine` đếm từ 1 theo mảng đó; null = không tô dòng nào (bước 0, bước hoàn thành của Sorting).
+  Nguyên tắc: mỗi bước ứng với một thao tác mã giả; bước lưu dữ liệu, tầng hiển thị lo định dạng chữ (không tách số từ message).
+- Bất biến bước tìm kiếm: `comparisons` tăng đúng 1 ở mỗi bước sau bước 0, trừ bước kết luận "không tìm thấy" (tăng 0).
+  Bất biến bước sắp xếp: `sortedIndices` của mỗi bước chứa `sortedIndices` của bước trước.
+- `src/pseudocode-view.js`: `renderPseudocode(codeEl, lines)` (mỗi dòng một `span.pseudocode-line[data-line]`) và
+  `highlightPseudocodeLine(codeEl, line)` (class `is-active` + `aria-current="step"`). Dùng chung cho Sorting và Searching.
+- Learning Panel: Sorting dùng `#learning-*` và bảng Big-O trong section của nó (query giới hạn trong section);
+  Searching dùng `#search-learning-*`, `#search-complexity-*`, `#search-target-value`, `#search-current-value`.
+  Nội dung lý thuyết nằm trong `algorithmConfig` (sorting.js) và `searchAlgorithmInfo` (searching.js).
+- CSS: `--state-active` là màu "đang xét" dùng chung cho cột đang so sánh và dòng mã giả đang tô.
+  `renderBars` không gắn `is-sorted` cho cột đang so sánh/đổi chỗ (màu xanh sẽ che màu trạng thái).
 - Sự kiện `algovision:viewchange` (`CustomEvent` trên `document`, `detail.page`): `navigation.js` phát mỗi khi đổi trang
   hoặc mở/đóng màn hình chi tiết; Sorting/Searching lắng nghe và tự `pause()` khi visualizer của mình bị ẩn.
 - `src/structures/*`: logic thuần của cấu trúc dữ liệu.
 - `tests/*.test.js`: Node Test Runner + happy-dom, nạp template thật từ `public/templates/app.html`.
 - `tests/helpers/fake-scheduler.js`: scheduler thời gian ảo cho test timer (không bị `node --test` quét).
+- `tests/complexity.test.js`: đối chiếu số phép so sánh thực tế với Big-O hiển thị.
+- Đếm test bằng dòng `ℹ tests` của `node --test` (grep `^test(` bỏ sót test sinh trong vòng `for`).
+  Test import module có thể thiếu export thì dùng namespace import để không làm hỏng cả file.
 
 ## Quy tắc làm việc (bắt buộc)
 
@@ -67,7 +86,8 @@ pnpm dev        # chạy thử trên trình duyệt
 ## Trạng thái hiện tại (cập nhật 2026-11-02)
 
 - `main` = `c4890d5` (Merge PR #3, giai đoạn 5). Baseline: 191/191 test pass, build OK.
-- Đang làm giai đoạn 6 trên branch `feat/learning-panel`.
+- Giai đoạn 6 (Learning Panel) xong trên branch `feat/learning-panel`, CHỜ người dùng review PR.
+  Kết quả: 245/245 test pass (baseline 191), build OK.
 - Máy phát triển: Windows và Ubuntu (repo trên phân vùng NTFS, `core.filemode=false`).
 - Windows: `core.autocrlf=true` + `.gitattributes` (`* text=auto eol=lf`), mọi file text là LF.
 - `.claude/settings.json` (đã commit) chặn bằng deny rule cho cả Bash và PowerShell: force push, push lên `main`,
@@ -103,7 +123,8 @@ pnpm dev        # chạy thử trên trình duyệt
   | completed | bật ("Chạy lại", từ đầu) | tắt | tắt | bật nếu bước > 0 | bật |
 
 - `src/algorithms/linearSearch.js`, `binarySearch.js`: sinh bước `{ index, mid, left, right, comparisons, foundIndex, finished, message }`;
-  bước 0 là trạng thái đầu, mỗi bước sau là một phép so sánh. Searching sinh bước lần đầu bấm Next/Run;
+  bước 0 là trạng thái đầu, mỗi bước sau là một phép so sánh (giai đoạn 6 đã đổi: bước kết luận "không tìm thấy"
+  là bước riêng, không so sánh — xem mục Kiến trúc). Searching sinh bước lần đầu bấm Next/Run;
   Reset/đổi mục tiêu/đổi thuật toán/mảng mới bỏ các bước cũ (`load([])`).
 - `initSorting(options)` và `initSearching(options)` nhận `options.scheduler`.
 
@@ -118,8 +139,7 @@ pnpm dev        # chạy thử trên trình duyệt
 - Chưa kiểm tra giao diện nút `#search-previous` trên trình duyệt thật.
 
 ## Roadmap sau giai đoạn 5 (chỉ làm khi được đồng ý)
-6. Learning Panel: theory, pseudocode highlight theo bước, giải thích từng bước, Big-O khớp code.
-   Ghi chú: `insertionSort.js` có bước dời phần tử với `sortedIndices: []` làm vùng đã sắp xếp nhấp nháy.
+6. Learning Panel (đã xong, chờ merge).
 7. BST, Hash Table, Graph, BFS, DFS — từng module một, có test.
 8. Tiến độ học tập bằng `localStorage` (xử lý dữ liệu lỗi/thiếu).
 9. Kiểm thử tổng thể, UI/UX, README (README trên GitHub đang lỗi thời), CI, deployment.
