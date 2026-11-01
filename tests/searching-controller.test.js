@@ -848,3 +848,55 @@ test('Searching không chạy tự động khi mục tiêu là Infinity', async 
     cleanup()
   }
 })
+
+function selectSearchAlgorithm(document, algorithm) {
+  const select = document.querySelector('#search-algorithm')
+
+  select.value = algorithm
+  select.dispatchEvent(
+    new document.defaultView.Event('change', { bubbles: true }),
+  )
+}
+
+function getSelectedSearchCards(document) {
+  return [
+    ...document.querySelectorAll('[data-search-algorithm].selected'),
+  ].map((card) => card.dataset.searchAlgorithm)
+}
+
+test('tiêu đề và Big-O của Searching khớp với thuật toán trong dropdown', async () => {
+  const { document, cleanup } = await setupSearching()
+
+  try {
+    const title = document.querySelector('#search-title')
+    const complexity = document.querySelector('#search-complexity')
+
+    selectSearchAlgorithm(document, 'binary')
+
+    assert.equal(title?.textContent, 'Binary Search')
+    assert.equal(complexity?.textContent, 'O(log n)')
+
+    selectSearchAlgorithm(document, 'linear')
+
+    assert.equal(title?.textContent, 'Linear Search')
+    assert.equal(complexity?.textContent, 'O(n)')
+  } finally {
+    cleanup()
+  }
+})
+
+test('đổi dropdown đồng bộ thẻ thuật toán tìm kiếm được chọn', async () => {
+  const { document, cleanup } = await setupSearching()
+
+  try {
+    assert.deepEqual(getSelectedSearchCards(document), ['linear'])
+
+    selectSearchAlgorithm(document, 'binary')
+    assert.deepEqual(getSelectedSearchCards(document), ['binary'])
+
+    selectSearchAlgorithm(document, 'linear')
+    assert.deepEqual(getSelectedSearchCards(document), ['linear'])
+  } finally {
+    cleanup()
+  }
+})

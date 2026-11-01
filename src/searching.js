@@ -1,4 +1,21 @@
+const searchAlgorithmInfo = {
+  linear: {
+    name: 'Linear Search',
+    description: 'Tìm một giá trị bằng cách kiểm tra lần lượt từng phần tử.',
+    complexity: 'O(n)',
+  },
+  binary: {
+    name: 'Binary Search',
+    description: 'Tìm một giá trị bằng cách chia đôi phạm vi tìm kiếm trên mảng đã sắp xếp.',
+    complexity: 'O(log n)',
+  },
+}
+
 export function initSearching(options = {}) {
+  const searchTitle = document.querySelector('#search-title')
+  const searchDescription = document.querySelector('#search-description')
+  const searchComplexity = document.querySelector('#search-complexity')
+  const searchAlgorithmCards = document.querySelectorAll('[data-search-algorithm]')
   const searchArrayElement = document.querySelector('#search-array')
   const searchRangePanel = document.querySelector('#search-range-panel')
   const searchLeftValue = document.querySelector('#search-left-value')
@@ -73,6 +90,19 @@ export function initSearching(options = {}) {
     const target = Number(value)
 
     return Number.isFinite(target) ? target : null
+  }
+
+  function renderAlgorithmInfo() {
+    const algorithm = isBinarySearch() ? 'binary' : 'linear'
+    const info = searchAlgorithmInfo[algorithm]
+
+    if (searchTitle) searchTitle.textContent = info.name
+    if (searchDescription) searchDescription.textContent = info.description
+    if (searchComplexity) searchComplexity.textContent = info.complexity
+
+    searchAlgorithmCards.forEach((card) => {
+      card.classList.toggle('selected', card.dataset.searchAlgorithm === algorithm)
+    })
   }
 
   function stopSearchAnimation() {
@@ -459,7 +489,10 @@ export function initSearching(options = {}) {
 
   searchTargetInput.addEventListener('change', resetSearch)
 
-  searchAlgorithmSelect.addEventListener('change', createSearchArray)
+  searchAlgorithmSelect.addEventListener('change', () => {
+    renderAlgorithmInfo()
+    createSearchArray()
+  })
 
   searchSpeedInput.addEventListener('input', () => {
     if (searchSpeedValue) {
@@ -500,5 +533,6 @@ export function initSearching(options = {}) {
     searchSpeedValue.textContent = `${searchSpeedInput.value} ms`
   }
 
+  renderAlgorithmInfo()
   createSearchArray()
 }
