@@ -250,3 +250,29 @@ for (const algorithm of algorithms) {
     }
   })
 }
+
+// Bước so sánh nhận biết bằng cấu trúc dữ liệu: bộ đếm comparisons tăng so với bước trước.
+function getComparisonSteps(steps) {
+  return steps.filter((step, index) => index > 0 && step.comparisons > steps[index - 1].comparisons)
+}
+
+test('Insertion Sort: bước so sánh chỉ tô A[j] và lưu key trong dữ liệu bước', () => {
+  const steps = generateInsertionSortSteps([30, 20, 10])
+
+  // Sau lần dời đầu tiên của i = 2, cột j + 1 chứa bản sao 30 chứ không phải key 10.
+  assert.deepEqual(
+    getComparisonSteps(steps).map(({ comparing, key }) => ({ comparing, key })),
+    [
+      { comparing: [0], key: 20 },
+      { comparing: [1], key: 10 },
+      { comparing: [0], key: 10 },
+    ],
+  )
+})
+
+test('Insertion Sort: key là null ở bước đầu và bước hoàn thành', () => {
+  const steps = generateInsertionSortSteps([30, 20, 10])
+
+  assert.equal(steps[0].key, null)
+  assert.equal(steps.at(-1).key, null)
+})
