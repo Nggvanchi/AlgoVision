@@ -2645,3 +2645,94 @@ button.dashboard-card:hover {
 .hash-legend-box.is-tombstone {
   background: repeating-linear-gradient(45deg, var(--muted) 0 2px, transparent 2px 5px);
 }
+
+/* ===== Graph ===== */
+.graph-edit-actions {
+  margin: 12px 0;
+}
+
+/* SVG cố định 300×300; khung hẹp hơn thì cuộn bên trong khung, không làm tràn trang. */
+.graph-frame {
+  max-width: 100%;
+  padding: 8px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--background);
+}
+
+.graph-svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.graph-empty {
+  fill: var(--muted);
+  font-size: 13px;
+}
+
+.graph-edge {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2;
+}
+
+/* Trạng thái không chỉ dựa vào màu: cạnh/đỉnh đang xét viền dày (+ ▶), đỉnh đã ghi nhận vòng kép + ✓,
+   u/v có nhãn chữ cạnh đỉnh. */
+.graph-edge.is-current {
+  stroke: var(--state-active);
+  stroke-width: 4;
+}
+
+.graph-arrow-head {
+  fill: var(--muted);
+}
+
+#graph-arrow-current .graph-arrow-head {
+  fill: var(--state-active);
+}
+
+.graph-vertex-circle {
+  fill: var(--panel-hover);
+  stroke: var(--muted);
+  stroke-width: 2;
+}
+
+.graph-vertex-label {
+  fill: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.graph-vertex.is-current .graph-vertex-circle {
+  stroke: var(--state-active);
+  stroke-width: 4;
+}
+
+.graph-vertex-marker {
+  fill: var(--state-active);
+  font-size: 12px;
+}
+
+.graph-vertex-ring {
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 2;
+}
+
+.graph-vertex.is-output .graph-vertex-circle {
+  fill: color-mix(in srgb, #22c55e 22%, var(--panel));
+}
+
+.graph-vertex-check {
+  fill: #22c55e;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.graph-vertex-badge {
+  fill: var(--text);
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 700;
+}
