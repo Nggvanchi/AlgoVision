@@ -423,6 +423,45 @@ test('Renderer bỏ qua id lạ: currentVertexId, currentEdge, outputIds, source
   })
 })
 
+test('Nhãn u/v trên SVG lấy từ sourceId/targetId của bước: đổi select sau khi sinh bước thì SVG không đổi', () => {
+  withGraph((ui) => {
+    const badgeOf = (label) => ui.vertexByLabel(label).querySelector('.graph-vertex-badge')?.textContent ?? null
+    ui.query('has-edge', 'A', 'C')
+    ui.$('#graph-next').click()
+
+    ui.select('B', 'D')
+    assert.equal(badgeOf('A'), 'u')
+    assert.equal(badgeOf('C'), 'v')
+    assert.equal(badgeOf('B'), null)
+    assert.equal(badgeOf('D'), null)
+    assert.equal(ui.text('#graph-reads'), '1', 'bước đang hiển thị giữ nguyên')
+  })
+})
+
+test('Đồ thị 1 đỉnh: v về "chưa chọn", Kiểm tra kề báo thiếu đỉnh v', () => {
+  withGraph((ui) => {
+    ui.$('#graph-clear').click()
+    ui.$('#graph-add-vertex').click()
+
+    assert.deepEqual(ui.optionLabels('#graph-target'), ['— chưa chọn —', 'A'])
+    assert.equal(ui.$('#graph-target').value, '')
+
+    ui.choose('#graph-source', 'A')
+    ui.change('#graph-operation', 'has-edge')
+    ui.$('#graph-apply').click()
+    assert.equal(ui.$('#graph-input-error').textContent, 'Hãy chọn cả đỉnh u và đỉnh v.')
+
+    // Preset có ≥ 3 đỉnh chọn sẵn u = A, v = C; về 1 đỉnh thì v (đã bị xóa) về "chưa chọn".
+    ui.$('#graph-preset-tree').click()
+    for (const label of ['G', 'F', 'E', 'D', 'C', 'B']) {
+      ui.choose('#graph-source', label)
+      ui.$('#graph-remove-vertex').click()
+    }
+    assert.deepEqual(ui.optionLabels('#graph-target'), ['— chưa chọn —', 'A'])
+    assert.equal(ui.$('#graph-target').value, '')
+  })
+})
+
 test('Trạng thái không chỉ bằng màu: đỉnh đang xét có ▶, đỉnh đã ghi nhận có ✓, u/v có nhãn chữ, cạnh đang xét có lớp riêng', () => {
   withGraph((ui) => {
     ui.query('neighbors', 'C')
