@@ -396,3 +396,87 @@ test('renderBstTree bỏ qua id không có trong tree.nodes', () => {
     window.happyDOM.abort()
   }
 })
+
+function selectOperation(ui, operation) {
+  ui.$('#bst-operation').value = operation
+  ui.$('#bst-operation').dispatchEvent(new ui.window.Event('change', { bubbles: true }))
+}
+
+test('Learning Panel: Big-O của Search/Insert/Delete/Min/Max là O(h), hai cột cân bằng và suy biến', () => {
+  const ui = setupBst()
+
+  try {
+    for (const operation of ['insert', 'search', 'delete', 'min', 'max']) {
+      selectOperation(ui, operation)
+
+      assert.equal(ui.text('#bst-complexity'), 'O(h)', operation)
+      assert.equal(ui.text('#bst-complexity-best'), 'O(1)', operation)
+      assert.equal(ui.text('#bst-complexity-balanced'), 'O(log n)', operation)
+      assert.equal(ui.text('#bst-complexity-degenerate'), 'O(n)', operation)
+      assert.equal(ui.text('#bst-complexity-space'), 'O(1)', operation)
+    }
+  } finally {
+    ui.cleanup()
+  }
+})
+
+test('Learning Panel: duyệt cây và Height luôn O(n), bộ nhớ O(h) do đệ quy', () => {
+  const ui = setupBst()
+
+  try {
+    for (const operation of ['inorder', 'preorder', 'postorder', 'height']) {
+      selectOperation(ui, operation)
+
+      assert.equal(ui.text('#bst-complexity'), 'O(n)', operation)
+      assert.equal(ui.text('#bst-complexity-best'), 'O(n)', operation)
+      assert.equal(ui.text('#bst-complexity-balanced'), 'O(n)', operation)
+      assert.equal(ui.text('#bst-complexity-degenerate'), 'O(n)', operation)
+      assert.equal(ui.text('#bst-complexity-space'), 'O(h)', operation)
+    }
+  } finally {
+    ui.cleanup()
+  }
+})
+
+test('Learning Panel: ý tưởng, ưu điểm, hạn chế đổi theo thao tác', () => {
+  const ui = setupBst()
+
+  try {
+    const seen = new Set()
+
+    for (const operation of Object.keys(bstView.bstOperations)) {
+      selectOperation(ui, operation)
+
+      const description = ui.text('#bst-learning-description')
+      assert.ok(description.length > 0, operation)
+      assert.ok(ui.text('#bst-learning-advantages').length > 0, operation)
+      assert.ok(ui.text('#bst-learning-disadvantages').length > 0, operation)
+      assert.match(ui.text('#bst-complexity-title'), new RegExp(bstView.bstOperations[operation].name, 'i'))
+      seen.add(description)
+    }
+
+    assert.equal(seen.size, Object.keys(bstView.bstOperations).length, 'mỗi thao tác một mô tả riêng')
+    selectOperation(ui, 'delete')
+    assert.match(ui.text('#bst-learning-description'), /successor/)
+    selectOperation(ui, 'height')
+    assert.match(ui.text('#bst-learning-description'), /-1|−1/)
+  } finally {
+    ui.cleanup()
+  }
+})
+
+test('Learning Panel: mã giả hiển thị lấy cùng nguồn với generator', () => {
+  const ui = setupBst()
+
+  try {
+    for (const [operation, info] of Object.entries(bstView.bstOperations)) {
+      selectOperation(ui, operation)
+
+      const lines = [...ui.document.querySelectorAll('#bst-pseudocode .pseudocode-line')]
+        .map((line) => line.textContent)
+      assert.deepEqual(lines, info.pseudocode, operation)
+    }
+  } finally {
+    ui.cleanup()
+  }
+})

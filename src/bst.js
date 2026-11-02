@@ -32,9 +32,57 @@ const IDLE_MESSAGE = 'Chọn thao tác rồi bấm Thực hiện.'
 const RESET_NOTE =
   'Đã tua minh họa về bước đầu. Cây hiện tại vẫn gồm kết quả thao tác trước; thao tác tiếp theo sẽ chạy trên cây đó.'
 
+// Big-O phải khớp generator (xem tests/bst-complexity.test.js).
+// Thao tác đi trên một đường từ gốc xuống: O(h), cài bằng vòng lặp nên bộ nhớ phụ O(1).
+const PATH_COMPLEXITY = {
+  tag: 'O(h)',
+  best: 'O(1)',
+  balanced: 'O(log n)',
+  degenerate: 'O(n)',
+  space: 'O(1)',
+  spaceNote: 'Cài bằng vòng lặp, chỉ giữ vài biến con trỏ.',
+}
+
+// Thao tác phải thăm mọi nút: O(n) với mọi hình dạng cây; đệ quy tốn ngăn xếp O(h).
+const FULL_COMPLEXITY = {
+  tag: 'O(n)',
+  best: 'O(n)',
+  balanced: 'O(n)',
+  degenerate: 'O(n)',
+  space: 'O(h)',
+  bestNote: 'Phải thăm mọi nút dù cây có hình dạng nào.',
+  spaceNote: 'Ngăn xếp đệ quy sâu bằng chiều cao cây, tức O(n) khi cây suy biến.',
+}
+
+const TRAVERSAL_LEARNING = {
+  inorder: {
+    description:
+      'Thăm cây con trái, rồi tới nút, rồi cây con phải. Với BST, Inorder luôn cho dãy giá trị tăng dần.',
+    advantages:
+      'Lấy được dãy đã sắp xếp từ cây trong O(n); cũng là cách kiểm tra một cây có đúng là BST hay không.',
+    disadvantages:
+      'Cài bằng đệ quy nên tốn ngăn xếp O(h); cây suy biến rất sâu có thể làm tràn ngăn xếp với dữ liệu lớn.',
+  },
+  preorder: {
+    description:
+      'Thăm nút trước, rồi cây con trái, rồi cây con phải. Chèn lại các giá trị theo thứ tự Preorder vào một cây rỗng sẽ dựng lại đúng hình dạng cây ban đầu.',
+    advantages: 'Phù hợp để sao chép hoặc lưu lại cấu trúc cây.',
+    disadvantages: 'Dãy kết quả không tăng dần; đệ quy tốn ngăn xếp O(h).',
+  },
+  postorder: {
+    description:
+      'Thăm cây con trái, cây con phải, rồi mới tới nút. Nút cha luôn được xử lý sau tất cả các con của nó.',
+    advantages:
+      'Phù hợp khi phải xử lý con trước cha: giải phóng cả cây, tính chiều cao hay kích thước của từng cây con.',
+    disadvantages: 'Dãy kết quả không tăng dần; đệ quy tốn ngăn xếp O(h).',
+  },
+}
+
 const traversal = (order) => ({
   name: order[0].toUpperCase() + order.slice(1),
   needsValue: false,
+  complexity: FULL_COMPLEXITY,
+  learning: TRAVERSAL_LEARNING[order],
   pseudocode: bstTraversalPseudocode[order],
   generate: (tree) => generateBstTraversalSteps(tree, order),
   formatResult: (step) => `Đã thăm ${step.output.length} nút`,
@@ -43,6 +91,23 @@ const traversal = (order) => ({
 const minMax = (kind) => ({
   name: kind === 'min' ? 'Min' : 'Max',
   needsValue: false,
+  complexity: {
+    ...PATH_COMPLEXITY,
+    bestNote: `Gốc không có con ${kind === 'min' ? 'trái' : 'phải'}.`,
+  },
+  learning: kind === 'min'
+    ? {
+      description:
+        'Giá trị nhỏ nhất nằm ở nút trái cùng: từ gốc đi sang trái mãi tới khi không còn con trái. Chỉ đi theo con trỏ, không cần so sánh khóa.',
+      advantages: 'Chỉ đi trên một đường, không phải xét toàn bộ phần tử như trên mảng chưa sắp xếp.',
+      disadvantages: 'Cây lệch trái (chèn dãy giảm dần) buộc phải đi qua cả n nút.',
+    }
+    : {
+      description:
+        'Giá trị lớn nhất nằm ở nút phải cùng: từ gốc đi sang phải mãi tới khi không còn con phải. Chỉ đi theo con trỏ, không cần so sánh khóa.',
+      advantages: 'Chỉ đi trên một đường, không phải xét toàn bộ phần tử như trên mảng chưa sắp xếp.',
+      disadvantages: 'Cây lệch phải (như cây suy biến 1…15) buộc phải đi qua cả n nút.',
+    },
   pseudocode: bstMinMaxPseudocode[kind],
   generate: (tree) => generateBstMinMaxSteps(tree, kind),
   formatResult: (step) => (step.result === null ? 'Cây rỗng' : String(step.result)),
@@ -52,6 +117,15 @@ export const bstOperations = {
   insert: {
     name: 'Insert',
     needsValue: true,
+    complexity: { ...PATH_COMPLEXITY, bestNote: 'Cây rỗng, gốc trùng x, hoặc nhánh cần đi của gốc đang trống.' },
+    learning: {
+      description:
+        'Bắt đầu từ gốc, so sánh x với nút đang xét: nhỏ hơn thì sang trái, lớn hơn thì sang phải, tới khi gặp chỗ trống thì gắn nút mới vào đó. Gặp giá trị bằng x thì dừng vì cây không chứa giá trị trùng. Số phép so sánh bằng số nút từ gốc tới cha của nút mới.',
+      advantages:
+        'Không phải dịch chuyển phần tử như chèn vào mảng đã sắp xếp; cây luôn giữ thứ tự nên Inorder cho dãy tăng dần.',
+      disadvantages:
+        'Thứ tự chèn quyết định hình dạng cây: chèn dãy đã sắp xếp tạo cây suy biến và mỗi lần chèn tốn O(n). BST thường không tự cân bằng (AVL, Red-Black thì có).',
+    },
     pseudocode: bstInsertPseudocode,
     generate: generateBstInsertSteps,
     formatResult: (step) => (step.result === 'inserted'
@@ -61,6 +135,14 @@ export const bstOperations = {
   search: {
     name: 'Search',
     needsValue: true,
+    complexity: { ...PATH_COMPLEXITY, bestNote: 'Giá trị cần tìm nằm ngay ở gốc.' },
+    learning: {
+      description:
+        'Mỗi lần so sánh loại bỏ cả một cây con: bằng thì tìm thấy, nhỏ hơn đi trái, lớn hơn đi phải. Đi tới chỗ trống (null) nghĩa là cây không có x.',
+      advantages:
+        'Cây cân bằng chỉ cần khoảng log₂ n phép so sánh như Binary Search, nhưng vẫn chèn và xóa nhanh, khác với mảng đã sắp xếp.',
+      disadvantages: 'Trên cây suy biến, tìm kiếm trở thành duyệt tuần tự O(n).',
+    },
     pseudocode: bstSearchPseudocode,
     generate: generateBstSearchSteps,
     formatResult: (step) => (step.result === 'found'
@@ -70,6 +152,14 @@ export const bstOperations = {
   delete: {
     name: 'Delete',
     needsValue: true,
+    complexity: { ...PATH_COMPLEXITY, bestNote: 'x nằm ở gốc và gốc có tối đa một con.' },
+    learning: {
+      description:
+        'Tìm nút z chứa x rồi xử lý ba trường hợp. Lá: gỡ z đi. Một con: nối con đó lên thay chỗ z. Hai con: tìm successor (nút nhỏ nhất của cây con phải), chép giá trị successor vào z, rồi gỡ successor; nút này không có con trái nên rơi vào trường hợp lá hoặc một con.',
+      advantages: 'Giữ đúng tính chất BST mà chỉ thay đổi cấu trúc quanh một đường từ gốc xuống.',
+      disadvantages:
+        'Trường hợp hai con phải đi thêm một đoạn xuống cây con phải để tìm successor; tổng chi phí vẫn O(h), nhưng xóa nhiều lần có thể làm cây lệch dần.',
+    },
     pseudocode: bstDeletePseudocode,
     generate: generateBstDeleteSteps,
     formatResult: (step) => (step.result === 'deleted'
@@ -84,6 +174,14 @@ export const bstOperations = {
   height: {
     name: 'Height',
     needsValue: false,
+    complexity: FULL_COMPLEXITY,
+    learning: {
+      description:
+        'Chiều cao là số cạnh trên đường dài nhất từ gốc xuống lá. Quy ước: cây rỗng là −1, cây một nút là 0. Tính theo hậu tự: biết chiều cao hai con thì chiều cao nút = 1 + max(trái, phải).',
+      advantages: 'Cho biết ngay chi phí O(h) của Search, Insert và Delete trên cây hiện tại.',
+      disadvantages:
+        'Phải thăm mọi nút nên tốn O(n); nếu cần dùng thường xuyên thì nên lưu sẵn chiều cao trong mỗi nút (như cây AVL).',
+    },
     pseudocode: bstHeightPseudocode,
     generate: generateBstHeightSteps,
     formatResult: (step) => String(step.result),
@@ -210,6 +308,21 @@ export function initBst(document, options = {}) {
   const resultValue = $('#bst-result')
   const pseudocodeTitle = $('#bst-pseudocode-title')
   const pseudocodeCode = $('#bst-pseudocode')
+  const complexityTag = $('#bst-complexity')
+  const complexityTitle = $('#bst-complexity-title')
+  const complexityCells = {
+    best: $('#bst-complexity-best'),
+    balanced: $('#bst-complexity-balanced'),
+    degenerate: $('#bst-complexity-degenerate'),
+    space: $('#bst-complexity-space'),
+    bestNote: $('#bst-complexity-best-note'),
+    spaceNote: $('#bst-complexity-space-note'),
+  }
+  const learningCells = {
+    description: $('#bst-learning-description'),
+    advantages: $('#bst-learning-advantages'),
+    disadvantages: $('#bst-learning-disadvantages'),
+  }
 
   const requiredElements = [
     section, operationSelect, valueInput, applyButton, treeSvg,
@@ -224,7 +337,7 @@ export function initBst(document, options = {}) {
   // Cây đã chốt: kết quả của thao tác gần nhất, được chốt ngay khi sinh bước.
   let committedTree = buildTree(BALANCED_PRESET)
   let idleMessage = IDLE_MESSAGE
-  let renderedPseudocodeOperation = null
+  let renderedOperation = null
 
   const simulation = createSimulationController({
     getDelay: () => Number(speedInput?.value) || DEFAULT_SPEED,
@@ -249,13 +362,24 @@ export function initBst(document, options = {}) {
     return 'Chạy minh họa'
   }
 
-  function renderPseudocodePanel(operation, line) {
-    if (renderedPseudocodeOperation !== operation) {
-      renderPseudocode(pseudocodeCode, bstOperations[operation].pseudocode)
-      if (pseudocodeTitle) {
-        pseudocodeTitle.textContent = `Mã giả: ${bstOperations[operation].name}`
-      }
-      renderedPseudocodeOperation = operation
+  function fillText(cells, values) {
+    for (const [key, element] of Object.entries(cells)) {
+      if (element) element.textContent = values[key] ?? ''
+    }
+  }
+
+  // Mã giả, Big-O và lý thuyết chỉ vẽ lại khi đổi thao tác; mỗi bước chỉ đổi dòng được tô.
+  function renderOperationInfo(operationName, line) {
+    if (renderedOperation !== operationName) {
+      const operation = bstOperations[operationName]
+
+      renderPseudocode(pseudocodeCode, operation.pseudocode)
+      if (pseudocodeTitle) pseudocodeTitle.textContent = `Mã giả: ${operation.name}`
+      if (complexityTag) complexityTag.textContent = operation.complexity.tag
+      if (complexityTitle) complexityTitle.textContent = operation.name.toUpperCase()
+      fillText(complexityCells, operation.complexity)
+      fillText(learningCells, operation.learning)
+      renderedOperation = operationName
     }
 
     highlightPseudocodeLine(pseudocodeCode, line)
@@ -319,7 +443,7 @@ export function initBst(document, options = {}) {
 
     renderTree(step)
     renderStats(step)
-    renderPseudocodePanel(step.operation, step.pseudocodeLine)
+    renderOperationInfo(step.operation, step.pseudocodeLine)
     message.textContent = step.message
     renderControls(snapshot)
   }

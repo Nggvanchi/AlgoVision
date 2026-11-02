@@ -1324,6 +1324,69 @@
                 <pre><code id="bst-pseudocode"></code></pre>
             </article>
         </div>
+
+        <div class="complexity-panel" id="bst-complexity-panel">
+        <div class="complexity-heading">
+            <h4>Phân tích thao tác</h4>
+            <span id="bst-complexity-title">INSERT</span>
+        </div>
+
+        <div class="complexity-grid">
+            <div class="complexity-card">
+                <span>Trường hợp tốt nhất</span>
+                <strong id="bst-complexity-best">O(1)</strong>
+                <p id="bst-complexity-best-note"></p>
+            </div>
+
+            <div class="complexity-card">
+                <span>Cây cân bằng (h ≈ log₂ n)</span>
+                <strong id="bst-complexity-balanced">O(log n)</strong>
+                <p>Mỗi mức chứa gấp đôi số nút của mức trên nên đường từ gốc xuống chỉ dài khoảng log₂ n.</p>
+            </div>
+
+            <div class="complexity-card">
+                <span>Cây suy biến (h = n − 1)</span>
+                <strong id="bst-complexity-degenerate">O(n)</strong>
+                <p>Chèn dữ liệu đã sắp xếp tạo cây chỉ có một nhánh, giống danh sách liên kết.</p>
+            </div>
+
+            <div class="complexity-card">
+                <span>Bộ nhớ phụ</span>
+                <strong id="bst-complexity-space">O(1)</strong>
+                <p id="bst-complexity-space-note"></p>
+            </div>
+        </div>
+        </div>
+
+        <div class="learning-section" id="bst-learning">
+            <div class="learning-heading">
+                <div>
+                    <span class="section-eyebrow">GÓC KIẾN THỨC</span>
+                    <h3>Tìm hiểu thao tác</h3>
+                    <p>
+                        h là chiều cao cây (số cạnh). Chi phí của BST phụ thuộc vào h,
+                        nên hãy so sánh cây mẫu cân bằng với cây suy biến.
+                    </p>
+                </div>
+            </div>
+
+            <div class="learning-content">
+                <article class="learning-block">
+                    <h4>Ý tưởng</h4>
+                    <p id="bst-learning-description"></p>
+                </article>
+
+                <article class="learning-block">
+                    <h4>Ưu điểm</h4>
+                    <p id="bst-learning-advantages"></p>
+                </article>
+
+                <article class="learning-block">
+                    <h4>Hạn chế</h4>
+                    <p id="bst-learning-disadvantages"></p>
+                </article>
+            </div>
+        </div>
     </div>
     </section>
 
