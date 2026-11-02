@@ -2920,6 +2920,135 @@ button.dashboard-card:hover {
   content: '· ';
 }
 
+/* BFS: cạnh cây nét liền đậm, đỉnh trong hàng đợi vòng nét đứt (không chỉ đổi màu). */
+.graph-edge.is-tree {
+  stroke: var(--purple);
+  stroke-width: 3.5;
+}
+
+.graph-edge.is-tree.is-current {
+  stroke: var(--state-active);
+}
+
+.graph-vertex-queue-ring {
+  fill: none;
+  stroke: var(--state-active);
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+}
+
+.graph-legend-queued {
+  border: 2px dashed var(--state-active);
+  background: transparent;
+}
+
+.graph-legend-tree {
+  display: inline-block;
+  width: 18px;
+  height: 0;
+  border-top: 4px solid var(--purple);
+  vertical-align: middle;
+}
+
+.graph-bfs-panel {
+  min-width: 0;
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--background);
+}
+
+.graph-bfs-panel h4 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.graph-bfs-panel h4 + .graph-bfs-queue-frame,
+.graph-bfs-panel h4 + .graph-bfs-order {
+  margin-bottom: 12px;
+}
+
+/* Hàng đợi là một dải ngang; dài hơn khung thì cuộn trong chính khung, không làm tràn trang. */
+.graph-bfs-queue-frame {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.graph-bfs-queue,
+.graph-bfs-order {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+}
+
+.graph-bfs-queue {
+  width: max-content;
+  padding-bottom: 4px;
+}
+
+.graph-bfs-order {
+  flex-wrap: wrap;
+}
+
+.graph-bfs-queue-item,
+.graph-bfs-order-item,
+.graph-bfs-queue-empty,
+.graph-bfs-order-empty {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 34px;
+  padding: 4px 6px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+}
+
+.graph-bfs-queue-item {
+  border-style: dashed;
+  border-color: var(--state-active);
+}
+
+.graph-bfs-queue-label {
+  font-weight: 700;
+}
+
+.graph-bfs-queue-tag {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.graph-bfs-order-item {
+  flex-direction: row;
+  gap: 2px;
+  font-weight: 700;
+}
+
+.graph-bfs-order-item.is-current {
+  border: 3px solid var(--state-active);
+}
+
+.graph-bfs-queue-empty,
+.graph-bfs-order-empty {
+  border-style: dotted;
+  color: var(--muted);
+}
+
+.graph-bfs-table td {
+  min-width: 48px;
+  padding: 2px 6px;
+  text-align: center;
+}
+
+.graph-bfs-table tr.is-current th {
+  border-left: 4px solid var(--state-active);
+}
+
 @media (max-width: 760px) {
   .graph-representations {
     grid-template-columns: minmax(0, 1fr);
