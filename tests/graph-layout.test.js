@@ -112,6 +112,23 @@ test('cạnh thẳng (K8 vô hướng): mọi đỉnh cách mọi cạnh không 
   assert.ok(minimum >= 33, `khoảng cách nhỏ nhất ${minimum}`)
 })
 
+test('cạnh thẳng một chiều (K8 có hướng, mọi cung u→v với slot u < v): mọi đỉnh cách mọi cạnh không kề nó ≥ 33px', () => {
+  const graph = buildGraph(true, 8, completePairs(8))
+  const { vertices, edges } = layout(graph)
+  let minimum = Infinity
+
+  assert.equal(edges.length, 28)
+  for (const edge of edges) {
+    assert.equal(edge.arrow, true)
+    assert.equal(edge.control, null)
+    for (const vertex of listVertices(graph)) {
+      if (vertex.id === edge.from || vertex.id === edge.to) continue
+      minimum = Math.min(minimum, distanceToSegment(vertices[vertex.id], vertices[edge.from], vertices[edge.to]))
+    }
+  }
+  assert.ok(minimum >= 33, `khoảng cách nhỏ nhất ${minimum}`)
+})
+
 test('có hướng: cả u→v và v→u thì hai đường cong, điểm điều khiển lệch ±12px theo pháp tuyến; một chiều vẽ thẳng', () => {
   const graph = buildGraph(true, 3, [[0, 1], [1, 0], [1, 2]])
   const { vertices, edges } = layout(graph)
@@ -138,6 +155,9 @@ test('có hướng: cả u→v và v→u thì hai đường cong, điểm điề
   assert.ok(Math.abs(forward.control.y + backward.control.y - 2 * middle.y) <= 0.2)
 })
 
+// Ngưỡng 27px (không phải 33px như cạnh thẳng): điểm điều khiển lệch 12px nên đỉnh vồng của đường cong bậc hai
+// lệch 6px khỏi dây cung; vồng về phía đỉnh k+1 thì còn R(1 − cos 45°) − 6 ≈ 27,7px, vẫn dư ~9,7px so với
+// bán kính đỉnh 18px. Đã chọn lệch 12px cho điểm điều khiển (đỉnh vồng lệch 12px sẽ chỉ còn ~21,7px).
 test('cạnh cong (K8 có hướng hai chiều): đường cong lệch tối đa 6px khỏi dây cung, mọi đỉnh khác cách ≥ 27px', () => {
   const pairs = completePairs(8).flatMap(([u, v]) => [[u, v], [v, u]])
   const graph = buildGraph(true, 8, pairs)
