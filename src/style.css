@@ -2651,7 +2651,8 @@ button.dashboard-card:hover {
   margin: 12px 0;
 }
 
-/* SVG cố định 300×300; khung hẹp hơn thì cuộn bên trong khung, không làm tràn trang. */
+/* SVG 300×300 theo viewBox: khung hẹp hơn (360px) thì co lại cho vừa (tọa độ layout giữ nguyên);
+   khung vẫn overflow: auto để không bao giờ làm tràn trang. */
 .graph-frame {
   max-width: 100%;
   padding: 8px;
@@ -2663,6 +2664,8 @@ button.dashboard-card:hover {
 
 .graph-svg {
   display: block;
+  max-width: 100%;
+  height: auto;
   margin: 0 auto;
 }
 
