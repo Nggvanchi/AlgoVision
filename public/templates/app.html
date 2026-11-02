@@ -763,6 +763,18 @@
             </span>
             <span class="structure-card-link">Mở trình mô phỏng →</span>
         </button>
+
+        <button
+            type="button"
+            class="structure-card"
+            data-structure-target="graph">
+            <span class="structure-card-icon">◬</span>
+            <span class="structure-card-title">Graph</span>
+            <span class="structure-card-description">
+                Dựng đồ thị có hướng hoặc vô hướng, so sánh danh sách kề với ma trận kề qua từng lần đọc.
+            </span>
+            <span class="structure-card-link">Mở trình mô phỏng →</span>
+        </button>
     </div>
     </section>
 
@@ -1639,6 +1651,286 @@
                 <article class="learning-block">
                     <h4>Hạn chế</h4>
                     <p id="hash-table-learning-disadvantages"></p>
+                </article>
+            </div>
+        </div>
+    </div>
+    </section>
+
+    <section class="visualizer-section" id="graph-section" hidden>
+    <button
+        type="button"
+        class="back-button"
+        data-back-to-structures>
+        ← Quay lại cấu trúc dữ liệu
+    </button>
+
+    <div class="section-heading">
+        <div>
+        <h3>Graph</h3>
+        <p>
+            Đồ thị đơn G = (V, E): không cạnh trùng, không khuyên. Dữ liệu lưu bằng danh sách kề;
+            ma trận kề được suy ra từ cùng đồ thị để so sánh chi phí đọc.
+        </p>
+        </div>
+        <span class="visualizer-tag">GRAPH</span>
+    </div>
+
+    <div class="visualizer-placeholder">
+        <div class="bst-toolbar hash-toolbar">
+        <label for="graph-kind">Loại đồ thị</label>
+        <select id="graph-kind">
+            <option value="undirected" selected>Vô hướng</option>
+            <option value="directed">Có hướng</option>
+        </select>
+
+        <label for="graph-representation">Truy vấn bằng</label>
+        <select id="graph-representation">
+            <option value="list" selected>Danh sách kề</option>
+            <option value="matrix">Ma trận kề</option>
+        </select>
+        </div>
+
+        <div class="bst-toolbar hash-toolbar">
+        <label for="graph-source">Đỉnh u</label>
+        <select id="graph-source"></select>
+
+        <label for="graph-target">Đỉnh v</label>
+        <select id="graph-target"></select>
+        </div>
+
+        <div class="bst-presets graph-edit-actions">
+        <button class="control-button" id="graph-add-vertex" type="button">Thêm đỉnh</button>
+        <button class="control-button" id="graph-remove-vertex" type="button">Xóa đỉnh u</button>
+        <button class="control-button" id="graph-add-edge" type="button">Thêm cạnh (u, v)</button>
+        <button class="control-button" id="graph-remove-edge" type="button">Xóa cạnh (u, v)</button>
+        </div>
+
+        <div class="bst-toolbar hash-toolbar">
+        <label for="graph-operation">Truy vấn</label>
+        <select id="graph-operation">
+            <option value="has-edge" selected>Kiểm tra u kề v</option>
+            <option value="neighbors">Đỉnh kề và bậc của u</option>
+        </select>
+
+        <button class="primary-button" id="graph-apply" type="button">
+            Thực hiện
+        </button>
+        </div>
+
+        <p class="bst-hint" id="graph-input-hint">
+            Tối đa 8 đỉnh (A–H), nhãn gắn với vị trí trên vòng tròn. Sửa đồ thị cập nhật ngay;
+            truy vấn được minh họa từng bước. Đổi loại đồ thị sẽ tạo đồ thị rỗng mới.
+        </p>
+        <p class="bst-error" id="graph-input-error" role="alert" hidden></p>
+
+        <div class="bst-presets">
+        <button class="control-button" id="graph-preset-sample" type="button">
+            Đồ thị mẫu
+        </button>
+        <button class="control-button" id="graph-preset-complete" type="button">
+            Đầy đủ K6
+        </button>
+        <button class="control-button" id="graph-preset-tree" type="button">
+            Cây 7 đỉnh
+        </button>
+        <button class="control-button" id="graph-clear" type="button">
+            Xóa toàn bộ
+        </button>
+        </div>
+
+        <div class="search-speed-control">
+        <label for="graph-speed">Tốc độ chạy</label>
+        <input
+            type="range"
+            id="graph-speed"
+            min="100"
+            max="1500"
+            step="100"
+            value="700"
+        />
+        <span id="graph-speed-value">700 ms</span>
+        </div>
+
+        <div class="graph-frame" id="graph-frame">
+        <svg
+            id="graph-svg"
+            class="graph-svg"
+            role="img"
+            aria-label="Đồ thị"
+            xmlns="http://www.w3.org/2000/svg"
+        ></svg>
+        </div>
+
+        <div class="graph-representations">
+            <section class="graph-representation-panel" id="graph-list-panel">
+                <h4>Danh sách kề <span class="graph-panel-badge"></span></h4>
+                <div class="graph-panel-frame">
+                    <ul class="graph-adjacency-list" id="graph-adjacency-list" aria-label="Danh sách kề"></ul>
+                </div>
+            </section>
+
+            <section class="graph-representation-panel" id="graph-matrix-panel">
+                <h4>Ma trận kề <span class="graph-panel-badge"></span></h4>
+                <div class="graph-panel-frame">
+                    <table class="graph-matrix" id="graph-adjacency-matrix" aria-label="Ma trận kề"></table>
+                </div>
+            </section>
+        </div>
+
+        <div class="search-legend hash-legend">
+            <span><i class="bst-legend-dot is-current"></i> Đỉnh / cạnh đang xét (viền dày, ▶)</span>
+            <span><i class="bst-legend-dot is-found"></i> Đã ghi nhận (vòng kép, ✓)</span>
+            <span><i class="bst-legend-dot"></i> u, v: nhãn chữ cạnh đỉnh</span>
+            <span><i class="hash-legend-box graph-legend-read"></i> Phần tử / ô đã đọc (viền nét đứt)</span>
+        </div>
+
+        <div class="simulation-controls">
+        <button class="control-button" id="graph-reset" type="button">
+            Đặt lại
+        </button>
+
+        <button class="control-button" id="graph-previous" type="button" disabled>
+            ← Bước trước
+        </button>
+
+        <button class="control-button" id="graph-next" type="button" disabled>
+            Bước tiếp theo
+        </button>
+
+        <button class="primary-button" id="graph-run" type="button" disabled>
+            Chạy minh họa
+        </button>
+
+        <button class="control-button" id="graph-pause" type="button" disabled>
+            Tạm dừng
+        </button>
+        </div>
+
+        <p class="simulation-message" id="graph-message" aria-live="polite">
+        Chọn đỉnh u, v để sửa đồ thị, hoặc chọn truy vấn rồi bấm Thực hiện.
+        </p>
+        <p class="bst-status" id="graph-status" aria-live="polite"></p>
+
+        <div class="simulation-stats bst-stats">
+        <div class="stat-card">
+            <span>Số đỉnh (V)</span>
+            <strong id="graph-vertex-count">0</strong>
+        </div>
+        <div class="stat-card">
+            <span>Số cạnh (E)</span>
+            <strong id="graph-edge-count">0</strong>
+        </div>
+        <div class="stat-card">
+            <span>Bậc của u</span>
+            <strong id="graph-degree">—</strong>
+        </div>
+        <div class="stat-card">
+            <span id="graph-reads-label">Phần tử danh sách đã đọc</span>
+            <strong id="graph-reads">0</strong>
+        </div>
+        <div class="stat-card">
+            <span>Kết quả</span>
+            <strong id="graph-result">Chưa có</strong>
+        </div>
+        </div>
+
+        <div class="learning-content bst-code-panel">
+            <article class="learning-block">
+                <h4 id="graph-pseudocode-title">Mã giả: Kiểm tra kề (danh sách kề)</h4>
+                <pre><code id="graph-pseudocode"></code></pre>
+            </article>
+        </div>
+
+        <div class="complexity-panel" id="graph-complexity-panel">
+        <div class="complexity-heading">
+            <h4>Danh sách kề so với ma trận kề</h4>
+            <span id="graph-complexity-title">KIỂM TRA KỀ · DANH SÁCH KỀ</span>
+        </div>
+        <p class="bst-hint" id="graph-complexity-live"></p>
+
+        <div class="simulation-stats bst-stats">
+            <div class="stat-card">
+                <span>Danh sách kề (ô nhớ)</span>
+                <strong id="graph-list-size">0</strong>
+            </div>
+            <div class="stat-card">
+                <span>Ma trận kề (ô)</span>
+                <strong id="graph-matrix-size">0</strong>
+            </div>
+        </div>
+        <p class="bst-hint" id="graph-density"></p>
+
+        <div class="graph-panel-frame">
+            <table class="graph-complexity-table" id="graph-complexity-table">
+                <caption>Chi phí thời gian và bộ nhớ theo cách biểu diễn (deg(u) ≤ V − 1)</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Thao tác</th>
+                        <th scope="col">Danh sách kề</th>
+                        <th scope="col">Ma trận kề</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-row="space">
+                        <th scope="row">Bộ nhớ</th>
+                        <td>Θ(V + E)</td>
+                        <td>Θ(V²)</td>
+                    </tr>
+                    <tr data-row="has-edge">
+                        <th scope="row">Kiểm tra u kề v <span class="graph-row-badge"></span></th>
+                        <td>O(deg(u)), tốt nhất O(1)</td>
+                        <td>O(1)</td>
+                    </tr>
+                    <tr data-row="neighbors">
+                        <th scope="row">Đỉnh kề của u <span class="graph-row-badge"></span></th>
+                        <td>Θ(deg(u))</td>
+                        <td>Θ(V)</td>
+                    </tr>
+                    <tr data-row="traverse">
+                        <th scope="row">Duyệt mọi cạnh (lý thuyết, BFS/DFS sẽ đo)</th>
+                        <td>Θ(V + E)</td>
+                        <td>Θ(V²)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="bst-hint" id="graph-edit-cost">
+            Sửa đồ thị trên danh sách kề (như cài đặt ở đây): thêm đỉnh O(V) vì tìm slot trống nhỏ nhất;
+            thêm cạnh O(deg(u) + deg(v)) vì kiểm tra cạnh trùng rồi chèn giữ thứ tự (có hướng: O(deg(u)));
+            xóa cạnh O(deg(u) + deg(v)) (có hướng: O(deg(u))); xóa đỉnh O(V + E) vì phải tìm cạnh đi vào
+            trong mọi danh sách. Các chi phí này là của cấu trúc dữ liệu, không tính chi phí sao chép snapshot
+            mà trình mô phỏng dùng để lưu từng bước.
+        </p>
+        </div>
+
+        <div class="learning-section" id="graph-learning">
+            <div class="learning-heading">
+                <div>
+                    <span class="section-eyebrow">GÓC KIẾN THỨC</span>
+                    <h3>Tìm hiểu thao tác</h3>
+                    <p>
+                        V là số đỉnh, E là số cạnh, deg(u) là số đỉnh kề của u (có hướng: số cạnh đi ra).
+                        So sánh preset Cây (thưa) với Đầy đủ K6 (dày) để thấy khi nào ma trận kề đáng dùng.
+                    </p>
+                </div>
+            </div>
+
+            <div class="learning-content">
+                <article class="learning-block">
+                    <h4>Ý tưởng</h4>
+                    <p id="graph-learning-description"></p>
+                </article>
+
+                <article class="learning-block">
+                    <h4>Ưu điểm</h4>
+                    <p id="graph-learning-advantages"></p>
+                </article>
+
+                <article class="learning-block">
+                    <h4>Hạn chế</h4>
+                    <p id="graph-learning-disadvantages"></p>
                 </article>
             </div>
         </div>

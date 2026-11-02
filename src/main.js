@@ -8,6 +8,7 @@ import { initQueue } from './queue.js'
 import { initLinkedList } from './linked-list.js'
 import { initBst } from './bst.js'
 import { initHashTable } from './hash-table.js'
+import { initGraph } from './graph.js'
 
 const app = document.querySelector('#app')
 
@@ -32,3 +33,4 @@ initQueue(document)
 initLinkedList(document)
 initBst(document)
 initHashTable(document)
+initGraph(document)
