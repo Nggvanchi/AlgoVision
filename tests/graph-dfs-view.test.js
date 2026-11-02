@@ -207,6 +207,43 @@ test('renderDfsTable: vào / ra / parent / trạng thái bằng chữ; ở bư�
   assert.ok(table.querySelector('tbody tr.is-current').dataset.id === idOf(steps[4].graph, 'B'))
 })
 
+test('dfsMaxDepthSoFar mỗi bước = số khung lớn nhất của ngăn xếp từ bước 0 tới bước đó; bước cuối = result.maxStackDepth', () => {
+  for (const pairs of [SAMPLE_PAIRS, TREE_PAIRS]) {
+    for (const representation of ['list', 'matrix']) {
+      const { steps } = dfsFromA(pairs, representation)
+      let maxSoFar = 0
+      steps.forEach((step, index) => {
+        maxSoFar = Math.max(maxSoFar, step.callStackIds.length)
+        assert.equal(dfsView.dfsMaxDepthSoFar(step), maxSoFar, `bước ${index}`)
+      })
+      assert.equal(dfsView.dfsMaxDepthSoFar(steps.at(-1)), steps.at(-1).result.maxStackDepth)
+    }
+  }
+  assert.equal(dfsView.dfsMaxDepthSoFar(strangeStep()), 2, 'bỏ qua id lạ trong visitedIds và parentIds')
+})
+
+test('formatCallCount: số lần gọi DFS = số đỉnh đã thăm; thao tác khác "—"', () => {
+  const { steps } = dfsFromA(SAMPLE_PAIRS, 'list')
+  assert.deepEqual([steps[0], steps[13], steps.at(-1)].map(dfsView.formatCallCount), ['0', '4', '4'])
+  assert.equal(dfsView.formatCallCount({ operation: 'bfs' }), '—')
+})
+
+test('describeDfsCost: null nếu không phải DFS; giữa chừng chỉ ghi số đã đếm; bước cuối kết luận Big-O (có hướng: tổng bậc ra)', () => {
+  const { steps } = dfsFromA(TREE_PAIRS, 'list')
+  assert.equal(dfsView.describeDfsCost({ operation: 'bfs' }), null)
+  assert.equal(dfsView.describeDfsCost(steps[8]), 'DFS từ A đang chạy (danh sách kề): đã 3 lần gọi, đã đọc 3 phần tử, '
+    + 'ngăn xếp gọi sâu nhất tới bước này 3 khung.')
+  assert.equal(dfsView.describeDfsCost(steps.at(-1)), 'DFS từ A (danh sách kề): R = 7 lần gọi + 12 phần tử đã đọc '
+    + '(tổng bậc của 7 đỉnh tới được) → O(V + E). Ngăn xếp gọi sâu nhất 3 khung (tối đa V = 7) → bộ nhớ phụ O(V).')
+
+  const directed = buildGraph(true, 7, TREE_PAIRS)
+  const last = generateGraphDfsSteps(directed, idOf(directed, 'A'), 'matrix').at(-1)
+  assert.equal(dfsView.describeDfsCost(last), 'DFS từ A (ma trận kề): R = 7 lần gọi + 49 ô đã đọc = R·V = 7·7 '
+    + '(tối đa V² = 49) → O(V²). Ngăn xếp gọi sâu nhất 3 khung (tối đa V = 7) → bộ nhớ phụ O(V).')
+  const directedList = generateGraphDfsSteps(directed, idOf(directed, 'A'), 'list').at(-1)
+  assert.match(dfsView.describeDfsCost(directedList), /R = 7 lần gọi \+ 6 phần tử đã đọc \(tổng bậc ra của 7 đỉnh tới được\)/)
+})
+
 test('formatDfsResult', () => {
   const { steps } = dfsFromA(SAMPLE_PAIRS, 'list')
 

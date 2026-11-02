@@ -193,6 +193,53 @@ export function renderDfsTable(table, step) {
   table.appendChild(body)
 }
 
+// Độ sâu ngăn xếp lớn nhất từ bước 0 tới bước này, suy từ dữ liệu của chính bước: khi vào v, ngăn xếp có đúng
+// (độ dài chuỗi parent từ v về nguồn) khung, nên lấy max trên các đỉnh đã thăm. Đỉnh lạ bị bỏ qua.
+export function dfsMaxDepthSoFar(step) {
+  const visited = idsOf(step, 'visitedIds')
+  // Giới hạn số bước đi lên bằng số đỉnh đã thăm để dữ liệu hỏng (parent vòng) không làm treo.
+  const depthOf = (id) => {
+    let depth = 0
+    let current = id
+    while (current !== null && hasVertex(step.graph, current) && depth <= visited.length) {
+      depth++
+      current = step.parentIds?.[current] ?? null
+    }
+    return depth
+  }
+  return visited.reduce((max, id) => Math.max(max, depthOf(id)), 0)
+}
+
+// Số lần gọi DFS tới bước này = số đỉnh đã thăm (mỗi lần vào một đỉnh là một lần gọi).
+export function formatCallCount(step) {
+  return step.operation === 'dfs' ? String(idsOf(step, 'visitedIds').length) : '—'
+}
+
+// Số đo DFS cho Learning Panel: số lần gọi (= R khi xong), reads và độ sâu ngăn xếp của bước đang hiển thị.
+// Chỉ bước cuối mới kết luận Big-O; giữa chừng chỉ ghi số đã đếm. Không phải bước DFS thì trả null.
+export function describeDfsCost(step) {
+  if (step.operation !== 'dfs') return null
+
+  const { graph } = step
+  const isList = step.representation === 'list'
+  const source = hasVertex(graph, step.sourceId) ? labelOf(graph, step.sourceId) : 's'
+  const representation = isList ? 'danh sách kề' : 'ma trận kề'
+  const calls = idsOf(step, 'visitedIds').length
+  const depth = dfsMaxDepthSoFar(step)
+
+  if (!step.finished) {
+    return `DFS từ ${source} đang chạy (${representation}): đã ${calls} lần gọi, đã đọc ${step.reads} `
+      + `${isList ? 'phần tử' : 'ô'}, ngăn xếp gọi sâu nhất tới bước này ${depth} khung.`
+  }
+
+  const vertexCount = listVertices(graph).length
+  const cost = isList
+    ? `${step.reads} phần tử đã đọc (tổng bậc${graph.directed ? ' ra' : ''} của ${calls} đỉnh tới được) → O(V + E)`
+    : `${step.reads} ô đã đọc = R·V = ${calls}·${vertexCount} (tối đa V² = ${vertexCount * vertexCount}) → O(V²)`
+  return `DFS từ ${source} (${representation}): R = ${calls} lần gọi + ${cost}. `
+    + `Ngăn xếp gọi sâu nhất ${depth} khung (tối đa V = ${vertexCount}) → bộ nhớ phụ O(V).`
+}
+
 export function formatDfsResult(step) {
   if (!step.finished || step.result === null) return 'Chưa có'
   const order = idsOf(step, 'visitedIds')

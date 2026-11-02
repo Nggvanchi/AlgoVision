@@ -39,9 +39,12 @@ import {
   renderBfsTable,
 } from './graph-bfs-view.js'
 import {
+  describeDfsCost,
   dfsListReadState,
   dfsMatrixReadState,
+  dfsMaxDepthSoFar,
   dfsVertexMarks,
+  formatCallCount,
   formatDfsResult,
   renderDfsOrder,
   renderDfsStack,
@@ -635,6 +638,7 @@ export function initGraph(document, options = {}) {
     density: $('#graph-density'),
     table: $('#graph-complexity-table'),
     bfsCost: $('#graph-bfs-cost'),
+    dfsCost: $('#graph-dfs-cost'),
   }
   const learningCells = {
     description: $('#graph-learning-description'),
@@ -647,7 +651,9 @@ export function initGraph(document, options = {}) {
     degree: $('#graph-degree'),
     readsLabel: $('#graph-reads-label'),
     reads: $('#graph-reads'),
+    dequeuesLabel: $('#graph-dequeues-label'),
     dequeues: $('#graph-dequeues'),
+    stackDepth: $('#graph-stack-depth'),
     result: $('#graph-result'),
   }
 
@@ -759,7 +765,11 @@ export function initGraph(document, options = {}) {
     setText(stats.degree, formatDegree(graph, step.sourceId))
     setText(stats.readsLabel, readsLabels[step.representation])
     setText(stats.reads, String(step.reads))
-    setText(stats.dequeues, formatDequeueCount(step))
+    // Thẻ thứ năm đếm số lần dequeue (BFS) hoặc số lần gọi (DFS); thẻ độ sâu chỉ có số với DFS.
+    const isDfs = step.operation === 'dfs'
+    setText(stats.dequeuesLabel, isDfs ? 'Số lần gọi DFS' : 'Số lần dequeue (BFS)')
+    setText(stats.dequeues, isDfs ? formatCallCount(step) : formatDequeueCount(step))
+    setText(stats.stackDepth, isDfs ? String(dfsMaxDepthSoFar(step)) : '—')
     setText(stats.result, formatResult(step))
 
     const { list, matrix } = representationSizes(graph)
@@ -769,13 +779,23 @@ export function initGraph(document, options = {}) {
     setText(complexity.density, describeDensity(graph))
   }
 
-  // Số đo BFS theo bước đang hiển thị; chưa sinh bước (chọn BFS nhưng chưa bấm Thực hiện) thì chỉ nhắc cách đo.
-  function renderBfsCost(step, hasSteps) {
-    if (!complexity.bfsCost) return
-    const text = describeBfsCost(step)
-    complexity.bfsCost.hidden = text === null
-    if (text === null) return
-    setText(complexity.bfsCost, hasSteps ? text : 'BFS từ s: bấm Thực hiện để đếm số lần dequeue và số lần đọc thật.')
+  // Số đo BFS/DFS theo bước đang hiển thị; chưa sinh bước (chọn thao tác nhưng chưa bấm Thực hiện) thì chỉ nhắc cách đo.
+  const traversalCosts = [
+    { element: complexity.bfsCost, describe: describeBfsCost, idle: 'BFS từ s: bấm Thực hiện để đếm số lần dequeue và số lần đọc thật.' },
+    {
+      element: complexity.dfsCost,
+      describe: describeDfsCost,
+      idle: 'DFS từ s: bấm Thực hiện để đếm số lần gọi, số lần đọc và độ sâu ngăn xếp thật.',
+    },
+  ]
+
+  function renderTraversalCost(step, hasSteps) {
+    for (const { element, describe, idle } of traversalCosts) {
+      if (!element) continue
+      const text = describe(step)
+      element.hidden = text === null
+      if (text !== null) setText(element, hasSteps ? text : idle)
+    }
   }
 
   function renderControls({ stepCount, controls }) {
@@ -851,7 +871,7 @@ export function initGraph(document, options = {}) {
     renderSourceLabel()
     renderRepresentations(step)
     renderStats(step)
-    renderBfsCost(step, snapshot.step !== null && snapshot.step !== undefined)
+    renderTraversalCost(step, snapshot.step !== null && snapshot.step !== undefined)
     renderOperationInfo(step)
     message.textContent = step.message
     renderControls(snapshot)

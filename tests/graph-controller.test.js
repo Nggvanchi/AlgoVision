@@ -698,9 +698,10 @@ test('Learning Panel đồ thị rỗng: 0 ô, không chia cho 0', () => {
   })
 })
 
-// Dòng "Duyệt mọi cạnh (lý thuyết, BFS/DFS sẽ đo)" được thay bằng dòng BFS đo thật (PR BFS); DFS chưa có nên
-// bảng không còn chữ nào nói DFS đã được đo.
-test('Bảng Big-O: danh sách kề so với ma trận kề; dòng BFS từ s (đo thật); dòng của thao tác đang chọn được đánh dấu bằng chữ', () => {
+// Dòng "Duyệt mọi cạnh (lý thuyết, BFS/DFS sẽ đo)" được thay bằng dòng BFS đo thật (PR BFS), rồi thêm dòng DFS đo thật
+// (PR DFS). Assert cũ "không có chữ DFS" (đúng khi DFS chưa có) được đổi thành "không còn chữ 'sẽ đo'": cùng ý không hiển
+// thị lý thuyết chưa đo, và kiểm dòng dfs.
+test('Bảng Big-O: danh sách kề so với ma trận kề; dòng BFS và DFS từ s (đo thật); dòng của thao tác đang chọn được đánh dấu bằng chữ', () => {
   withGraph((ui) => {
     const row = (name) => ui.$(`#graph-complexity-table tr[data-row="${name}"]`)
     const cells = (name) => [...row(name).querySelectorAll('td')].map((cell) => cell.textContent.trim())
@@ -711,7 +712,9 @@ test('Bảng Big-O: danh sách kề so với ma trận kề; dòng BFS từ s (�
     assert.equal(row('traverse') === null, true)
     assert.deepEqual(cells('bfs'), ['O(V + E): R lần dequeue + tổng bậc (ra) của R đỉnh', 'O(V²): R·V ô, tối đa V²'])
     assert.equal(row('bfs').querySelector('th').textContent.trim(), 'BFS từ s')
-    assert.doesNotMatch(ui.text('#graph-complexity-panel'), /DFS/)
+    assert.deepEqual(cells('dfs'), ['O(V + E): R lần gọi + tổng bậc (ra) của R đỉnh', 'O(V²): R·V ô, tối đa V²'])
+    assert.equal(row('dfs').querySelector('th').textContent.trim(), 'DFS từ s')
+    assert.doesNotMatch(ui.text('#graph-complexity-panel'), /sẽ đo/)
 
     assert.ok(row('has-edge').classList.contains('is-active'))
     assert.equal(row('has-edge').querySelector('.graph-row-badge').textContent, 'đang chọn')
@@ -1291,5 +1294,101 @@ test('DFS: mã giả lấy từ chính file generator, lý thuyết riêng cho d
     }
     assert.equal(descriptions.size, 2)
     assert.equal(descriptions.has(bfsDescription), false)
+  })
+})
+
+test('Learning Panel DFS: dòng dfs được đánh dấu; #graph-dfs-cost chỉ hiện với bước DFS, ghi số lần gọi, số lần đọc và độ sâu thật', () => {
+  withGraph((ui) => {
+    const row = ui.$('#graph-complexity-table tr[data-row="dfs"]')
+    assert.equal(ui.$('#graph-dfs-cost').hidden, true)
+
+    ui.query('dfs', 'A')
+    assert.ok(row.classList.contains('is-active'))
+    assert.equal(row.querySelector('.graph-row-badge').textContent, 'đang chọn')
+    assert.equal(ui.$('#graph-dfs-cost').hidden, false)
+    assert.equal(ui.$('#graph-bfs-cost').hidden, true)
+
+    ui.nextUntilDone()
+    assert.equal(ui.text('#graph-dfs-cost'), 'DFS từ A (danh sách kề): R = 4 lần gọi + 8 phần tử đã đọc '
+      + '(tổng bậc của 4 đỉnh tới được) → O(V + E). Ngăn xếp gọi sâu nhất 4 khung (tối đa V = 7) → bộ nhớ phụ O(V).')
+
+    ui.change('#graph-representation', 'matrix')
+    ui.query('dfs', 'A')
+    ui.nextUntilDone()
+    assert.equal(ui.text('#graph-dfs-cost'), 'DFS từ A (ma trận kề): R = 4 lần gọi + 28 ô đã đọc = R·V = 4·7 '
+      + '(tối đa V² = 49) → O(V²). Ngăn xếp gọi sâu nhất 4 khung (tối đa V = 7) → bộ nhớ phụ O(V).')
+
+    ui.query('bfs', 'A')
+    assert.equal(ui.$('#graph-dfs-cost').hidden, true)
+    assert.equal(ui.$('#graph-bfs-cost').hidden, false)
+  })
+})
+
+test('Learning Panel DFS có hướng ghi "tổng bậc ra"; số liệu đọc từ step.graph (nạp bước K6 khi đồ thị đã chốt là Mẫu, select ở BFS)', () => {
+  withGraph((ui) => {
+    ui.change('#graph-kind', 'directed')
+    ui.$('#graph-preset-sample').click()
+    ui.query('dfs', 'A')
+    ui.nextUntilDone()
+    assert.match(ui.text('#graph-dfs-cost'), /R = 4 lần gọi \+ 5 phần tử đã đọc \(tổng bậc ra của 4 đỉnh tới được\)/)
+
+    const k6 = buildGraph(false, 6, [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [1, 2], [1, 3], [1, 4], [1, 5],
+      [2, 3], [2, 4], [2, 5], [3, 4], [3, 5], [4, 5]])
+    ui.change('#graph-operation', 'bfs')
+    ui.handle.loadSteps([dfsModule.generateGraphDfsSteps(k6, 'v1', 'matrix').at(-1)])
+    assert.match(ui.text('#graph-dfs-cost'), /R = 6 lần gọi \+ 36 ô đã đọc = R·V = 6·6 \(tối đa V² = 36\)/)
+    assert.match(ui.text('#graph-dfs-cost'), /sâu nhất 6 khung \(tối đa V = 6\)/)
+    assert.deepEqual([ui.text('#graph-dequeues'), ui.text('#graph-stack-depth')], ['6', '6'])
+  })
+})
+
+test('Learning Panel DFS giữa chừng (vào D): ghi số đã đếm tới bước đang hiển thị, chưa kết luận Big-O; chưa sinh bước thì chỉ nhắc', () => {
+  withGraph((ui) => {
+    ui.change('#graph-operation', 'dfs')
+    assert.equal(ui.text('#graph-dfs-cost'), 'DFS từ s: bấm Thực hiện để đếm số lần gọi, số lần đọc và độ sâu ngăn xếp thật.')
+
+    ui.query('dfs', 'A')
+    clickNext(ui, 13)
+    assert.equal(ui.text('#graph-dfs-cost'), 'DFS từ A đang chạy (danh sách kề): đã 4 lần gọi, đã đọc 6 phần tử, '
+      + 'ngăn xếp gọi sâu nhất tới bước này 4 khung.')
+  })
+})
+
+test('Thẻ số liệu: nhãn đổi theo thao tác (dequeue / gọi DFS); độ sâu "tối đa tới bước này" giữ giá trị lớn nhất khi quay lui', () => {
+  withGraph((ui) => {
+    const label = () => ui.text('#graph-dequeues-label')
+    assert.equal(ui.text('#graph-stack-depth-label'), 'Độ sâu ngăn xếp DFS (tối đa tới bước này)')
+    assert.deepEqual([ui.text('#graph-dequeues'), ui.text('#graph-stack-depth')], ['—', '—'])
+
+    ui.query('bfs', 'A')
+    assert.equal(label(), 'Số lần dequeue (BFS)')
+    assert.equal(ui.text('#graph-stack-depth'), '—')
+
+    ui.query('dfs', 'A')
+    assert.equal(label(), 'Số lần gọi DFS')
+    assert.deepEqual([ui.text('#graph-dequeues'), ui.text('#graph-stack-depth')], ['0', '0'])
+    clickNext(ui, 13)
+    assert.deepEqual([ui.text('#graph-dequeues'), ui.text('#graph-stack-depth')], ['4', '4'])
+    clickNext(ui, 4)
+    assert.match(ui.text('#graph-message'), /^Đọc hết Adj\[B\]/)
+    assert.deepEqual([ui.text('#graph-dequeues'), ui.text('#graph-stack-depth')], ['4', '4'], 'ngăn xếp chỉ còn A nhưng tối đa vẫn 4')
+  })
+})
+
+test('Thẻ độ sâu ở bước cuối bằng result.maxStackDepth: Cây 3, K6 6, C5 5 (danh sách và ma trận)', () => {
+  withGraph((ui) => {
+    const cases = [
+      [buildGraph(false, 7, TREE_PAIRS), 3],
+      [buildGraph(false, 6, [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [1, 2], [1, 3], [1, 4], [1, 5], [2, 3], [2, 4], [2, 5], [3, 4], [3, 5], [4, 5]]), 6],
+      [buildGraph(false, 5, [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]]), 5],
+    ]
+    for (const [graph, depth] of cases) {
+      for (const representation of ['list', 'matrix']) {
+        const last = dfsModule.generateGraphDfsSteps(graph, 'v1', representation).at(-1)
+        ui.handle.loadSteps([last])
+        assert.equal(last.result.maxStackDepth, depth)
+        assert.equal(ui.text('#graph-stack-depth'), String(last.result.maxStackDepth))
+      }
+    }
   })
 })

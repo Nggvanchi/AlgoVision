@@ -1866,8 +1866,12 @@
             <strong id="graph-reads">0</strong>
         </div>
         <div class="stat-card">
-            <span>Số lần dequeue (BFS)</span>
+            <span id="graph-dequeues-label">Số lần dequeue (BFS)</span>
             <strong id="graph-dequeues">—</strong>
+        </div>
+        <div class="stat-card">
+            <span id="graph-stack-depth-label">Độ sâu ngăn xếp DFS (tối đa tới bước này)</span>
+            <strong id="graph-stack-depth">—</strong>
         </div>
         <div class="stat-card">
             <span>Kết quả</span>
@@ -1932,10 +1936,16 @@
                         <td>O(V + E): R lần dequeue + tổng bậc (ra) của R đỉnh</td>
                         <td>O(V²): R·V ô, tối đa V²</td>
                     </tr>
+                    <tr data-row="dfs">
+                        <th scope="row">DFS từ s <span class="graph-row-badge"></span></th>
+                        <td>O(V + E): R lần gọi + tổng bậc (ra) của R đỉnh</td>
+                        <td>O(V²): R·V ô, tối đa V²</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
         <p class="bst-hint" id="graph-bfs-cost" hidden></p>
+        <p class="bst-hint" id="graph-dfs-cost" hidden></p>
 
         <p class="bst-hint" id="graph-edit-cost">
             Sửa đồ thị trên danh sách kề (như cài đặt ở đây): thêm đỉnh O(V) vì tìm slot trống nhỏ nhất;
