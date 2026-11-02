@@ -28,7 +28,7 @@ function assertSymmetric(graph, where) {
   }
 }
 
-// extra: { references, paths } gộp thêm vào cấu hình Graph (BFS dùng để kiểm các trường riêng của nó).
+// extra: { references, paths } gộp thêm vào cấu hình Graph (BFS, DFS dùng để kiểm các trường riêng của nó).
 export function assertGraphStepInvariants(steps, extra = {}) {
   assertStepInvariants(steps, {
     ...graphOptions,
@@ -113,6 +113,103 @@ function assertBfsStep(step, previous, where) {
 export function assertBfsStepInvariants(steps) {
   assertGraphStepInvariants(steps, bfsOptions)
   steps.forEach((step, index) => assertBfsStep(step, steps[index - 1], `bước ${index}`))
+}
+
+// Bất biến riêng của DFS (thêm vào bất biến Graph ở trên). Dòng mã giả "gọi" (parent[w] ← u; DFS(w)) là dòng 5.
+// - callStackIds, key của discovery/finish, key/giá trị của parentIds chỉ chứa id đỉnh của bước; visitedIds, finishedIds chỉ tăng;
+// - discovery, finish, parentIds có key cho đúng mọi đỉnh; discovery[x] khác null ⇔ x đã thăm; finish[x] khác null ⇔ x đã đóng;
+//   mốc đã gán không đổi; các mốc đã gán là đúng 1..k (đồng hồ tăng 1 mỗi lần vào và mỗi lần ra);
+// - visitedIds không trùng, đỉnh đầu tiên là nguồn; finishedIds không trùng và chỉ chứa đỉnh đã thăm;
+// - callStackIds đúng bằng các đỉnh đã thăm chưa đóng (đỉnh xám) theo thứ tự thăm, và là đường đi từ nguồn theo parentIds;
+// - currentVertexId là đỉnh của ngăn xếp (null khi ngăn xếp rỗng);
+// - parent của w được gán ở bước "gọi" khi w CHƯA thăm (visited đánh dấu ở bước "vào w" ngay sau). Vì vậy: w có parent p thì
+//   p đã thăm và mốc vào của p nhỏ hơn của w; hoặc w đã thăm, hoặc bước này là bước "gọi" với currentEdge = (p, w) và p là đỉnh
+//   ngăn xếp. Đỉnh đã thăm khác nguồn phải có parent; nguồn không có parent.
+export const DFS_CALL_LINE = 5
+
+const dfsOptions = {
+  references: [
+    { field: 'callStackIds', exists: vertexExists, idsOf: (ids) => ids },
+    { field: 'discovery', exists: vertexExists, idsOf: (map) => Object.keys(map) },
+    { field: 'finish', exists: vertexExists, idsOf: (map) => Object.keys(map) },
+    {
+      field: 'parentIds',
+      exists: vertexExists,
+      idsOf: (map) => [...Object.keys(map), ...Object.values(map).filter((id) => id !== null)],
+    },
+  ],
+  paths: [
+    { field: 'visitedIds', exists: vertexExists },
+    { field: 'finishedIds', exists: vertexExists },
+  ],
+}
+
+function assertStampsKept(step, previous, field, where) {
+  if (!previous) return
+  for (const [id, value] of Object.entries(previous[field])) {
+    if (value !== null && Object.hasOwn(step[field], id)) {
+      assert.equal(step[field][id], value, `${where}: ${field}[${id}] bị đổi`)
+    }
+  }
+}
+
+function assertParent(step, id, where) {
+  const { parentIds, visitedIds, discovery, sourceId, currentEdge, callStackIds } = step
+  const parentId = parentIds[id]
+  const visited = visitedIds.includes(id)
+
+  if (parentId === null) {
+    if (visited && id !== sourceId) assert.fail(`${where}: ${id} đã thăm nhưng không có parent`)
+    return
+  }
+  assert.notEqual(id, sourceId, `${where}: nguồn không có parent`)
+  assert.ok(visitedIds.includes(parentId), `${where}: parent ${parentId} của ${id} chưa được thăm`)
+  if (visited) {
+    assert.ok(discovery[parentId] < discovery[id], `${where}: mốc vào của parent phải nhỏ hơn mốc vào của ${id}`)
+    return
+  }
+  const isCallTarget = step.pseudocodeLine === DFS_CALL_LINE && currentEdge?.from === parentId && currentEdge?.to === id
+  assert.ok(isCallTarget && callStackIds.at(-1) === parentId,
+    `${where}: parent của ${id} được gán nhưng ${id} chưa thăm và không phải đích của bước gọi`)
+}
+
+function assertDfsStep(step, previous, where) {
+  const { discovery, finish, parentIds, visitedIds, finishedIds, callStackIds, sourceId } = step
+  const vertexIds = Object.keys(step.graph.vertices).sort()
+
+  for (const [field, map] of [['discovery', discovery], ['finish', finish], ['parentIds', parentIds]]) {
+    assert.deepEqual(sortedKeys(map), vertexIds, `${where}: ${field} phải có key cho mọi đỉnh`)
+  }
+  assert.equal(new Set(visitedIds).size, visitedIds.length, `${where}: visitedIds có phần tử trùng`)
+  assert.equal(new Set(finishedIds).size, finishedIds.length, `${where}: finishedIds có phần tử trùng`)
+  if (visitedIds.length > 0) assert.equal(visitedIds[0], sourceId, `${where}: đỉnh thăm đầu tiên phải là nguồn`)
+  for (const id of finishedIds) assert.ok(visitedIds.includes(id), `${where}: ${id} đã đóng nhưng chưa thăm`)
+
+  for (const id of vertexIds) {
+    assert.equal(discovery[id] !== null, visitedIds.includes(id), `${where}: discovery khác null khi và chỉ khi đã thăm (${id})`)
+    assert.equal(finish[id] !== null, finishedIds.includes(id), `${where}: finish khác null khi và chỉ khi đã đóng (${id})`)
+  }
+  assertStampsKept(step, previous, 'discovery', where)
+  assertStampsKept(step, previous, 'finish', where)
+
+  const stamps = [...Object.values(discovery), ...Object.values(finish)].filter((value) => value !== null).sort((x, y) => x - y)
+  assert.deepEqual(stamps, stamps.map((_, index) => index + 1), `${where}: mốc thời gian phải là 1..k, mỗi số một lần`)
+
+  const grayIds = visitedIds.filter((id) => !finishedIds.includes(id))
+  assert.deepEqual(callStackIds, grayIds, `${where}: callStackIds phải bằng các đỉnh đã thăm chưa đóng (theo thứ tự thăm)`)
+  callStackIds.forEach((id, index) => {
+    const expectedParent = index === 0 ? null : callStackIds[index - 1]
+    if (index === 0) assert.equal(id, sourceId, `${where}: đáy ngăn xếp phải là nguồn`)
+    assert.equal(parentIds[id], expectedParent, `${where}: callStackIds phải là đường đi từ nguồn theo parentIds`)
+  })
+  assert.equal(step.currentVertexId, callStackIds.at(-1) ?? null, `${where}: currentVertexId phải là đỉnh của ngăn xếp`)
+
+  for (const id of vertexIds) assertParent(step, id, where)
+}
+
+export function assertDfsStepInvariants(steps) {
+  assertGraphStepInvariants(steps, dfsOptions)
+  steps.forEach((step, index) => assertDfsStep(step, steps[index - 1], `bước ${index}`))
 }
 
 export { lineText }
