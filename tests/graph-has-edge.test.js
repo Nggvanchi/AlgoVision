@@ -137,6 +137,34 @@ test('mọi cặp đỉnh, cả hai chế độ và hai cách biểu diễn: b�
   }
 })
 
+test('mọi trường hợp false: bước kết luận không tăng reads (danh sách); ma trận chỉ đọc đúng một ô, không có bước kết luận riêng', () => {
+  let falseCases = 0
+
+  for (const graph of [undirectedSample(), directedSample()]) {
+    const ids = listVertices(graph).map((vertex) => vertex.id)
+    for (const from of ids) {
+      for (const to of ids) {
+        const list = hasEdgeModule.generateGraphHasEdgeSteps(graph, from, to, 'list')
+        const matrix = hasEdgeModule.generateGraphHasEdgeSteps(graph, from, to, 'matrix')
+        if (list.at(-1).result !== false) continue
+        falseCases++
+
+        const conclusion = list.at(-1)
+        assert.equal(conclusion.pseudocodeLine, 3)
+        assert.equal(conclusion.reads, list.at(-2).reads, 'bước kết luận "return false" tăng reads')
+        assert.equal(conclusion.reads, graph.adjacency[from].length)
+
+        assert.equal(matrix.length, 2)
+        assert.equal(matrix.at(-1).pseudocodeLine, 1)
+        assert.equal(matrix.at(-1).reads, 1)
+      }
+    }
+  }
+
+  // Vô hướng: 49 cặp − 10 cặp có cạnh = 39; có hướng: 49 − 6 = 43.
+  assert.equal(falseCases, 39 + 43)
+})
+
 test('trường đầu vào chốt trong mọi bước; bước chỉ lưu dữ liệu', () => {
   const graph = undirectedSample()
   const steps = run(graph, 'A', 'C', 'list')
