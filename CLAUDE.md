@@ -15,7 +15,8 @@ pnpm dev        # chạy thử trên trình duyệt
 ## Kiến trúc
 
 - `index.html` chỉ có `#app`; `src/main.js` fetch `public/templates/app.html` rồi gọi các hàm `init*`.
-- Module UI: `navigation.js`, `sorting.js`, `searching.js`, `array.js`, `stack.js`, `queue.js`, `linked-list.js`.
+- Module UI: `navigation.js`, `sorting.js`, `searching.js`, `array.js`, `stack.js`, `queue.js`, `linked-list.js`,
+  `bst.js`, `hash-table.js`.
 - `src/simulation-controller.js`: bộ điều khiển mô phỏng dùng chung cho Sorting và Searching
   (state `idle | running | paused | completed`, một timer duy nhất, scheduler inject được). Chi tiết API ở mục Giai đoạn 5.
   `initSorting(options)` / `initSearching(options)` nhận `options.scheduler` và truyền vào controller.
@@ -47,7 +48,7 @@ pnpm dev        # chạy thử trên trình duyệt
     giới hạn 1–99 và 15 nút đặt ở `src/bst.js`. Chiều cao theo số cạnh: rỗng = -1, một nút = 0.
   - `src/algorithms/bst{Insert,Search,Delete,Traversal,MinMax,Height}.js` + khuôn bước `bstStep.js`:
     `{ tree, currentId, pathIds, foundId, successorId, output, heights, operation, value, comparisons, pseudocodeLine, message, finished, result }`.
-    Bất biến (kiểm bằng `tests/helpers/bst-step-invariants.js`): `currentId/foundId/successorId` là null hoặc thuộc
+    Bất biến (kiểm bằng `tests/helpers/bst-step-invariants.js`, lớp bọc của helper chung): `currentId/foundId/successorId` là null hoặc thuộc
     `tree.nodes` của chính bước đó; `pathIds` chỉ tăng (trừ nút bị xóa); chỉ bước cuối `finished`.
   - comparisons: Insert = số nút từ gốc tới cha nút mới (rỗng = 0, trùng ở độ sâu d = d + 1); Search/Delete = mỗi nút
     được xét tính 1, gồm nút tìm thấy; bước kết luận "không tìm thấy" không tăng; đi tìm successor, Min/Max, duyệt, Height = 0.
@@ -57,10 +58,36 @@ pnpm dev        # chạy thử trên trình duyệt
   - `src/bst.js`: `initBst(document, { scheduler })`, `renderBstTree(svg, step)` (bỏ qua id không có trong cây),
     `bstOperations` (mã giả, Big-O, lý thuyết theo thao tác). Cây được chốt bằng `steps.at(-1).tree` ngay khi sinh bước;
     Reset chỉ tua minh họa (báo qua `#bst-status`). Đang Run thì khóa nút thao tác. n, h đọc từ cây của bước đang hiển thị.
+- Hash Table (giai đoạn 7):
+  - `src/structures/hashTable.js`: snapshot thuần, hai chiến lược. Chaining `{ strategy, capacity, buckets: [[{ id, key }]], nextId }`;
+    linear probing `{ strategy, capacity, cells: [{ kind: 'empty' | 'occupied' (id, key) | 'tombstone' }], nextId }`.
+    Ô định danh bằng chỉ số, phần tử bằng id chuỗi `e1, e2, …` không cấp lại; tombstone không giữ id. n luôn đếm từ dữ liệu.
+    Hàm băm `key mod m` (khóa âm vẫn về 0..m-1). Tầng này chỉ yêu cầu khóa nguyên, m nguyên ≥ 1.
+    `insertKey` trả `{ table, inserted, full, id }`: kiểm trùng trước kiểm đầy; probing chỉ `full` khi không ô trống,
+    không tombstone và khóa chưa có. `containsKey` là cách duy nhất UI dùng để kiểm trùng.
+  - `src/algorithms/hashTable{Insert,Search,Delete}.js` + `hashTableStep.js` (khuôn bước, `scanChain`, `scanProbes`):
+    `{ table, operation, key, hashIndex, currentBucket, currentEntryId, pathEntryIds, probedBuckets, foundEntryId,
+    insertedEntryId, comparisons, probes, pseudocodeLine, message, finished, result }`. Mỗi file export mã giả
+    `chaining*Pseudocode` và `probing*Pseudocode`; hàm `generateHashTable*Steps` chọn theo `table.strategy`.
+    Bất biến kiểm bằng `tests/helpers/hash-step-invariants.js` (lớp bọc của helper chung `step-invariants.js`).
+  - comparisons = số lần so khóa với khóa của một phần tử có thật; probes = số ô đã dò (chỉ probing, gồm ô trống/tombstone).
+    Tính hash không phải phép so sánh. Bước kết luận (không tìm thấy, đã tồn tại, đầy) không tăng cả hai.
+    Mỗi lần dò probing sinh hai bước: dòng `p = (i + j) mod m` rồi dòng quyết định (trống / tombstone / so khóa).
+  - Xóa probing để lại tombstone; đặt về trống làm Search khóa phía sau báo nhầm (test: xóa 10 khỏi 3, 10, 17 rồi tìm 17).
+  - `src/hash-table-layout.js`: mỗi ô một hàng 48px; chaining nối phần tử sang phải (40px + 16px mũi tên);
+    `scrollTargetFor` chọn điểm cuộn (phần tử đang xét → vừa chèn/tìm thấy → ô đang xét), bỏ qua id lạ.
+  - `src/hash-table.js`: `initHashTable(document, { scheduler })`, `renderHashTable`, `formatLoadFactor` (dấu phẩy cố định),
+    `collisionPresetKeys` (3 + k·m). Giới hạn UI: khóa 0–99, m ∈ {5, 7, 11}, chaining 15 phần tử, probing m.
+    Bảng chốt bằng `steps.at(-1).table`; đổi m/chiến lược tạo bảng rỗng (báo qua `#hash-table-status`; chưa có rehash);
+    đang Run khóa cả ô chọn m và chiến lược. Mọi số liệu (n, m, α, tombstone) đọc từ bảng của bước đang hiển thị.
+- `navigation.js`: thẻ `data-structure-target="x"` mở section `#x-section` (suy ra lúc init, kể cả danh sách cần ẩn);
+  thêm cấu trúc mới không cần sửa navigation. Thẻ không có section thì click bị bỏ qua, thư viện giữ nguyên.
 - Section Sorting có `id="sorting-section"` (navigation và test tìm theo id, không dùng chuỗi `:not(...)` nữa).
 - `tests/*.test.js`: Node Test Runner + happy-dom, nạp template thật từ `public/templates/app.html`.
 - `tests/helpers/fake-scheduler.js`: scheduler thời gian ảo cho test timer (không bị `node --test` quét).
-- `tests/complexity.test.js`, `tests/bst-complexity.test.js`: đối chiếu số phép so sánh thực tế với Big-O hiển thị.
+- `tests/complexity.test.js`, `tests/bst-complexity.test.js`, `tests/hash-table-complexity.test.js`,
+  `tests/hash-table-probing-complexity.test.js`: đối chiếu số phép so sánh / số ô dò thực tế với Big-O hiển thị.
+- `tests/helpers/step-invariants.js`: bất biến bước dùng chung (tham chiếu id, đường đi chỉ tăng, trường hằng, finished, bước 0).
 - Đếm test bằng dòng `ℹ tests` của `node --test` (grep `^test(` bỏ sót test sinh trong vòng `for`).
   Test import module có thể thiếu export thì dùng namespace import để không làm hỏng cả file.
 
@@ -103,7 +130,8 @@ pnpm dev        # chạy thử trên trình duyệt
 ## Trạng thái hiện tại (cập nhật 2026-11-02)
 
 - `main` = `a386bba` (Merge PR #5, giai đoạn 7 module BST). Baseline: 357/357 test pass, build OK.
-- Giai đoạn 7, module tiếp theo: Hash Table trên branch `feat/hash-table` (đang lập kế hoạch, chưa có code).
+- Giai đoạn 7, module Hash Table xong trên branch `feat/hash-table`, CHỜ người dùng review PR.
+  Kết quả: 458/458 test pass (baseline 357), build OK.
 - Máy phát triển: Windows và Ubuntu (repo trên phân vùng NTFS, `core.filemode=false`).
 - Windows: `core.autocrlf=true` + `.gitattributes` (`* text=auto eol=lf`), mọi file text là LF.
 - `.claude/settings.json` (đã commit) chặn bằng deny rule cho cả Bash và PowerShell: force push, push lên `main`,
@@ -156,7 +184,7 @@ pnpm dev        # chạy thử trên trình duyệt
 
 ## Roadmap sau giai đoạn 5 (chỉ làm khi được đồng ý)
 6. Learning Panel (đã merge, PR #4).
-7. BST (đã merge, PR #5), Hash Table, Graph, BFS, DFS — từng module một, có test.
+7. BST (đã merge, PR #5), Hash Table (xong, chờ merge), Graph, BFS, DFS — từng module một, có test.
 8. Tiến độ học tập bằng `localStorage` (xử lý dữ liệu lỗi/thiếu).
 9. Kiểm thử tổng thể, UI/UX, README (README trên GitHub đang lỗi thời), CI, deployment.
    Ghi chú: `main.js` không xử lý lỗi khi fetch template thất bại (trang trắng).
