@@ -7,6 +7,7 @@ import { initStack } from './stack.js'
 import { initQueue } from './queue.js'
 import { initLinkedList } from './linked-list.js'
 import { initBst } from './bst.js'
+import { initHashTable } from './hash-table.js'
 
 const app = document.querySelector('#app')
 
@@ -30,3 +31,4 @@ initStack()
 initQueue(document)
 initLinkedList(document)
 initBst(document)
+initHashTable(document)
