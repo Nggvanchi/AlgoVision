@@ -4,6 +4,7 @@ import { adjacencyListSize, buildGraph, listVertices, toAdjacencyMatrix } from '
 import { generateGraphHasEdgeSteps } from '../src/algorithms/graphHasEdge.js'
 import { generateGraphNeighborsSteps } from '../src/algorithms/graphNeighbors.js'
 import { generateGraphBfsSteps } from '../src/algorithms/graphBfs.js'
+import { generateGraphDfsSteps } from '../src/algorithms/graphDfs.js'
 
 // Đối chiếu số lần đọc thực tế (reads) và kích thước bộ nhớ với Big-O hiển thị trong Learning Panel:
 // - Kiểm tra (u, v): danh sách O(deg(u)) (tốt nhất 1), ma trận O(1);
@@ -11,6 +12,8 @@ import { generateGraphBfsSteps } from '../src/algorithms/graphBfs.js'
 // - Không gian: danh sách Θ(V + E), ma trận Θ(V²);
 // - BFS từ s (đo thật): danh sách R lần dequeue + tổng bậc (ra) của R đỉnh tới được → O(V + E);
 //   ma trận R·V ô, tối đa V² → O(V²).
+// - DFS từ s (đo thật): R lần gọi + cùng số reads với BFS (mỗi đỉnh tới được được mở đúng một lần) → O(V + E) / O(V²);
+//   ngăn xếp gọi sâu nhất ≤ V khung → bộ nhớ phụ O(V) (xấu nhất: đường thẳng, nguồn ở đầu).
 const SAMPLE_PAIRS = [[0, 1], [0, 2], [1, 2], [2, 3], [4, 5]]
 const TREE_PAIRS = [[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6]]
 const COMPLETE_PAIRS = []
@@ -204,4 +207,87 @@ test('BFS ma trận, đường thẳng 50 đỉnh: 50 dequeue, reads 2500 = V²,
 
   assert.deepEqual([matrix.at(-1).orderIds.length, matrix.at(-1).reads, matrix.length], [50, 2500, 2602])
   assert.deepEqual([list.at(-1).reads, list.length], [98, 200])
+})
+
+// ---- DFS từ s: đo số lần gọi (= R, mỗi lần vào một đỉnh là một lần gọi DFS), reads và độ sâu ngăn xếp tối đa (số khung).
+const dfsCost = (graph, sourceId, representation) => {
+  const steps = generateGraphDfsSteps(graph, sourceId, representation)
+  const last = steps.at(-1)
+  return {
+    calls: last.visitedIds.length,
+    reads: last.reads,
+    depth: Math.max(...steps.map((step) => step.callStackIds.length)),
+    steps: steps.length,
+    result: last.result,
+  }
+}
+const CYCLE5_PAIRS = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]]
+const traversalPresets = {
+  ...presets,
+  cycle5: (directed) => buildGraph(directed, 5, CYCLE5_PAIRS),
+  single: (directed) => buildGraph(directed, 1, []),
+}
+
+for (const directed of [false, true]) {
+  const mode = directed ? 'có hướng' : 'vô hướng'
+  const expected = directed
+    ? { sample: [4, 5, 28, 4], tree: [7, 6, 49, 3], complete: [6, 15, 36, 6] }
+    : { sample: [4, 8, 28, 4], tree: [7, 12, 49, 3], complete: [6, 30, 36, 6] }
+  const text = Object.entries(expected).map(([name, values]) => `${name} ${values.join('/')}`).join(', ')
+
+  test(`DFS nguồn A — ${mode} (gọi/reads danh sách/reads ma trận/độ sâu): ${text}`, () => {
+    const costs = Object.fromEntries(Object.entries(presets).map(([name, make]) => {
+      const graph = make(directed)
+      const list = dfsCost(graph, firstId(graph), 'list')
+      const matrix = dfsCost(graph, firstId(graph), 'matrix')
+      assert.deepEqual([matrix.calls, matrix.depth], [list.calls, list.depth])
+      assert.deepEqual(list.result, { reachable: list.calls, maxStackDepth: list.depth })
+      return [name, [list.calls, list.reads, matrix.reads, list.depth]]
+    }))
+
+    assert.deepEqual(costs, expected)
+  })
+}
+
+test('DFS và BFS đọc cùng số phần tử / ô: mọi đồ thị mẫu × mọi nguồn × hai chế độ × hai biểu diễn; số lần gọi = số lần dequeue = R', () => {
+  for (const make of Object.values(traversalPresets)) {
+    for (const directed of [false, true]) {
+      const graph = make(directed)
+      for (const { id, label } of listVertices(graph)) {
+        for (const representation of ['list', 'matrix']) {
+          const dfs = dfsCost(graph, id, representation)
+          const bfs = bfsCost(graph, id, representation)
+          assert.deepEqual([dfs.calls, dfs.reads], [bfs.dequeues, bfs.reads], `${label}, ${directed}, ${representation}`)
+        }
+      }
+    }
+  }
+})
+
+test('DFS danh sách, đường thẳng 300 đỉnh, nguồn ở đầu: 300 lần gọi, reads 598 = 2E, ngăn xếp sâu 300 = V, 1498 bước', () => {
+  const graph = buildGraph(false, 300, Array.from({ length: 299 }, (_, index) => [index, index + 1]))
+  const cost = dfsCost(graph, firstId(graph), 'list')
+
+  assert.deepEqual([cost.calls, cost.reads, cost.depth, cost.steps], [300, 598, 300, 1498])
+  assert.deepEqual(cost.result, { reachable: 300, maxStackDepth: 300 })
+})
+
+test('DFS danh sách, sao 300 đỉnh: nguồn ở tâm sâu 2; nguồn ở lá sâu 3; cả hai 300 lần gọi, reads 598', () => {
+  const graph = buildGraph(false, 300, Array.from({ length: 299 }, (_, index) => [0, index + 1]))
+  const vertices = listVertices(graph)
+  const center = dfsCost(graph, vertices[0].id, 'list')
+  const leaf = dfsCost(graph, vertices.at(-1).id, 'list')
+
+  assert.deepEqual([center.calls, center.reads, center.depth], [300, 598, 2])
+  assert.deepEqual([leaf.calls, leaf.reads, leaf.depth], [300, 598, 3])
+})
+
+// Ma trận chỉ đo ở 50 đỉnh: tạo 3R + R·V bước, mỗi bước giữ một bản sao đồ thị (300 đỉnh ≈ 90 900 bước, tràn bộ nhớ).
+test('DFS ma trận, đường thẳng 50 đỉnh: 50 lần gọi, reads 2500 = V², sâu 50, 2650 bước (danh sách: 98 reads, 248 bước)', () => {
+  const graph = buildGraph(false, 50, Array.from({ length: 49 }, (_, index) => [index, index + 1]))
+  const matrix = dfsCost(graph, firstId(graph), 'matrix')
+  const list = dfsCost(graph, firstId(graph), 'list')
+
+  assert.deepEqual([matrix.calls, matrix.reads, matrix.depth, matrix.steps], [50, 2500, 50, 2650])
+  assert.deepEqual([list.reads, list.depth, list.steps], [98, 50, 248])
 })
