@@ -1712,6 +1712,7 @@
             <option value="has-edge" selected>Kiểm tra u kề v</option>
             <option value="neighbors">Đỉnh kề và bậc của u</option>
             <option value="bfs">BFS từ đỉnh nguồn s</option>
+            <option value="dfs">DFS từ đỉnh nguồn s</option>
         </select>
 
         <button class="primary-button" id="graph-apply" type="button">
@@ -1722,7 +1723,7 @@
         <p class="bst-hint" id="graph-input-hint">
             Tối đa 8 đỉnh (A–H), nhãn gắn với vị trí trên vòng tròn. Sửa đồ thị cập nhật ngay;
             truy vấn được minh họa từng bước. Đổi loại đồ thị sẽ tạo đồ thị rỗng mới.
-            BFS dùng ô chọn đỉnh thứ nhất làm đỉnh nguồn s (u và s là cùng một ô chọn).
+            BFS và DFS dùng ô chọn đỉnh thứ nhất làm đỉnh nguồn s (u và s là cùng một ô chọn).
         </p>
         <p class="bst-error" id="graph-input-error" role="alert" hidden></p>
 
@@ -1776,6 +1777,24 @@
             </div>
         </section>
 
+        <section class="graph-bfs-panel graph-dfs-panel" id="graph-dfs-panel" aria-label="Trạng thái DFS" hidden>
+            <div class="graph-dfs-layout">
+                <div class="graph-dfs-stack-column">
+                    <h4>Ngăn xếp gọi <span class="graph-panel-badge">đỉnh ở trên</span></h4>
+                    <div class="graph-dfs-stack-frame" id="graph-dfs-stack-frame">
+                        <ol class="graph-dfs-stack" id="graph-dfs-stack" aria-label="Ngăn xếp gọi"></ol>
+                    </div>
+                </div>
+                <div class="graph-dfs-detail-column">
+                    <h4>Thứ tự thăm (lúc vào)</h4>
+                    <ol class="graph-bfs-order graph-dfs-order" id="graph-dfs-order" aria-label="Thứ tự thăm (lúc vào)"></ol>
+                    <div class="graph-panel-frame">
+                        <table class="graph-matrix graph-bfs-table graph-dfs-table" id="graph-dfs-table" aria-label="Mốc vào, mốc ra và đỉnh cha"></table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <div class="graph-representations">
             <section class="graph-representation-panel" id="graph-list-panel">
                 <h4>Danh sách kề <span class="graph-panel-badge"></span></h4>
@@ -1798,7 +1817,8 @@
             <span><i class="bst-legend-dot"></i> u, v: nhãn chữ cạnh đỉnh</span>
             <span><i class="hash-legend-box graph-legend-read"></i> Phần tử / ô đã đọc (viền nét đứt)</span>
             <span><i class="bst-legend-dot graph-legend-queued"></i> BFS: đỉnh trong hàng đợi (vòng nét đứt)</span>
-            <span><i class="graph-legend-tree"></i> BFS: cạnh cây (nét liền đậm); s·0, d=k: khoảng cách từ s</span>
+            <span><i class="graph-legend-tree"></i> BFS/DFS: cạnh cây (nét liền đậm); BFS s·0, d=k: khoảng cách từ s</span>
+            <span><i class="bst-legend-dot graph-legend-open"></i> DFS: đỉnh đang mở trong ngăn xếp gọi (vòng chấm); vào/ra: mốc thời gian</span>
         </div>
 
         <div class="simulation-controls">

@@ -26,6 +26,7 @@ import {
   matrixNeighborsPseudocode,
 } from './algorithms/graphNeighbors.js'
 import { generateGraphBfsSteps, listBfsPseudocode, matrixBfsPseudocode } from './algorithms/graphBfs.js'
+import { generateGraphDfsSteps, listDfsPseudocode, matrixDfsPseudocode } from './algorithms/graphDfs.js'
 import {
   bfsListReadState,
   bfsMatrixReadState,
@@ -33,11 +34,20 @@ import {
   describeBfsCost,
   formatBfsResult,
   formatDequeueCount,
-  isBfsTreeEdge,
   renderBfsOrder,
   renderBfsQueue,
   renderBfsTable,
 } from './graph-bfs-view.js'
+import {
+  dfsListReadState,
+  dfsMatrixReadState,
+  dfsVertexMarks,
+  formatDfsResult,
+  renderDfsOrder,
+  renderDfsStack,
+  renderDfsTable,
+} from './graph-dfs-view.js'
+import { isTreeEdge } from './graph-traversal-view.js'
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 
@@ -96,12 +106,20 @@ export const graphOperations = {
     pseudocode: { list: listBfsPseudocode, matrix: matrixBfsPseudocode },
     generate: (graph, sourceId, _targetId, representation) => generateGraphBfsSteps(graph, sourceId, representation),
   },
+  dfs: {
+    name: 'DFS từ s',
+    needsTarget: false,
+    pseudocode: { list: listDfsPseudocode, matrix: matrixDfsPseudocode },
+    generate: (graph, sourceId, _targetId, representation) => generateGraphDfsSteps(graph, sourceId, representation),
+  },
 }
 
-// Nhãn và thông báo của ô chọn đỉnh thứ nhất: BFS gọi là đỉnh nguồn s (cùng một select với u).
+// Thao tác duyệt đồ thị từ một nguồn: vẽ cạnh cây, ô chọn đỉnh thứ nhất gọi là đỉnh nguồn s (cùng một select với u).
+const TRAVERSALS = ['bfs', 'dfs']
+const isTraversal = (operation) => TRAVERSALS.includes(operation)
 const sourceNames = {
-  label: (operation) => (operation === 'bfs' ? 'Đỉnh nguồn s' : 'Đỉnh u'),
-  missing: (operation) => (operation === 'bfs' ? 'Hãy chọn đỉnh nguồn s.' : 'Hãy chọn đỉnh u.'),
+  label: (operation) => (isTraversal(operation) ? 'Đỉnh nguồn s' : 'Đỉnh u'),
+  missing: (operation) => (isTraversal(operation) ? 'Hãy chọn đỉnh nguồn s.' : 'Hãy chọn đỉnh u.'),
 }
 
 const kindName = (directed) => (directed ? 'có hướng' : 'vô hướng')
@@ -152,6 +170,23 @@ export const graphLearning = {
         + 'tức O(V²) dù đồ thị rất thưa.',
     },
   },
+  dfs: {
+    list: {
+      description: 'Đi sâu trước: vào u thì đánh dấu và ghi mốc vào; đọc từng w trong Adj[u], gặp w chưa thăm thì gán '
+        + 'parent[w] = u và gọi DFS(w) ngay (khung mới lên đỉnh ngăn xếp); đọc hết Adj[u] thì ghi mốc ra và quay lui. '
+        + 'Minh họa dùng ngăn xếp tường minh nhưng thứ tự giống hệt bản đệ quy.',
+      advantages: 'Mỗi đỉnh tới được được gọi đúng một lần và chỉ đọc các cạnh thật sự đi ra từ nó (có hướng: bậc ra), '
+        + 'nên tổng chi phí O(V + E), cùng số lần đọc với BFS. Mốc vào/ra lồng nhau cho biết quan hệ tổ tiên – con cháu.',
+      disadvantages: 'Không cho đường đi ngắn nhất (Cây hay C5 đi sâu theo một nhánh trước). Ngăn xếp gọi sâu tới V khung '
+        + 'khi đồ thị là một đường thẳng: bộ nhớ phụ O(V), và đệ quy thật có thể tràn ngăn xếp.',
+    },
+    matrix: {
+      description: 'Giống DFS trên danh sách kề, nhưng ở mỗi đỉnh u phải dò cả hàng u của ma trận (V ô) để tìm các w có '
+        + 'M[u][w] = 1; dò dở thì gọi DFS(w), quay lui rồi dò tiếp từ cột kế tiếp.',
+      advantages: 'Cài đặt đơn giản, không cần danh sách kề; đồ thị dày (E gần V²) thì chi phí tương đương danh sách kề.',
+      disadvantages: 'Mỗi đỉnh tới được luôn đọc đủ V ô, kể cả ô bằng 0: tổng R·V ô, tối đa V², tức O(V²) dù đồ thị rất thưa.',
+    },
+  },
 }
 
 // Số ô nhớ của hai cách biểu diễn cho đồ thị của bước đang hiển thị.
@@ -200,6 +235,7 @@ export function formatDegree(graph, vertexId) {
 
 export function formatResult(step) {
   if (step.operation === 'bfs') return formatBfsResult(step)
+  if (step.operation === 'dfs') return formatDfsResult(step)
   if (!step.finished || step.result === null) return 'Chưa có'
 
   const { graph, sourceId, targetId } = step
@@ -259,12 +295,12 @@ function isCurrentEdge(step, edge) {
   return sameDirection || (!step.graph.directed && reversed)
 }
 
-// BFS: cạnh cây (parent[w], w) có lớp is-tree (nét liền đậm). Rẽ nhánh theo step.operation, không theo select.
+// BFS/DFS: cạnh cây (parent[w], w) có lớp is-tree (nét liền đậm). Rẽ nhánh theo step.operation, không theo select.
 function renderEdges(document, svg, step, layout) {
-  const isBfs = step.operation === 'bfs'
+  const drawsTree = isTraversal(step.operation)
   for (const edge of layout.edges) {
     const isCurrent = isCurrentEdge(step, edge)
-    const isTree = isBfs && isBfsTreeEdge(step, edge)
+    const isTree = drawsTree && isTreeEdge(step, edge)
     const path = createSvgElement(document, 'path', {
       class: ['graph-edge', isCurrent ? 'is-current' : null, isTree ? 'is-tree' : null].filter(Boolean).join(' '),
       d: edgePath(edge),
@@ -299,7 +335,8 @@ function queryVertexMarks(step) {
   return { doneIds, queuedIds: new Set(), badges }
 }
 
-// marks { doneIds, queuedIds, badges }: của truy vấn (queryVertexMarks) hoặc của BFS (bfsVertexMarks).
+// marks { doneIds, queuedIds, openIds?, badges }: của truy vấn (queryVertexMarks), BFS (bfsVertexMarks) hoặc DFS
+// (dfsVertexMarks; openIds = đỉnh trong ngăn xếp gọi, vẽ vòng chấm).
 function renderVertex(document, svg, step, vertex, point, marks) {
   const radius = GRAPH_LAYOUT.vertexRadius
   const group = createSvgElement(document, 'g', { class: 'graph-vertex', 'data-id': vertex.id, 'data-label': vertex.label })
@@ -315,6 +352,12 @@ function renderVertex(document, svg, step, vertex, point, marks) {
     group.classList.add('is-queued')
     group.appendChild(createSvgElement(document, 'circle', {
       class: 'graph-vertex-queue-ring', cx: point.x, cy: point.y, r: radius + 4,
+    }))
+  }
+  if (marks.openIds?.has(vertex.id)) {
+    group.classList.add('is-open')
+    group.appendChild(createSvgElement(document, 'circle', {
+      class: 'graph-vertex-stack-ring', cx: point.x, cy: point.y, r: radius + 4,
     }))
   }
 
@@ -386,9 +429,11 @@ function matrixReadState(step, rowId, columnId, columnIndex) {
   return columnIndex < step.reads ? 'read' : null
 }
 
-// Trạng thái đọc theo thao tác của bước: BFS đọc nhiều hàng (mọi đỉnh đã lấy khỏi hàng đợi), truy vấn chỉ hàng u.
+// Trạng thái đọc theo thao tác của bước: BFS đọc nhiều hàng (mọi đỉnh đã lấy khỏi hàng đợi), DFS đọc hàng của đỉnh
+// đã đóng và đọc dở hàng của đỉnh trong ngăn xếp, truy vấn chỉ hàng u.
 function readStateOf(step, table) {
   if (step.operation === 'bfs') return table === 'list' ? bfsListReadState : bfsMatrixReadState
+  if (step.operation === 'dfs') return table === 'list' ? dfsListReadState : dfsMatrixReadState
   return table === 'list' ? listReadState : matrixReadState
 }
 
@@ -506,7 +551,8 @@ export function renderGraph(svg, step) {
   const document = svg.ownerDocument
   const { graph } = step
   const layout = layoutGraph(graph)
-  const marks = step.operation === 'bfs' ? bfsVertexMarks(step) : queryVertexMarks(step)
+  const markers = { bfs: bfsVertexMarks, dfs: dfsVertexMarks }
+  const marks = (markers[step.operation] ?? queryVertexMarks)(step)
 
   svg.replaceChildren()
   svg.setAttribute('width', String(layout.width))
@@ -574,6 +620,12 @@ export function initGraph(document, options = {}) {
     queue: $('#graph-bfs-queue'),
     order: $('#graph-bfs-order'),
     table: $('#graph-bfs-table'),
+  }
+  const dfs = {
+    panel: $('#graph-dfs-panel'),
+    stack: $('#graph-dfs-stack'),
+    order: $('#graph-dfs-order'),
+    table: $('#graph-dfs-table'),
   }
   const complexity = {
     title: $('#graph-complexity-title'),
@@ -772,6 +824,18 @@ export function initGraph(document, options = {}) {
     if (bfs.table) renderBfsTable(bfs.table, step)
   }
 
+  // Khung DFS (ngăn xếp gọi, thứ tự thăm, mốc vào/ra) cũng theo thao tác của BƯỚC ĐANG HIỂN THỊ.
+  function renderDfsPanel(step) {
+    if (!dfs.panel) return
+    const isDfs = step.operation === 'dfs'
+    dfs.panel.hidden = !isDfs
+    if (!isDfs) return
+
+    if (dfs.stack) renderDfsStack(dfs.stack, step)
+    if (dfs.order) renderDfsOrder(dfs.order, step)
+    if (dfs.table) renderDfsTable(dfs.table, step)
+  }
+
   // Nhãn ô chọn đỉnh mô tả việc nút Thực hiện sắp làm, nên theo select thao tác.
   function renderSourceLabel() {
     setText(sourceLabel, sourceNames.label(getSelectedOperation()))
@@ -783,6 +847,7 @@ export function initGraph(document, options = {}) {
     renderGraph(svg, step)
     svg.setAttribute('aria-label', describeGraph(step.graph))
     renderBfsPanel(step)
+    renderDfsPanel(step)
     renderSourceLabel()
     renderRepresentations(step)
     renderStats(step)

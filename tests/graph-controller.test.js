@@ -10,6 +10,7 @@ import { createGraphStepFactory } from '../src/algorithms/graphStep.js'
 import { listHasEdgePseudocode } from '../src/algorithms/graphHasEdge.js'
 import { matrixNeighborsPseudocode } from '../src/algorithms/graphNeighbors.js'
 import * as bfsModule from '../src/algorithms/graphBfs.js'
+import * as dfsModule from '../src/algorithms/graphDfs.js'
 import { createFakeScheduler } from './helpers/fake-scheduler.js'
 
 const template = await readFile(new URL('../public/templates/app.html', import.meta.url), 'utf8')
@@ -1044,5 +1045,251 @@ test('BFS: mã giả lấy từ chính file generator, lý thuyết riêng cho d
       assert.notEqual(ui.text('#graph-learning-disadvantages'), '')
     }
     assert.equal(descriptions.size, 2)
+  })
+})
+
+// ---- DFS ----
+// Bước DFS danh sách trên Mẫu từ A (xem tests/graph-dfs.test.js): 3 gọi DFS(B), 4 vào B, 13 vào D, 15 ra D, 19 ra A (cuối).
+const TREE_PAIRS = [[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6]]
+const dfsSampleSteps = (representation) => {
+  const graph = buildGraph(false, 7, SAMPLE_PAIRS)
+  return dfsModule.generateGraphDfsSteps(graph, 'v1', representation)
+}
+const dfsTableRows = (ui) => [...ui.document.querySelectorAll('#graph-dfs-table tbody tr')]
+  .map((row) => [...row.children].map((cell) => cell.textContent))
+const clickNext = (ui, times) => {
+  for (let index = 0; index < times; index++) ui.$('#graph-next').click()
+}
+const edgeLabels = (ui, selector) => [...ui.document.querySelectorAll(`#graph-svg ${selector}`)]
+  .map((path) => [path.dataset.from, path.dataset.to].map((id) => ui.$(`#graph-source option[value="${id}"]`).textContent.trim()).join(''))
+  .sort()
+
+test('DFS: chọn thao tác DFS thì nhãn là "Đỉnh nguồn s", khung DFS hiện, khung BFS ẩn; thao tác khác thì ẩn', () => {
+  withGraph((ui) => {
+    const label = () => ui.$('label[for="graph-source"]').textContent.trim()
+    assert.equal(ui.$('#graph-dfs-panel').hidden, true)
+
+    ui.change('#graph-operation', 'dfs')
+    assert.equal(label(), 'Đỉnh nguồn s')
+    assert.equal(ui.$('#graph-dfs-panel').hidden, false)
+    assert.equal(ui.$('#graph-bfs-panel').hidden, true)
+    assert.equal(ui.text('#graph-dfs-stack'), '(rỗng)')
+    assert.ok(dfsTableRows(ui).every((row) => row.slice(1).join(' ') === '— — — chưa thăm'))
+
+    ui.change('#graph-operation', 'bfs')
+    assert.equal(ui.$('#graph-dfs-panel').hidden, true)
+    assert.equal(ui.$('#graph-bfs-panel').hidden, false)
+    ui.change('#graph-operation', 'neighbors')
+    assert.equal(label(), 'Đỉnh u')
+    assert.equal(ui.$('#graph-dfs-panel').hidden, true)
+  })
+})
+
+test('DFS Mẫu vô hướng từ A theo danh sách: 20 bước, reads 8, thứ tự A B C D, bảng vào/ra/parent, kết quả, dòng mã giả cuối', () => {
+  withGraph((ui) => {
+    ui.query('dfs', 'A')
+    assert.equal(ui.text('#graph-message'), 'DFS từ A bằng danh sách kề.')
+
+    let clicks = 0
+    while (!ui.$('#graph-next').disabled && clicks < 100) {
+      ui.$('#graph-next').click()
+      clicks++
+    }
+    assert.equal(clicks, 19)
+    assert.equal(ui.text('#graph-reads'), '8')
+    assert.equal(ui.text('#graph-result'), 'Tới được 4/7 đỉnh: A, B, C, D')
+    assert.equal(ui.activeLine(), dfsModule.listDfsPseudocode[5])
+    assert.deepEqual(listItems(ui, '#graph-dfs-order .graph-dfs-order-item'), ['A', 'B', 'C', 'D'])
+    assert.equal(ui.text('#graph-dfs-stack'), '(rỗng)')
+    assert.deepEqual(dfsTableRows(ui).slice(0, 5), [
+      ['A', '1', '8', '—', 'đã đóng'], ['B', '2', '7', 'A', 'đã đóng'], ['C', '3', '6', 'B', 'đã đóng'],
+      ['D', '4', '5', 'C', 'đã đóng'], ['E', '—', '—', '—', 'chưa thăm'],
+    ])
+  })
+})
+
+test('DFS bước cuối: mọi đỉnh đã đóng có ✓, không còn ▶ hay đỉnh mở; cây DFS A–B, B–C, C–D (BFS là A–B, A–C, C–D); nhãn mốc', () => {
+  withGraph((ui) => {
+    ui.query('dfs', 'A')
+    ui.nextUntilDone()
+
+    assert.deepEqual(svgLabels(ui, '.graph-vertex.is-output'), ['A', 'B', 'C', 'D'])
+    for (const label of ['A', 'B', 'C', 'D']) {
+      assert.equal(ui.vertexByLabel(label).querySelector('.graph-vertex-check')?.textContent, '✓', label)
+    }
+    assert.equal(ui.document.querySelectorAll('#graph-svg .graph-vertex-marker').length, 0)
+    assert.equal(ui.document.querySelectorAll('#graph-svg .graph-vertex.is-current').length, 0)
+    assert.equal(ui.document.querySelectorAll('#graph-svg .graph-vertex.is-open').length, 0)
+    assert.deepEqual(edgeLabels(ui, '.graph-edge.is-tree'), ['AB', 'BC', 'CD'])
+    assert.deepEqual(['A', 'B', 'D', 'E'].map((label) => badgeText(ui, label)), ['s·1/8', '2/7', '4/5', null])
+  })
+})
+
+test('DFS giữa chừng (vào D): D có ▶; A, B, C, D đang mở (vòng chấm); ngăn xếp D, C, B, A với đỉnh ở trên', () => {
+  withGraph((ui) => {
+    ui.query('dfs', 'A')
+    clickNext(ui, 13)
+
+    assert.equal(ui.text('#graph-message'), 'Vào DFS(D): đánh dấu D, vào[D] = 4. Ngăn xếp (đáy → đỉnh): A, B, C, D.')
+    assert.deepEqual(svgLabels(ui, '.graph-vertex.is-current'), ['D'])
+    assert.deepEqual(svgLabels(ui, '.graph-vertex.is-open'), ['A', 'B', 'C', 'D'])
+    assert.ok(ui.vertexByLabel('B').querySelector('.graph-vertex-stack-ring'))
+    assert.equal(ui.document.querySelectorAll('#graph-svg .graph-vertex.is-output').length, 0)
+    assert.deepEqual(listItems(ui, '#graph-dfs-stack .graph-dfs-stack-call'), ['DFS(D)', 'DFS(C)', 'DFS(B)', 'DFS(A)'])
+    assert.deepEqual(listItems(ui, '#graph-dfs-stack .graph-dfs-stack-tag'), ['đỉnh', 'đáy'])
+    assert.equal(ui.$('#graph-dfs-stack').getAttribute('aria-label'), 'Ngăn xếp gọi (đỉnh → đáy): D, C, B, A.')
+  })
+})
+
+test('DFS Cây sau khi vào D: Adj[A] đọc tới và gồm B; Adj[B] đọc tới và gồm D; Adj[D], Adj[C] chưa đọc', () => {
+  withGraph((ui) => {
+    ui.$('#graph-preset-tree').click()
+    ui.query('dfs', 'A')
+    clickNext(ui, 8)
+    assert.match(ui.text('#graph-message'), /^Vào DFS\(D\)/)
+
+    const states = (owner) => [...ui.document.querySelectorAll(`#graph-adjacency-list .graph-list-row[data-label="${owner}"] .graph-list-entry`)]
+      .map((entry) => `${entry.dataset.label}:${entry.classList.contains('is-read') ? 'đọc' : entry.classList.contains('is-current') ? 'đang' : '-'}`)
+    assert.deepEqual(states('A'), ['B:đọc', 'C:-'])
+    assert.deepEqual(states('B'), ['A:đọc', 'D:đọc', 'E:-'])
+    assert.deepEqual(states('D'), ['B:-'])
+    assert.deepEqual(states('C'), ['A:-', 'F:-', 'G:-'])
+  })
+})
+
+test('DFS bước "gọi DFS(B)": bảng ghi B "chưa thăm" kèm parent A (chủ ý); bước "vào B" mới chuyển "đang mở"', () => {
+  withGraph((ui) => {
+    ui.query('dfs', 'A')
+    clickNext(ui, 3)
+    assert.equal(ui.text('#graph-message'), 'parent[B] = A; gọi DFS(B).')
+    assert.deepEqual(dfsTableRows(ui)[1], ['B', '—', '—', 'A', 'chưa thăm'])
+    assert.deepEqual(edgeLabels(ui, '.graph-edge.is-tree'), ['AB'])
+
+    clickNext(ui, 1)
+    assert.deepEqual(dfsTableRows(ui)[1], ['B', '2', '—', 'A', 'đang mở'])
+  })
+})
+
+test('DFS Mẫu vô hướng từ A theo ma trận: reads 28, 28 ô đã đọc (hàng A–D), không còn ô đang đọc', () => {
+  withGraph((ui) => {
+    ui.change('#graph-representation', 'matrix')
+    ui.query('dfs', 'A')
+    ui.nextUntilDone()
+
+    assert.equal(ui.text('#graph-reads'), '28')
+    const readRows = [...ui.document.querySelectorAll('#graph-adjacency-matrix .graph-matrix-cell.is-read')]
+      .map((cell) => cell.dataset.rowLabel)
+    assert.equal(readRows.length, 28)
+    assert.deepEqual([...new Set(readRows)], ['A', 'B', 'C', 'D'])
+    assert.equal(ui.document.querySelectorAll('#graph-adjacency-matrix .is-current').length, 0)
+  })
+})
+
+test('Có hướng, Mẫu, DFS từ B: chỉ đi theo cạnh ra — B, C, A, D; cạnh cây B→C, C→A, C→D', () => {
+  withGraph((ui) => {
+    ui.change('#graph-kind', 'directed')
+    ui.$('#graph-preset-sample').click()
+    ui.query('dfs', 'B')
+    ui.nextUntilDone()
+
+    assert.equal(ui.text('#graph-result'), 'Tới được 4/7 đỉnh: B, C, A, D')
+    assert.equal(ui.text('#graph-reads'), '5')
+    assert.deepEqual(edgeLabels(ui, '.graph-edge.is-tree'), ['BC', 'CA', 'CD'])
+  })
+})
+
+test('Renderer rẽ nhánh theo step.operation: nạp bước DFS khi select đang là "BFS" vẫn vẽ kiểu DFS', () => {
+  withGraph((ui) => {
+    ui.change('#graph-operation', 'bfs')
+    ui.handle.loadSteps([dfsSampleSteps('list')[13]])
+
+    assert.equal(ui.$('#graph-operation').value, 'bfs')
+    assert.equal(ui.$('#graph-dfs-panel').hidden, false)
+    assert.equal(ui.$('#graph-bfs-panel').hidden, true)
+    assert.deepEqual(svgLabels(ui, '.graph-vertex.is-open'), ['A', 'B', 'C', 'D'])
+    assert.equal(ui.document.querySelectorAll('#graph-svg .graph-vertex.is-queued').length, 0)
+    assert.equal(badgeText(ui, 'D'), '4/–')
+    assert.equal(ui.activeLine(), dfsModule.listDfsPseudocode[1])
+  })
+})
+
+test('Renderer bỏ qua id lạ trong bước DFS (visitedIds, callStackIds, finishedIds, discovery, parentIds, currentVertexId)', () => {
+  withGraph((ui) => {
+    const graph = buildGraph(false, 3, [[0, 1]])
+    const createStep = createGraphStepFactory('dfs', { representation: 'list', sourceId: 'v1' })
+    ui.handle.loadSteps([createStep({
+      graph,
+      currentVertexId: 'v98',
+      currentEdge: { from: 'v1', to: 'v97' },
+      visitedIds: ['v1', 'v2', 'v99'],
+      callStackIds: ['v1', 'v99', 'v2'],
+      finishedIds: ['v98'],
+      discovery: { v1: 1, v2: 2, v99: 3 },
+      finish: { v1: null, v2: null, v99: null },
+      parentIds: { v1: null, v2: 'v1', v3: 'v96', v99: 'v1' },
+      message: 'id lạ',
+    })])
+
+    assert.deepEqual(ui.vertexLabels(), ['A', 'B', 'C'])
+    assert.deepEqual(svgLabels(ui, '.graph-vertex.is-open'), ['A', 'B'])
+    assert.equal(ui.document.querySelectorAll('#graph-svg .graph-edge.is-tree').length, 1)
+    assert.equal(ui.document.querySelectorAll('#graph-svg .is-current').length, 0)
+    assert.equal(dfsTableRows(ui).length, 3)
+    assert.deepEqual(listItems(ui, '#graph-dfs-stack .graph-dfs-stack-call'), ['DFS(B)', 'DFS(A)'])
+  })
+})
+
+test('DFS: xóa đỉnh nguồn khi Pause bỏ bước cũ; chọn B thì chạy trên đồ thị mới', () => {
+  withGraph((ui) => {
+    ui.query('dfs', 'A')
+    ui.$('#graph-run').click()
+    ui.scheduler.advance(SPEED * 3)
+    ui.$('#graph-pause').click()
+
+    ui.$('#graph-remove-vertex').click()
+    assert.equal(ui.$('#graph-source').value, '')
+    assert.equal(ui.$('#graph-run').disabled, true)
+    assert.equal(ui.$('#graph-next').disabled, true)
+    assert.equal(ui.text('#graph-dfs-order'), '(chưa có)')
+
+    ui.choose('#graph-source', 'B')
+    ui.$('#graph-apply').click()
+    ui.nextUntilDone()
+    assert.equal(ui.text('#graph-result'), 'Tới được 3/6 đỉnh: B, C, D')
+    assert.equal(ui.text('#graph-reads'), '4')
+    assert.equal(ui.document.querySelectorAll('#graph-section [data-id="v1"]').length, 0, 'không còn id của A')
+  })
+})
+
+test('DFS đang Run: khóa đủ 14 điều khiển, kể cả select đỉnh nguồn; chạy xong thì mở lại', () => {
+  withGraph((ui) => {
+    ui.query('dfs', 'A')
+    ui.$('#graph-run').click()
+    for (const selector of LOCKABLE) assert.equal(ui.$(selector).disabled, true, selector)
+
+    ui.scheduler.advance(SPEED * 40)
+    assert.equal(ui.text('#graph-result'), 'Tới được 4/7 đỉnh: A, B, C, D')
+    for (const selector of LOCKABLE) assert.equal(ui.$(selector).disabled, false, selector)
+  })
+})
+
+test('DFS: mã giả lấy từ chính file generator, lý thuyết riêng cho danh sách và ma trận, khác lý thuyết BFS', () => {
+  withGraph((ui) => {
+    const rendered = () => [...ui.document.querySelectorAll('#graph-pseudocode .pseudocode-line')].map((line) => line.textContent)
+    ui.change('#graph-operation', 'bfs')
+    const bfsDescription = ui.text('#graph-learning-description')
+    ui.change('#graph-operation', 'dfs')
+    const descriptions = new Set()
+
+    for (const [representation, pseudocode] of [['list', dfsModule.listDfsPseudocode], ['matrix', dfsModule.matrixDfsPseudocode]]) {
+      ui.change('#graph-representation', representation)
+      assert.deepEqual(rendered(), pseudocode)
+      assert.match(ui.text('#graph-pseudocode-title'), /^Mã giả: DFS từ s/)
+      descriptions.add(ui.text('#graph-learning-description'))
+      assert.notEqual(ui.text('#graph-learning-advantages'), '')
+      assert.notEqual(ui.text('#graph-learning-disadvantages'), '')
+    }
+    assert.equal(descriptions.size, 2)
+    assert.equal(descriptions.has(bfsDescription), false)
   })
 })

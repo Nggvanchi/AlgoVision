@@ -2942,6 +2942,20 @@ button.dashboard-card:hover {
   background: transparent;
 }
 
+/* DFS: đỉnh trong ngăn xếp gọi có vòng chấm tròn (khác vòng nét đứt của hàng đợi BFS và vòng kép của đỉnh đã đóng). */
+.graph-vertex-stack-ring {
+  fill: none;
+  stroke: var(--purple);
+  stroke-width: 3;
+  stroke-dasharray: 0.5 5;
+  stroke-linecap: round;
+}
+
+.graph-legend-open {
+  border: 3px dotted var(--purple);
+  background: transparent;
+}
+
 .graph-legend-tree {
   display: inline-block;
   width: 18px;
@@ -3047,6 +3061,102 @@ button.dashboard-card:hover {
 
 .graph-bfs-table tr.is-current th {
   border-left: 4px solid var(--state-active);
+}
+
+/* DFS: ngăn xếp gọi là cột dọc, đỉnh ở trên. Chiều cao tối đa đủ cho 8 khung (giới hạn 8 đỉnh của UI) nên không cần
+   cuộn; overflow-y: auto chỉ là lưới an toàn khi nạp bước của đồ thị lớn hơn. */
+.graph-dfs-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 150px) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.graph-dfs-layout > div {
+  min-width: 0;
+}
+
+.graph-dfs-stack-frame {
+  max-height: 336px;
+  overflow-y: auto;
+}
+
+.graph-dfs-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+}
+
+.graph-dfs-stack-item,
+.graph-dfs-stack-empty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 6px;
+  min-height: 24px;
+  padding: 4px 6px;
+  border: 2px dotted var(--purple);
+  border-radius: 6px;
+}
+
+.graph-dfs-stack-item.is-current {
+  border: 3px solid var(--state-active);
+}
+
+.graph-dfs-stack-call {
+  font-weight: 700;
+}
+
+.graph-dfs-stack-time,
+.graph-dfs-stack-tag {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.graph-dfs-stack-tag {
+  margin-left: auto;
+}
+
+.graph-dfs-stack-empty {
+  border-style: dotted;
+  border-color: var(--border);
+  color: var(--muted);
+}
+
+.graph-dfs-order-item,
+.graph-dfs-order-empty {
+  display: inline-flex;
+  gap: 2px;
+  min-width: 34px;
+  padding: 4px 6px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.graph-dfs-order-item.is-current {
+  border: 3px solid var(--state-active);
+}
+
+.graph-dfs-order-empty {
+  border-style: dotted;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.graph-dfs-panel .graph-dfs-order {
+  margin-bottom: 12px;
+}
+
+@media (max-width: 480px) {
+  .graph-dfs-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 760px) {
