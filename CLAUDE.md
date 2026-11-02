@@ -80,7 +80,7 @@ pnpm dev        # chạy thử trên trình duyệt
     `collisionPresetKeys` (3 + k·m). Giới hạn UI: khóa 0–99, m ∈ {5, 7, 11}, chaining 15 phần tử, probing m.
     Bảng chốt bằng `steps.at(-1).table`; đổi m/chiến lược tạo bảng rỗng (báo qua `#hash-table-status`; chưa có rehash);
     đang Run khóa cả ô chọn m và chiến lược. Mọi số liệu (n, m, α, tombstone) đọc từ bảng của bước đang hiển thị.
-- Graph (giai đoạn 7, đã merge PR #7; BFS đã merge PR #8; DFS trên `feat/dfs`):
+- Graph (giai đoạn 7, đã merge PR #7; BFS đã merge PR #8; DFS trên `feat/dfs`, chờ merge):
   - `src/structures/graph.js`: đồ thị đơn dạng snapshot thuần `{ directed, vertices: { id: { id, slot, label } }, adjacency, nextId }`.
     Id `v1, v2, …` không cấp lại; cạnh định danh bằng cặp id `{ from, to }`. slot = số nhỏ nhất chưa dùng, nhãn suy từ slot
     (xóa C rồi thêm lại thì nhãn C, id mới). Danh sách kề sắp theo slot. Vô hướng lưu hai chiều. Ma trận kề không lưu,
@@ -108,6 +108,16 @@ pnpm dev        # chạy thử trên trình duyệt
     dist/parent, cạnh cây `is-tree` (có hướng chỉ khớp chiều parent → con), vòng nét đứt `is-queued`, `describeBfsCost`
     cho `#graph-bfs-cost` (bước cuối mới kết luận Big-O). Renderer rẽ nhánh theo `step.operation` của bước, không theo select.
     Bất biến BFS: `assertBfsStepInvariants` trong `tests/helpers/graph-step-invariants.js`.
+  - DFS (`src/algorithms/graphDfs.js`): một nguồn s, ngăn xếp tường minh (khung = đỉnh + vị trí đọc kế tiếp), thứ tự trùng DFS
+    đệ quy (visited lúc VÀO, duyệt theo Adj). Trường thêm: `visitedIds` (thứ tự thăm), `callStackIds` (đáy ở index 0),
+    `finishedIds`, `discovery`/`finish` (t tăng 1 mỗi lần vào và ra), `parentIds`. Bước: vào (dòng 2), đọc (dòng 4, +1 reads),
+    gọi (dòng 5, gán parent khi w CHƯA thăm), ra (dòng 6); bước "ra s" là bước cuối. Số bước: danh sách 3R + D, ma trận 3R + R·V;
+    reads bằng BFS. `currentVertexId` luôn là đỉnh ngăn xếp (null khi rỗng); xám = `callStackIds`. result `{ reachable, maxStackDepth }`.
+    `src/graph-dfs-view.js` (không import `graph.js`): ngăn xếp là cột dọc đỉnh ở trên (đủ cao 8 khung), thứ tự thăm, bảng
+    vào/ra/parent/trạng thái, vòng chấm `is-open`, tô đọc dở (khung xám đọc tới và gồm con ở khung trên), `describeDfsCost`
+    cho `#graph-dfs-cost`, thẻ số lần gọi và độ sâu tối đa tới bước này (`dfsMaxDepthSoFar`, suy từ `parentIds`).
+    `src/graph-traversal-view.js`: cạnh cây dùng chung BFS/DFS (`graph-bfs-view.js` export lại tên cũ).
+    Bất biến DFS: `assertDfsStepInvariants` (ngăn xếp = đỉnh xám và là đường đi theo parentIds, mốc 1..k).
   - Còn tồn tại: `buildGraph` sao chép đồ thị sau mỗi lần thêm nên chậm ở quy mô lớn (test 1000 đỉnh ~1,3 s; test đồ thị sao
     hạ xuống 300 đỉnh); `favicon.ico` 404 trên toàn site; `tests/navigation.test.js` có BOM UTF-8 (file duy nhất).
     Assert so sánh trực tiếp phần tử DOM (`assert.equal(el, null)`) khi đỏ làm Node tràn bộ nhớ lúc in phần tử happy-dom:
@@ -164,7 +174,7 @@ pnpm dev        # chạy thử trên trình duyệt
 ## Trạng thái hiện tại (cập nhật 2026-11-03)
 
 - `main` = `42b43ee` (Merge PR #8, giai đoạn 7 module BFS). Baseline: 644/644 test pass, build OK.
-- Giai đoạn 7, module DFS (PR 3 của Graph) trên branch `feat/dfs`: ĐANG LẬP KẾ HOẠCH, chờ người dùng duyệt.
+- Giai đoạn 7, module DFS (PR 3 của Graph) trên branch `feat/dfs`: đã hoàn tất, chờ merge (737/737 test pass, build OK).
 - Máy phát triển: Windows và Ubuntu (repo trên phân vùng NTFS, `core.filemode=false`).
 - Windows: `core.autocrlf=true` + `.gitattributes` (`* text=auto eol=lf`), mọi file text là LF.
   PowerShell 5.1 làm hỏng ngoặc kép khi truyền tham số cho lệnh ngoài: commit bằng `git commit -F <file message>`.
@@ -218,7 +228,8 @@ pnpm dev        # chạy thử trên trình duyệt
 
 ## Roadmap sau giai đoạn 5 (chỉ làm khi được đồng ý)
 6. Learning Panel (đã merge, PR #4).
-7. BST (đã merge, PR #5), Hash Table (đã merge, PR #6), Graph (đã merge, PR #7), BFS (đã merge, PR #8), DFS (đang lập kế hoạch) — từng module một, có test.
+7. BST (đã merge, PR #5), Hash Table (đã merge, PR #6), Graph (đã merge, PR #7), BFS (đã merge, PR #8), DFS (đã hoàn tất, chờ merge) — từng module một, có test.
+   Để sau: phân loại 4 loại cạnh DFS (cây/ngược/xuôi/chéo) dựa trên mốc vào/ra đã có.
 8. Tiến độ học tập bằng `localStorage` (xử lý dữ liệu lỗi/thiếu).
 9. Kiểm thử tổng thể, UI/UX, README (README trên GitHub đang lỗi thời), CI, deployment.
    Ghi chú: `main.js` không xử lý lỗi khi fetch template thất bại (trang trắng).
