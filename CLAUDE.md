@@ -16,7 +16,7 @@ pnpm dev        # chạy thử trên trình duyệt
 
 - `index.html` chỉ có `#app`; `src/main.js` fetch `public/templates/app.html` rồi gọi các hàm `init*`.
 - Module UI: `navigation.js`, `sorting.js`, `searching.js`, `array.js`, `stack.js`, `queue.js`, `linked-list.js`,
-  `bst.js`, `hash-table.js`.
+  `bst.js`, `hash-table.js`, `graph.js`.
 - `src/simulation-controller.js`: bộ điều khiển mô phỏng dùng chung cho Sorting và Searching
   (state `idle | running | paused | completed`, một timer duy nhất, scheduler inject được). Chi tiết API ở mục Giai đoạn 5.
   `initSorting(options)` / `initSearching(options)` nhận `options.scheduler` và truyền vào controller.
@@ -80,14 +80,39 @@ pnpm dev        # chạy thử trên trình duyệt
     `collisionPresetKeys` (3 + k·m). Giới hạn UI: khóa 0–99, m ∈ {5, 7, 11}, chaining 15 phần tử, probing m.
     Bảng chốt bằng `steps.at(-1).table`; đổi m/chiến lược tạo bảng rỗng (báo qua `#hash-table-status`; chưa có rehash);
     đang Run khóa cả ô chọn m và chiến lược. Mọi số liệu (n, m, α, tombstone) đọc từ bảng của bước đang hiển thị.
+- Graph (giai đoạn 7, PR Graph; BFS và DFS là hai PR sau):
+  - `src/structures/graph.js`: đồ thị đơn dạng snapshot thuần `{ directed, vertices: { id: { id, slot, label } }, adjacency, nextId }`.
+    Id `v1, v2, …` không cấp lại; cạnh định danh bằng cặp id `{ from, to }`. slot = số nhỏ nhất chưa dùng, nhãn suy từ slot
+    (xóa C rồi thêm lại thì nhãn C, id mới). Danh sách kề sắp theo slot. Vô hướng lưu hai chiều. Ma trận kề không lưu,
+    suy ra bằng `toAdjacencyMatrix` (hàng = đỉnh đi, cột = đỉnh đến). `addEdge` trả `{ graph, added, reason }`
+    (`missing-vertex` → `self-loop` → `duplicate`). `removeVertex` xóa cả cạnh vào. Tầng này không giới hạn số đỉnh.
+  - Khuôn bước `src/algorithms/graphStep.js` (`createGraphStepFactory(operation, input, extraDefaults)`), mỗi bước một bản sao đồ thị:
+    `{ graph, operation, representation, sourceId, targetId, currentVertexId, currentEdge, matrixCell, outputIds, reads, pseudocodeLine, message, finished, result }`.
+    BFS/DFS thêm trường qua `extraDefaults`: `visitedIds`, `frontierIds` (đỉnh ngăn xếp ở cuối), `orderIds`, `distance`, `parentIds`, DFS thêm `callStack`.
+  - `graphHasEdge.js`, `graphNeighbors.js`: mỗi thao tác có mã giả `list*` và `matrix*`. reads = số phần tử Adj[u] hoặc số ô ma trận đã đọc;
+    `deg ← 0`, `return deg`, bước kết luận false của danh sách không tăng. Kiểm tra kề theo ma trận chỉ có 2 bước (đọc ô là bước cuối).
+    Có hướng: Đỉnh kề chỉ liệt kê đỉnh kề ra; bậc vào tính bằng `inDegree`.
+  - Bất biến: `tests/helpers/graph-step-invariants.js` (lớp bọc mỏng của `step-invariants.js`, thêm: `currentEdge` là cạnh có thật,
+    reads không giảm, `directed` không đổi, vô hướng đối xứng).
+  - `src/graph-layout.js`: 8 slot cố định trên vòng tròn tâm (150, 150), R = 115, slot k ở góc −90° + 45°·k, đỉnh bán kính 18.
+    Cạnh cắt lùi 18px; u→v và v→u vẽ hai đường cong (điểm điều khiển lệch 12px). Cạnh thẳng cách đỉnh khác ≥ 33px, cạnh cong ≥ 27px.
+  - `src/graph.js`: `initGraph(document, { scheduler })` trả `{ loadSteps }` CHỈ DÙNG CHO TEST (nạp bước có đồ thị khác đồ thị đã chốt
+    hoặc id lạ); `main.js` không dùng. Sửa đồ thị tức thì, truy vấn từng bước, chốt bằng `steps.at(-1).graph`. Select đỉnh có value là id,
+    làm mới sau mỗi lần sửa (đỉnh bị xóa về "chưa chọn"). Đổi loại đồ thị tạo đồ thị rỗng. Đang Run khóa 14 điều khiển.
+    Giới hạn UI 8 đỉnh. Hai bảng danh sách kề / ma trận kề vẽ song song từ `step.graph`; Learning Panel tính kích thước
+    (vô hướng V + 2E, có hướng V + E, ma trận V²) từ `step.graph`. Nhãn u/v trên SVG lấy từ `sourceId/targetId` của bước.
+  - Còn tồn tại: `buildGraph` sao chép đồ thị sau mỗi lần thêm nên chậm ở quy mô lớn (test 1000 đỉnh ~1,3 s; test đồ thị sao
+    hạ xuống 300 đỉnh); `favicon.ico` 404 trên toàn site; `tests/navigation.test.js` có BOM UTF-8 (file duy nhất).
 - `navigation.js`: thẻ `data-structure-target="x"` mở section `#x-section` (suy ra lúc init, kể cả danh sách cần ẩn);
   thêm cấu trúc mới không cần sửa navigation. Thẻ không có section thì click bị bỏ qua, thư viện giữ nguyên.
 - Section Sorting có `id="sorting-section"` (navigation và test tìm theo id, không dùng chuỗi `:not(...)` nữa).
 - `tests/*.test.js`: Node Test Runner + happy-dom, nạp template thật từ `public/templates/app.html`.
 - `tests/helpers/fake-scheduler.js`: scheduler thời gian ảo cho test timer (không bị `node --test` quét).
 - `tests/complexity.test.js`, `tests/bst-complexity.test.js`, `tests/hash-table-complexity.test.js`,
-  `tests/hash-table-probing-complexity.test.js`: đối chiếu số phép so sánh / số ô dò thực tế với Big-O hiển thị.
+  `tests/hash-table-probing-complexity.test.js`, `tests/graph-complexity.test.js`: đối chiếu số phép so sánh / số ô dò /
+  số lần đọc thực tế với Big-O hiển thị.
 - `tests/helpers/step-invariants.js`: bất biến bước dùng chung (tham chiếu id, đường đi chỉ tăng, trường hằng, finished, bước 0).
+  Trường dạng đối tượng (`currentEdge`, `matrixCell`) khai báo `idsOf(value)`; không có `idsOf` thì giá trị chính là id.
 - Đếm test bằng dòng `ℹ tests` của `node --test` (grep `^test(` bỏ sót test sinh trong vòng `for`).
   Test import module có thể thiếu export thì dùng namespace import để không làm hỏng cả file.
 
@@ -130,7 +155,8 @@ pnpm dev        # chạy thử trên trình duyệt
 ## Trạng thái hiện tại (cập nhật 2026-11-02)
 
 - `main` = `5e119c8` (Merge PR #6, giai đoạn 7 module Hash Table). Baseline: 458/458 test pass, build OK.
-- Giai đoạn 7, module Graph: đang lập kế hoạch trên branch `feat/graph` (chia ba PR: Graph, BFS, DFS).
+- Giai đoạn 7, module Graph xong trên branch `feat/graph`, CHỜ người dùng review PR (chia ba PR: Graph, BFS, DFS).
+  Kết quả: 560/560 test pass (baseline 458), build OK.
 - Máy phát triển: Windows và Ubuntu (repo trên phân vùng NTFS, `core.filemode=false`).
 - Windows: `core.autocrlf=true` + `.gitattributes` (`* text=auto eol=lf`), mọi file text là LF.
 - `.claude/settings.json` (đã commit) chặn bằng deny rule cho cả Bash và PowerShell: force push, push lên `main`,
@@ -183,7 +209,7 @@ pnpm dev        # chạy thử trên trình duyệt
 
 ## Roadmap sau giai đoạn 5 (chỉ làm khi được đồng ý)
 6. Learning Panel (đã merge, PR #4).
-7. BST (đã merge, PR #5), Hash Table (đã merge, PR #6), Graph (đang lập kế hoạch), BFS, DFS — từng module một, có test.
+7. BST (đã merge, PR #5), Hash Table (đã merge, PR #6), Graph (xong, chờ merge), BFS, DFS — từng module một, có test.
 8. Tiến độ học tập bằng `localStorage` (xử lý dữ liệu lỗi/thiếu).
 9. Kiểm thử tổng thể, UI/UX, README (README trên GitHub đang lỗi thời), CI, deployment.
    Ghi chú: `main.js` không xử lý lỗi khi fetch template thất bại (trang trắng).
