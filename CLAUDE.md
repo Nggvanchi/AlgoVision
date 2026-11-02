@@ -80,7 +80,7 @@ pnpm dev        # chạy thử trên trình duyệt
     `collisionPresetKeys` (3 + k·m). Giới hạn UI: khóa 0–99, m ∈ {5, 7, 11}, chaining 15 phần tử, probing m.
     Bảng chốt bằng `steps.at(-1).table`; đổi m/chiến lược tạo bảng rỗng (báo qua `#hash-table-status`; chưa có rehash);
     đang Run khóa cả ô chọn m và chiến lược. Mọi số liệu (n, m, α, tombstone) đọc từ bảng của bước đang hiển thị.
-- Graph (giai đoạn 7, PR Graph; BFS và DFS là hai PR sau):
+- Graph (giai đoạn 7, đã merge PR #7; BFS và DFS là hai PR sau):
   - `src/structures/graph.js`: đồ thị đơn dạng snapshot thuần `{ directed, vertices: { id: { id, slot, label } }, adjacency, nextId }`.
     Id `v1, v2, …` không cấp lại; cạnh định danh bằng cặp id `{ from, to }`. slot = số nhỏ nhất chưa dùng, nhãn suy từ slot
     (xóa C rồi thêm lại thì nhãn C, id mới). Danh sách kề sắp theo slot. Vô hướng lưu hai chiều. Ma trận kề không lưu,
@@ -154,9 +154,8 @@ pnpm dev        # chạy thử trên trình duyệt
 
 ## Trạng thái hiện tại (cập nhật 2026-11-02)
 
-- `main` = `5e119c8` (Merge PR #6, giai đoạn 7 module Hash Table). Baseline: 458/458 test pass, build OK.
-- Giai đoạn 7, module Graph xong trên branch `feat/graph`, CHỜ người dùng review PR (chia ba PR: Graph, BFS, DFS).
-  Kết quả: 560/560 test pass (baseline 458), build OK.
+- `main` = `d11eb98` (Merge PR #7, giai đoạn 7 module Graph). Baseline: 560/560 test pass, build OK.
+- Giai đoạn 7, module BFS (PR 2 của Graph) trên branch `feat/bfs`: ĐANG LẬP KẾ HOẠCH, chờ người dùng duyệt.
 - Máy phát triển: Windows và Ubuntu (repo trên phân vùng NTFS, `core.filemode=false`).
 - Windows: `core.autocrlf=true` + `.gitattributes` (`* text=auto eol=lf`), mọi file text là LF.
 - `.claude/settings.json` (đã commit) chặn bằng deny rule cho cả Bash và PowerShell: force push, push lên `main`,
@@ -209,7 +208,7 @@ pnpm dev        # chạy thử trên trình duyệt
 
 ## Roadmap sau giai đoạn 5 (chỉ làm khi được đồng ý)
 6. Learning Panel (đã merge, PR #4).
-7. BST (đã merge, PR #5), Hash Table (đã merge, PR #6), Graph (xong, chờ merge), BFS, DFS — từng module một, có test.
+7. BST (đã merge, PR #5), Hash Table (đã merge, PR #6), Graph (đã merge, PR #7), BFS (đang lập kế hoạch), DFS — từng module một, có test.
 8. Tiến độ học tập bằng `localStorage` (xử lý dữ liệu lỗi/thiếu).
 9. Kiểm thử tổng thể, UI/UX, README (README trên GitHub đang lỗi thời), CI, deployment.
    Ghi chú: `main.js` không xử lý lỗi khi fetch template thất bại (trang trắng).
