@@ -186,6 +186,30 @@ export function formatBfsResult(step) {
   return `Tới được ${order.length}/${listVertices(step.graph).length} đỉnh: ${labelsText(step.graph, order)}`
 }
 
+// Số đo BFS cho Learning Panel: số lần dequeue (= R khi xong) và reads của bước đang hiển thị.
+// Chỉ bước cuối mới kết luận Big-O; giữa chừng chỉ ghi số đã đếm. Không phải bước BFS thì trả null.
+export function describeBfsCost(step) {
+  if (step.operation !== 'bfs') return null
+
+  const { graph } = step
+  const isList = step.representation === 'list'
+  const source = hasVertex(graph, step.sourceId) ? labelOf(graph, step.sourceId) : 's'
+  const representation = isList ? 'danh sách kề' : 'ma trận kề'
+  const dequeues = idsOf(step, 'orderIds').length
+  const unit = isList ? 'phần tử' : 'ô'
+
+  if (!step.finished) {
+    return `BFS từ ${source} đang chạy (${representation}): đã ${dequeues} lần dequeue, đã đọc ${step.reads} ${unit}.`
+  }
+
+  const vertexCount = listVertices(graph).length
+  const cost = isList
+    ? `${step.reads} phần tử đã đọc (tổng bậc${graph.directed ? ' ra' : ''} của ${dequeues} đỉnh tới được) → O(V + E)`
+    : `${step.reads} ô đã đọc = R·V = ${dequeues}·${vertexCount} (tối đa V² = ${vertexCount * vertexCount}) → O(V²)`
+  return `BFS từ ${source} (${representation}): R = ${dequeues} lần dequeue + ${cost}. `
+    + 'Bộ nhớ phụ O(V): hàng đợi, visited, dist, parent.'
+}
+
 export function formatDequeueCount(step) {
   return step.operation === 'bfs' ? String(idsOf(step, 'orderIds').length) : '—'
 }

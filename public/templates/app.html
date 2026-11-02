@@ -1907,14 +1907,15 @@
                         <td>Θ(deg(u))</td>
                         <td>Θ(V)</td>
                     </tr>
-                    <tr data-row="traverse">
-                        <th scope="row">Duyệt mọi cạnh (lý thuyết, BFS/DFS sẽ đo)</th>
-                        <td>Θ(V + E)</td>
-                        <td>Θ(V²)</td>
+                    <tr data-row="bfs">
+                        <th scope="row">BFS từ s <span class="graph-row-badge"></span></th>
+                        <td>O(V + E): R lần dequeue + tổng bậc (ra) của R đỉnh</td>
+                        <td>O(V²): R·V ô, tối đa V²</td>
                     </tr>
                 </tbody>
             </table>
         </div>
+        <p class="bst-hint" id="graph-bfs-cost" hidden></p>
 
         <p class="bst-hint" id="graph-edit-cost">
             Sửa đồ thị trên danh sách kề (như cài đặt ở đây): thêm đỉnh O(V) vì tìm slot trống nhỏ nhất;

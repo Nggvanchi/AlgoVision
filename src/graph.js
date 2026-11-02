@@ -30,6 +30,7 @@ import {
   bfsListReadState,
   bfsMatrixReadState,
   bfsVertexMarks,
+  describeBfsCost,
   formatBfsResult,
   formatDequeueCount,
   isBfsTreeEdge,
@@ -581,6 +582,7 @@ export function initGraph(document, options = {}) {
     matrixSize: $('#graph-matrix-size'),
     density: $('#graph-density'),
     table: $('#graph-complexity-table'),
+    bfsCost: $('#graph-bfs-cost'),
   }
   const learningCells = {
     description: $('#graph-learning-description'),
@@ -715,6 +717,15 @@ export function initGraph(document, options = {}) {
     setText(complexity.density, describeDensity(graph))
   }
 
+  // Số đo BFS theo bước đang hiển thị; chưa sinh bước (chọn BFS nhưng chưa bấm Thực hiện) thì chỉ nhắc cách đo.
+  function renderBfsCost(step, hasSteps) {
+    if (!complexity.bfsCost) return
+    const text = describeBfsCost(step)
+    complexity.bfsCost.hidden = text === null
+    if (text === null) return
+    setText(complexity.bfsCost, hasSteps ? text : 'BFS từ s: bấm Thực hiện để đếm số lần dequeue và số lần đọc thật.')
+  }
+
   function renderControls({ stepCount, controls }) {
     const hasSteps = stepCount > 0
     const running = isRunning()
@@ -775,6 +786,7 @@ export function initGraph(document, options = {}) {
     renderSourceLabel()
     renderRepresentations(step)
     renderStats(step)
+    renderBfsCost(step, snapshot.step !== null && snapshot.step !== undefined)
     renderOperationInfo(step)
     message.textContent = step.message
     renderControls(snapshot)

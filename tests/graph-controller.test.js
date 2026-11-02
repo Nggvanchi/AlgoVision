@@ -697,7 +697,9 @@ test('Learning Panel đồ thị rỗng: 0 ô, không chia cho 0', () => {
   })
 })
 
-test('Bảng Big-O: danh sách kề so với ma trận kề; "Duyệt mọi cạnh" là lý thuyết; dòng của thao tác đang chọn được đánh dấu bằng chữ', () => {
+// Dòng "Duyệt mọi cạnh (lý thuyết, BFS/DFS sẽ đo)" được thay bằng dòng BFS đo thật (PR BFS); DFS chưa có nên
+// bảng không còn chữ nào nói DFS đã được đo.
+test('Bảng Big-O: danh sách kề so với ma trận kề; dòng BFS từ s (đo thật); dòng của thao tác đang chọn được đánh dấu bằng chữ', () => {
   withGraph((ui) => {
     const row = (name) => ui.$(`#graph-complexity-table tr[data-row="${name}"]`)
     const cells = (name) => [...row(name).querySelectorAll('td')].map((cell) => cell.textContent.trim())
@@ -705,8 +707,10 @@ test('Bảng Big-O: danh sách kề so với ma trận kề; "Duyệt mọi cạ
     assert.deepEqual(cells('space'), ['Θ(V + E)', 'Θ(V²)'])
     assert.deepEqual(cells('has-edge'), ['O(deg(u)), tốt nhất O(1)', 'O(1)'])
     assert.deepEqual(cells('neighbors'), ['Θ(deg(u))', 'Θ(V)'])
-    assert.deepEqual(cells('traverse'), ['Θ(V + E)', 'Θ(V²)'])
-    assert.equal(row('traverse').querySelector('th').textContent.trim(), 'Duyệt mọi cạnh (lý thuyết, BFS/DFS sẽ đo)')
+    assert.equal(row('traverse') === null, true)
+    assert.deepEqual(cells('bfs'), ['O(V + E): R lần dequeue + tổng bậc (ra) của R đỉnh', 'O(V²): R·V ô, tối đa V²'])
+    assert.equal(row('bfs').querySelector('th').textContent.trim(), 'BFS từ s')
+    assert.doesNotMatch(ui.text('#graph-complexity-panel'), /DFS/)
 
     assert.ok(row('has-edge').classList.contains('is-active'))
     assert.equal(row('has-edge').querySelector('.graph-row-badge').textContent, 'đang chọn')
@@ -947,6 +951,81 @@ test('BFS đang Run: khóa đủ 14 điều khiển, kể cả select đỉnh ng
     ui.scheduler.advance(SPEED * 40)
     assert.equal(ui.text('#graph-result'), 'Tới được 4/7 đỉnh: A, B, C, D')
     for (const selector of LOCKABLE) assert.equal(ui.$(selector).disabled, false, selector)
+  })
+})
+
+test('Learning Panel BFS: dòng bfs được đánh dấu; #graph-bfs-cost chỉ hiện với bước BFS, ghi số dequeue và số lần đọc thật', () => {
+  withGraph((ui) => {
+    const row = ui.$('#graph-complexity-table tr[data-row="bfs"]')
+    assert.equal(ui.$('#graph-bfs-cost').hidden, true)
+
+    ui.query('bfs', 'A')
+    assert.ok(row.classList.contains('is-active'))
+    assert.equal(row.querySelector('.graph-row-badge').textContent, 'đang chọn')
+    assert.equal(ui.$('#graph-bfs-cost').hidden, false)
+
+    ui.nextUntilDone()
+    assert.equal(ui.text('#graph-bfs-cost'), 'BFS từ A (danh sách kề): R = 4 lần dequeue + 8 phần tử đã đọc '
+      + '(tổng bậc của 4 đỉnh tới được) → O(V + E). Bộ nhớ phụ O(V): hàng đợi, visited, dist, parent.')
+
+    ui.change('#graph-representation', 'matrix')
+    ui.query('bfs', 'A')
+    ui.nextUntilDone()
+    assert.equal(ui.text('#graph-bfs-cost'), 'BFS từ A (ma trận kề): R = 4 lần dequeue + 28 ô đã đọc = R·V = 4·7 '
+      + '(tối đa V² = 49) → O(V²). Bộ nhớ phụ O(V): hàng đợi, visited, dist, parent.')
+
+    ui.change('#graph-operation', 'neighbors')
+    assert.equal(ui.$('#graph-bfs-cost').hidden, true)
+  })
+})
+
+test('Learning Panel BFS có hướng ghi "tổng bậc ra"; số liệu đọc từ step.graph (nạp bước K6 khi đồ thị đã chốt là Mẫu)', () => {
+  withGraph((ui) => {
+    ui.change('#graph-kind', 'directed')
+    ui.$('#graph-preset-sample').click()
+    ui.query('bfs', 'A')
+    ui.nextUntilDone()
+    assert.match(ui.text('#graph-bfs-cost'), /R = 4 lần dequeue \+ 5 phần tử đã đọc \(tổng bậc ra của 4 đỉnh tới được\)/)
+
+    const k6 = buildGraph(false, 6, [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [1, 2], [1, 3], [1, 4], [1, 5],
+      [2, 3], [2, 4], [2, 5], [3, 4], [3, 5], [4, 5]])
+    ui.handle.loadSteps([bfsModule.generateGraphBfsSteps(k6, 'v1', 'matrix').at(-1)])
+    assert.match(ui.text('#graph-bfs-cost'), /R = 6 lần dequeue \+ 36 ô đã đọc = R·V = 6·6 \(tối đa V² = 36\)/)
+  })
+})
+
+test('Có hướng, Mẫu, BFS từ A: cạnh cây A→B, A→C, C→D có is-tree; cạnh ngược C→A và B→C thì không', () => {
+  withGraph((ui) => {
+    ui.change('#graph-kind', 'directed')
+    ui.$('#graph-preset-sample').click()
+    ui.query('bfs', 'A')
+    ui.nextUntilDone()
+
+    const label = (id) => ui.$(`#graph-source option[value="${id}"]`).textContent.trim()
+    const edgeNames = (selector) => [...ui.document.querySelectorAll(`#graph-svg ${selector}`)]
+      .map((path) => `${label(path.dataset.from)}→${label(path.dataset.to)}`)
+      .sort()
+
+    assert.deepEqual(edgeNames('.graph-edge.is-tree'), ['A→B', 'A→C', 'C→D'])
+    assert.ok(edgeNames('.graph-edge').includes('C→A'))
+    assert.ok(edgeNames('.graph-edge:not(.is-tree)').includes('C→A'))
+    assert.ok(edgeNames('.graph-edge:not(.is-tree)').includes('B→C'))
+  })
+})
+
+test('Learning Panel BFS chưa sinh bước (chọn BFS, chưa bấm Thực hiện): chỉ nhắc cách đo, không ghi số', () => {
+  withGraph((ui) => {
+    ui.change('#graph-operation', 'bfs')
+    assert.equal(ui.$('#graph-bfs-cost').hidden, false)
+    assert.equal(ui.text('#graph-bfs-cost'), 'BFS từ s: bấm Thực hiện để đếm số lần dequeue và số lần đọc thật.')
+  })
+})
+
+test('Learning Panel BFS giữa chừng: ghi số đã đếm tới bước đang hiển thị, chưa kết luận Big-O', () => {
+  withGraph((ui) => {
+    ui.query('bfs', 'A')
+    for (let index = 0; index < 9; index++) ui.$('#graph-next').click()
+    assert.equal(ui.text('#graph-bfs-cost'), 'BFS từ A đang chạy (danh sách kề): đã 2 lần dequeue, đã đọc 4 phần tử.')
   })
 })
 
