@@ -25,6 +25,19 @@ import {
   listNeighborsPseudocode,
   matrixNeighborsPseudocode,
 } from './algorithms/graphNeighbors.js'
+import { generateGraphBfsSteps, listBfsPseudocode, matrixBfsPseudocode } from './algorithms/graphBfs.js'
+import {
+  bfsListReadState,
+  bfsMatrixReadState,
+  bfsVertexMarks,
+  describeBfsCost,
+  formatBfsResult,
+  formatDequeueCount,
+  isBfsTreeEdge,
+  renderBfsOrder,
+  renderBfsQueue,
+  renderBfsTable,
+} from './graph-bfs-view.js'
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 
@@ -77,6 +90,18 @@ export const graphOperations = {
       generateGraphNeighborsSteps(graph, sourceId, representation)
     ),
   },
+  bfs: {
+    name: 'BFS từ s',
+    needsTarget: false,
+    pseudocode: { list: listBfsPseudocode, matrix: matrixBfsPseudocode },
+    generate: (graph, sourceId, _targetId, representation) => generateGraphBfsSteps(graph, sourceId, representation),
+  },
+}
+
+// Nhãn và thông báo của ô chọn đỉnh thứ nhất: BFS gọi là đỉnh nguồn s (cùng một select với u).
+const sourceNames = {
+  label: (operation) => (operation === 'bfs' ? 'Đỉnh nguồn s' : 'Đỉnh u'),
+  missing: (operation) => (operation === 'bfs' ? 'Hãy chọn đỉnh nguồn s.' : 'Hãy chọn đỉnh u.'),
 }
 
 const kindName = (directed) => (directed ? 'có hướng' : 'vô hướng')
@@ -107,6 +132,24 @@ export const graphLearning = {
       description: 'Đọc cả hàng u của ma trận, ô bằng 1 nào thì cột đó là một đỉnh kề.',
       advantages: 'Cột u cho ngay các cạnh đi vào u, nên bậc vào cũng chỉ tốn Θ(V).',
       disadvantages: 'Luôn đọc đủ V ô, kể cả khi u là đỉnh cô lập (bậc 0).',
+    },
+  },
+  bfs: {
+    list: {
+      description: 'Duyệt theo từng lớp bằng hàng đợi: lấy u ở đầu hàng, đọc từng w trong Adj[u]; w chưa được đánh dấu thì '
+        + 'đánh dấu ngay, gán dist[w] = dist[u] + 1, parent[w] = u và đưa vào cuối hàng. Đánh dấu lúc đưa vào hàng nên '
+        + 'mỗi đỉnh vào hàng đợi đúng một lần.',
+      advantages: 'Mỗi đỉnh tới được lấy ra một lần và chỉ đọc các cạnh thật sự đi ra từ nó (có hướng: bậc ra), '
+        + 'nên tổng chi phí O(V + E); dist là số cạnh của đường đi ngắn nhất từ s.',
+      disadvantages: 'Chỉ đi tới các đỉnh tới được từ s: đỉnh ở thành phần khác giữ dist = — (cần chạy lại từ nguồn khác). '
+        + 'Hàng đợi và mảng visited/dist/parent tốn thêm O(V) bộ nhớ.',
+    },
+    matrix: {
+      description: 'Giống BFS trên danh sách kề, nhưng với mỗi u lấy khỏi hàng đợi phải đọc cả hàng u của ma trận '
+        + '(V ô) để tìm các w có M[u][w] = 1.',
+      advantages: 'Cài đặt đơn giản, không cần danh sách kề; với đồ thị dày (E gần V²) chi phí tương đương danh sách kề.',
+      disadvantages: 'Mỗi lần lấy u ra luôn đọc đủ V ô, kể cả ô bằng 0: tổng R·V ô (R là số đỉnh tới được), tối đa V², '
+        + 'tức O(V²) dù đồ thị rất thưa.',
     },
   },
 }
@@ -156,6 +199,7 @@ export function formatDegree(graph, vertexId) {
 }
 
 export function formatResult(step) {
+  if (step.operation === 'bfs') return formatBfsResult(step)
   if (!step.finished || step.result === null) return 'Chưa có'
 
   const { graph, sourceId, targetId } = step
@@ -215,11 +259,14 @@ function isCurrentEdge(step, edge) {
   return sameDirection || (!step.graph.directed && reversed)
 }
 
+// BFS: cạnh cây (parent[w], w) có lớp is-tree (nét liền đậm). Rẽ nhánh theo step.operation, không theo select.
 function renderEdges(document, svg, step, layout) {
+  const isBfs = step.operation === 'bfs'
   for (const edge of layout.edges) {
     const isCurrent = isCurrentEdge(step, edge)
+    const isTree = isBfs && isBfsTreeEdge(step, edge)
     const path = createSvgElement(document, 'path', {
-      class: `graph-edge${isCurrent ? ' is-current' : ''}`,
+      class: ['graph-edge', isCurrent ? 'is-current' : null, isTree ? 'is-tree' : null].filter(Boolean).join(' '),
       d: edgePath(edge),
       'data-from': edge.from,
       'data-to': edge.to,
@@ -239,16 +286,36 @@ function badgePosition(point) {
   return { x: Number((point.x + (dx / norm) * distance).toFixed(1)), y: Number((point.y + (dy / norm) * distance).toFixed(1)) }
 }
 
-function renderVertex(document, svg, step, vertex, point, outputIds) {
+// Trạng thái vẽ đỉnh của truy vấn: đã ghi nhận = outputIds; nhãn "u"/"v" theo sourceId/targetId. Id lạ bị bỏ qua.
+function queryVertexMarks(step) {
+  const { graph } = step
+  const doneIds = new Set((step.outputIds ?? []).filter((id) => hasVertex(graph, id)))
+  const badges = new Map()
+
+  for (const { id } of listVertices(graph)) {
+    const roles = [step.sourceId === id ? 'u' : null, step.targetId === id ? 'v' : null].filter(Boolean)
+    if (roles.length > 0) badges.set(id, roles.join(','))
+  }
+  return { doneIds, queuedIds: new Set(), badges }
+}
+
+// marks { doneIds, queuedIds, badges }: của truy vấn (queryVertexMarks) hoặc của BFS (bfsVertexMarks).
+function renderVertex(document, svg, step, vertex, point, marks) {
   const radius = GRAPH_LAYOUT.vertexRadius
   const group = createSvgElement(document, 'g', { class: 'graph-vertex', 'data-id': vertex.id, 'data-label': vertex.label })
   const isCurrent = step.currentVertexId === vertex.id
-  const isOutput = outputIds.has(vertex.id)
+  const isOutput = marks.doneIds.has(vertex.id)
 
   if (isCurrent) group.classList.add('is-current')
   if (isOutput) {
     group.classList.add('is-output')
     group.appendChild(createSvgElement(document, 'circle', { class: 'graph-vertex-ring', cx: point.x, cy: point.y, r: radius + 4 }))
+  }
+  if (marks.queuedIds.has(vertex.id)) {
+    group.classList.add('is-queued')
+    group.appendChild(createSvgElement(document, 'circle', {
+      class: 'graph-vertex-queue-ring', cx: point.x, cy: point.y, r: radius + 4,
+    }))
   }
 
   group.appendChild(createSvgElement(document, 'circle', { class: 'graph-vertex-circle', cx: point.x, cy: point.y, r: radius }))
@@ -265,12 +332,12 @@ function renderVertex(document, svg, step, vertex, point, outputIds) {
     }, '✓')
   }
 
-  const roles = [step.sourceId === vertex.id ? 'u' : null, step.targetId === vertex.id ? 'v' : null].filter(Boolean)
-  if (roles.length > 0) {
+  const badgeText = marks.badges.get(vertex.id)
+  if (badgeText) {
     const badge = badgePosition(point)
     appendText(document, group, {
       class: 'graph-vertex-badge', x: badge.x, y: badge.y, dy: '0.35em', 'text-anchor': 'middle',
-    }, roles.join(','))
+    }, badgeText)
   }
 
   svg.appendChild(group)
@@ -319,6 +386,12 @@ function matrixReadState(step, rowId, columnId, columnIndex) {
   return columnIndex < step.reads ? 'read' : null
 }
 
+// Trạng thái đọc theo thao tác của bước: BFS đọc nhiều hàng (mọi đỉnh đã lấy khỏi hàng đợi), truy vấn chỉ hàng u.
+function readStateOf(step, table) {
+  if (step.operation === 'bfs') return table === 'list' ? bfsListReadState : bfsMatrixReadState
+  return table === 'list' ? listReadState : matrixReadState
+}
+
 // Bảng danh sách kề của đồ thị trong bước: mỗi đỉnh một hàng "A → B C", sắp theo slot.
 export function renderAdjacencyList(listElement, step) {
   const document = listElement.ownerDocument
@@ -364,7 +437,7 @@ export function renderAdjacencyList(listElement, step) {
       entry.className = 'graph-list-entry'
       entry.dataset.id = neighborId
       entry.dataset.label = labelOf(graph, neighborId)
-      markReadState(document, entry, listReadState(step, vertex.id, neighborId, index))
+      markReadState(document, entry, readStateOf(step, 'list')(step, vertex.id, neighborId, index))
       entry.append(labelOf(graph, neighborId))
       row.appendChild(entry)
     })
@@ -419,7 +492,7 @@ export function renderAdjacencyMatrix(table, step) {
         'data-col-label': labelOf(graph, columnId),
         'data-value': String(value),
       })
-      markReadState(document, cell, matrixReadState(step, rowId, columnId, columnIndex))
+      markReadState(document, cell, readStateOf(step, 'matrix')(step, rowId, columnId, columnIndex))
       cell.append(String(value))
       row.appendChild(cell)
     })
@@ -433,7 +506,7 @@ export function renderGraph(svg, step) {
   const document = svg.ownerDocument
   const { graph } = step
   const layout = layoutGraph(graph)
-  const outputIds = new Set((step.outputIds ?? []).filter((id) => hasVertex(graph, id)))
+  const marks = step.operation === 'bfs' ? bfsVertexMarks(step) : queryVertexMarks(step)
 
   svg.replaceChildren()
   svg.setAttribute('width', String(layout.width))
@@ -454,7 +527,7 @@ export function renderGraph(svg, step) {
 
   renderEdges(document, svg, step, layout)
   for (const vertex of listVertices(graph)) {
-    renderVertex(document, svg, step, vertex, layout.vertices[vertex.id], outputIds)
+    renderVertex(document, svg, step, vertex, layout.vertices[vertex.id], marks)
   }
   return layout
 }
@@ -495,6 +568,13 @@ export function initGraph(document, options = {}) {
   const adjacencyList = $('#graph-adjacency-list')
   const adjacencyMatrix = $('#graph-adjacency-matrix')
   const representationPanels = { list: $('#graph-list-panel'), matrix: $('#graph-matrix-panel') }
+  const sourceLabel = $('label[for="graph-source"]')
+  const bfs = {
+    panel: $('#graph-bfs-panel'),
+    queue: $('#graph-bfs-queue'),
+    order: $('#graph-bfs-order'),
+    table: $('#graph-bfs-table'),
+  }
   const complexity = {
     title: $('#graph-complexity-title'),
     live: $('#graph-complexity-live'),
@@ -502,6 +582,7 @@ export function initGraph(document, options = {}) {
     matrixSize: $('#graph-matrix-size'),
     density: $('#graph-density'),
     table: $('#graph-complexity-table'),
+    bfsCost: $('#graph-bfs-cost'),
   }
   const learningCells = {
     description: $('#graph-learning-description'),
@@ -514,6 +595,7 @@ export function initGraph(document, options = {}) {
     degree: $('#graph-degree'),
     readsLabel: $('#graph-reads-label'),
     reads: $('#graph-reads'),
+    dequeues: $('#graph-dequeues'),
     result: $('#graph-result'),
   }
 
@@ -625,6 +707,7 @@ export function initGraph(document, options = {}) {
     setText(stats.degree, formatDegree(graph, step.sourceId))
     setText(stats.readsLabel, readsLabels[step.representation])
     setText(stats.reads, String(step.reads))
+    setText(stats.dequeues, formatDequeueCount(step))
     setText(stats.result, formatResult(step))
 
     const { list, matrix } = representationSizes(graph)
@@ -632,6 +715,15 @@ export function initGraph(document, options = {}) {
     setText(complexity.listSize, String(list))
     setText(complexity.matrixSize, String(matrix))
     setText(complexity.density, describeDensity(graph))
+  }
+
+  // Số đo BFS theo bước đang hiển thị; chưa sinh bước (chọn BFS nhưng chưa bấm Thực hiện) thì chỉ nhắc cách đo.
+  function renderBfsCost(step, hasSteps) {
+    if (!complexity.bfsCost) return
+    const text = describeBfsCost(step)
+    complexity.bfsCost.hidden = text === null
+    if (text === null) return
+    setText(complexity.bfsCost, hasSteps ? text : 'BFS từ s: bấm Thực hiện để đếm số lần dequeue và số lần đọc thật.')
   }
 
   function renderControls({ stepCount, controls }) {
@@ -668,13 +760,33 @@ export function initGraph(document, options = {}) {
     }
   }
 
+  // Khung BFS (hàng đợi, đã xử lý, dist/parent) hiện theo thao tác của BƯỚC ĐANG HIỂN THỊ, không theo select.
+  function renderBfsPanel(step) {
+    if (!bfs.panel) return
+    const isBfs = step.operation === 'bfs'
+    bfs.panel.hidden = !isBfs
+    if (!isBfs) return
+
+    if (bfs.queue) renderBfsQueue(bfs.queue, step)
+    if (bfs.order) renderBfsOrder(bfs.order, step)
+    if (bfs.table) renderBfsTable(bfs.table, step)
+  }
+
+  // Nhãn ô chọn đỉnh mô tả việc nút Thực hiện sắp làm, nên theo select thao tác.
+  function renderSourceLabel() {
+    setText(sourceLabel, sourceNames.label(getSelectedOperation()))
+  }
+
   function render(snapshot) {
     const step = snapshot.step ?? createIdleStep()
 
     renderGraph(svg, step)
     svg.setAttribute('aria-label', describeGraph(step.graph))
+    renderBfsPanel(step)
+    renderSourceLabel()
     renderRepresentations(step)
     renderStats(step)
+    renderBfsCost(step, snapshot.step !== null && snapshot.step !== undefined)
     renderOperationInfo(step)
     message.textContent = step.message
     renderControls(snapshot)
@@ -730,7 +842,7 @@ export function initGraph(document, options = {}) {
   function readSource() {
     const sourceId = selectedId(sourceSelect)
     if (sourceId === null) {
-      showInputError('Hãy chọn đỉnh u.')
+      showInputError(sourceNames.missing(getSelectedOperation()))
       return null
     }
     if (!hasVertex(committedGraph, sourceId)) {

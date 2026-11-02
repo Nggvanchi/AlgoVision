@@ -1711,6 +1711,7 @@
         <select id="graph-operation">
             <option value="has-edge" selected>Kiểm tra u kề v</option>
             <option value="neighbors">Đỉnh kề và bậc của u</option>
+            <option value="bfs">BFS từ đỉnh nguồn s</option>
         </select>
 
         <button class="primary-button" id="graph-apply" type="button">
@@ -1721,6 +1722,7 @@
         <p class="bst-hint" id="graph-input-hint">
             Tối đa 8 đỉnh (A–H), nhãn gắn với vị trí trên vòng tròn. Sửa đồ thị cập nhật ngay;
             truy vấn được minh họa từng bước. Đổi loại đồ thị sẽ tạo đồ thị rỗng mới.
+            BFS dùng ô chọn đỉnh thứ nhất làm đỉnh nguồn s (u và s là cùng một ô chọn).
         </p>
         <p class="bst-error" id="graph-input-error" role="alert" hidden></p>
 
@@ -1762,6 +1764,18 @@
         ></svg>
         </div>
 
+        <section class="graph-bfs-panel" id="graph-bfs-panel" aria-label="Trạng thái BFS" hidden>
+            <h4>Hàng đợi Q <span class="graph-panel-badge">đầu bên trái</span></h4>
+            <div class="graph-bfs-queue-frame" id="graph-bfs-queue-frame">
+                <ol class="graph-bfs-queue" id="graph-bfs-queue" aria-label="Hàng đợi"></ol>
+            </div>
+            <h4>Đã lấy khỏi hàng đợi (đã xử lý)</h4>
+            <ol class="graph-bfs-order" id="graph-bfs-order" aria-label="Đã lấy khỏi hàng đợi (đã xử lý)"></ol>
+            <div class="graph-panel-frame">
+                <table class="graph-matrix graph-bfs-table" id="graph-bfs-table" aria-label="Khoảng cách và đỉnh cha"></table>
+            </div>
+        </section>
+
         <div class="graph-representations">
             <section class="graph-representation-panel" id="graph-list-panel">
                 <h4>Danh sách kề <span class="graph-panel-badge"></span></h4>
@@ -1783,6 +1797,8 @@
             <span><i class="bst-legend-dot is-found"></i> Đã ghi nhận (vòng kép, ✓)</span>
             <span><i class="bst-legend-dot"></i> u, v: nhãn chữ cạnh đỉnh</span>
             <span><i class="hash-legend-box graph-legend-read"></i> Phần tử / ô đã đọc (viền nét đứt)</span>
+            <span><i class="bst-legend-dot graph-legend-queued"></i> BFS: đỉnh trong hàng đợi (vòng nét đứt)</span>
+            <span><i class="graph-legend-tree"></i> BFS: cạnh cây (nét liền đậm); s·0, d=k: khoảng cách từ s</span>
         </div>
 
         <div class="simulation-controls">
@@ -1828,6 +1844,10 @@
         <div class="stat-card">
             <span id="graph-reads-label">Phần tử danh sách đã đọc</span>
             <strong id="graph-reads">0</strong>
+        </div>
+        <div class="stat-card">
+            <span>Số lần dequeue (BFS)</span>
+            <strong id="graph-dequeues">—</strong>
         </div>
         <div class="stat-card">
             <span>Kết quả</span>
@@ -1887,14 +1907,15 @@
                         <td>Θ(deg(u))</td>
                         <td>Θ(V)</td>
                     </tr>
-                    <tr data-row="traverse">
-                        <th scope="row">Duyệt mọi cạnh (lý thuyết, BFS/DFS sẽ đo)</th>
-                        <td>Θ(V + E)</td>
-                        <td>Θ(V²)</td>
+                    <tr data-row="bfs">
+                        <th scope="row">BFS từ s <span class="graph-row-badge"></span></th>
+                        <td>O(V + E): R lần dequeue + tổng bậc (ra) của R đỉnh</td>
+                        <td>O(V²): R·V ô, tối đa V²</td>
                     </tr>
                 </tbody>
             </table>
         </div>
+        <p class="bst-hint" id="graph-bfs-cost" hidden></p>
 
         <p class="bst-hint" id="graph-edit-cost">
             Sửa đồ thị trên danh sách kề (như cài đặt ở đây): thêm đỉnh O(V) vì tìm slot trống nhỏ nhất;
