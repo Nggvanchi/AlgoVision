@@ -29,20 +29,8 @@ export function bfsVertexMarks(step) {
   return { doneIds, queuedIds, badges }
 }
 
-// Cạnh cây BFS: (parent[w], w) khi cả hai đỉnh và cạnh đều có trong đồ thị của bước.
-export function bfsTreeEdges(step) {
-  const { graph } = step
-  return Object.entries(step.parentIds ?? {})
-    .filter(([childId, parentId]) => parentId !== null && hasVertex(graph, childId) && hasEdge(graph, parentId, childId))
-    .map(([childId, parentId]) => ({ from: parentId, to: childId }))
-}
-
-// edge là cạnh của layout ({ from, to }); vô hướng khớp cả hai chiều.
-export function isBfsTreeEdge(step, edge) {
-  return bfsTreeEdges(step).some(({ from, to }) => (
-    (from === edge.from && to === edge.to) || (!step.graph.directed && from === edge.to && to === edge.from)
-  ))
-}
+// Cạnh cây BFS: dùng chung với DFS (graph-traversal-view.js); giữ tên cũ để không đổi API của file này.
+export { treeEdges as bfsTreeEdges, isTreeEdge as isBfsTreeEdge } from './graph-traversal-view.js'
 
 // Hàng của đỉnh đã xử lý xong (đã lấy ra, không phải u) đã đọc hết; hàng u đọc tới vị trí đang xét.
 function rowReadState(step, ownerId, index, currentIndex) {
