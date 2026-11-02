@@ -1841,6 +1841,99 @@
                 <pre><code id="graph-pseudocode"></code></pre>
             </article>
         </div>
+
+        <div class="complexity-panel" id="graph-complexity-panel">
+        <div class="complexity-heading">
+            <h4>Danh sách kề so với ma trận kề</h4>
+            <span id="graph-complexity-title">KIỂM TRA KỀ · DANH SÁCH KỀ</span>
+        </div>
+        <p class="bst-hint" id="graph-complexity-live"></p>
+
+        <div class="simulation-stats bst-stats">
+            <div class="stat-card">
+                <span>Danh sách kề (ô nhớ)</span>
+                <strong id="graph-list-size">0</strong>
+            </div>
+            <div class="stat-card">
+                <span>Ma trận kề (ô)</span>
+                <strong id="graph-matrix-size">0</strong>
+            </div>
+        </div>
+        <p class="bst-hint" id="graph-density"></p>
+
+        <div class="graph-panel-frame">
+            <table class="graph-complexity-table" id="graph-complexity-table">
+                <caption>Chi phí thời gian và bộ nhớ theo cách biểu diễn (deg(u) ≤ V − 1)</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Thao tác</th>
+                        <th scope="col">Danh sách kề</th>
+                        <th scope="col">Ma trận kề</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-row="space">
+                        <th scope="row">Bộ nhớ</th>
+                        <td>Θ(V + E)</td>
+                        <td>Θ(V²)</td>
+                    </tr>
+                    <tr data-row="has-edge">
+                        <th scope="row">Kiểm tra u kề v <span class="graph-row-badge"></span></th>
+                        <td>O(deg(u)), tốt nhất O(1)</td>
+                        <td>O(1)</td>
+                    </tr>
+                    <tr data-row="neighbors">
+                        <th scope="row">Đỉnh kề của u <span class="graph-row-badge"></span></th>
+                        <td>Θ(deg(u))</td>
+                        <td>Θ(V)</td>
+                    </tr>
+                    <tr data-row="traverse">
+                        <th scope="row">Duyệt mọi cạnh (lý thuyết, BFS/DFS sẽ đo)</th>
+                        <td>Θ(V + E)</td>
+                        <td>Θ(V²)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="bst-hint" id="graph-edit-cost">
+            Sửa đồ thị trên danh sách kề (như cài đặt ở đây): thêm đỉnh O(V) vì tìm slot trống nhỏ nhất;
+            thêm cạnh O(deg(u) + deg(v)) vì kiểm tra cạnh trùng rồi chèn giữ thứ tự (có hướng: O(deg(u)));
+            xóa cạnh O(deg(u) + deg(v)) (có hướng: O(deg(u))); xóa đỉnh O(V + E) vì phải tìm cạnh đi vào
+            trong mọi danh sách. Các chi phí này là của cấu trúc dữ liệu, không tính chi phí sao chép snapshot
+            mà trình mô phỏng dùng để lưu từng bước.
+        </p>
+        </div>
+
+        <div class="learning-section" id="graph-learning">
+            <div class="learning-heading">
+                <div>
+                    <span class="section-eyebrow">GÓC KIẾN THỨC</span>
+                    <h3>Tìm hiểu thao tác</h3>
+                    <p>
+                        V là số đỉnh, E là số cạnh, deg(u) là số đỉnh kề của u (có hướng: số cạnh đi ra).
+                        So sánh preset Cây (thưa) với Đầy đủ K6 (dày) để thấy khi nào ma trận kề đáng dùng.
+                    </p>
+                </div>
+            </div>
+
+            <div class="learning-content">
+                <article class="learning-block">
+                    <h4>Ý tưởng</h4>
+                    <p id="graph-learning-description"></p>
+                </article>
+
+                <article class="learning-block">
+                    <h4>Ưu điểm</h4>
+                    <p id="graph-learning-advantages"></p>
+                </article>
+
+                <article class="learning-block">
+                    <h4>Hạn chế</h4>
+                    <p id="graph-learning-disadvantages"></p>
+                </article>
+            </div>
+        </div>
     </div>
     </section>
 

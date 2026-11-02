@@ -2879,6 +2879,47 @@ button.dashboard-card:hover {
   border: 2px dashed var(--purple);
 }
 
+.graph-complexity-table {
+  width: 100%;
+  margin-top: 12px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.graph-complexity-table caption {
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: left;
+}
+
+.graph-complexity-table th,
+.graph-complexity-table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.graph-complexity-table td {
+  font-family: ui-monospace, monospace;
+  white-space: nowrap;
+}
+
+/* Dòng của thao tác đang chọn: viền trái dày + chữ "đang chọn" (không chỉ màu). */
+.graph-complexity-table tr.is-active th {
+  border-left: 4px solid var(--state-active);
+}
+
+.graph-row-badge {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.graph-row-badge:not(:empty)::before {
+  content: '· ';
+}
+
 @media (max-width: 760px) {
   .graph-representations {
     grid-template-columns: minmax(0, 1fr);

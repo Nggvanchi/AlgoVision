@@ -635,3 +635,107 @@ test('Đồ thị rỗng: danh sách báo rỗng, ma trận 0 × 0', () => {
     assert.equal(ui.document.querySelectorAll('#graph-adjacency-matrix .graph-matrix-cell').length, 0)
   })
 })
+
+// ===== Learning Panel =====
+const sizes = (ui) => [ui.text('#graph-list-size'), ui.text('#graph-matrix-size')]
+
+test('Learning Panel vô hướng: kích thước danh sách / ma trận đọc từ đồ thị đang hiển thị — Mẫu 17/49, Cây 19/49, K6 36/36', () => {
+  withGraph((ui) => {
+    assert.deepEqual(sizes(ui), ['17', '49'])
+    assert.equal(
+      ui.text('#graph-complexity-live'),
+      'Đồ thị đang hiển thị (vô hướng): V = 7, E = 5. Danh sách kề lưu V + 2E = 17 ô nhớ; ma trận kề lưu V² = 49 ô.',
+    )
+    assert.equal(ui.text('#graph-density'), 'Danh sách kề tiết kiệm hơn: 17 so với 49 ô (E = 5, tối đa 21 cạnh).')
+
+    ui.$('#graph-preset-tree').click()
+    assert.deepEqual(sizes(ui), ['19', '49'])
+
+    ui.$('#graph-preset-complete').click()
+    assert.deepEqual(sizes(ui), ['36', '36'])
+    assert.equal(ui.text('#graph-density'), 'Hai cách tốn bằng nhau: 36 so với 36 ô (E = 15, tối đa 15 cạnh: đồ thị đầy đủ).')
+  })
+})
+
+test('Learning Panel có hướng: danh sách V + E — Mẫu 13, Cây 13, K6 21 (ma trận 49, 49, 36)', () => {
+  withGraph((ui) => {
+    ui.change('#graph-kind', 'directed')
+    ui.$('#graph-preset-sample').click()
+    assert.deepEqual(sizes(ui), ['13', '49'])
+    assert.equal(
+      ui.text('#graph-complexity-live'),
+      'Đồ thị đang hiển thị (có hướng): V = 7, E = 6. Danh sách kề lưu V + E = 13 ô nhớ; ma trận kề lưu V² = 49 ô.',
+    )
+    assert.equal(ui.text('#graph-density'), 'Danh sách kề tiết kiệm hơn: 13 so với 49 ô (E = 6, tối đa 42 cạnh).')
+
+    ui.$('#graph-preset-tree').click()
+    assert.deepEqual(sizes(ui), ['13', '49'])
+
+    ui.$('#graph-preset-complete').click()
+    assert.deepEqual(sizes(ui), ['21', '36'])
+  })
+})
+
+test('Learning Panel đọc step.graph: nạp bước dùng K6 khi đồ thị đã chốt là Mẫu thì panel hiện số của K6', () => {
+  withGraph((ui) => {
+    const k6 = buildGraph(false, 6, [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [1, 2], [1, 3], [1, 4], [1, 5],
+      [2, 3], [2, 4], [2, 5], [3, 4], [3, 5], [4, 5]])
+    const createStep = createGraphStepFactory('neighbors', { representation: 'matrix', sourceId: 'v1' })
+    ui.handle.loadSteps([createStep({ graph: k6, message: 'K6' })])
+
+    assert.deepEqual(sizes(ui), ['36', '36'])
+    assert.ok(ui.text('#graph-complexity-live').startsWith('Đồ thị đang hiển thị (vô hướng): V = 6, E = 15.'))
+  })
+})
+
+test('Learning Panel đồ thị rỗng: 0 ô, không chia cho 0', () => {
+  withGraph((ui) => {
+    ui.$('#graph-clear').click()
+    assert.deepEqual(sizes(ui), ['0', '0'])
+    assert.equal(ui.text('#graph-density'), 'Đồ thị rỗng: cả hai cách đều chưa tốn ô nào.')
+  })
+})
+
+test('Bảng Big-O: danh sách kề so với ma trận kề; "Duyệt mọi cạnh" là lý thuyết; dòng của thao tác đang chọn được đánh dấu bằng chữ', () => {
+  withGraph((ui) => {
+    const row = (name) => ui.$(`#graph-complexity-table tr[data-row="${name}"]`)
+    const cells = (name) => [...row(name).querySelectorAll('td')].map((cell) => cell.textContent.trim())
+
+    assert.deepEqual(cells('space'), ['Θ(V + E)', 'Θ(V²)'])
+    assert.deepEqual(cells('has-edge'), ['O(deg(u)), tốt nhất O(1)', 'O(1)'])
+    assert.deepEqual(cells('neighbors'), ['Θ(deg(u))', 'Θ(V)'])
+    assert.deepEqual(cells('traverse'), ['Θ(V + E)', 'Θ(V²)'])
+    assert.equal(row('traverse').querySelector('th').textContent.trim(), 'Duyệt mọi cạnh (lý thuyết, BFS/DFS sẽ đo)')
+
+    assert.ok(row('has-edge').classList.contains('is-active'))
+    assert.equal(row('has-edge').querySelector('.graph-row-badge').textContent, 'đang chọn')
+    ui.change('#graph-operation', 'neighbors')
+    assert.ok(row('neighbors').classList.contains('is-active'))
+    assert.equal(row('has-edge').querySelector('.graph-row-badge').textContent, '')
+
+    assert.match(ui.text('#graph-edit-cost'), /không tính chi phí sao chép snapshot/)
+  })
+})
+
+test('Mã giả và lý thuyết đổi theo thao tác và cách biểu diễn; mã giả lấy từ chính file generator', () => {
+  withGraph((ui) => {
+    const rendered = () => [...ui.document.querySelectorAll('#graph-pseudocode .pseudocode-line')].map((line) => line.textContent)
+    const combos = [
+      ['has-edge', 'list', listHasEdgePseudocode],
+      ['has-edge', 'matrix', graphView.graphOperations['has-edge'].pseudocode.matrix],
+      ['neighbors', 'list', graphView.graphOperations.neighbors.pseudocode.list],
+      ['neighbors', 'matrix', matrixNeighborsPseudocode],
+    ]
+    const descriptions = new Set()
+
+    for (const [operation, representation, pseudocode] of combos) {
+      ui.change('#graph-operation', operation)
+      ui.change('#graph-representation', representation)
+      assert.deepEqual(rendered(), pseudocode)
+      descriptions.add(ui.text('#graph-learning-description'))
+      assert.notEqual(ui.text('#graph-learning-advantages'), '')
+      assert.notEqual(ui.text('#graph-learning-disadvantages'), '')
+    }
+    assert.equal(descriptions.size, 4, 'mỗi cặp thao tác × biểu diễn có lý thuyết riêng')
+  })
+})

@@ -4,6 +4,7 @@ import { layoutGraph, GRAPH_LAYOUT } from './graph-layout.js'
 import {
   addEdge,
   addVertex,
+  adjacencyListSize,
   buildGraph,
   countEdges,
   countVertices,
@@ -80,6 +81,64 @@ export const graphOperations = {
 
 const kindName = (directed) => (directed ? 'có hướng' : 'vô hướng')
 const readsLabels = { list: 'Phần tử danh sách đã đọc', matrix: 'Ô ma trận đã đọc' }
+
+// Lý thuyết theo thao tác × cách biểu diễn (khớp với generator: reads của danh sách = số phần tử Adj[u] đã đọc,
+// của ma trận = số ô đã đọc).
+export const graphLearning = {
+  'has-edge': {
+    list: {
+      description: 'Duyệt Adj[u] từ đầu, so từng đỉnh w với v; gặp v thì dừng, hết danh sách mà không gặp thì u không kề v.',
+      advantages: 'Chỉ đọc các cạnh thật sự đi ra từ u: đồ thị thưa thì deg(u) nhỏ, kiểm tra rất nhanh.',
+      disadvantages: 'Trường hợp xấu nhất (v ở cuối hoặc không có) phải đọc cả deg(u) phần tử, tới V − 1 trong đồ thị dày.',
+    },
+    matrix: {
+      description: 'Đọc thẳng ô M[u][v]: bằng 1 thì có cạnh u → v (vô hướng thì cũng là v → u).',
+      advantages: 'Luôn đúng một lần đọc, không phụ thuộc bậc của u: O(1) cả trong đồ thị dày.',
+      disadvantages: 'Phải giữ đủ V² ô kể cả khi gần như không có cạnh nào.',
+    },
+  },
+  neighbors: {
+    list: {
+      description: 'Đọc lần lượt mọi phần tử của Adj[u]; mỗi phần tử là một đỉnh kề, số phần tử là bậc (có hướng: bậc ra).',
+      advantages: 'Chi phí đúng bằng số đỉnh kề Θ(deg(u)): không tốn lần đọc nào cho cặp không kề.',
+      disadvantages: 'Có hướng thì bậc vào không có sẵn: phải tìm u trong mọi danh sách khác, O(V + E).',
+    },
+    matrix: {
+      description: 'Đọc cả hàng u của ma trận, ô bằng 1 nào thì cột đó là một đỉnh kề.',
+      advantages: 'Cột u cho ngay các cạnh đi vào u, nên bậc vào cũng chỉ tốn Θ(V).',
+      disadvantages: 'Luôn đọc đủ V ô, kể cả khi u là đỉnh cô lập (bậc 0).',
+    },
+  },
+}
+
+// Số ô nhớ của hai cách biểu diễn cho đồ thị của bước đang hiển thị.
+export function representationSizes(graph) {
+  const vertexCount = countVertices(graph)
+  return { list: adjacencyListSize(graph), matrix: vertexCount * vertexCount }
+}
+
+export function describeRepresentationCost(graph) {
+  const { list, matrix } = representationSizes(graph)
+  const formula = graph.directed ? 'V + E' : 'V + 2E'
+  return `Đồ thị đang hiển thị (${kindName(graph.directed)}): ${graphTotals(graph)} `
+    + `Danh sách kề lưu ${formula} = ${list} ô nhớ; ma trận kề lưu V² = ${matrix} ô.`
+}
+
+// So sánh thưa/dày tính từ chính đồ thị đang hiển thị (không ghi cứng ví dụ).
+export function describeDensity(graph) {
+  const vertexCount = countVertices(graph)
+  if (vertexCount === 0) return 'Đồ thị rỗng: cả hai cách đều chưa tốn ô nào.'
+
+  const { list, matrix } = representationSizes(graph)
+  const edgeCount = countEdges(graph)
+  const maxEdges = graph.directed ? vertexCount * (vertexCount - 1) : (vertexCount * (vertexCount - 1)) / 2
+  const complete = edgeCount === maxEdges ? ': đồ thị đầy đủ' : ''
+  const detail = `${list} so với ${matrix} ô (E = ${edgeCount}, tối đa ${maxEdges} cạnh${complete}).`
+
+  if (list < matrix) return `Danh sách kề tiết kiệm hơn: ${detail}`
+  if (list === matrix) return `Hai cách tốn bằng nhau: ${detail}`
+  return `Ma trận kề tiết kiệm hơn: ${detail}`
+}
 
 export function describeGraph(graph) {
   return `Đồ thị ${kindName(graph.directed)}, V = ${countVertices(graph)}, E = ${countEdges(graph)}.`
@@ -436,6 +495,19 @@ export function initGraph(document, options = {}) {
   const adjacencyList = $('#graph-adjacency-list')
   const adjacencyMatrix = $('#graph-adjacency-matrix')
   const representationPanels = { list: $('#graph-list-panel'), matrix: $('#graph-matrix-panel') }
+  const complexity = {
+    title: $('#graph-complexity-title'),
+    live: $('#graph-complexity-live'),
+    listSize: $('#graph-list-size'),
+    matrixSize: $('#graph-matrix-size'),
+    density: $('#graph-density'),
+    table: $('#graph-complexity-table'),
+  }
+  const learningCells = {
+    description: $('#graph-learning-description'),
+    advantages: $('#graph-learning-advantages'),
+    disadvantages: $('#graph-learning-disadvantages'),
+  }
   const stats = {
     vertices: $('#graph-vertex-count'),
     edges: $('#graph-edge-count'),
@@ -529,8 +601,17 @@ export function initGraph(document, options = {}) {
     const infoKey = `${step.operation}:${step.representation}`
 
     if (renderedInfo !== infoKey) {
+      const learning = graphLearning[step.operation][step.representation]
+
       renderPseudocode(pseudocodeCode, operation.pseudocode[step.representation])
       setText(pseudocodeTitle, `Mã giả: ${operation.name} (${representationNames[step.representation]})`)
+      setText(complexity.title, `${operation.name} · ${representationNames[step.representation]}`.toUpperCase())
+      for (const [key, element] of Object.entries(learningCells)) setText(element, learning[key])
+      complexity.table?.querySelectorAll('tbody tr').forEach((row) => {
+        const isActive = row.dataset.row === step.operation
+        row.classList.toggle('is-active', isActive)
+        setText(row.querySelector('.graph-row-badge'), isActive ? 'đang chọn' : '')
+      })
       renderedInfo = infoKey
     }
     highlightPseudocodeLine(pseudocodeCode, step.pseudocodeLine)
@@ -545,6 +626,12 @@ export function initGraph(document, options = {}) {
     setText(stats.readsLabel, readsLabels[step.representation])
     setText(stats.reads, String(step.reads))
     setText(stats.result, formatResult(step))
+
+    const { list, matrix } = representationSizes(graph)
+    setText(complexity.live, describeRepresentationCost(graph))
+    setText(complexity.listSize, String(list))
+    setText(complexity.matrixSize, String(matrix))
+    setText(complexity.density, describeDensity(graph))
   }
 
   function renderControls({ stepCount, controls }) {
