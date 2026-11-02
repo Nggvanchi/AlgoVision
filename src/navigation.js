@@ -25,9 +25,7 @@ export function initNavigation(document) {
   const pageHeading = document.querySelector('.page-heading')
 
   const sortingLibrary = document.querySelector('.algorithm-section')
-  const sortingVisualizer = document.querySelector(
-    'main > .visualizer-section:not(#search-section):not(#category-placeholder):not(#structure-library):not(#array-section):not(#stack-section):not(#queue-section):not(#linked-list-section)',
-  )
+  const sortingVisualizer = document.querySelector('#sorting-section')
 
   const searchLibrary = document.querySelector('#search-algorithm-library')
   const searchVisualizer = document.querySelector('#search-section')
