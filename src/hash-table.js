@@ -49,6 +49,105 @@ export const strategyNames = {
   probing: 'linear probing',
 }
 
+// Big-O phải khớp generator (xem tests/hash-table-complexity.test.js, tests/hash-table-probing-complexity.test.js).
+// Chaining: mọi thao tác duyệt đúng một chain, chi phí = độ dài chain (trung bình α = n/m).
+const CHAINING_COMPLEXITY = {
+  tag: 'O(1 + α)',
+  best: 'O(1)',
+  average: 'O(1 + α)',
+  averageNote:
+    'Hàm băm phân tán đều thì mỗi chain dài trung bình α = n/m. Giữ α không vượt một hằng số (bằng rehash khi bảng đầy dần) thì chi phí là O(1).',
+  worst: 'O(n)',
+  worstNote: 'Mọi khóa rơi vào cùng một ô: chain dài n, phải so sánh lần lượt như danh sách liên kết.',
+  space: 'O(m + n)',
+  spaceNote: 'm ô đầu chain cộng n phần tử.',
+}
+
+// Linear probing: probes = số ô đã dò. Công thức Knuth là số ô dò kỳ vọng.
+const KNUTH_FOUND = '½(1 + 1/(1 − α))'
+const KNUTH_NOT_FOUND = '½(1 + 1/(1 − α)²)'
+const PROBING_COMPLEXITY = {
+  tag: 'O(1) trung bình',
+  best: 'O(1)',
+  averageNote:
+    'Số ô dò kỳ vọng theo Knuth, giả định hàm băm đều và chưa có xóa. Khi đã có tombstone, chi phí phụ thuộc số ô không trống, tức (n + tombstone)/m, chứ không chỉ α. α càng gần 1 thì chi phí tăng vọt.',
+  worst: 'O(m)',
+  worstNote: 'Cụm va chạm dài hoặc nhiều tombstone buộc phải dò cả bảng; tombstone cũng phải dò dù n nhỏ.',
+  space: 'O(m)',
+  spaceNote: 'Một mảng m ô, n ≤ m, không cần nút phụ.',
+}
+
+const complexityFor = {
+  chaining: {
+    insert: { ...CHAINING_COMPLEXITY, bestNote: 'Ô đích rỗng: không có khóa nào để so sánh.' },
+    search: { ...CHAINING_COMPLEXITY, bestNote: 'Khóa nằm ở đầu chain, hoặc ô rỗng.' },
+    delete: { ...CHAINING_COMPLEXITY, bestNote: 'Khóa nằm ở đầu chain.' },
+  },
+  probing: {
+    insert: {
+      ...PROBING_COMPLEXITY,
+      average: `≈ ${KNUTH_NOT_FOUND} ô`,
+      bestNote: 'Ô hash(key) đang trống: 1 lần dò.',
+    },
+    search: {
+      ...PROBING_COMPLEXITY,
+      average: `Thấy ≈ ${KNUTH_FOUND} ô, không thấy ≈ ${KNUTH_NOT_FOUND} ô`,
+      bestNote: 'Ô hash(key) chứa đúng khóa hoặc đang trống: 1 lần dò.',
+    },
+    delete: {
+      ...PROBING_COMPLEXITY,
+      average: `≈ ${KNUTH_FOUND} ô (như tìm thấy)`,
+      bestNote: 'Ô hash(key) chứa đúng khóa: 1 lần dò.',
+    },
+  },
+}
+
+const learningFor = {
+  chaining: {
+    insert: {
+      description:
+        'Tính i = key mod m rồi duyệt chain của ô i để kiểm tra trùng. Không có khóa bằng key thì nối key vào cuối chain. Số phép so sánh bằng độ dài chain của ô i.',
+      advantages: 'Bảng không bao giờ "đầy": chain dài thêm được, α có thể vượt 1.',
+      disadvantages:
+        'Vì phải kiểm tra trùng nên tốn cả chain; chỉ khi không cần kiểm tra trùng mới chèn đầu chain trong O(1). Chain dài khi hàm băm phân tán kém.',
+    },
+    search: {
+      description:
+        'Tính i = key mod m, rồi so key với từng phần tử trong chain của ô i. Hết chain mà không thấy thì kết luận không có, không cần xét ô khác.',
+      advantages: 'Chỉ xét một ô; khóa ở ô khác không ảnh hưởng tới chi phí.',
+      disadvantages: 'Mọi khóa cùng một ô thì tìm kiếm thành tuần tự O(n); duyệt chain cũng kém thân thiện với bộ nhớ đệm.',
+    },
+    delete: {
+      description:
+        'Tìm phần tử mang key trong chain của ô i rồi gỡ nó khỏi chain. Các phần tử khác giữ nguyên vị trí.',
+      advantages: 'Xóa thật sự, không để lại dấu vết: tìm kiếm sau đó không bị chậm đi.',
+      disadvantages: 'Vẫn phải tìm trước khi xóa nên chi phí bằng chi phí tìm kiếm.',
+    },
+  },
+  probing: {
+    insert: {
+      description:
+        'Dò lần lượt ô (i + j) mod m. Gặp tombstone thì ghi nhớ ô đầu tiên làm vị trí chèn nhưng vẫn dò tiếp để kiểm tra trùng; gặp ô trống thì dừng. Chỉ báo "bảng đầy" khi đã dò đủ m ô, không có ô trống, không có tombstone và khóa chưa tồn tại.',
+      advantages: 'Mọi khóa nằm ngay trong mảng, không cần cấp phát nút; dò ô liền kề thân thiện với bộ nhớ đệm.',
+      disadvantages:
+        'Va chạm tạo thành cụm (primary clustering): khóa mới rơi vào cụm làm cụm dài thêm. Tối đa m khóa.',
+    },
+    search: {
+      description:
+        'Dò từ ô key mod m sang phải (vòng lại đầu bảng). Ô trống nghĩa là key chưa từng được đặt xa hơn nên dừng; tombstone thì bỏ qua và dò tiếp; dò đủ m ô thì dừng.',
+      advantages: 'Bảng thưa thì thường chỉ cần một vài lần dò.',
+      disadvantages: 'Bảng gần đầy hoặc nhiều tombstone thì phải dò rất xa, xấu nhất là cả m ô.',
+    },
+    delete: {
+      description:
+        'Tìm ô chứa key rồi thay bằng tombstone, không đặt về trống. Nếu đặt về trống, chuỗi dò của các khóa từng bị đẩy qua ô này sẽ bị cắt: tìm kiếm dừng ở ô trống và báo nhầm "không tìm thấy".',
+      advantages: 'Giữ đúng mọi chuỗi dò mà không phải di chuyển khóa khác.',
+      disadvantages:
+        'Tombstone vẫn chiếm chỗ trên đường dò nên tìm kiếm chậm dần; cần dọn bằng cách rehash (chưa minh họa ở đây).',
+    },
+  },
+}
+
 export const hashTableOperations = {
   insert: {
     name: 'Insert',
@@ -323,6 +422,24 @@ export function initHashTable(document, options = {}) {
     result: $('#hash-table-result'),
   }
   const probingOnlyCards = [$('#hash-table-probes-card'), $('#hash-table-tombstone-card')]
+  const complexityTag = $('#hash-table-complexity')
+  const complexityTitle = $('#hash-table-complexity-title')
+  const complexityLive = $('#hash-table-complexity-live')
+  const complexityCells = {
+    best: $('#hash-table-complexity-best'),
+    bestNote: $('#hash-table-complexity-best-note'),
+    average: $('#hash-table-complexity-average'),
+    averageNote: $('#hash-table-complexity-average-note'),
+    worst: $('#hash-table-complexity-worst'),
+    worstNote: $('#hash-table-complexity-worst-note'),
+    space: $('#hash-table-complexity-space'),
+    spaceNote: $('#hash-table-complexity-space-note'),
+  }
+  const learningCells = {
+    description: $('#hash-table-learning-description'),
+    advantages: $('#hash-table-learning-advantages'),
+    disadvantages: $('#hash-table-learning-disadvantages'),
+  }
 
   const requiredElements = [
     section, strategySelect, capacitySelect, operationSelect, keyInput, applyButton, svg,
@@ -337,7 +454,7 @@ export function initHashTable(document, options = {}) {
   // Bảng đã chốt: kết quả của thao tác gần nhất, được chốt ngay khi sinh bước.
   let committedTable = buildHashTable(SAMPLE_PRESET.capacity, SAMPLE_PRESET.keys, 'chaining')
   let idleMessage = IDLE_MESSAGE
-  let renderedPseudocode = null
+  let renderedInfo = null
 
   strategySelect.value = committedTable.strategy
   capacitySelect.value = String(committedTable.capacity)
@@ -373,19 +490,42 @@ export function initHashTable(document, options = {}) {
     return 'Chạy minh họa'
   }
 
-  // Mã giả chỉ vẽ lại khi đổi thao tác hoặc chiến lược; mỗi bước chỉ đổi dòng được tô.
-  function renderPseudocodePanel(step) {
+  function fillText(cells, values) {
+    for (const [key, element] of Object.entries(cells)) {
+      if (element) element.textContent = values[key] ?? ''
+    }
+  }
+
+  // Mã giả, Big-O và lý thuyết chỉ vẽ lại khi đổi thao tác hoặc chiến lược; mỗi bước chỉ đổi dòng được tô.
+  function renderOperationInfo(step) {
     const { strategy } = step.table
     const operation = hashTableOperations[step.operation]
-    const pseudocodeKey = `${strategy}:${step.operation}`
+    const infoKey = `${strategy}:${step.operation}`
 
-    if (renderedPseudocode !== pseudocodeKey) {
+    if (renderedInfo !== infoKey) {
+      const complexity = complexityFor[strategy][step.operation]
+
       renderPseudocode(pseudocodeCode, operation.pseudocode[strategy])
-      if (pseudocodeTitle) pseudocodeTitle.textContent = `Mã giả: ${operation.name} (${strategyNames[strategy]})`
-      renderedPseudocode = pseudocodeKey
+      setText(pseudocodeTitle, `Mã giả: ${operation.name} (${strategyNames[strategy]})`)
+      setText(complexityTag, complexity.tag)
+      setText(complexityTitle, `${operation.name} · ${strategyNames[strategy]}`.toUpperCase())
+      fillText(complexityCells, complexity)
+      fillText(learningCells, learningFor[strategy][step.operation])
+      renderedInfo = infoKey
     }
 
     highlightPseudocodeLine(pseudocodeCode, step.pseudocodeLine)
+  }
+
+  // Số liệu của Learning Panel cũng đọc từ bảng của bước đang hiển thị.
+  function describeLiveLoad(table) {
+    const n = countEntries(table)
+    const base = `Bảng đang hiển thị: n = ${n}, m = ${table.capacity}, α = ${formatLoadFactor(loadFactor(table))}`
+
+    if (table.strategy !== 'probing') return `${base}.`
+
+    const tombstones = countTombstones(table)
+    return `${base}, tombstone = ${tombstones}, (n + tombstone)/m = ${formatLoadFactor((n + tombstones) / table.capacity)}.`
   }
 
   // Bảng rộng/cao hơn khung thì cuộn để phần tử hoặc ô đang xét nằm giữa khung.
@@ -418,6 +558,7 @@ export function initHashTable(document, options = {}) {
     setText(stats.comparisons, String(step.comparisons))
     setText(stats.probes, String(step.probes))
     setText(stats.result, step.finished ? formatResult(step) : 'Chưa có')
+    setText(complexityLive, describeLiveLoad(table))
 
     probingOnlyCards.forEach((card) => {
       if (card) card.hidden = !isProbing
@@ -451,7 +592,7 @@ export function initHashTable(document, options = {}) {
     svg.setAttribute('aria-label', describeTable(step.table))
     scrollToFocus(layout, step)
     renderStats(step)
-    renderPseudocodePanel(step)
+    renderOperationInfo(step)
     message.textContent = step.message
     renderControls(snapshot)
   }

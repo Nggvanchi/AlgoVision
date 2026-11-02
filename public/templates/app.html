@@ -1577,6 +1577,71 @@
                 <pre><code id="hash-table-pseudocode"></code></pre>
             </article>
         </div>
+
+        <div class="complexity-panel" id="hash-table-complexity-panel">
+        <div class="complexity-heading">
+            <h4>Phân tích thao tác</h4>
+            <span id="hash-table-complexity-title">INSERT · CHAINING</span>
+        </div>
+        <p class="bst-hint" id="hash-table-complexity-live"></p>
+
+        <div class="complexity-grid">
+            <div class="complexity-card">
+                <span>Trường hợp tốt nhất</span>
+                <strong id="hash-table-complexity-best">O(1)</strong>
+                <p id="hash-table-complexity-best-note"></p>
+            </div>
+
+            <div class="complexity-card">
+                <span>Phân tán tốt (trung bình)</span>
+                <strong id="hash-table-complexity-average">O(1 + α)</strong>
+                <p id="hash-table-complexity-average-note"></p>
+            </div>
+
+            <div class="complexity-card">
+                <span>Va chạm nặng (xấu nhất)</span>
+                <strong id="hash-table-complexity-worst">O(n)</strong>
+                <p id="hash-table-complexity-worst-note"></p>
+            </div>
+
+            <div class="complexity-card">
+                <span>Bộ nhớ</span>
+                <strong id="hash-table-complexity-space">O(m + n)</strong>
+                <p id="hash-table-complexity-space-note"></p>
+            </div>
+        </div>
+        </div>
+
+        <div class="learning-section" id="hash-table-learning">
+            <div class="learning-heading">
+                <div>
+                    <span class="section-eyebrow">GÓC KIẾN THỨC</span>
+                    <h3>Tìm hiểu thao tác</h3>
+                    <p>
+                        n là số khóa, m là số ô, α = n/m là hệ số tải. So sánh bảng mẫu với preset
+                        va chạm nặng để thấy chi phí đi từ O(1) tới O(n). Bảng ở đây có m cố định:
+                        chưa minh họa rehash (tạo bảng lớn hơn rồi chèn lại mọi khóa khi α vượt ngưỡng).
+                    </p>
+                </div>
+            </div>
+
+            <div class="learning-content">
+                <article class="learning-block">
+                    <h4>Ý tưởng</h4>
+                    <p id="hash-table-learning-description"></p>
+                </article>
+
+                <article class="learning-block">
+                    <h4>Ưu điểm</h4>
+                    <p id="hash-table-learning-advantages"></p>
+                </article>
+
+                <article class="learning-block">
+                    <h4>Hạn chế</h4>
+                    <p id="hash-table-learning-disadvantages"></p>
+                </article>
+            </div>
+        </div>
     </div>
     </section>
 

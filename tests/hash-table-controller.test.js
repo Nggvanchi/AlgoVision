@@ -476,3 +476,127 @@ test('renderHashTable bỏ qua id không có trong bảng và ô ngoài phạm v
     window.happyDOM.abort()
   }
 })
+
+function complexityTexts(ui) {
+  return {
+    tag: ui.text('#hash-table-complexity'),
+    title: ui.text('#hash-table-complexity-title'),
+    best: ui.text('#hash-table-complexity-best'),
+    average: ui.text('#hash-table-complexity-average'),
+    worst: ui.text('#hash-table-complexity-worst'),
+    space: ui.text('#hash-table-complexity-space'),
+    averageNote: ui.text('#hash-table-complexity-average-note'),
+    worstNote: ui.text('#hash-table-complexity-worst-note'),
+  }
+}
+
+test('Learning Panel chaining: tốt nhất O(1), phân tán tốt O(1 + α), va chạm nặng O(n), bộ nhớ O(m + n)', () => {
+  const ui = setupHashTable()
+
+  try {
+    ui.open()
+
+    for (const [operation, name] of [['insert', 'INSERT'], ['search', 'SEARCH'], ['delete', 'DELETE']]) {
+      ui.change('#hash-table-operation', operation)
+      const texts = complexityTexts(ui)
+
+      assert.equal(texts.title, `${name} · CHAINING`)
+      assert.equal(texts.tag, 'O(1 + α)')
+      assert.equal(texts.best, 'O(1)')
+      assert.equal(texts.average, 'O(1 + α)')
+      assert.equal(texts.worst, 'O(n)')
+      assert.equal(texts.space, 'O(m + n)')
+      assert.match(texts.worstNote, /cùng một ô/)
+    }
+  } finally {
+    ui.cleanup()
+  }
+})
+
+test('Learning Panel probing: công thức Knuth kèm giả định, xấu nhất O(m), bộ nhớ O(m), nhắc tombstone', () => {
+  const ui = setupHashTable()
+
+  try {
+    ui.open()
+    ui.change('#hash-table-strategy', 'probing')
+
+    ui.change('#hash-table-operation', 'search')
+    let texts = complexityTexts(ui)
+    assert.equal(texts.title, 'SEARCH · LINEAR PROBING')
+    assert.equal(texts.best, 'O(1)')
+    assert.match(texts.average, /½\(1 \+ 1\/\(1 − α\)\)/, 'tìm thấy')
+    assert.match(texts.average, /½\(1 \+ 1\/\(1 − α\)²\)/, 'không tìm thấy')
+    assert.equal(texts.worst, 'O(m)')
+    assert.equal(ui.text('#hash-table-complexity-space'), 'O(m)')
+    assert.match(texts.averageNote, /Knuth/)
+    assert.match(texts.averageNote, /hàm băm đều/)
+    assert.match(texts.averageNote, /chưa có xóa/)
+    assert.match(texts.averageNote, /\(n \+ tombstone\)\/m/)
+    assert.match(texts.worstNote, /tombstone/)
+
+    ui.change('#hash-table-operation', 'insert')
+    texts = complexityTexts(ui)
+    assert.equal(texts.title, 'INSERT · LINEAR PROBING')
+    assert.match(texts.average, /½\(1 \+ 1\/\(1 − α\)²\)/)
+  } finally {
+    ui.cleanup()
+  }
+})
+
+test('Learning Panel: n, m, α (và tombstone với probing) đọc từ bước đang hiển thị', () => {
+  const ui = setupHashTable()
+
+  try {
+    ui.open()
+    assert.equal(ui.text('#hash-table-complexity-live'), 'Bảng đang hiển thị: n = 6, m = 7, α = 0,86.')
+
+    ui.perform('insert', 29)
+    ui.nextUntilDone()
+    assert.equal(ui.text('#hash-table-complexity-live'), 'Bảng đang hiển thị: n = 7, m = 7, α = 1,00.')
+    ui.$('#hash-table-previous').click()
+    assert.equal(ui.text('#hash-table-complexity-live'), 'Bảng đang hiển thị: n = 6, m = 7, α = 0,86.')
+
+    ui.change('#hash-table-strategy', 'probing')
+    ui.$('#hash-table-preset-sample').click()
+    ui.perform('delete', 8)
+    ui.nextUntilDone()
+    assert.equal(
+      ui.text('#hash-table-complexity-live'),
+      'Bảng đang hiển thị: n = 5, m = 7, α = 0,71, tombstone = 1, (n + tombstone)/m = 0,86.',
+    )
+  } finally {
+    ui.cleanup()
+  }
+})
+
+test('Learning Panel: ý tưởng, ưu điểm, hạn chế đổi theo chiến lược và thao tác; nói rõ chưa minh họa rehash', () => {
+  const ui = setupHashTable()
+  const learning = () => [
+    ui.text('#hash-table-learning-description'),
+    ui.text('#hash-table-learning-advantages'),
+    ui.text('#hash-table-learning-disadvantages'),
+  ]
+
+  try {
+    ui.open()
+    const seen = new Set()
+
+    for (const strategy of ['chaining', 'probing']) {
+      ui.change('#hash-table-strategy', strategy)
+      for (const operation of ['insert', 'search', 'delete']) {
+        ui.change('#hash-table-operation', operation)
+        const [description, advantages, disadvantages] = learning()
+        assert.ok(description && advantages && disadvantages, `${strategy}/${operation} thiếu nội dung`)
+        seen.add(description)
+      }
+    }
+
+    assert.equal(seen.size, 6, 'mỗi cặp chiến lược/thao tác có mô tả riêng')
+    ui.change('#hash-table-strategy', 'probing')
+    ui.change('#hash-table-operation', 'delete')
+    assert.match(ui.text('#hash-table-learning-description'), /tombstone/)
+    assert.match(ui.text('#hash-table-learning'), /chưa minh họa rehash/)
+  } finally {
+    ui.cleanup()
+  }
+})
