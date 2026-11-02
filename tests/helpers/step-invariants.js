@@ -2,7 +2,9 @@ import assert from 'node:assert/strict'
 
 // Bất biến dùng chung cho mọi mảng bước mô phỏng cấu trúc dữ liệu (BST, Hash Table, …).
 // options:
-// - references: [{ field, exists(step, id) }] — trường là null hoặc id có trong snapshot của CHÍNH bước đó;
+// - references: [{ field, exists(step, id), idsOf? }] — trường là null hoặc id có trong snapshot của CHÍNH bước đó;
+//   trường dạng đối tượng (vd currentEdge { from, to }) khai báo idsOf(value) → [id, …] để kiểm từng id;
+//   không có idsOf thì chính giá trị của trường là id (hành vi cũ của BST, Hash Table);
 // - paths: [{ field, exists(step, id) }] — mảng id chỉ tăng: mọi id đều có trong snapshot của bước,
 //   và chứa mọi id của bước trước trừ những id đã biến mất khỏi snapshot;
 // - constantFields: các trường giống nhau ở mọi bước (chốt khi sinh bước).
@@ -13,9 +15,18 @@ export function assertStepInvariants(steps, { references = [], paths = [], const
   steps.forEach((step, index) => {
     const where = `bước ${index}`
 
-    for (const { field, exists } of references) {
-      const id = step[field]
-      assert.ok(id === null || exists(step, id), `${where}: ${field} = ${id} không có trong snapshot của bước`)
+    for (const { field, exists, idsOf } of references) {
+      const value = step[field]
+      if (value === null) continue
+
+      if (!idsOf) {
+        assert.ok(exists(step, value), `${where}: ${field} = ${value} không có trong snapshot của bước`)
+        continue
+      }
+
+      for (const id of idsOf(value)) {
+        assert.ok(exists(step, id), `${where}: ${field} chứa id ${id} không có trong snapshot của bước`)
+      }
     }
 
     for (const { field, exists } of paths) {

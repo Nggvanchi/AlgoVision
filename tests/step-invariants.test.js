@@ -48,6 +48,38 @@ test('assertStepInvariants cho phép đường đi bỏ phần tử đã biến 
   invariants.assertStepInvariants(steps, options)
 })
 
+// Trường dạng đối tượng (Graph): currentEdge { from, to } và matrixCell { rowId, colId }; idsOf trích các id cần kiểm.
+const objectOptions = {
+  references: [
+    { field: 'currentEdge', exists: hasItem, idsOf: (edge) => [edge.from, edge.to] },
+    { field: 'matrixCell', exists: hasItem, idsOf: (cell) => [cell.rowId, cell.colId] },
+  ],
+}
+
+function makeObjectSteps() {
+  const items = { a: {}, b: {} }
+  return [
+    { snapshot: { items }, currentEdge: null, matrixCell: null, pseudocodeLine: null, finished: false },
+    { snapshot: { items }, currentEdge: { from: 'a', to: 'b' }, matrixCell: { rowId: 'b', colId: 'a' }, pseudocodeLine: 1, finished: true },
+  ]
+}
+
+test('assertStepInvariants: trường đối tượng hợp lệ (idsOf) được chấp nhận', () => {
+  invariants.assertStepInvariants(makeObjectSteps(), objectOptions)
+})
+
+test('assertStepInvariants: currentEdge treo báo đúng id, không phải [object Object]', () => {
+  const steps = makeObjectSteps()
+  steps[1].currentEdge = { from: 'a', to: 'ghost' }
+  assert.throws(() => invariants.assertStepInvariants(steps, objectOptions), /bước 1: currentEdge chứa id ghost/)
+})
+
+test('assertStepInvariants: matrixCell treo báo đúng id, không phải [object Object]', () => {
+  const steps = makeObjectSteps()
+  steps[1].matrixCell = { rowId: 'ghost', colId: 'a' }
+  assert.throws(() => invariants.assertStepInvariants(steps, objectOptions), /bước 1: matrixCell chứa id ghost/)
+})
+
 test('assertStepInvariants báo lỗi khi trường hằng bị đổi, finished sai hoặc bước 0 tô mã giả', () => {
   const changed = makeSteps()
   changed[1].operation = 'y'
