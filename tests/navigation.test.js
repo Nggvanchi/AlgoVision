@@ -277,3 +277,79 @@ test('Section mô phỏng Sorting có id riêng chứa #array-bars, navigation �
     window.happyDOM.abort()
   }
 })
+
+// Thêm một thẻ cấu trúc dữ liệu giả vào thư viện; withSection = true thì thêm cả section #<target>-section.
+function addStructureCard(document, target, { withSection }) {
+  const card = document.createElement('button')
+  card.className = 'structure-card'
+  card.dataset.structureTarget = target
+  document.querySelector('#structure-library').append(card)
+
+  if (withSection) {
+    const section = document.createElement('section')
+    section.className = 'visualizer-section'
+    section.id = `${target}-section`
+    section.hidden = true
+    document.querySelector('#bst-section').after(section)
+  }
+
+  return card
+}
+
+test('Section cấu trúc dữ liệu được suy ra từ data-structure-target theo quy ước #<target>-section', () => {
+  const window = new Window()
+  const { document } = window
+
+  try {
+    document.body.innerHTML = template
+    const card = addStructureCard(document, 'demo', { withSection: true })
+    initNavigation(document)
+
+    const demoSection = document.querySelector('#demo-section')
+    const events = []
+    document.addEventListener('algovision:viewchange', (event) => events.push(event.detail.page))
+
+    document.querySelector('.nav-item[data-page="structures"]').click()
+    card.click()
+    assert.equal(demoSection.hidden, false, 'mở thẻ demo phải hiện #demo-section')
+    assert.equal(document.querySelector('#structure-library').hidden, true)
+    assert.equal(document.querySelector('#bst-section').hidden, true)
+
+    document.querySelector('[data-structure-target="bst"]').click()
+    assert.equal(demoSection.hidden, true, 'mở cấu trúc khác phải ẩn #demo-section')
+    assert.equal(document.querySelector('#bst-section').hidden, false)
+
+    card.click()
+    document.querySelector('.nav-item[data-page="sorting"]').click()
+    assert.equal(demoSection.hidden, true, 'đổi trang phải ẩn mọi section cấu trúc dữ liệu')
+    assert.deepEqual(events, ['structures', 'structures', 'structures', 'structures', 'sorting'])
+  } finally {
+    window.happyDOM.abort()
+  }
+})
+
+test('Thẻ cấu trúc dữ liệu không có section tương ứng: giữ nguyên thư viện, không phát viewchange', () => {
+  const window = new Window()
+  const { document } = window
+
+  try {
+    document.body.innerHTML = template
+    const card = addStructureCard(document, 'ghost', { withSection: false })
+    initNavigation(document)
+
+    document.querySelector('.nav-item[data-page="structures"]').click()
+    const events = []
+    document.addEventListener('algovision:viewchange', (event) => events.push(event.detail.page))
+
+    assert.doesNotThrow(() => card.click())
+    assert.equal(document.querySelector('#structure-library').hidden, false, 'thư viện vẫn hiện')
+    document.querySelectorAll('.visualizer-section').forEach((section) => {
+      if (!['category-placeholder', 'structure-library'].includes(section.id)) {
+        assert.equal(section.hidden, true, `${section.id} không được hiện`)
+      }
+    })
+    assert.deepEqual(events, [])
+  } finally {
+    window.happyDOM.abort()
+  }
+})

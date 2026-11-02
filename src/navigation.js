@@ -32,11 +32,15 @@ export function initNavigation(document) {
 
   const categoryPlaceholder = document.querySelector('#category-placeholder')
   const structureLibrary = document.querySelector('#structure-library')
-  const arraySection = document.querySelector('#array-section')
-  const stackSection = document.querySelector('#stack-section')
-  const queueSection = document.querySelector('#queue-section')
-  const linkedListSection = document.querySelector('#linked-list-section')
-  const bstSection = document.querySelector('#bst-section')
+  const structureCards = [...document.querySelectorAll('[data-structure-target]')]
+  // Mỗi thẻ data-structure-target="x" mở section #x-section; thêm cấu trúc mới không cần sửa file này.
+  // Thẻ không có section tương ứng bị bỏ qua khi click (thư viện giữ nguyên).
+  const structureSections = new Map(
+    structureCards
+      .map((card) => card.dataset.structureTarget)
+      .map((target) => [target, document.querySelector(`#${target}-section`)])
+      .filter(([, section]) => section !== null),
+  )
 
   const placeholderTitle = document.querySelector('#placeholder-title')
   const placeholderDescription = document.querySelector('#placeholder-description')
@@ -51,11 +55,9 @@ export function initNavigation(document) {
     searchVisualizer.hidden = true
     categoryPlaceholder.hidden = true
     structureLibrary.hidden = true
-    arraySection.hidden = true
-    stackSection.hidden = true
-    queueSection.hidden = true
-    linkedListSection.hidden = true
-    bstSection.hidden = true
+    structureSections.forEach((section) => {
+      section.hidden = true
+    })
   }
 
   function updateNavigation(pageName) {
@@ -199,18 +201,17 @@ export function initNavigation(document) {
     .querySelector('[data-back-to-search-algorithms]')
     ?.addEventListener('click', showSearchingLibrary)
 
-  document.querySelectorAll('[data-structure-target]').forEach((card) => {
+  structureCards.forEach((card) => {
     card.addEventListener('click', () => {
       if (currentPage !== 'structures') return
 
       const target = card.dataset.structureTarget
+      if (!structureSections.has(target)) return
 
       structureLibrary.hidden = true
-      arraySection.hidden = target !== 'array'
-      stackSection.hidden = target !== 'stack'
-      queueSection.hidden = target !== 'queue'
-      linkedListSection.hidden = target !== 'linked-list'
-      bstSection.hidden = target !== 'bst'
+      structureSections.forEach((section, sectionTarget) => {
+        section.hidden = sectionTarget !== target
+      })
       notifyViewChange()
     })
   })
