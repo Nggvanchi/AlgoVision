@@ -85,9 +85,8 @@ pnpm dev        # chạy thử trên trình duyệt
 
 ## Trạng thái hiện tại (cập nhật 2026-11-02)
 
-- `main` = `c4890d5` (Merge PR #3, giai đoạn 5). Baseline: 191/191 test pass, build OK.
-- Giai đoạn 6 (Learning Panel) xong trên branch `feat/learning-panel`, CHỜ người dùng review PR.
-  Kết quả: 245/245 test pass (baseline 191), build OK.
+- `main` = `1fd5bf8` (Merge PR #4, giai đoạn 6 Learning Panel). Baseline: 245/245 test pass, build OK.
+- Giai đoạn 7 (BST) đang làm trên branch `feat/bst`.
 - Máy phát triển: Windows và Ubuntu (repo trên phân vùng NTFS, `core.filemode=false`).
 - Windows: `core.autocrlf=true` + `.gitattributes` (`* text=auto eol=lf`), mọi file text là LF.
 - `.claude/settings.json` (đã commit) chặn bằng deny rule cho cả Bash và PowerShell: force push, push lên `main`,
@@ -139,7 +138,7 @@ pnpm dev        # chạy thử trên trình duyệt
 - Chưa kiểm tra giao diện nút `#search-previous` trên trình duyệt thật.
 
 ## Roadmap sau giai đoạn 5 (chỉ làm khi được đồng ý)
-6. Learning Panel (đã xong, chờ merge).
+6. Learning Panel (đã merge, PR #4).
 7. BST, Hash Table, Graph, BFS, DFS — từng module một, có test.
 8. Tiến độ học tập bằng `localStorage` (xử lý dữ liệu lỗi/thiếu).
 9. Kiểm thử tổng thể, UI/UX, README (README trên GitHub đang lỗi thời), CI, deployment.
