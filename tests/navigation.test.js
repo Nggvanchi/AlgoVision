@@ -31,7 +31,7 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
       'Thư viện thuật toán tìm kiếm phải tồn tại trong HTML',
     )
     const visualizerSection = document.querySelector(
-      'main > .visualizer-section:not(#search-section):not(#category-placeholder):not(#structure-library):not(#array-section):not(#stack-section):not(#queue-section):not(#linked-list-section)',
+      '#sorting-section',
     )
     const searchSection = document.querySelector('#search-section')
     const categoryPlaceholder = document.querySelector(
@@ -248,6 +248,31 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
     assert.equal(linkedListSection.hidden, true)
     assert.equal(categoryPlaceholder.hidden, true)
     assert.equal(sortingNav.classList.contains('active'), true)
+  } finally {
+    window.happyDOM.abort()
+  }
+})
+
+test('Section mô phỏng Sorting có id riêng chứa #array-bars, navigation điều khiển đúng section đó', () => {
+  const window = new Window()
+  const { document } = window
+
+  try {
+    document.body.innerHTML = template
+    initNavigation(document)
+
+    const sortingSection = document.querySelector('#sorting-section')
+
+    assert.ok(sortingSection, 'Section Sorting phải có id="sorting-section"')
+    assert.ok(sortingSection.classList.contains('visualizer-section'))
+    assert.ok(sortingSection.querySelector('#array-bars'), 'section phải chứa cột của Sorting')
+
+    document.querySelector('.nav-item[data-page="sorting"]').click()
+    document.querySelector('[data-algorithm="bubble"]').click()
+    assert.equal(sortingSection.hidden, false)
+
+    document.querySelector('.nav-item[data-page="searching"]').click()
+    assert.equal(sortingSection.hidden, true)
   } finally {
     window.happyDOM.abort()
   }

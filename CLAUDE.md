@@ -41,9 +41,26 @@ pnpm dev        # chạy thử trên trình duyệt
 - Sự kiện `algovision:viewchange` (`CustomEvent` trên `document`, `detail.page`): `navigation.js` phát mỗi khi đổi trang
   hoặc mở/đóng màn hình chi tiết; Sorting/Searching lắng nghe và tự `pause()` khi visualizer của mình bị ẩn.
 - `src/structures/*`: logic thuần của cấu trúc dữ liệu.
+- BST (giai đoạn 7):
+  - `src/structures/bst.js`: cây snapshot thuần `{ rootId, nodes: { id: { id, value, left, right } }, nextId }`.
+    Nút tham chiếu bằng id ổn định, không bằng giá trị. Không chứa giá trị trùng. Tầng này chỉ yêu cầu số nguyên;
+    giới hạn 1–99 và 15 nút đặt ở `src/bst.js`. Chiều cao theo số cạnh: rỗng = -1, một nút = 0.
+  - `src/algorithms/bst{Insert,Search,Delete,Traversal,MinMax,Height}.js` + khuôn bước `bstStep.js`:
+    `{ tree, currentId, pathIds, foundId, successorId, output, heights, operation, value, comparisons, pseudocodeLine, message, finished, result }`.
+    Bất biến (kiểm bằng `tests/helpers/bst-step-invariants.js`): `currentId/foundId/successorId` là null hoặc thuộc
+    `tree.nodes` của chính bước đó; `pathIds` chỉ tăng (trừ nút bị xóa); chỉ bước cuối `finished`.
+  - comparisons: Insert = số nút từ gốc tới cha nút mới (rỗng = 0, trùng ở độ sâu d = d + 1); Search/Delete = mỗi nút
+    được xét tính 1, gồm nút tìm thấy; bước kết luận "không tìm thấy" không tăng; đi tìm successor, Min/Max, duyệt, Height = 0.
+  - Delete hai con dùng successor. Bước 12 (`z.value = s.value`) có giá trị trùng tạm thời; bước 13 xóa s theo id.
+    Vì vậy mọi code đọc cây của bước (layout, render) phải duyệt theo con trỏ, không dò theo giá trị.
+  - `src/tree-layout.js`: x = thứ hạng inorder × 40px, y = độ sâu × 56px (15 nút rộng 600px, cuộn trong `#bst-tree-frame`).
+  - `src/bst.js`: `initBst(document, { scheduler })`, `renderBstTree(svg, step)` (bỏ qua id không có trong cây),
+    `bstOperations` (mã giả, Big-O, lý thuyết theo thao tác). Cây được chốt bằng `steps.at(-1).tree` ngay khi sinh bước;
+    Reset chỉ tua minh họa (báo qua `#bst-status`). Đang Run thì khóa nút thao tác. n, h đọc từ cây của bước đang hiển thị.
+- Section Sorting có `id="sorting-section"` (navigation và test tìm theo id, không dùng chuỗi `:not(...)` nữa).
 - `tests/*.test.js`: Node Test Runner + happy-dom, nạp template thật từ `public/templates/app.html`.
 - `tests/helpers/fake-scheduler.js`: scheduler thời gian ảo cho test timer (không bị `node --test` quét).
-- `tests/complexity.test.js`: đối chiếu số phép so sánh thực tế với Big-O hiển thị.
+- `tests/complexity.test.js`, `tests/bst-complexity.test.js`: đối chiếu số phép so sánh thực tế với Big-O hiển thị.
 - Đếm test bằng dòng `ℹ tests` của `node --test` (grep `^test(` bỏ sót test sinh trong vòng `for`).
   Test import module có thể thiếu export thì dùng namespace import để không làm hỏng cả file.
 
@@ -85,9 +102,9 @@ pnpm dev        # chạy thử trên trình duyệt
 
 ## Trạng thái hiện tại (cập nhật 2026-11-02)
 
-- `main` = `c4890d5` (Merge PR #3, giai đoạn 5). Baseline: 191/191 test pass, build OK.
-- Giai đoạn 6 (Learning Panel) xong trên branch `feat/learning-panel`, CHỜ người dùng review PR.
-  Kết quả: 245/245 test pass (baseline 191), build OK.
+- `main` = `1fd5bf8` (Merge PR #4, giai đoạn 6 Learning Panel). Baseline: 245/245 test pass, build OK.
+- Giai đoạn 7, module BST xong trên branch `feat/bst`, CHỜ người dùng review PR.
+  Kết quả: 357/357 test pass (baseline 245), build OK.
 - Máy phát triển: Windows và Ubuntu (repo trên phân vùng NTFS, `core.filemode=false`).
 - Windows: `core.autocrlf=true` + `.gitattributes` (`* text=auto eol=lf`), mọi file text là LF.
 - `.claude/settings.json` (đã commit) chặn bằng deny rule cho cả Bash và PowerShell: force push, push lên `main`,
@@ -139,8 +156,8 @@ pnpm dev        # chạy thử trên trình duyệt
 - Chưa kiểm tra giao diện nút `#search-previous` trên trình duyệt thật.
 
 ## Roadmap sau giai đoạn 5 (chỉ làm khi được đồng ý)
-6. Learning Panel (đã xong, chờ merge).
-7. BST, Hash Table, Graph, BFS, DFS — từng module một, có test.
+6. Learning Panel (đã merge, PR #4).
+7. BST (xong, chờ merge), Hash Table, Graph, BFS, DFS — từng module một, có test.
 8. Tiến độ học tập bằng `localStorage` (xử lý dữ liệu lỗi/thiếu).
 9. Kiểm thử tổng thể, UI/UX, README (README trên GitHub đang lỗi thời), CI, deployment.
    Ghi chú: `main.js` không xử lý lỗi khi fetch template thất bại (trang trắng).

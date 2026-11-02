@@ -200,7 +200,7 @@
     </div>
     </section>
 
-    <section class="visualizer-section">
+    <section class="visualizer-section" id="sorting-section">
     <button
         type="button"
         class="back-button"
@@ -739,6 +739,18 @@
             </span>
             <span class="structure-card-link">Mở trình mô phỏng →</span>
         </button>
+
+        <button
+            type="button"
+            class="structure-card"
+            data-structure-target="bst">
+            <span class="structure-card-icon">⋔</span>
+            <span class="structure-card-title">Binary Search Tree</span>
+            <span class="structure-card-description">
+                Quan sát chèn, tìm, xóa, duyệt cây và vì sao chi phí là O(h).
+            </span>
+            <span class="structure-card-link">Mở trình mô phỏng →</span>
+        </button>
     </div>
     </section>
 
@@ -1152,6 +1164,230 @@
                 </button>
             </article>
         </div>
+    </section>
+
+    <section class="visualizer-section" id="bst-section" hidden>
+    <button
+        type="button"
+        class="back-button"
+        data-back-to-structures>
+        ← Quay lại cấu trúc dữ liệu
+    </button>
+
+    <div class="section-heading">
+        <div>
+        <h3>Binary Search Tree</h3>
+        <p>
+            Cây nhị phân tìm kiếm: nhỏ hơn đi trái, lớn hơn đi phải.
+            Cây không tự cân bằng, không chứa giá trị trùng.
+        </p>
+        </div>
+        <span class="visualizer-tag" id="bst-complexity">O(h)</span>
+    </div>
+
+    <div class="visualizer-placeholder">
+        <div class="bst-toolbar">
+        <label for="bst-operation">Thao tác</label>
+        <select id="bst-operation">
+            <option value="insert">Chèn (Insert)</option>
+            <option value="search">Tìm kiếm (Search)</option>
+            <option value="delete">Xóa (Delete)</option>
+            <option value="inorder">Duyệt Inorder</option>
+            <option value="preorder">Duyệt Preorder</option>
+            <option value="postorder">Duyệt Postorder</option>
+            <option value="min">Giá trị nhỏ nhất (Min)</option>
+            <option value="max">Giá trị lớn nhất (Max)</option>
+            <option value="height">Chiều cao (Height)</option>
+        </select>
+
+        <label for="bst-value">Giá trị</label>
+        <input
+            id="bst-value"
+            type="number"
+            min="1"
+            max="99"
+            step="1"
+            value="45"
+            aria-describedby="bst-input-hint bst-input-error"
+        />
+
+        <button class="primary-button" id="bst-apply" type="button">
+            Thực hiện
+        </button>
+        </div>
+
+        <p class="bst-hint" id="bst-input-hint">
+            Số nguyên 1–99, tối đa 15 nút. Chiều cao tính theo số cạnh: cây rỗng là −1, cây một nút là 0.
+        </p>
+        <p class="bst-error" id="bst-input-error" role="alert" hidden></p>
+
+        <div class="bst-presets">
+        <button class="control-button" id="bst-preset-balanced" type="button">
+            Cây mẫu cân bằng
+        </button>
+        <button class="control-button" id="bst-preset-degenerate" type="button">
+            Cây suy biến (1…15)
+        </button>
+        <button class="control-button" id="bst-clear" type="button">
+            Xóa toàn bộ cây
+        </button>
+        </div>
+
+        <div class="search-speed-control">
+        <label for="bst-speed">Tốc độ chạy</label>
+        <input
+            type="range"
+            id="bst-speed"
+            min="100"
+            max="1500"
+            step="100"
+            value="700"
+        />
+        <span id="bst-speed-value">700 ms</span>
+        </div>
+
+        <div class="bst-tree-frame" id="bst-tree-frame">
+        <p class="bst-empty" id="bst-empty" hidden>Cây đang rỗng.</p>
+        <svg
+            id="bst-tree"
+            class="bst-tree"
+            role="img"
+            aria-label="Cây BST"
+            xmlns="http://www.w3.org/2000/svg"
+        ></svg>
+        </div>
+
+        <p class="bst-output" id="bst-output-row" hidden>
+            Thứ tự đã thăm: <strong id="bst-output"></strong>
+        </p>
+
+        <div class="search-legend bst-legend">
+            <span><i class="bst-legend-dot is-current"></i> Đang xét (viền dày)</span>
+            <span><i class="bst-legend-dot is-path"></i> Đã đi qua (cạnh đậm)</span>
+            <span><i class="bst-legend-dot is-found"></i> Tìm thấy / vừa chèn (vòng kép)</span>
+            <span><i class="bst-legend-dot is-successor"></i> Successor (nét đứt)</span>
+        </div>
+
+        <div class="simulation-controls">
+        <button class="control-button" id="bst-reset" type="button">
+            Đặt lại
+        </button>
+
+        <button class="control-button" id="bst-previous" type="button" disabled>
+            ← Bước trước
+        </button>
+
+        <button class="control-button" id="bst-next" type="button" disabled>
+            Bước tiếp theo
+        </button>
+
+        <button class="primary-button" id="bst-run" type="button" disabled>
+            Chạy minh họa
+        </button>
+
+        <button class="control-button" id="bst-pause" type="button" disabled>
+            Tạm dừng
+        </button>
+        </div>
+
+        <p class="simulation-message" id="bst-message" aria-live="polite">
+        Chọn thao tác rồi bấm Thực hiện.
+        </p>
+        <p class="bst-status" id="bst-status" aria-live="polite"></p>
+
+        <div class="simulation-stats bst-stats">
+        <div class="stat-card">
+            <span>Số nút (n)</span>
+            <strong id="bst-node-count">0</strong>
+        </div>
+        <div class="stat-card">
+            <span>Chiều cao (h)</span>
+            <strong id="bst-height">-1</strong>
+        </div>
+        <div class="stat-card">
+            <span>Giá trị đang xét</span>
+            <strong id="bst-current-value">—</strong>
+        </div>
+        <div class="stat-card">
+            <span>Số lần so sánh</span>
+            <strong id="bst-comparisons">0</strong>
+        </div>
+        <div class="stat-card">
+            <span>Kết quả</span>
+            <strong id="bst-result">Chưa có</strong>
+        </div>
+        </div>
+
+        <div class="learning-content bst-code-panel">
+            <article class="learning-block">
+                <h4 id="bst-pseudocode-title">Mã giả: Insert</h4>
+                <pre><code id="bst-pseudocode"></code></pre>
+            </article>
+        </div>
+
+        <div class="complexity-panel" id="bst-complexity-panel">
+        <div class="complexity-heading">
+            <h4>Phân tích thao tác</h4>
+            <span id="bst-complexity-title">INSERT</span>
+        </div>
+
+        <div class="complexity-grid">
+            <div class="complexity-card">
+                <span>Trường hợp tốt nhất</span>
+                <strong id="bst-complexity-best">O(1)</strong>
+                <p id="bst-complexity-best-note"></p>
+            </div>
+
+            <div class="complexity-card">
+                <span>Cây cân bằng (h ≈ log₂ n)</span>
+                <strong id="bst-complexity-balanced">O(log n)</strong>
+                <p>Mỗi mức chứa gấp đôi số nút của mức trên nên đường từ gốc xuống chỉ dài khoảng log₂ n.</p>
+            </div>
+
+            <div class="complexity-card">
+                <span>Cây suy biến (h = n − 1)</span>
+                <strong id="bst-complexity-degenerate">O(n)</strong>
+                <p>Chèn dữ liệu đã sắp xếp tạo cây chỉ có một nhánh, giống danh sách liên kết.</p>
+            </div>
+
+            <div class="complexity-card">
+                <span>Bộ nhớ phụ</span>
+                <strong id="bst-complexity-space">O(1)</strong>
+                <p id="bst-complexity-space-note"></p>
+            </div>
+        </div>
+        </div>
+
+        <div class="learning-section" id="bst-learning">
+            <div class="learning-heading">
+                <div>
+                    <span class="section-eyebrow">GÓC KIẾN THỨC</span>
+                    <h3>Tìm hiểu thao tác</h3>
+                    <p>
+                        h là chiều cao cây (số cạnh). Chi phí của BST phụ thuộc vào h,
+                        nên hãy so sánh cây mẫu cân bằng với cây suy biến.
+                    </p>
+                </div>
+            </div>
+
+            <div class="learning-content">
+                <article class="learning-block">
+                    <h4>Ý tưởng</h4>
+                    <p id="bst-learning-description"></p>
+                </article>
+
+                <article class="learning-block">
+                    <h4>Ưu điểm</h4>
+                    <p id="bst-learning-advantages"></p>
+                </article>
+
+                <article class="learning-block">
+                    <h4>Hạn chế</h4>
+                    <p id="bst-learning-disadvantages"></p>
+                </article>
+            </div>
+        </div>
+    </div>
     </section>
 
     <footer class="page-footer">

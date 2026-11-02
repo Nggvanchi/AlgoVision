@@ -6,6 +6,7 @@ import { initArray } from './array.js'
 import { initStack } from './stack.js'
 import { initQueue } from './queue.js'
 import { initLinkedList } from './linked-list.js'
+import { initBst } from './bst.js'
 
 const app = document.querySelector('#app')
 
@@ -28,3 +29,4 @@ initArray()
 initStack()
 initQueue(document)
 initLinkedList(document)
+initBst(document)

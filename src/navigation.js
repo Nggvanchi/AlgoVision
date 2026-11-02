@@ -25,9 +25,7 @@ export function initNavigation(document) {
   const pageHeading = document.querySelector('.page-heading')
 
   const sortingLibrary = document.querySelector('.algorithm-section')
-  const sortingVisualizer = document.querySelector(
-    'main > .visualizer-section:not(#search-section):not(#category-placeholder):not(#structure-library):not(#array-section):not(#stack-section):not(#queue-section):not(#linked-list-section)',
-  )
+  const sortingVisualizer = document.querySelector('#sorting-section')
 
   const searchLibrary = document.querySelector('#search-algorithm-library')
   const searchVisualizer = document.querySelector('#search-section')
@@ -38,6 +36,7 @@ export function initNavigation(document) {
   const stackSection = document.querySelector('#stack-section')
   const queueSection = document.querySelector('#queue-section')
   const linkedListSection = document.querySelector('#linked-list-section')
+  const bstSection = document.querySelector('#bst-section')
 
   const placeholderTitle = document.querySelector('#placeholder-title')
   const placeholderDescription = document.querySelector('#placeholder-description')
@@ -56,6 +55,7 @@ export function initNavigation(document) {
     stackSection.hidden = true
     queueSection.hidden = true
     linkedListSection.hidden = true
+    bstSection.hidden = true
   }
 
   function updateNavigation(pageName) {
@@ -210,6 +210,7 @@ export function initNavigation(document) {
       stackSection.hidden = target !== 'stack'
       queueSection.hidden = target !== 'queue'
       linkedListSection.hidden = target !== 'linked-list'
+      bstSection.hidden = target !== 'bst'
       notifyViewChange()
     })
   })
