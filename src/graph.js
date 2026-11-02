@@ -15,6 +15,7 @@ import {
   outDegree,
   removeEdge,
   removeVertex,
+  toAdjacencyMatrix,
 } from './structures/graph.js'
 import { createGraphStepFactory, edgeText, labelOf, representationNames } from './algorithms/graphStep.js'
 import { generateGraphHasEdgeSteps, listHasEdgePseudocode, matrixHasEdgePseudocode } from './algorithms/graphHasEdge.js'
@@ -216,6 +217,158 @@ function renderVertex(document, svg, step, vertex, point, outputIds) {
   svg.appendChild(group)
 }
 
+function appendMarker(document, parent) {
+  const marker = document.createElement('span')
+  marker.className = 'graph-entry-marker'
+  marker.setAttribute('aria-hidden', 'true')
+  marker.textContent = '▶'
+  parent.appendChild(marker)
+}
+
+// Đánh dấu một phần tử/ô của bảng: đang đọc (▶, aria-current) hoặc đã đọc (lớp is-read, viền nét đứt).
+function markReadState(document, element, state) {
+  if (state === 'current') {
+    element.classList.add('is-current')
+    element.setAttribute('aria-current', 'true')
+    appendMarker(document, element)
+  } else if (state === 'read') {
+    element.classList.add('is-read')
+  }
+}
+
+// Phần tử của Adj[u] đã đọc trong bước dùng danh sách kề: reads phần tử đầu của Adj[sourceId].
+function listReadState(step, ownerId, neighborId, index) {
+  const { graph, currentEdge, sourceId } = step
+  if (step.representation !== 'list' || ownerId !== sourceId) return null
+
+  const isCurrent = currentEdge !== null && hasEdge(graph, currentEdge.from, currentEdge.to)
+    && currentEdge.from === ownerId && currentEdge.to === neighborId
+  if (isCurrent) return 'current'
+  return index < step.reads ? 'read' : null
+}
+
+// Ô ma trận trong bước dùng ma trận kề: ô matrixCell đang đọc; Đỉnh kề đọc lần lượt reads ô đầu của hàng u,
+// còn Kiểm tra kề chỉ đọc đúng một ô nên không có ô "đã đọc" nào khác.
+function matrixReadState(step, rowId, columnId, columnIndex) {
+  const { graph, matrixCell, sourceId } = step
+  if (step.representation !== 'matrix' || !hasVertex(graph, rowId)) return null
+
+  const isCurrent = matrixCell !== null && hasVertex(graph, matrixCell.rowId) && hasVertex(graph, matrixCell.colId)
+    && matrixCell.rowId === rowId && matrixCell.colId === columnId
+  if (isCurrent) return 'current'
+  if (step.operation !== 'neighbors' || rowId !== sourceId) return null
+  return columnIndex < step.reads ? 'read' : null
+}
+
+// Bảng danh sách kề của đồ thị trong bước: mỗi đỉnh một hàng "A → B C", sắp theo slot.
+export function renderAdjacencyList(listElement, step) {
+  const document = listElement.ownerDocument
+  const { graph } = step
+  const vertices = listVertices(graph)
+  const entryCount = vertices.reduce((total, vertex) => total + graph.adjacency[vertex.id].length, 0)
+
+  listElement.replaceChildren()
+  listElement.setAttribute(
+    'aria-label',
+    `Danh sách kề (${kindName(graph.directed)}): ${vertices.length} danh sách, ${entryCount} phần tử.`,
+  )
+
+  if (vertices.length === 0) {
+    const empty = document.createElement('li')
+    empty.className = 'graph-list-empty-graph'
+    empty.textContent = 'Đồ thị rỗng.'
+    listElement.appendChild(empty)
+    return
+  }
+
+  for (const vertex of vertices) {
+    const row = document.createElement('li')
+    row.className = 'graph-list-row'
+    row.dataset.id = vertex.id
+    row.dataset.label = vertex.label
+
+    const head = document.createElement('span')
+    head.className = 'graph-list-head'
+    head.textContent = `${vertex.label} →`
+    row.appendChild(head)
+
+    const neighborIds = graph.adjacency[vertex.id]
+    if (neighborIds.length === 0) {
+      const empty = document.createElement('span')
+      empty.className = 'graph-list-empty'
+      empty.textContent = '∅'
+      row.appendChild(empty)
+    }
+
+    neighborIds.forEach((neighborId, index) => {
+      const entry = document.createElement('span')
+      entry.className = 'graph-list-entry'
+      entry.dataset.id = neighborId
+      entry.dataset.label = labelOf(graph, neighborId)
+      markReadState(document, entry, listReadState(step, vertex.id, neighborId, index))
+      entry.append(labelOf(graph, neighborId))
+      row.appendChild(entry)
+    })
+
+    listElement.appendChild(row)
+  }
+}
+
+// Bảng ma trận kề suy ra từ đồ thị của bước: hàng là đỉnh đi, cột là đỉnh đến (vô hướng thì đối xứng).
+export function renderAdjacencyMatrix(table, step) {
+  const document = table.ownerDocument
+  const { graph } = step
+  const { ids, cells } = toAdjacencyMatrix(graph)
+  const ones = cells.reduce((total, row) => total + row.filter((value) => value === 1).length, 0)
+  const createCell = (tag, text, attributes = {}) => {
+    const cell = document.createElement(tag)
+    for (const [key, value] of Object.entries(attributes)) cell.setAttribute(key, value)
+    if (text !== null) cell.textContent = text
+    return cell
+  }
+
+  table.replaceChildren()
+  table.setAttribute(
+    'aria-label',
+    `Ma trận kề ${ids.length} × ${ids.length} (${kindName(graph.directed)}): ${ones} ô bằng 1.`,
+  )
+  table.appendChild(createCell('caption', graph.directed
+    ? 'Có hướng: hàng là đỉnh đi, cột là đỉnh đến (M[u][v] = 1 khi có u → v).'
+    : 'Vô hướng: ma trận đối xứng, M[u][v] = M[v][u].'))
+
+  if (ids.length === 0) return
+
+  const head = document.createElement('thead')
+  const headRow = document.createElement('tr')
+  headRow.appendChild(createCell('td', '', { class: 'graph-matrix-corner' }))
+  ids.forEach((id) => headRow.appendChild(createCell('th', labelOf(graph, id), { scope: 'col' })))
+  head.appendChild(headRow)
+  table.appendChild(head)
+
+  const body = document.createElement('tbody')
+  ids.forEach((rowId, rowIndex) => {
+    const row = document.createElement('tr')
+    row.appendChild(createCell('th', labelOf(graph, rowId), { scope: 'row' }))
+
+    ids.forEach((columnId, columnIndex) => {
+      const value = cells[rowIndex][columnIndex]
+      const cell = createCell('td', null, {
+        class: `graph-matrix-cell${value === 1 ? ' is-one' : ''}`,
+        'data-row': rowId,
+        'data-col': columnId,
+        'data-row-label': labelOf(graph, rowId),
+        'data-col-label': labelOf(graph, columnId),
+        'data-value': String(value),
+      })
+      markReadState(document, cell, matrixReadState(step, rowId, columnId, columnIndex))
+      cell.append(String(value))
+      row.appendChild(cell)
+    })
+    body.appendChild(row)
+  })
+  table.appendChild(body)
+}
+
 // Vẽ đồ thị của một bước. Id không có trong đồ thị của bước (đỉnh, cạnh, đỉnh đã ghi nhận) bị bỏ qua, không tô.
 export function renderGraph(svg, step) {
   const document = svg.ownerDocument
@@ -280,6 +433,9 @@ export function initGraph(document, options = {}) {
   const status = $('#graph-status')
   const pseudocodeTitle = $('#graph-pseudocode-title')
   const pseudocodeCode = $('#graph-pseudocode')
+  const adjacencyList = $('#graph-adjacency-list')
+  const adjacencyMatrix = $('#graph-adjacency-matrix')
+  const representationPanels = { list: $('#graph-list-panel'), matrix: $('#graph-matrix-panel') }
   const stats = {
     vertices: $('#graph-vertex-count'),
     edges: $('#graph-edge-count'),
@@ -412,11 +568,25 @@ export function initGraph(document, options = {}) {
     }
   }
 
+  // Hai bảng cùng vẽ đồ thị của bước; bảng ứng với cách biểu diễn của bước được đánh dấu bằng chữ, không chỉ màu.
+  function renderRepresentations(step) {
+    if (adjacencyList) renderAdjacencyList(adjacencyList, step)
+    if (adjacencyMatrix) renderAdjacencyMatrix(adjacencyMatrix, step)
+
+    for (const [representation, panel] of Object.entries(representationPanels)) {
+      if (!panel) continue
+      const isActive = representation === step.representation
+      panel.classList.toggle('is-active', isActive)
+      setText(panel.querySelector('.graph-panel-badge'), isActive ? 'đang dùng để truy vấn' : '')
+    }
+  }
+
   function render(snapshot) {
     const step = snapshot.step ?? createIdleStep()
 
     renderGraph(svg, step)
     svg.setAttribute('aria-label', describeGraph(step.graph))
+    renderRepresentations(step)
     renderStats(step)
     renderOperationInfo(step)
     message.textContent = step.message
@@ -633,6 +803,7 @@ export function initGraph(document, options = {}) {
   refreshVertexSelects({ keep: false, defaults: defaultSelection(committedGraph) })
   render(simulation.getSnapshot())
 
-  // Dùng cho test: nạp mảng bước tùy ý (vd. bước có đồ thị khác đồ thị đã chốt) mà không đổi đồ thị đã chốt.
+  // CHỈ DÙNG CHO TEST: nạp mảng bước tùy ý (vd. bước có đồ thị khác đồ thị đã chốt, bước có id lạ)
+  // mà không đổi đồ thị đã chốt. main.js không dùng giá trị trả về này.
   return { loadSteps: (steps) => simulation.load(steps) }
 }

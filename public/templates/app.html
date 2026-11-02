@@ -1762,10 +1762,27 @@
         ></svg>
         </div>
 
+        <div class="graph-representations">
+            <section class="graph-representation-panel" id="graph-list-panel">
+                <h4>Danh sách kề <span class="graph-panel-badge"></span></h4>
+                <div class="graph-panel-frame">
+                    <ul class="graph-adjacency-list" id="graph-adjacency-list" aria-label="Danh sách kề"></ul>
+                </div>
+            </section>
+
+            <section class="graph-representation-panel" id="graph-matrix-panel">
+                <h4>Ma trận kề <span class="graph-panel-badge"></span></h4>
+                <div class="graph-panel-frame">
+                    <table class="graph-matrix" id="graph-adjacency-matrix" aria-label="Ma trận kề"></table>
+                </div>
+            </section>
+        </div>
+
         <div class="search-legend hash-legend">
             <span><i class="bst-legend-dot is-current"></i> Đỉnh / cạnh đang xét (viền dày, ▶)</span>
             <span><i class="bst-legend-dot is-found"></i> Đã ghi nhận (vòng kép, ✓)</span>
             <span><i class="bst-legend-dot"></i> u, v: nhãn chữ cạnh đỉnh</span>
+            <span><i class="hash-legend-box graph-legend-read"></i> Phần tử / ô đã đọc (viền nét đứt)</span>
         </div>
 
         <div class="simulation-controls">

@@ -479,3 +479,159 @@ test('Trạng thái không chỉ bằng màu: đỉnh đang xét có ▶, đỉn
     assert.ok(ui.$('#graph-status').getAttribute('aria-live'))
   })
 })
+
+// ===== 7b: hai bảng danh sách kề và ma trận kề song song =====
+const listEntries = (ui, label) => [...ui.document
+  .querySelectorAll(`#graph-adjacency-list .graph-list-row[data-label="${label}"] .graph-list-entry`)]
+  .map((entry) => entry.dataset.label)
+const listEntry = (ui, owner, label) => ui.document
+  .querySelector(`#graph-adjacency-list .graph-list-row[data-label="${owner}"] .graph-list-entry[data-label="${label}"]`)
+const matrixCell = (ui, row, column) => ui.document
+  .querySelector(`#graph-adjacency-matrix .graph-matrix-cell[data-row-label="${row}"][data-col-label="${column}"]`)
+const matrixRow = (ui, row) => [...ui.document
+  .querySelectorAll(`#graph-adjacency-matrix .graph-matrix-cell[data-row-label="${row}"]`)]
+  .map((cell) => cell.dataset.value).join('')
+const highlighted = (ui, panel, state) => ui.document.querySelectorAll(`${panel} .${state}`).length
+
+test('Bảng danh sách kề và ma trận kề (vô hướng, Mẫu): đúng dữ liệu, có aria-label và chú thích', () => {
+  withGraph((ui) => {
+    assert.deepEqual(listEntries(ui, 'A'), ['B', 'C'])
+    assert.deepEqual(listEntries(ui, 'C'), ['A', 'B', 'D'])
+    assert.deepEqual(listEntries(ui, 'G'), [])
+    const emptyRow = ui.document.querySelector('#graph-adjacency-list .graph-list-row[data-label="G"] .graph-list-empty')
+    assert.equal(emptyRow.textContent, '∅')
+    assert.equal(ui.$('#graph-adjacency-list').getAttribute('aria-label'), 'Danh sách kề (vô hướng): 7 danh sách, 10 phần tử.')
+
+    assert.equal(matrixRow(ui, 'C'), '1101000')
+    assert.equal(matrixRow(ui, 'G'), '0000000')
+    assert.equal(ui.$('#graph-adjacency-matrix').getAttribute('aria-label'), 'Ma trận kề 7 × 7 (vô hướng): 10 ô bằng 1.')
+    assert.equal(ui.text('#graph-adjacency-matrix caption'), 'Vô hướng: ma trận đối xứng, M[u][v] = M[v][u].')
+    assert.equal(ui.document.querySelectorAll('#graph-adjacency-matrix thead th[scope="col"]').length, 7)
+    assert.equal(ui.document.querySelectorAll('#graph-adjacency-matrix tbody th[scope="row"]').length, 7)
+  })
+})
+
+test('Có hướng: danh sách là đỉnh kề ra; ma trận đúng chiều hàng → cột (M[u][v] = 1 khi có u → v)', () => {
+  withGraph((ui) => {
+    ui.change('#graph-kind', 'directed')
+    ui.$('#graph-preset-sample').click()
+
+    assert.deepEqual(listEntries(ui, 'C'), ['A', 'D'])
+    assert.deepEqual(listEntries(ui, 'D'), [])
+    assert.equal(matrixCell(ui, 'C', 'D').dataset.value, '1')
+    assert.equal(matrixCell(ui, 'D', 'C').dataset.value, '0')
+    assert.equal(matrixCell(ui, 'B', 'C').dataset.value, '1')
+    assert.equal(matrixCell(ui, 'C', 'B').dataset.value, '0')
+    assert.equal(matrixCell(ui, 'A', 'C').dataset.value, '1')
+    assert.equal(matrixCell(ui, 'C', 'A').dataset.value, '1')
+    assert.equal(
+      ui.text('#graph-adjacency-matrix caption'),
+      'Có hướng: hàng là đỉnh đi, cột là đỉnh đến (M[u][v] = 1 khi có u → v).',
+    )
+    assert.equal(ui.$('#graph-adjacency-matrix').getAttribute('aria-label'), 'Ma trận kề 7 × 7 (có hướng): 6 ô bằng 1.')
+    assert.equal(ui.$('#graph-adjacency-list').getAttribute('aria-label'), 'Danh sách kề (có hướng): 7 danh sách, 6 phần tử.')
+  })
+})
+
+test('Kiểm tra kề (A, D) theo danh sách: phần tử đang đọc có ▶ và aria-current, đã đọc có lớp riêng; ma trận không tô', () => {
+  withGraph((ui) => {
+    ui.query('has-edge', 'A', 'D')
+    ui.$('#graph-next').click()
+    ui.$('#graph-next').click()
+
+    const current = listEntry(ui, 'A', 'C')
+    assert.ok(current.classList.contains('is-current'))
+    assert.equal(current.getAttribute('aria-current'), 'true')
+    assert.equal(current.querySelector('.graph-entry-marker').textContent, '▶')
+    assert.ok(listEntry(ui, 'A', 'B').classList.contains('is-read'))
+    assert.equal(highlighted(ui, '#graph-adjacency-list', 'is-current'), 1)
+    assert.equal(highlighted(ui, '#graph-adjacency-list', 'is-read'), 1)
+
+    assert.ok(ui.$('#graph-list-panel').classList.contains('is-active'))
+    assert.equal(ui.text('#graph-list-panel .graph-panel-badge'), 'đang dùng để truy vấn')
+    assert.equal(ui.text('#graph-matrix-panel .graph-panel-badge'), '')
+    assert.equal(highlighted(ui, '#graph-adjacency-matrix', 'is-current'), 0)
+    assert.equal(highlighted(ui, '#graph-adjacency-matrix', 'is-read'), 0)
+
+    // Bước kết luận: không còn phần tử đang đọc, cả hai phần tử đều đã đọc.
+    ui.$('#graph-next').click()
+    assert.equal(highlighted(ui, '#graph-adjacency-list', 'is-current'), 0)
+    assert.equal(highlighted(ui, '#graph-adjacency-list', 'is-read'), 2)
+  })
+})
+
+test('Đỉnh kề của C theo ma trận: ô đang đọc có ▶ và aria-current, các ô trước trên hàng C đã đọc; danh sách không tô', () => {
+  withGraph((ui) => {
+    ui.change('#graph-representation', 'matrix')
+    ui.query('neighbors', 'C')
+    // Bước 7 (reads 4): đọc M[C][D], sau A, ghi nhận A, B, ghi nhận B, C.
+    for (let index = 0; index < 7; index++) ui.$('#graph-next').click()
+
+    assert.equal(ui.text('#graph-reads'), '4')
+    const current = matrixCell(ui, 'C', 'D')
+    assert.ok(current.classList.contains('is-current'))
+    assert.equal(current.getAttribute('aria-current'), 'true')
+    assert.equal(current.querySelector('.graph-entry-marker').textContent, '▶')
+    assert.deepEqual(
+      [...ui.document.querySelectorAll('#graph-adjacency-matrix .graph-matrix-cell.is-read')].map((cell) => cell.dataset.colLabel),
+      ['A', 'B', 'C'],
+    )
+    assert.ok(ui.$('#graph-matrix-panel').classList.contains('is-active'))
+    assert.equal(highlighted(ui, '#graph-adjacency-list', 'is-current'), 0)
+    assert.equal(highlighted(ui, '#graph-adjacency-list', 'is-read'), 0)
+  })
+})
+
+test('Kiểm tra kề (A, C) theo ma trận: chỉ tô đúng một ô M[A][C], không ô nào "đã đọc"', () => {
+  withGraph((ui) => {
+    ui.change('#graph-representation', 'matrix')
+    ui.query('has-edge', 'A', 'C')
+    ui.$('#graph-next').click()
+
+    assert.ok(matrixCell(ui, 'A', 'C').classList.contains('is-current'))
+    assert.equal(highlighted(ui, '#graph-adjacency-matrix', 'is-current'), 1)
+    assert.equal(highlighted(ui, '#graph-adjacency-matrix', 'is-read'), 0)
+  })
+})
+
+test('Sửa đồ thị: hai bảng cập nhật ngay (thêm A–D, xóa đỉnh C)', () => {
+  withGraph((ui) => {
+    ui.select('A', 'D')
+    ui.$('#graph-add-edge').click()
+    assert.deepEqual(listEntries(ui, 'A'), ['B', 'C', 'D'])
+    assert.equal(matrixCell(ui, 'A', 'D').dataset.value, '1')
+    assert.equal(matrixCell(ui, 'D', 'A').dataset.value, '1')
+
+    ui.select('C')
+    ui.$('#graph-remove-vertex').click()
+    assert.equal(ui.document.querySelectorAll('#graph-adjacency-list .graph-list-row').length, 6)
+    assert.equal(ui.document.querySelectorAll('#graph-adjacency-matrix tbody tr').length, 6)
+    // Cột theo slot: A, B, D, E, F, G.
+    assert.equal(matrixRow(ui, 'A'), '011000')
+    assert.equal(ui.$('#graph-adjacency-matrix').getAttribute('aria-label'), 'Ma trận kề 6 × 6 (vô hướng): 6 ô bằng 1.')
+  })
+})
+
+test('Hai bảng bỏ qua id lạ: matrixCell / currentEdge / sourceId trỏ tới đỉnh không có thì không tô', () => {
+  withGraph((ui) => {
+    const graph = buildGraph(false, 3, [[0, 1]])
+    const matrixStep = createGraphStepFactory('neighbors', { representation: 'matrix', sourceId: 'v99' })
+    ui.handle.loadSteps([matrixStep({ graph, matrixCell: { rowId: 'v99', colId: 'v1' }, reads: 2, message: 'id lạ' })])
+    assert.equal(highlighted(ui, '#graph-adjacency-matrix', 'is-current'), 0)
+    assert.equal(highlighted(ui, '#graph-adjacency-matrix', 'is-read'), 0)
+
+    const listStep = createGraphStepFactory('has-edge', { representation: 'list', sourceId: 'v99', targetId: 'v1' })
+    ui.handle.loadSteps([listStep({ graph, currentEdge: { from: 'v99', to: 'v1' }, reads: 1, message: 'id lạ' })])
+    assert.equal(highlighted(ui, '#graph-adjacency-list', 'is-current'), 0)
+    assert.equal(highlighted(ui, '#graph-adjacency-list', 'is-read'), 0)
+  })
+})
+
+test('Đồ thị rỗng: danh sách báo rỗng, ma trận 0 × 0', () => {
+  withGraph((ui) => {
+    ui.$('#graph-clear').click()
+    assert.equal(ui.text('#graph-adjacency-list'), 'Đồ thị rỗng.')
+    assert.equal(ui.$('#graph-adjacency-matrix').getAttribute('aria-label'), 'Ma trận kề 0 × 0 (vô hướng): 0 ô bằng 1.')
+    assert.equal(ui.document.querySelectorAll('#graph-adjacency-matrix .graph-matrix-cell').length, 0)
+  })
+})
