@@ -129,9 +129,8 @@ pnpm dev        # chạy thử trên trình duyệt
 
 ## Trạng thái hiện tại (cập nhật 2026-11-02)
 
-- `main` = `a386bba` (Merge PR #5, giai đoạn 7 module BST). Baseline: 357/357 test pass, build OK.
-- Giai đoạn 7, module Hash Table xong trên branch `feat/hash-table`, CHỜ người dùng review PR.
-  Kết quả: 458/458 test pass (baseline 357), build OK.
+- `main` = `5e119c8` (Merge PR #6, giai đoạn 7 module Hash Table). Baseline: 458/458 test pass, build OK.
+- Giai đoạn 7, module Graph: đang lập kế hoạch trên branch `feat/graph` (chia ba PR: Graph, BFS, DFS).
 - Máy phát triển: Windows và Ubuntu (repo trên phân vùng NTFS, `core.filemode=false`).
 - Windows: `core.autocrlf=true` + `.gitattributes` (`* text=auto eol=lf`), mọi file text là LF.
 - `.claude/settings.json` (đã commit) chặn bằng deny rule cho cả Bash và PowerShell: force push, push lên `main`,
@@ -184,7 +183,7 @@ pnpm dev        # chạy thử trên trình duyệt
 
 ## Roadmap sau giai đoạn 5 (chỉ làm khi được đồng ý)
 6. Learning Panel (đã merge, PR #4).
-7. BST (đã merge, PR #5), Hash Table (xong, chờ merge), Graph, BFS, DFS — từng module một, có test.
+7. BST (đã merge, PR #5), Hash Table (đã merge, PR #6), Graph (đang lập kế hoạch), BFS, DFS — từng module một, có test.
 8. Tiến độ học tập bằng `localStorage` (xử lý dữ liệu lỗi/thiếu).
 9. Kiểm thử tổng thể, UI/UX, README (README trên GitHub đang lỗi thời), CI, deployment.
    Ghi chú: `main.js` không xử lý lỗi khi fetch template thất bại (trang trắng).
