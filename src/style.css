@@ -2340,3 +2340,174 @@ button.dashboard-card:hover {
     padding: 18px;
   }
 }
+
+/* ===== Binary Search Tree ===== */
+.bst-toolbar,
+.bst-presets {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.bst-presets {
+  margin: 12px 0 20px;
+}
+
+.bst-toolbar label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.bst-toolbar input,
+.bst-toolbar select {
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  color: inherit;
+  font: inherit;
+}
+
+.bst-toolbar input {
+  width: 90px;
+}
+
+.bst-toolbar input[aria-invalid='true'] {
+  border-color: #f87171;
+}
+
+.bst-hint,
+.bst-status {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.bst-error {
+  margin: 8px 0 0;
+  color: #fca5a5;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Cây rộng hơn khung thì cuộn ngang bên trong khung, không làm tràn trang. */
+.bst-tree-frame {
+  max-width: 100%;
+  min-height: 80px;
+  padding: 8px;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--background);
+}
+
+.bst-tree {
+  display: block;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.bst-empty {
+  margin: 16px 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.bst-edge {
+  stroke: var(--border);
+  stroke-width: 2;
+}
+
+/* Trạng thái không chỉ dựa vào màu: cạnh đường đi đậm hơn, nút đang xét viền dày,
+   nút tìm thấy có vòng kép, successor viền nét đứt. */
+.bst-edge.is-path {
+  stroke: var(--purple);
+  stroke-width: 4;
+}
+
+.bst-node-circle {
+  fill: var(--panel-hover);
+  stroke: var(--muted);
+  stroke-width: 2;
+}
+
+.bst-node-label {
+  fill: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.bst-node-height {
+  fill: var(--muted);
+  font-size: 10px;
+}
+
+.bst-node.is-path .bst-node-circle {
+  stroke: var(--purple);
+}
+
+.bst-node.is-current .bst-node-circle {
+  stroke: var(--state-active);
+  stroke-width: 4;
+}
+
+.bst-node.is-successor .bst-node-circle {
+  stroke: #38bdf8;
+  stroke-width: 3;
+  stroke-dasharray: 4 3;
+}
+
+.bst-node-ring {
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 2;
+}
+
+.bst-node.is-found .bst-node-circle {
+  fill: color-mix(in srgb, #22c55e 22%, var(--panel));
+}
+
+.bst-output {
+  margin: 14px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.bst-legend-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--muted);
+  border-radius: 50%;
+}
+
+.bst-legend-dot.is-current {
+  border: 3px solid var(--state-active);
+}
+
+.bst-legend-dot.is-path {
+  border-color: var(--purple);
+}
+
+.bst-legend-dot.is-found {
+  border-color: #22c55e;
+  outline: 2px solid #22c55e;
+  outline-offset: 1px;
+}
+
+.bst-legend-dot.is-successor {
+  border: 2px dashed #38bdf8;
+}
+
+.simulation-stats.bst-stats {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+.bst-code-panel {
+  margin-top: 20px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.bst-code-panel pre {
+  overflow-x: auto;
+}
