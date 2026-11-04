@@ -40,7 +40,7 @@ Không push, không tạo PR: người dùng tự làm.
 | Ca | Kết quả |
 
 ## Trình duyệt
-<360px và 1280px, console; hoặc "CẦN BẠN ĐIỀN">
+<360px và 1280px, console, kiểm trên link preview Vercel của PR; hoặc "CẦN BẠN ĐIỀN">
 
 ## Lưu ý khi review
 <commit refactor không đổi hành vi, assert cũ bị đổi có chủ ý và lý do>
