@@ -14,7 +14,6 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 
 ## Giao diện
 - Click thẻ thuật toán Sorting luôn tạo mảng mới (hành vi có từ trước).
-- Chưa kiểm tra giao diện nút `#search-previous` trên trình duyệt thật.
 - Thẻ "Cấu trúc dữ liệu" trên Tổng quan vẫn ghi "Array, Stack, Queue và Linked List", thiếu BST, Hash Table, Graph
   (`public/templates/app.html`).
 
