@@ -102,7 +102,7 @@ test('Chèn qua ô nhập: Next tô đúng nút đang xét và dòng mã giả',
     ui.perform('insert', 45)
 
     assert.equal(ui.$('#bst-next').disabled, false)
-    assert.equal(ui.nodeByValue(45), null, 'bước 0 còn là cây cũ')
+    assert.ok(ui.nodeByValue(45) === null, 'Bước 0 của Insert 45 còn là cây cũ: chưa vẽ nút 45')
 
     ui.$('#bst-next').click()
 
@@ -136,7 +136,7 @@ test('Previous quay lại bước trước, n và h đọc từ cây của bư�
 
     ui.$('#bst-previous').click()
 
-    assert.equal(ui.nodeByValue(45), null)
+    assert.ok(ui.nodeByValue(45) === null, 'Previous về bước trước khi gắn nút mới: cây chưa vẽ nút 45')
     assert.equal(ui.text('#bst-node-count'), '7')
     assert.equal(ui.text('#bst-height'), '2')
   } finally {
@@ -152,7 +152,7 @@ test('Reset chỉ tua minh họa, báo cây hiện tại vẫn giữ kết quả
     ui.nextUntilDone()
     ui.$('#bst-reset').click()
 
-    assert.equal(ui.nodeByValue(45), null, 'bước 0 hiển thị cây trước thao tác')
+    assert.ok(ui.nodeByValue(45) === null, 'Reset về bước 0 hiển thị cây trước thao tác: chưa vẽ nút 45')
     assert.equal(ui.text('#bst-node-count'), '7')
     assert.equal(ui.$('#bst-status').getAttribute('aria-live'), 'polite')
     assert.match(ui.text('#bst-status'), /cây hiện tại vẫn gồm kết quả thao tác trước/i)
@@ -300,7 +300,7 @@ test('Xóa nút hai con: mọi bước chỉ vẽ nút có trong cây của bư�
     }
 
     assert.equal(ui.text('#bst-node-count'), '6')
-    assert.equal(ui.nodeByValue(50), null)
+    assert.ok(ui.nodeByValue(50) === null, 'Xóa nút hai con 50 (thay bằng successor 60): bước cuối không còn nút nào mang giá trị 50')
     assert.ok(ui.nodeByValue(60).classList.contains('is-found'))
   } finally {
     ui.cleanup()

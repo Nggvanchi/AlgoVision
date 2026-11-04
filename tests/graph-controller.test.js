@@ -112,7 +112,7 @@ test('Khởi tạo với preset Mẫu vô hướng: V = 7, E = 5, aria-label có
     assert.equal(ui.$('#graph-svg').getAttribute('aria-label'), 'Đồ thị vô hướng, V = 7, E = 5.')
     assert.deepEqual(ui.optionLabels('#graph-source'), ['— chưa chọn —', 'A', 'B', 'C', 'D', 'E', 'F', 'G'])
     assert.deepEqual(ui.optionLabels('#graph-target'), ['— chưa chọn —', 'A', 'B', 'C', 'D', 'E', 'F', 'G'])
-    assert.equal(ui.$('#graph-svg .graph-edge[marker-end]'), null, 'vô hướng không có mũi tên')
+    assert.ok(ui.$('#graph-svg .graph-edge[marker-end]') === null, 'Đồ thị vô hướng không có cạnh nào vẽ mũi tên (marker-end)')
   })
 })
 

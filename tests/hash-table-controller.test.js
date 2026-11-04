@@ -189,7 +189,7 @@ test('Previous: n, hệ số tải đọc từ bảng của bước đang hiển
     ui.$('#hash-table-previous').click()
     assert.equal(ui.text('#hash-table-entry-count'), '6')
     assert.equal(ui.text('#hash-table-load-factor'), '0,86')
-    assert.equal(ui.entryByKey(29), null)
+    assert.ok(ui.entryByKey(29) === null, 'Previous về bước trước khi chèn: bảng chưa vẽ phần tử khóa 29')
   } finally {
     ui.cleanup()
   }

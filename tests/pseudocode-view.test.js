@@ -42,7 +42,8 @@ test('renderPseudocode gán nội dung bằng textContent, không diễn giải 
   try {
     renderPseudocode(code, ['if A[j] < <b>x</b>'])
 
-    assert.equal(code.querySelector('b'), null)
+    const boldElement = code.querySelector('b')
+    assert.ok(boldElement === null, 'Mã giả chứa thẻ HTML phải hiển thị nguyên văn, không tạo phần tử <b>')
     assert.equal(code.querySelector('.pseudocode-line').textContent, 'if A[j] < <b>x</b>')
   } finally {
     window.happyDOM.abort()
