@@ -1,190 +1,106 @@
 # AlgoVision
 
-**AlgoVision** là dự án trực quan hóa thuật toán và cấu trúc dữ liệu được xây dựng bằng HTML, CSS và JavaScript. Dự án hướng đến việc giúp người học hiểu cách thuật toán xử lý dữ liệu thông qua mô phỏng từng bước, thay vì chỉ đọc mã nguồn hoặc ghi nhớ lý thuyết.
+[![CI](https://github.com/Nggvanchi/AlgoVision/actions/workflows/ci.yml/badge.svg)](https://github.com/Nggvanchi/AlgoVision/actions/workflows/ci.yml)
 
-## Mục tiêu dự án
+**AlgoVision** là website giáo dục trực quan hóa cấu trúc dữ liệu và giải thuật. Mỗi thao tác được chia thành từng bước;
+mỗi bước khớp với một dòng mã giả và hiển thị số đo thật (số phép so sánh, số ô dò, số lần đọc…) đặt cạnh độ phức tạp
+Big-O lý thuyết, để người học thấy lý thuyết khớp với những gì thuật toán thực sự làm.
 
-- Trực quan hóa quá trình hoạt động của các thuật toán cơ bản.
-- Quan sát sự thay đổi của dữ liệu trong từng bước thực thi.
-- Theo dõi các chỉ số như số lần so sánh, đổi chỗ và dịch chuyển phần tử.
-- Thực hành các thao tác cơ bản trên cấu trúc dữ liệu.
-- Xây dựng nền tảng để mở rộng thêm thuật toán và cấu trúc dữ liệu trong tương lai.
+<!-- TODO: ảnh chụp màn hình dashboard -->
+<!-- TODO: link demo sau khi deploy -->
 
-## Công nghệ sử dụng
+## Tính năng
 
-- **HTML5:** xây dựng cấu trúc giao diện.
-- **CSS3:** thiết kế giao diện tối và bố cục trực quan.
-- **JavaScript (ES Modules):** triển khai thuật toán, xử lý dữ liệu và điều khiển giao diện.
-- **Vite:** phát triển và build ứng dụng.
-- **pnpm:** quản lý package và các lệnh của dự án.
-- **Node.js Test Runner:** chạy kiểm thử tự động.
-- **happy-dom:** mô phỏng môi trường DOM trong các bài kiểm thử.
-- **Git và GitHub:** quản lý mã nguồn.
+### Thuật toán
 
-## Chức năng hiện tại
+- **Sắp xếp:** Bubble Sort, Selection Sort, Insertion Sort.
+  Chạy tự động, tạm dừng, đi từng bước, lùi bước, đặt lại; chọn kích thước mảng (8–24 phần tử) và tốc độ;
+  đếm số phép so sánh, đổi chỗ (và dịch chuyển với Insertion Sort).
+- **Tìm kiếm:** Linear Search, Binary Search.
+  Nhập giá trị cần tìm, quan sát phần tử đang xét và phạm vi bị loại; đếm số phép so sánh;
+  so sánh số phép so sánh của hai thuật toán trên cùng dữ liệu.
 
-### 1. Trực quan hóa thuật toán sắp xếp
+### Cấu trúc dữ liệu
 
-AlgoVision hiện hỗ trợ ba thuật toán:
+- **Array:** thêm vào cuối, chèn, xóa, tìm kiếm, khôi phục.
+- **Stack** (LIFO): Push, Pop, Peek, khôi phục.
+- **Queue** (FIFO): Enqueue, Dequeue, Front, đặt lại.
+- **Singly Linked List:** thêm vào đầu, thêm vào cuối, chèn, xóa, tìm kiếm, khôi phục.
+- **Binary Search Tree:** chèn, tìm kiếm, xóa (nút hai con thay bằng successor), duyệt Inorder / Preorder / Postorder,
+  Min, Max, chiều cao. Giá trị 1–99, tối đa 15 nút.
+- **Hash Table:** separate chaining và linear probing (xóa để lại tombstone); chèn, tìm kiếm, xóa;
+  số ô m ∈ {5, 7, 11}, hệ số tải, bộ khóa mẫu gây va chạm.
+- **Graph:** vô hướng hoặc có hướng, tối đa 8 đỉnh; danh sách kề và ma trận kề vẽ song song;
+  kiểm tra hai đỉnh kề nhau, liệt kê đỉnh kề và bậc.
+  - **BFS:** hàng đợi, thứ tự lấy ra, bảng khoảng cách và đỉnh cha, cạnh cây.
+  - **DFS:** ngăn xếp gọi, thứ tự thăm, mốc vào/ra, cạnh cây, độ sâu ngăn xếp tối đa.
 
-| Thuật toán | Độ phức tạp trung bình | Độ phức tạp xấu nhất |
-|---|---|---|
-| Bubble Sort | O(n²) | O(n²) |
-| Selection Sort | O(n²) | O(n²) |
-| Insertion Sort | O(n²) | O(n²) |
+Các thao tác bị lỗi đầu vào (giá trị ngoài giới hạn, trùng khóa, cấu trúc rỗng, bảng đầy…) được báo rõ thay vì làm hỏng trạng thái.
 
-Các chức năng mô phỏng bao gồm:
+### Learning Panel
 
-- Tạo mảng dữ liệu mới với số lượng phần tử có thể lựa chọn.
-- Thực hiện thuật toán theo từng bước hoặc chạy tự động.
-- Tạm dừng và tiếp tục quá trình mô phỏng.
-- Điều chỉnh tốc độ chạy.
-- Đặt lại trạng thái mô phỏng.
-- Theo dõi số lần so sánh, đổi chỗ hoặc dịch chuyển phần tử.
+Đi kèm các trình mô phỏng Sorting, Searching, BST, Hash Table và Graph:
 
-### 2. Trực quan hóa thuật toán tìm kiếm
+- Mã giả, dòng ứng với bước hiện tại được tô sáng.
+- Giải thích lý thuyết và bảng Big-O của thao tác đang chọn.
+- Số đo thật của bước đang xem, để đối chiếu với Big-O.
 
-Dự án hỗ trợ:
+<!-- TODO: GIF Learning Panel -->
 
-- **Linear Search:** kiểm tra lần lượt từng phần tử để tìm giá trị mục tiêu.
-- **Binary Search:** thu hẹp phạm vi tìm kiếm trên mảng đã được sắp xếp.
+## Công nghệ
 
-Các chức năng bao gồm:
+HTML, CSS và JavaScript (ES Modules), không dùng framework. Vite để chạy thử và build, pnpm để quản lý package,
+Node.js Test Runner và happy-dom cho kiểm thử.
 
-- Nhập giá trị cần tìm.
-- Quan sát quá trình kiểm tra và loại bỏ các phần tử khỏi phạm vi tìm kiếm.
-- Chạy từng bước hoặc chạy tự động.
-- Tạm dừng, đặt lại và điều chỉnh tốc độ.
-- Theo dõi số lần so sánh và vị trí tìm thấy.
-- So sánh số lần so sánh của hai thuật toán trên cùng dữ liệu.
+## Chạy dự án
 
-### 3. Trực quan hóa cấu trúc dữ liệu
-
-#### Array
-
-Array Visualizer hỗ trợ các thao tác:
-
-- Truy cập phần tử theo index.
-- Thêm phần tử vào cuối mảng.
-- Chèn phần tử tại index được chọn.
-- Xóa phần tử theo index.
-- Tìm kiếm giá trị trong mảng.
-- Khôi phục mảng về trạng thái ban đầu.
-
-Giao diện hiển thị giá trị và index của từng phần tử, giúp người học quan sát sự thay đổi của mảng sau mỗi thao tác.
-
-#### Stack
-
-Stack Visualizer mô phỏng cấu trúc ngăn xếp theo nguyên tắc **LIFO (Last In, First Out)**.
-
-Các thao tác được hỗ trợ:
-
-- **Push:** thêm phần tử lên đỉnh Stack.
-- **Pop:** lấy phần tử trên đỉnh ra khỏi Stack.
-- **Peek:** xem phần tử trên đỉnh mà không xóa.
-- **Reset:** khôi phục Stack về trạng thái ban đầu.
-
-Dự án cũng xử lý các trường hợp như Pop hoặc Peek khi Stack rỗng và dữ liệu đầu vào không hợp lệ.
-
-#### Các cấu trúc dữ liệu dự kiến phát triển
-
-- Queue.
-- Linked List.
-- Các cấu trúc dữ liệu và thuật toán khác phù hợp với mục tiêu học tập của dự án.
-
-## Cài đặt và chạy dự án
-
-### Yêu cầu
-
-- Node.js tương thích với phiên bản Vite được sử dụng.
-- pnpm.
-
-### 1. Clone repository
+Yêu cầu: Node.js `^20.19.0 || >=22.12.0` (trường `engines` trong `package.json`) và pnpm.
 
 ```bash
 git clone https://github.com/Nggvanchi/AlgoVision.git
 cd AlgoVision
+pnpm install --frozen-lockfile
+pnpm dev        # mở địa chỉ Vite in ra, thường là http://localhost:5173/
+pnpm build      # build vào dist/
+pnpm preview    # chạy thử bản build
 ```
-
-### 2. Cài đặt dependencies
-
-```bash
-pnpm install
-```
-
-### 3. Chạy môi trường phát triển
-
-```bash
-pnpm dev
-```
-
-Mở địa chỉ local được Vite hiển thị trong terminal, thông thường là `http://localhost:5173/`.
 
 ## Kiểm thử
 
-Chạy toàn bộ bài kiểm thử tự động bằng lệnh:
-
 ```bash
-pnpm test
+pnpm test                          # toàn bộ test
+node --test tests/<file>.test.js   # một file
 ```
 
-## Build production
+Test giao diện chạy trên happy-dom với template thật. Ngoài kiểm tra kết quả, bộ test kiểm:
 
-Tạo bản build để triển khai bằng lệnh:
+- bất biến của từng bước (tham chiếu hợp lệ, đường đi chỉ tăng, chỉ bước cuối kết thúc);
+- số bước, thứ tự thăm, số đo so với kết quả dò tay độc lập;
+- số đo thật so với Big-O hiển thị, kể cả ở quy mô lớn;
+- phá thử (mutation): sửa tạm code để chắc test thật sự bắt được lỗi.
 
-```bash
-pnpm build
-```
+CI chạy `pnpm test`, `pnpm build` và kiểm mã hóa file trên Ubuntu và Windows cho mỗi pull request.
 
-Để chạy thử bản build:
+## Kiến trúc
 
-```bash
-pnpm preview
-```
-
-## Cấu trúc dự án
+Mỗi module mới đi qua các lớp: cấu trúc thuần → sinh bước → bố cục vẽ → view → controller → template.
+Mã thuần không chạm DOM nên test được bằng `node --test` không cần trình duyệt. Chi tiết: [`docs/architecture.md`](docs/architecture.md).
 
 ```text
 AlgoVision/
-├── public/
-│   └── templates/
-│       └── app.html
+├── public/templates/   # template giao diện (app.html)
 ├── src/
-│   ├── algorithms/
-│   │   ├── bubbleSort.js
-│   │   ├── insertionSort.js
-│   │   └── selectionSort.js
-│   ├── structures/
-│   │   ├── array.js
-│   │   └── stack.js
-│   ├── main.js
-│   ├── navigation.js
-│   ├── sorting.js
-│   ├── searching.js
-│   ├── array.js
-│   ├── stack.js
-│   └── style.css
-├── tests/
-│   ├── navigation.test.js
-│   ├── searching-controller.test.js
-│   ├── sorting-controller.test.js
-│   ├── sorting.test.js
-│   ├── array.test.js
-│   ├── array-controller.test.js
-│   ├── stack.test.js
-│   └── stack-controller.test.js
-├── index.html
-├── package.json
-├── pnpm-lock.yaml
-└── README.md
+│   ├── structures/     # cấu trúc dữ liệu thuần (snapshot bất biến)
+│   ├── algorithms/     # sinh mảng bước và mã giả
+│   └── *.js            # layout, view, controller từng module
+├── tests/              # node:test + happy-dom; tests/helpers/ không bị quét
+└── docs/               # kiến trúc, lộ trình, backlog
 ```
 
-## Trạng thái phát triển
+## Trạng thái
 
-AlgoVision đang được phát triển theo từng giai đoạn. Các chức năng sắp xếp, tìm kiếm, Array và Stack đã có phần triển khai và kiểm thử tương ứng.
+Lộ trình theo giai đoạn: [`docs/roadmap.md`](docs/roadmap.md). Việc còn tồn tại: [`docs/backlog.md`](docs/backlog.md).
 
-Các tính năng tiếp theo sẽ tập trung vào việc hoàn thiện trải nghiệm trực quan hóa, bổ sung cấu trúc dữ liệu mới và nâng cao chất lượng kiểm thử.
+## Giấy phép
 
-## Định hướng
-
-Mục tiêu dài hạn của AlgoVision là trở thành một công cụ học tập trực quan, cho phép người học quan sát, thử nghiệm và hiểu sâu hơn về thuật toán cũng như cấu trúc dữ liệu thông qua tương tác trực tiếp.
+[MIT](LICENSE).

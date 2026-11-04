@@ -1,0 +1,16 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+
+[*.md]
+trim_trailing_whitespace = false
+
+# Template chính thụt lề 4 dấu cách (đo 2026-11-05: 353 bước 4, 17 bước 2); mọi file khác 2 dấu cách.
+[public/templates/*.html]
+indent_size = 4

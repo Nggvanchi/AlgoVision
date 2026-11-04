@@ -15,9 +15,10 @@ pnpm dev                         # chạy thử trên trình duyệt
 
 ## Baseline
 
-Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so với mục này. Cập nhật khi một PR làm thay đổi.
+Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so với mục này.
+Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
-- Đo 2026-11-04 trên Ubuntu (Node 26.13.0, pnpm 12.16.1), `main` sau PR #10.
+- Đo 2026-11-05 trên Ubuntu (Node 26.13.0, pnpm 12.16.1).
 - `pnpm test`: 737/737 pass, 0 fail, 0 skipped, khoảng 8 s.
 - `pnpm build`: JS 138,61 kB (gzip 39,86 kB), CSS 41,93 kB (gzip 8,37 kB), HTML 0,63 kB.
 
@@ -80,7 +81,8 @@ Chi tiết từng module (trường bước, công thức số bước, bất bi
 ## Công cụ Claude Code trong repo
 
 - Skill (`.claude/skills/`): `resume-check` (đầu phiên, sau khi đổi máy), `check` (trước commit), `mutation-test`
-  (TDD, phá thử, đo heap), `module-workflow` (gọi tay), `pr-description` (soạn mô tả PR). Script Node chạy từ gốc repo
+  (TDD, phá thử, đo heap), `test-profile` (đo từng file test: thời gian, RSS, tràn heap), `module-workflow` (gọi tay),
+  `pr-description` (soạn mô tả PR). Script Node chạy từ gốc repo
   bằng đường dẫn tương đối (đường dẫn tuyệt đối của repo có dấu cách).
 - `.claude/settings.json` có 64 deny rule cho Bash và PowerShell: force push, push lên `main`, `reset --hard`, `clean`,
   `merge`, `--no-verify`, kể cả dạng có tùy chọn toàn cục (`git -C . clean`). Rule khớp theo chữ của lệnh, không chặn được
@@ -92,25 +94,10 @@ Chi tiết từng module (trường bước, công thức số bước, bất bi
 
 Chạy `/resume-check`.
 
-## Roadmap (chỉ làm khi được đồng ý)
+## Roadmap
 
-1–5. Nền tảng, Simulation Controls (PR #3).
-6. Learning Panel (PR #4).
-7. BST (PR #5), Hash Table (PR #6), Graph (PR #7), BFS (PR #8), DFS (PR #9). Dọn dẹp sau giai đoạn 7 (PR #10).
-   Để sau: phân loại 4 loại cạnh DFS (cây/ngược/xuôi/chéo) dựa trên mốc vào/ra đã có.
-8. Tiến độ học tập bằng `localStorage` (xử lý dữ liệu lỗi/thiếu).
-9. Kiểm thử tổng thể, UI/UX, README (README trên GitHub đang lỗi thời), CI, deployment.
+`docs/roadmap.md` (chỉ làm giai đoạn mới khi được đồng ý).
 
 ## Còn tồn tại
 
-- `tests/searching-controller.test.js` cần hơn 512 MB heap khi chạy riêng, ngay cả khi xanh; chưa rõ nguyên nhân, rủi ro nếu CI
-  giới hạn bộ nhớ thấp (giai đoạn 9).
-- Generator sinh bước chưa có chốt an toàn về số bước tối đa: lỗi kiểu "quên pop" gây treo/tràn heap thay vì ném lỗi rõ ràng.
-- `buildGraph` sao chép đồ thị sau mỗi lần thêm nên chậm ở quy mô lớn (1000 đỉnh ~1,3 s; test đồ thị sao hạ xuống 300 đỉnh).
-- Thẻ số lần gọi DFS dùng chung id `#graph-dequeues` với BFS (nhãn đổi đúng, chỉ tên id gây hiểu nhầm).
-- `main.js` không xử lý lỗi khi fetch template thất bại (trang trắng).
-- `packageManager` chưa ghi trong `package.json`: pnpm khác phiên bản giữa hai máy (Windows 12.5.1, Ubuntu 12.16.1).
-- Click thẻ thuật toán Sorting luôn tạo mảng mới (hành vi có từ trước).
-- Chưa kiểm tra giao diện nút `#search-previous` trên trình duyệt thật.
-- Lệnh kiểm trình duyệt bằng Chrome headless (360px/1280px) dùng ở PR #5–#9 chưa được lưu lại trong repo.
-- `deepFreeze` được định nghĩa lại trong 8 file test thay vì một helper chung.
+`docs/backlog.md` (nhóm: lỗi, hiệu năng, giao diện, dọn dẹp, công cụ).

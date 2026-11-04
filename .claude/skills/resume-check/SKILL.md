@@ -24,7 +24,7 @@ Mục tiêu: biết chính xác trạng thái thật trước khi sửa bất c�
    - KHÔNG restore. Báo cáo và chờ người dùng quyết định.
 4. Với test đã sửa mà chưa commit, kiểm xem có chỗ nào đang ở trạng thái "đảo điều kiện" của mutation test hay không (ví dụ `=== null` bị đổi thành `!== null`).
 5. `git fetch` rồi so `git log --oneline -10`, `git branch -vv`, `git log main..HEAD`, `git log main..origin/main` để biết việc
-   đang làm dở và `main` local có tụt sau GitHub không. Đối chiếu mục **Baseline**, **Roadmap** và **Còn tồn tại** trong CLAUDE.md
+   đang làm dở và `main` local có tụt sau GitHub không. Đối chiếu mục **Baseline** trong CLAUDE.md, `docs/roadmap.md` và `docs/backlog.md`
    với thực tế; liệt kê từng câu đã lỗi thời kèm số dòng.
 6. Chạy `pnpm test` và `pnpm build`. Ghi số test pass/fail, thời gian, kích thước bundle và so với mục **Baseline**. Nếu đỏ, nêu test nào, lỗi nguyên văn, và bằng chứng xem có phải do khác biệt hệ điều hành không.
 
