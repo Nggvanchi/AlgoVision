@@ -42,6 +42,7 @@ Một branch, một PR, một chủ đề. Người dùng tự push, tạo PR v�
 1. Cập nhật Baseline trong CLAUDE.md, `docs/roadmap.md`, `docs/backlog.md` và `docs/architecture.md` chỉ ở những dòng mà việc này làm thay đổi sự thật. Commit riêng, đặt cuối.
 2. Chạy `check` lần cuối trên toàn branch.
 3. Nếu có giao diện mới: kiểm trên trình duyệt thật ở 360px và 1280px (không tràn trang, console sạch) nếu môi trường cho phép; không được thì ghi vào mục CHƯA xác minh.
+   Mỗi PR có link preview Vercel (bot Vercel ghi trong PR): dùng link đó để kiểm 360px và 1280px.
 4. Soạn mô tả PR theo skill `pr-description`.
 5. Báo cáo theo mẫu dưới, rồi **DỪNG** và chờ người dùng trả lời "đồng ý". Không push, không tạo PR, không merge.
 

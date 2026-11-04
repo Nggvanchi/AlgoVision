@@ -6,8 +6,9 @@
 mỗi bước khớp với một dòng mã giả và hiển thị số đo thật (số phép so sánh, số ô dò, số lần đọc…) đặt cạnh độ phức tạp
 Big-O lý thuyết, để người học thấy lý thuyết khớp với những gì thuật toán thực sự làm.
 
+**Demo:** [algo-vision-gamma.vercel.app](https://algo-vision-gamma.vercel.app)
+
 <!-- TODO: ảnh chụp màn hình dashboard -->
-<!-- TODO: link demo sau khi deploy -->
 
 ## Tính năng
 

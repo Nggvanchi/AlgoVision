@@ -14,7 +14,6 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 
 ## Giao diện
 - Click thẻ thuật toán Sorting luôn tạo mảng mới (hành vi có từ trước).
-- Chưa kiểm tra giao diện nút `#search-previous` trên trình duyệt thật.
 - Thẻ "Cấu trúc dữ liệu" trên Tổng quan vẫn ghi "Array, Stack, Queue và Linked List", thiếu BST, Hash Table, Graph
   (`public/templates/app.html`).
 
@@ -27,5 +26,6 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 
 ## Công cụ
 - Nâng pnpm Windows lên 12.16.1, thêm `packageManager`, bỏ dòng `version` trong CI (`.github/workflows/ci.yml`).
-- Lệnh kiểm trình duyệt bằng Chrome headless (360px/1280px) dùng ở PR #5–#9 chưa được lưu lại trong repo.
+- Kiểm giao diện bằng link preview Vercel của mỗi PR ở 360px và 1280px (thay cho lệnh Chrome headless của PR #5–#9,
+  vốn không được lưu lại trong repo).
 - Meta test `no-dom-in-equal` (gói v2) chưa đưa vào repo; để PR test/hardening.
