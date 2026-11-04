@@ -14,7 +14,7 @@ Một branch, một PR, một chủ đề. Người dùng tự push, tạo PR v�
 
 1. Chạy skill `resume-check`. Nếu có LỆCH chưa giải quyết thì DỪNG.
 2. `git fetch`, rồi xác nhận `main` = `origin/main` và working tree sạch (trừ file người dùng đã dặn để nguyên).
-3. Đọc roadmap và mục liên quan trong CLAUDE.md, đọc `docs/architecture.md` (các lớp của một module, chi tiết từng module,
+3. Đọc `docs/roadmap.md` và mục liên quan trong CLAUDE.md, đọc `docs/architecture.md` (các lớp của một module, chi tiết từng module,
    cách test), rồi đọc code thật của module gần nhất làm mẫu.
 4. Trình bày kế hoạch:
    - Phạm vi và những gì KHÔNG làm.
@@ -39,7 +39,7 @@ Một branch, một PR, một chủ đề. Người dùng tự push, tạo PR v�
 
 ## Pha C: Kết thúc
 
-1. Cập nhật CLAUDE.md (Baseline, Roadmap, Còn tồn tại) và `docs/architecture.md` chỉ ở những dòng mà việc này làm thay đổi sự thật. Commit riêng, đặt cuối.
+1. Cập nhật Baseline trong CLAUDE.md, `docs/roadmap.md`, `docs/backlog.md` và `docs/architecture.md` chỉ ở những dòng mà việc này làm thay đổi sự thật. Commit riêng, đặt cuối.
 2. Chạy `check` lần cuối trên toàn branch.
 3. Nếu có giao diện mới: kiểm trên trình duyệt thật ở 360px và 1280px (không tràn trang, console sạch) nếu môi trường cho phép; không được thì ghi vào mục CHƯA xác minh.
 4. Soạn mô tả PR theo skill `pr-description`.

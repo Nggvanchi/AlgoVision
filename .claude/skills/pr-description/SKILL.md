@@ -15,7 +15,7 @@ Không push, không tạo PR: người dùng tự làm.
 - `git log --reverse --format='%h %s%n%b' main..HEAD`: commit và thân commit.
 - `git diff main --stat`.
 - Số liệu test/build/phá thử: CHỈ lấy từ lệnh đã chạy trong phiên này hoặc từ thân commit. Không có nguồn thì không ghi số.
-- Mục "Còn tồn tại" trong CLAUDE.md để lấy các vấn đề liên quan.
+- `docs/backlog.md` để lấy các vấn đề còn tồn tại liên quan.
 
 ## Cấu trúc (bỏ mục không liên quan, không bịa nội dung)
 
