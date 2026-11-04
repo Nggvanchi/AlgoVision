@@ -91,7 +91,33 @@ if (upstream) {
   show('upstream', '(không có: branch chỉ ở local hoặc chưa đặt upstream)')
 }
 
-const mainRef = git(['rev-parse', '--verify', '--quiet', 'main']) ? 'main' : null
+const fetchHead = git(['rev-parse', '--git-path', 'FETCH_HEAD'])
+if (fetchHead && fs.existsSync(fetchHead)) {
+  const hours = (Date.now() - fs.statSync(fetchHead).mtimeMs) / 3_600_000
+  show('lần fetch gần nhất', `${hours.toFixed(1)} giờ trước`)
+  if (hours > 12) warn('Thông tin origin có thể đã cũ: chạy git fetch (chỉ đọc remote) trước khi kết luận về main')
+} else {
+  warn('Chưa từng fetch trong repo này: chạy git fetch trước khi kết luận về main')
+}
+
+const localMain = git(['rev-parse', '--verify', '--quiet', 'main'])
+const remoteMain = git(['rev-parse', '--verify', '--quiet', 'origin/main'])
+if (localMain && remoteMain) {
+  const [mainBehind, mainAhead] = (git(['rev-list', '--left-right', '--count', 'origin/main...main']) ?? '0 0').split(/\s+/)
+  show('main so với origin/main', `ahead ${mainAhead}, behind ${mainBehind}`)
+  if (Number(mainBehind) > 0) {
+    warn(`main local tụt ${mainBehind} commit so với origin/main: git switch main && git pull --ff-only trước khi tạo branch mới`)
+  }
+  if (Number(mainAhead) > 0) warn(`main local có ${mainAhead} commit chưa có trên origin/main (không được push thẳng lên main)`)
+}
+
+const goneBranches = (git(['branch', '-vv']) ?? '')
+  .split('\n')
+  .filter((entry) => /\[[^\]]*: gone\]/.test(entry))
+  .map((entry) => entry.replace(/^\*?\s+/, '').split(/\s+/)[0])
+if (goneBranches.length) show('upstream đã mất', `${goneBranches.join(', ')} (đã merge và xóa trên GitHub; dọn khi tiện)`)
+
+const mainRef = localMain ? 'main' : null
 if (mainRef) {
   const onlyHere = git(['log', '--oneline', 'main..HEAD'])
   show('commit so với main', onlyHere ? `\n${onlyHere.split('\n').map((l) => '   ' + l).join('\n')}` : '(không có)')

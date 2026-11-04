@@ -80,7 +80,8 @@ Chi tiết từng module (trường bước, công thức số bước, bất bi
 ## Công cụ Claude Code trong repo
 
 - Skill (`.claude/skills/`): `resume-check` (đầu phiên, sau khi đổi máy), `check` (trước commit), `mutation-test`
-  (TDD, phá thử, đo heap), `module-workflow` (gọi tay), `pr-description` (soạn mô tả PR). Script Node chạy từ gốc repo
+  (TDD, phá thử, đo heap), `test-profile` (đo từng file test: thời gian, RSS, tràn heap), `module-workflow` (gọi tay),
+  `pr-description` (soạn mô tả PR). Script Node chạy từ gốc repo
   bằng đường dẫn tương đối (đường dẫn tuyệt đối của repo có dấu cách).
 - `.claude/settings.json` có 64 deny rule cho Bash và PowerShell: force push, push lên `main`, `reset --hard`, `clean`,
   `merge`, `--no-verify`, kể cả dạng có tùy chọn toàn cục (`git -C . clean`). Rule khớp theo chữ của lệnh, không chặn được
