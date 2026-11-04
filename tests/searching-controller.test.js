@@ -235,10 +235,8 @@ test('Linear Search không tìm thấy mục tiêu', async () => {
       /không tìm thấy/i,
     )
 
-    assert.equal(
-      document.querySelector('#search-array .search-cell.is-found'),
-      null,
-    )
+    const foundCell = document.querySelector('#search-array .search-cell.is-found')
+    assert.ok(foundCell === null, 'Linear Search không tìm thấy mục tiêu thì không ô nào được đánh dấu is-found')
   } finally {
     cleanup()
   }
@@ -273,10 +271,8 @@ test('Binary Search không tìm thấy mục tiêu', async () => {
       /không tìm thấy/i,
     )
 
-    assert.equal(
-      document.querySelector('#search-array .search-cell.is-found'),
-      null,
-    )
+    const foundCell = document.querySelector('#search-array .search-cell.is-found')
+    assert.ok(foundCell === null, 'Binary Search không tìm thấy mục tiêu thì không ô nào được đánh dấu is-found')
 
     assert.equal(
       document.querySelector('#search-next').disabled,
@@ -401,10 +397,8 @@ test('Searching không chạy bước tiếp theo khi ô mục tiêu để trố
     assert.equal(searchResult.textContent, 'Chưa có kết quả.')
     assert.equal(searchNextButton.disabled, false)
 
-    assert.equal(
-      document.querySelector('#search-array .search-cell.is-found'),
-      null,
-    )
+    const foundCell = document.querySelector('#search-array .search-cell.is-found')
+    assert.ok(foundCell === null, 'Ô mục tiêu để trống thì Next không chạy và không ô nào được đánh dấu is-found')
   } finally {
     cleanup()
   }
@@ -493,7 +487,8 @@ test('Linear Search không tìm thấy mục tiêu trong mảng một phần t�
 
     assert.equal(document.querySelector('#search-comparisons').textContent, '1')
     assert.equal(document.querySelector('#search-result').textContent, 'Không tìm thấy giá trị.')
-    assert.equal(document.querySelector('#search-array .search-cell.is-found'), null)
+    const foundCell = document.querySelector('#search-array .search-cell.is-found')
+    assert.ok(foundCell === null, 'Linear Search không tìm thấy thì không ô nào được đánh dấu is-found')
     assert.equal(document.querySelector('#search-next').disabled, true)
   } finally {
     cleanup()
@@ -554,7 +549,8 @@ test('Binary Search không tìm thấy mục tiêu trong mảng một phần t�
 
     assert.equal(document.querySelector('#search-comparisons').textContent, '1')
     assert.equal(document.querySelector('#search-result').textContent, 'Không tìm thấy giá trị.')
-    assert.equal(document.querySelector('#search-array .search-cell.is-found'), null)
+    const foundCell = document.querySelector('#search-array .search-cell.is-found')
+    assert.ok(foundCell === null, 'Binary Search không tìm thấy thì không ô nào được đánh dấu is-found')
     assert.equal(document.querySelector('#search-next').disabled, true)
   } finally {
     cleanup()
@@ -711,10 +707,8 @@ test('Reset giữ nguyên mảng và xóa trạng thái tìm kiếm', async () =
     assert.equal(comparisons.textContent, '0')
     assert.equal(result.textContent, 'Chưa có kết quả.')
     assert.equal(nextButton.disabled, false)
-    assert.equal(
-      document.querySelector('#search-array .is-found'),
-      null,
-    )
+    const foundCell = document.querySelector('#search-array .is-found')
+    assert.ok(foundCell === null, 'Reset xóa đánh dấu is-found khỏi ô đã tìm thấy trước đó')
   } finally {
     cleanup()
   }
@@ -751,10 +745,8 @@ test('Tạo mảng mới đặt lại bộ đếm và kết quả tìm kiếm', 
     assert.equal(comparisons.textContent, '0')
     assert.equal(result.textContent, 'Chưa có kết quả.')
     assert.equal(nextButton.disabled, false)
-    assert.equal(
-      document.querySelector('#search-array .is-found'),
-      null,
-    )
+    const foundCell = document.querySelector('#search-array .is-found')
+    assert.ok(foundCell === null, 'Tạo mảng mới thì mảng mới không có ô nào được đánh dấu is-found')
   } finally {
     cleanup()
   }

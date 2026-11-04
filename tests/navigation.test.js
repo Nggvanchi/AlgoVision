@@ -1,4 +1,4 @@
-﻿import test from 'node:test'
+import test from 'node:test'
 import assert from 'node:assert/strict'
 import { Window } from 'happy-dom'
 import { readFile } from 'node:fs/promises'
@@ -213,7 +213,7 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
       '[data-structure-target="queue"]',
     )
 
-    assert.ok(queueCard, 'Tháº» Queue pháº£i tá»“n táº¡i')
+    assert.ok(queueCard, 'Thẻ Queue phải tồn tại')
 
     queueCard.click()
 

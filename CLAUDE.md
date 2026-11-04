@@ -80,7 +80,7 @@ pnpm dev        # chạy thử trên trình duyệt
     `collisionPresetKeys` (3 + k·m). Giới hạn UI: khóa 0–99, m ∈ {5, 7, 11}, chaining 15 phần tử, probing m.
     Bảng chốt bằng `steps.at(-1).table`; đổi m/chiến lược tạo bảng rỗng (báo qua `#hash-table-status`; chưa có rehash);
     đang Run khóa cả ô chọn m và chiến lược. Mọi số liệu (n, m, α, tombstone) đọc từ bảng của bước đang hiển thị.
-- Graph (giai đoạn 7, đã merge PR #7; BFS đã merge PR #8; DFS trên `feat/dfs`, chờ merge):
+- Graph (giai đoạn 7, đã merge PR #7; BFS đã merge PR #8; DFS đã merge PR #9):
   - `src/structures/graph.js`: đồ thị đơn dạng snapshot thuần `{ directed, vertices: { id: { id, slot, label } }, adjacency, nextId }`.
     Id `v1, v2, …` không cấp lại; cạnh định danh bằng cặp id `{ from, to }`. slot = số nhỏ nhất chưa dùng, nhãn suy từ slot
     (xóa C rồi thêm lại thì nhãn C, id mới). Danh sách kề sắp theo slot. Vô hướng lưu hai chiều. Ma trận kề không lưu,
@@ -119,9 +119,20 @@ pnpm dev        # chạy thử trên trình duyệt
     `src/graph-traversal-view.js`: cạnh cây dùng chung BFS/DFS (`graph-bfs-view.js` export lại tên cũ).
     Bất biến DFS: `assertDfsStepInvariants` (ngăn xếp = đỉnh xám và là đường đi theo parentIds, mốc 1..k).
   - Còn tồn tại: `buildGraph` sao chép đồ thị sau mỗi lần thêm nên chậm ở quy mô lớn (test 1000 đỉnh ~1,3 s; test đồ thị sao
-    hạ xuống 300 đỉnh); `favicon.ico` 404 trên toàn site; `tests/navigation.test.js` có BOM UTF-8 (file duy nhất).
-    Assert so sánh trực tiếp phần tử DOM (`assert.equal(el, null)`) khi đỏ làm Node tràn bộ nhớ lúc in phần tử happy-dom:
-    viết `assert.equal(el === null, true)`; còn 9 chỗ cũ (graph-controller, pseudocode-view, searching-controller).
+    hạ xuống 300 đỉnh).
+- Assert phần tử DOM: KHÔNG truyền phần tử DOM vào `assert.equal/strictEqual/notEqual/deepEqual`, kể cả khi có thông điệp.
+  Khi đỏ, Node in cả phần tử happy-dom: có thể tràn heap và mất thông điệp. Mẫu chuẩn `assert.ok(<biểu thức> === null, '<mô tả>')`
+  (hoặc `!== null`), luôn kèm thông điệp mô tả để lúc đỏ chỉ in thông điệp. `assert.ok(el, '<mô tả>')` an toàn vì khi đỏ thì el là null.
+  Đã sửa 14 chỗ trong 5 file ở `chore/cleanup` (searching-controller 7, bst-controller 4, hash-table-controller 1,
+  graph-controller 1, pseudocode-view 1).
+  - Kết quả đo (một test riêng, 512 MB): (a) `equal(el, null)` tràn heap; (b) `equal(el, null, 'thông điệp')` treo ~77 s rồi
+    RangeError, mất thông điệp; (c), (d), (e) an toàn, in đúng thông điệp trong ~1,2 s. Riêng `tests/searching-controller.test.js`
+    cần hơn 512 MB heap ngay cả khi xanh (xanh từ 768 MB). Ở 768 và 1024 MB với mutation `src/searching.js:251` (`|| index === 0`),
+    assert cũ tràn heap sau khoảng 71–76 s, assert mới không (45 test, 8 đỏ, đủ thông điệp mới, ~4 s). Chưa đo ở heap mặc định.
+  - Cách dò: quét động bằng `--import` bọc assert và các hàm truy vấn DOM của happy-dom (giới hạn: chỉ phủ nhánh test chạy thật;
+    có thể báo nhầm; có thể bỏ sót nếu giữa truy vấn và assert còn một assert khác). Grep một dòng từng bỏ sót assert viết nhiều
+    dòng và helper như `ui.$`. Quét tĩnh nhiều dòng (tách đúng tham số đầu) trên Ubuntu cũng ra 0 chỗ còn lại.
+    Script dò nằm ngoài repo, không commit.
 - `navigation.js`: thẻ `data-structure-target="x"` mở section `#x-section` (suy ra lúc init, kể cả danh sách cần ẩn);
   thêm cấu trúc mới không cần sửa navigation. Thẻ không có section thì click bị bỏ qua, thư viện giữ nguyên.
 - Section Sorting có `id="sorting-section"` (navigation và test tìm theo id, không dùng chuỗi `:not(...)` nữa).
@@ -171,15 +182,30 @@ pnpm dev        # chạy thử trên trình duyệt
 4. Checklist để người dùng tự kiểm tra trên trình duyệt (`pnpm dev`).
 5. Vấn đề còn tồn tại, đề xuất cho giai đoạn sau.
 
-## Trạng thái hiện tại (cập nhật 2026-11-03)
+## Trạng thái hiện tại (cập nhật 2026-11-04)
 
-- `main` = `42b43ee` (Merge PR #8, giai đoạn 7 module BFS). Baseline: 644/644 test pass, build OK.
-- Giai đoạn 7, module DFS (PR 3 của Graph) trên branch `feat/dfs`: đã hoàn tất, chờ merge (737/737 test pass, build OK).
-- Máy phát triển: Windows và Ubuntu (repo trên phân vùng NTFS, `core.filemode=false`).
-- Windows: `core.autocrlf=true` + `.gitattributes` (`* text=auto eol=lf`), mọi file text là LF.
-  PowerShell 5.1 làm hỏng ngoặc kép khi truyền tham số cho lệnh ngoài: commit bằng `git commit -F <file message>`.
+- `main` = `6ac3edd` (Merge PR #9, module DFS). Giai đoạn 7 xong cả 5 module (BST, Hash Table, Graph, BFS, DFS).
+  Baseline: 737/737 test pass, build OK.
+- Đang ở branch `chore/cleanup` (dọn dẹp, không đổi logic): assert DOM, favicon, BOM và thông điệp hỏng mã hóa ở
+  `navigation.test.js`, deny rule `git -C`, `engines`. Chờ review.
+- Việc còn lại: `packageManager` chưa chốt, chờ xác nhận phiên bản pnpm trên Windows.
+- Backlog giai đoạn 9: `tests/searching-controller.test.js` cần hơn 512 MB heap khi xanh, chưa rõ nguyên nhân, có thể là rủi ro
+  nếu CI giới hạn bộ nhớ thấp; chưa điều tra.
+- Máy phát triển: Windows và Ubuntu dùng chung một repo trên phân vùng NTFS, `core.fileMode=false`.
+  Mỗi lần đổi hệ điều hành chạy lại `pnpm install --frozen-lockfile`: `node_modules` chứa binary riêng theo hệ điều hành
+  (rolldown, lightningcss).
+- Xuống dòng: `core.autocrlf=true` trên Windows, không đặt trên Ubuntu; không gây vấn đề nhờ `.gitattributes`
+  (`* text=auto eol=lf`), mọi file text là LF.
+- pnpm khác phiên bản giữa hai máy (Windows 12.5.1, Ubuntu 12.16.1); lockfile v9 chạy ổn trên cả hai nên `packageManager`
+  chưa ghi cứng. `engines.node` = `^20.19.0 || >=22.12.0` (ràng buộc chặt nhất của vite 8 và rolldown).
+- Windows: PowerShell 5.1 làm hỏng ngoặc kép khi truyền tham số cho lệnh ngoài: commit bằng `git commit -F <file message>`.
+  Không dùng redirect/`Out-File`/`Set-Content` để ghi file (dễ ra UTF-16/BOM).
 - `.claude/settings.json` (đã commit) chặn bằng deny rule cho cả Bash và PowerShell: force push, push lên `main`,
-  `reset --hard`, `clean`, `merge`, `--no-verify`. Rule khớp theo chữ của lệnh, không chặn được dạng `git -C . clean`.
+  `reset --hard`, `clean`, `merge`, `--no-verify`. 64 rule: mỗi rule `git <subcommand> …` có thêm bản `git * <subcommand> …`
+  để chặn dạng có tùy chọn toàn cục (`git -C . clean`). Đã xác minh trong phiên Claude Code trên Ubuntu: `git -C . clean -n`
+  chạy được trước khi sửa và bị deny sau khi sửa. Giới hạn: rule khớp theo chữ của lệnh, không chặn được `sh -c "git ..."`,
+  đường dẫn tuyệt đối tới git hay biến `GIT_DIR`; rào chắn thật là branch protection trên GitHub. Bản `git * …` có thể chặn
+  nhầm commit message chứa "clean"/"merge": commit bằng `git commit -F <file>`.
   `.claude/settings.local.json` đã nằm trong `.gitignore`.
 
 ## Giai đoạn 5: Chuẩn hóa Simulation Controls (đã merge, PR #3)
@@ -228,7 +254,7 @@ pnpm dev        # chạy thử trên trình duyệt
 
 ## Roadmap sau giai đoạn 5 (chỉ làm khi được đồng ý)
 6. Learning Panel (đã merge, PR #4).
-7. BST (đã merge, PR #5), Hash Table (đã merge, PR #6), Graph (đã merge, PR #7), BFS (đã merge, PR #8), DFS (đã hoàn tất, chờ merge) — từng module một, có test.
+7. BST (đã merge, PR #5), Hash Table (đã merge, PR #6), Graph (đã merge, PR #7), BFS (đã merge, PR #8), DFS (đã merge, PR #9) — từng module một, có test.
    Để sau: phân loại 4 loại cạnh DFS (cây/ngược/xuôi/chéo) dựa trên mốc vào/ra đã có.
 8. Tiến độ học tập bằng `localStorage` (xử lý dữ liệu lỗi/thiếu).
 9. Kiểm thử tổng thể, UI/UX, README (README trên GitHub đang lỗi thời), CI, deployment.
