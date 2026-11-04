@@ -161,7 +161,7 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
 - `deepFreeze` để bắt sửa nhầm snapshot: hiện có ở 8 file test graph/hash (mỗi file tự định nghĩa); BST, Sorting, Searching chưa dùng.
 - Phá thử logic (mutation, skill `mutation-test`) và ghi kết quả vào mô tả PR.
 - Kiểm trình duyệt ở 360px và 1280px: không tràn trang, console sạch. PR #5–#9 ghi đã kiểm bằng Chrome headless nhưng lệnh và
-  script không được lưu lại trong repo.
+  script không được lưu lại trong repo; từ khi deploy: kiểm bằng link preview Vercel của PR.
 
 ## Lỗi đã biết liên quan cấu trúc
 
