@@ -212,3 +212,20 @@ test('(j) start ném lỗi: lỗi ném ra bình thường, không hiện màn h�
   assert.equal(alerts(root).length, 0, 'lỗi của start không phải lỗi tải: không hiện vùng role="alert"')
   assert.equal(buttons(root).length, 0, 'không có nút "Thử lại" cho lỗi của start')
 })
+
+test('(k) cấu trúc màn hình lỗi: #app có đúng một con .load-error-screen; nút nằm SAU vùng role="alert" và không nằm trong nó', async () => {
+  const { root } = createRoot()
+  const run = boot(root, [new TypeError('Failed to fetch')])
+  await run.done
+
+  assert.equal(root.children.length, 1, '#app chỉ có một con khi hiện lỗi')
+  const screen = root.children[0]
+  assert.ok(screen.classList.contains('load-error-screen'), `con duy nhất của #app phải là .load-error-screen, đang là <${screen.tagName.toLowerCase()} class="${screen.className}">`)
+
+  const alert = alerts(root)[0]
+  const button = buttons(root)[0]
+  assert.ok(alert.parentElement === screen, 'vùng role="alert" là con trực tiếp của .load-error-screen')
+  assert.ok(button.parentElement === screen, 'nút là con trực tiếp của .load-error-screen')
+  assert.ok(!alert.contains(button), 'nút không được nằm trong vùng role="alert"')
+  assert.ok(Array.prototype.indexOf.call(screen.children, alert) < Array.prototype.indexOf.call(screen.children, button), 'thứ tự DOM: vùng alert trước, nút sau')
+})
