@@ -20,6 +20,9 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Click thẻ thuật toán Sorting luôn tạo mảng mới (hành vi có từ trước).
 - Rà soát giao diện ở 360px (chưa khảo sát, đầu vào cho bước rà soát giao diện): chữ Big-O của linear probing, tiêu đề bảng mốc DFS,
   viền "ô đã dò" bị che ở PR #6/#9.
+- L3, màn hình lỗi tải template (`src/bootstrap.js`): khóa nút "Thử lại" bằng `disabled` làm focus rơi về `body` trong lúc đang tải
+  (đo Chrome 153: `activeElement` = `body` khi nút disabled, nút nhận lại focus khi tải thất bại). Cân nhắc `aria-disabled="true"` kèm chặn
+  click trong listener để nút giữ focus; phải sửa test (h) ở `tests/bootstrap.test.js` cùng lúc (hiện kiểm `button.disabled`).
 
 ## Dọn dẹp
 - Xóa khối placeholder chết `#category-placeholder` (`public/templates/app.html`, tham chiếu trong `src/navigation.js`, CSS
