@@ -806,18 +806,18 @@ button:disabled {
 
 /* Nhãn "Đang chèn" của Insertion Sort: luôn giữ chỗ để khung không đổi chiều cao giữa các bước */
 .insertion-key {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 10px;
-  min-height: 3em;
   margin: 14px 0 0;
   color: #858ba0;
   font-size: 12px;
   line-height: 1.5;
 }
 
+/* Dòng key luôn chiếm đúng một dòng, kể cả khi rỗng (is-idle): chiều cao nhãn không đổi giữa các bước ở mọi độ rộng. */
 .insertion-key strong {
+  display: block;
+  height: 1.5em;
+  overflow: hidden;
+  white-space: nowrap;
   color: var(--state-active);
   font-variant-numeric: tabular-nums;
 }
