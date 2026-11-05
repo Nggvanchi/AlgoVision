@@ -1363,8 +1363,8 @@ test('Searching chạy tự động thì dòng được tô đi theo từng tick
 
 // Chú giải màu của Tìm kiếm phải theo thuật toán đang chọn: Linear dùng is-checked (không bao giờ is-eliminated),
 // Binary dùng is-eliminated (không bao giờ is-checked). Các mục bị ẩn bằng thuộc tính hidden.
-const LEGEND_LINEAR = ['Đang kiểm tra', 'Đã kiểm tra', 'Tìm thấy']
-const LEGEND_BINARY = ['Đang kiểm tra', 'Đã loại bỏ', 'Tìm thấy']
+const LEGEND_LINEAR = ['Đang kiểm tra (viền dày, ▶)', 'Đã kiểm tra (viền nét đứt)', 'Tìm thấy (khung kép, ✓)']
+const LEGEND_BINARY = ['Đang kiểm tra (viền dày, ▶)', 'Đã loại bỏ (nét đứt, mờ)', 'Tìm thấy (khung kép, ✓)']
 
 const visibleLegend = (document) => [...document.querySelectorAll('#search-legend [data-algorithms]')]
   .filter((item) => !item.hidden)
@@ -1441,8 +1441,117 @@ test('chú giải Tìm kiếm khớp đúng các trạng thái ô mà từng thu
         }
       }
 
-      const legendStates = visibleLegend(document).map((label) => stateOf[label])
+      // Nhãn có phần ký hiệu trong ngoặc ('Đang kiểm tra (viền dày, ▶)'): so khớp theo tên trạng thái ở trước dấu ngoặc.
+      const legendStates = visibleLegend(document).map((label) => stateOf[label.split(' (')[0]])
       assert.deepEqual([...used].sort(), [...legendStates].sort(), `${algorithm}: trạng thái ô đã dùng so với chú giải đang hiện`)
+    } finally {
+      app.cleanup()
+    }
+  }
+})
+
+// --- Ký hiệu ngoài màu trong ô Tìm kiếm (R4): ▶ ở ô đang kiểm tra, ✓ ở ô tìm thấy ---
+const SEARCH_MARKER_OF = { 'is-current': '▶', 'is-found': '✓' }
+
+function searchCellMarkers(document) {
+  return [...document.querySelectorAll('#search-array .search-cell')].map((cell, index) => ({
+    index,
+    state: ['is-current', 'is-found', 'is-checked', 'is-eliminated'].find((name) => cell.classList.contains(name)) ?? 'plain',
+    // Glyph nằm ở data-marker (CSS vẽ bằng ::before): textContent của marker rỗng và textContent của ô vẫn là giá trị.
+    value: cell.textContent,
+    markers: [...cell.querySelectorAll('.search-cell-marker')].map((marker) => ({
+      text: marker.dataset.marker,
+      ariaHidden: marker.getAttribute('aria-hidden'),
+      ownText: marker.textContent,
+    })),
+  }))
+}
+
+test('Tìm kiếm: ở mọi bước, ▶ chỉ nằm ở ô đang kiểm tra và ✓ chỉ ở ô tìm thấy (Linear và Binary, nhiều mục tiêu)', async () => {
+  for (const algorithm of ['linear', 'binary']) {
+    const app = await setupSearching()
+
+    try {
+      const { document } = app
+
+      chooseAlgorithm(app, algorithm)
+
+      const values = [...document.querySelectorAll('#search-array .search-cell')].map((cell) => cell.textContent)
+
+      for (const target of [values[0], values[values.length - 1], values[Math.floor(values.length / 2)], '5']) {
+        setSearchTarget(app.document, target)
+        document.querySelector('#search-reset').click()
+
+        for (let step = 0; step < 30; step++) {
+          document.querySelector('#search-next').click()
+
+          for (const cell of searchCellMarkers(document)) {
+            const want = SEARCH_MARKER_OF[cell.state]
+
+            assert.equal(cell.value, values[cell.index], `${algorithm}: giá trị ô ${cell.index + 1} không dính ký hiệu`)
+
+            assert.deepEqual(
+              cell.markers,
+              want === undefined ? [] : [{ text: want, ariaHidden: 'true', ownText: '' }],
+              `${algorithm}, mục tiêu ${target}, bước ${step + 1}, ô ${cell.index + 1} (${cell.state})`,
+            )
+          }
+        }
+      }
+    } finally {
+      app.cleanup()
+    }
+  }
+})
+
+test('Linear Search: marker chuyển từ ▶ sang ✓ ở bước tìm thấy, không còn ▶ cũ', async () => {
+  const app = await setupSearching()
+
+  try {
+    const { document } = app
+    const values = [...document.querySelectorAll('#search-array .search-cell')].map((cell) => cell.textContent)
+    // Giá trị xuất hiện lần đầu ở vị trí >= 1 để có ít nhất một bước đang kiểm tra trước bước tìm thấy.
+    const foundAt = values.findIndex((value, index) => index >= 1 && values.indexOf(value) === index)
+
+    setSearchTarget(app.document, values[foundAt])
+
+    const markerList = () => searchCellMarkers(document)
+      .filter((cell) => cell.markers.length > 0)
+      .map((cell) => ({ index: cell.index, text: cell.markers[0].text }))
+
+    // Dò tay: bước k (k <= foundAt) con trỏ ▶ ở ô k; bước foundAt + 1 là bước tìm thấy, ✓ ở ô foundAt.
+    for (let step = 1; step <= foundAt; step++) {
+      document.querySelector('#search-next').click()
+      assert.deepEqual(markerList(), [{ index: step, text: '▶' }], `bước ${step}`)
+    }
+
+    document.querySelector('#search-next').click()
+    assert.deepEqual(markerList(), [{ index: foundAt, text: '✓' }], 'bước tìm thấy: chỉ còn ✓, không còn ▶')
+  } finally {
+    app.cleanup()
+  }
+})
+
+test('Tìm kiếm không thấy mục tiêu: bước cuối không còn marker nào (Linear và Binary)', async () => {
+  for (const algorithm of ['linear', 'binary']) {
+    const app = await setupSearching()
+
+    try {
+      const { document } = app
+
+      chooseAlgorithm(app, algorithm)
+      setSearchTarget(app.document, '5')
+
+      for (let step = 0; step < 30; step++) {
+        document.querySelector('#search-next').click()
+      }
+
+      assert.equal(document.querySelector('#search-result').textContent, 'Không tìm thấy giá trị.')
+      assert.deepEqual(
+        searchCellMarkers(document).filter((cell) => cell.markers.length > 0),
+        [],
+        `${algorithm}: không còn marker sau khi kết luận không tìm thấy`,
+      )
     } finally {
       app.cleanup()
     }

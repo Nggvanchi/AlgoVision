@@ -267,6 +267,20 @@ export function initSearching(options = {}) {
     return null
   }
 
+  // Ký hiệu ngoài màu: ▶ ở ô đang kiểm tra, ✓ ở ô tìm thấy (cùng bộ ký hiệu với BST, Hash Table, Graph).
+  // Glyph nằm ở data-marker và được CSS vẽ bằng ::before: textContent của ô vẫn đúng là giá trị (test và chép văn bản không dính ▶/✓).
+  const CELL_MARKERS = { 'is-current': '▶', 'is-found': '✓' }
+
+  function createCellMarker(symbol) {
+    const marker = document.createElement('span')
+
+    marker.className = 'search-cell-marker'
+    marker.setAttribute('aria-hidden', 'true')
+    marker.dataset.marker = symbol
+
+    return marker
+  }
+
   function renderSearchArray(step) {
     searchArrayElement.innerHTML = ''
 
@@ -281,6 +295,10 @@ export function initSearching(options = {}) {
 
       if (cellClass) {
         cell.classList.add(cellClass)
+      }
+
+      if (CELL_MARKERS[cellClass]) {
+        cell.appendChild(createCellMarker(CELL_MARKERS[cellClass]))
       }
 
       searchArrayElement.appendChild(cell)

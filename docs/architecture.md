@@ -61,12 +61,25 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
   không có trường `key` (Bubble, Selection) → `hidden`; `key` null (bước đầu, bước cuối) → class `is-idle` (`visibility: hidden`, vẫn chiếm chỗ);
   còn lại hiện chữ. Dòng key cao cố định `1.5em` để khung không nhảy giữa các bước. Nhãn không nằm trong `requiredElements`
   (thiếu thì bỏ qua). Mảng ở bước Dời của Insertion vẫn có bản sao (`85 85`) vì key được giữ riêng, không nằm trong mảng.
+- `src/sorting-bar-state.js`: `getBarStateClasses(step, index)` (hàm thuần) trả `is-comparing`, `is-swapped`, `is-sorted` của một cột; `renderBars` và test chú giải
+  dùng chung. `is-sorted` chỉ khi cột không comparing và không swapped; cột vừa so sánh vừa đổi chỗ có cả hai lớp và CSS cho `is-swapped` thắng.
+  Trạng thái thật mỗi thuật toán (đo bằng cách chạy generator): Bubble và Selection có comparing, swapped, sorted; Insertion có comparing (cả trong
+  vùng đã sắp xếp) và sorted, không bao giờ swapped.
+- Cue ngoài màu của cột (`style.css`, quanh `.array-bar.is-comparing`): nằm trong cột nên không chiếm chỗ. Đang so sánh = viền dày (`box-shadow` inset 2px),
+  đã đổi chỗ = viền nét đứt (hai dải gradient 2px, vì `outline: dashed` hiện như nét liền ở cột 7,6px = 24 cột ở 360px), đã sắp xếp = viền kép
+  (inset 1px). Màu cue `--bar-cue` gần đen: >= 4,78:1 với nền cột (viền ngoài của cột cách nền khung >= 8,5:1).
+- Chú giải `#sort-legend` (ngay dưới `#array-bars`, trước `#insertion-key`): mỗi mục có `data-algorithms` và `data-state`, mẫu `.sort-legend-swatch` vẽ đúng
+  kiểu viền. `selectAlgorithm` ẩn mục không thuộc thuật toán (Bubble và Selection 3 mục, Insertion 2 mục). Ở <= 700px `min-height: 78px` để chiều cao
+  không đổi giữa các thuật toán.
 - Lời giải thích Selection đánh số vị trí từ 1; hai loại bước dùng cặp cột tô khác nhau: So sánh `[minIndex, j]`, Tìm thấy nhỏ hơn `[i, minIndex]`
   (`selectionSort.js:45`, `:61`). `tests/fixtures/selection-sort-main.json` khóa số bước, mảng, bộ đếm, `comparing`, `pseudocodeLine` (không có `message`).
 - `linearSearch.js`, `binarySearch.js`: `(numbers, target)` → bước
   `{ index, mid, left, right, comparisons, foundIndex, finished, target, currentIndex, currentValue, pseudocodeLine, message }`.
   `currentIndex`/`currentValue` là phần tử vừa so sánh (Linear = i, Binary = mid), null ở bước 0 và bước kết luận "không tìm thấy".
   `index` của Linear là con trỏ tới phần tử sẽ xét tiếp (= currentIndex + 1).
+- Ô Tìm kiếm (`getCellClass`, `searching.js:259`): `is-found` > `is-current` > `is-eliminated` (Binary) > `is-checked` (Linear). Ô `is-current`/`is-found` có thêm
+  `span.search-cell-marker` (`aria-hidden`, `position: absolute` góc trên trái). Glyph `▶`/`✓` nằm ở `data-marker` và CSS vẽ bằng `::before`, nên
+  `textContent` của ô vẫn là giá trị (test đọc `cell.textContent`). Cue viền dùng lại màu chữ của ô để đạt >= 3:1 (6,37; 6,49; 5,81).
   Bất biến: `comparisons` tăng đúng 1 mỗi bước sau bước 0, trừ bước kết luận "không tìm thấy" (tăng 0).
 
 ## BST

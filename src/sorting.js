@@ -4,6 +4,7 @@ import { generateSelectionSortSteps, selectionSortPseudocode } from './algorithm
 import { generateInsertionSortSteps, insertionSortPseudocode } from './algorithms/insertionSort.js'
 import { createSimulationController } from './simulation-controller.js'
 import { renderPseudocode, highlightPseudocodeLine } from './pseudocode-view.js'
+import { getBarStateClasses } from './sorting-bar-state.js'
 
 export function initSorting(options = {}) {
   const arrayBars = document.querySelector('#array-bars')
@@ -29,6 +30,8 @@ export function initSorting(options = {}) {
   // thiếu nhãn không được làm hỏng Bubble và Selection (renderInsertionKey bỏ qua khi null).
   const insertionKeyLabel = document.querySelector('#insertion-key')
   const insertionKeyValue = document.querySelector('#insertion-key-value')
+  // Chú giải trạng thái cột: mỗi mục khai báo thuật toán dùng nó trong data-algorithms (như chú giải Tìm kiếm).
+  const sortLegendItems = document.querySelectorAll('#sort-legend [data-algorithms]')
 
   const algorithmCards = document.querySelectorAll('.algorithm-card[data-algorithm]')
   // Searching cũng có bảng Big-O cùng class: chỉ tìm trong section của Sorting.
@@ -171,22 +174,7 @@ export function initSorting(options = {}) {
       bar.style.height = `${number}%`
       bar.dataset.index = index
 
-      const isComparing = currentStep.comparing.includes(index)
-      const isSwapped = currentStep.swapped.includes(index)
-
-      if (isComparing) {
-        bar.classList.add('is-comparing')
-      }
-
-      if (isSwapped) {
-        bar.classList.add('is-swapped')
-      }
-
-      // Trạng thái hành động ưu tiên hơn trạng thái nền: Insertion Sort so sánh A[j]
-      // ngay trong vùng đã sắp xếp, nếu thêm is-sorted thì màu xanh che mất màu so sánh.
-      if (currentStep.sortedIndices.includes(index) && !isComparing && !isSwapped) {
-        bar.classList.add('is-sorted')
-      }
+      bar.classList.add(...getBarStateClasses(currentStep, index))
 
       value.className = 'bar-value'
       value.textContent = number
@@ -263,6 +251,10 @@ export function initSorting(options = {}) {
     learningDisadvantages.textContent = config.disadvantages
 
     complexityTitle.textContent = config.name.toUpperCase()
+
+    sortLegendItems.forEach((item) => {
+      item.hidden = !item.dataset.algorithms.split(' ').includes(algorithm)
+    })
 
     if (complexityCards.length >= 4) {
       complexityCards[0].textContent = config.best

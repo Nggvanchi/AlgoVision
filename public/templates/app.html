@@ -239,6 +239,28 @@
 
         <div class="array-bars" id="array-bars" role="img" aria-label="Biểu đồ các giá trị trong mảng"></div>
 
+        <div class="search-legend sort-legend" id="sort-legend">
+            <span data-algorithms="bubble selection" data-state="comparing">
+                <i class="sort-legend-swatch is-comparing"></i>
+                Đang so sánh (viền dày)
+            </span>
+
+            <span data-algorithms="insertion" data-state="comparing" hidden>
+                <i class="sort-legend-swatch is-comparing"></i>
+                Đang so sánh (viền dày, kể cả cột nằm trong đoạn đã sắp xếp)
+            </span>
+
+            <span data-algorithms="bubble selection" data-state="swapped">
+                <i class="sort-legend-swatch is-swapped"></i>
+                Đã đổi chỗ (viền nét đứt)
+            </span>
+
+            <span data-algorithms="bubble selection insertion" data-state="sorted">
+                <i class="sort-legend-swatch is-sorted"></i>
+                Đã sắp xếp (viền kép)
+            </span>
+        </div>
+
         <p class="insertion-key is-idle" id="insertion-key" hidden>
             <strong id="insertion-key-value"></strong>
             <span class="insertion-key-note">Giá trị này được giữ riêng và chỉ được ghi vào mảng ở bước chèn.</span>
@@ -525,21 +547,21 @@
         <div class="search-legend" id="search-legend">
             <span data-algorithms="linear binary">
                 <i class="search-legend-dot is-current"></i>
-                Đang kiểm tra
+                Đang kiểm tra (viền dày, ▶)
             </span>
 
             <span data-algorithms="binary">
                 <i class="search-legend-dot is-eliminated"></i>
-                Đã loại bỏ
+                Đã loại bỏ (nét đứt, mờ)
             </span>
 
             <span data-algorithms="linear">
                 <i class="search-legend-dot is-checked"></i>
-                Đã kiểm tra
+                Đã kiểm tra (viền nét đứt)
             </span>
             <span data-algorithms="linear binary">
                 <i class="search-legend-dot is-found"></i>
-                Tìm thấy
+                Tìm thấy (khung kép, ✓)
             </span>
         </div>
 

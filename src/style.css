@@ -22,6 +22,9 @@
   /* Màu trạng thái "đang xét": cột đang so sánh và dòng mã giả đang thực thi. */
   --state-active: #f6c76a;
 
+  /* Màu của cue ngoài màu trên cột Sắp xếp (viền dày, nét đứt, viền kép): gần đen, đạt >= 3:1 với mọi màu nền cột. */
+  --bar-cue: #0d0f15;
+
   --border-color: var(--border);
   --card-background: var(--panel);
   --text-secondary: var(--muted);
@@ -788,20 +791,53 @@ button:disabled {
   transform: none;
 }
 
-/* Màu của các trạng thái trong Bubble Sort */
-.array-bar.is-comparing {
+/* Trạng thái của cột Sắp xếp: không chỉ dựa vào màu. Cue nằm TRONG cột (inset), không chiếm thêm chỗ nên hai cột kề nhau
+   không chạm; đọc được cả ở cột 7,6px (24 cột ở 360px). Mẫu trong chú giải (.sort-legend-swatch) dùng cùng quy tắc.
+   Đang so sánh: viền dày (vòng trong 2px). Đã đổi chỗ: viền nét đứt. Đã sắp xếp: viền kép (vòng trong 1px).
+   Nét đứt dựng bằng gradient vì outline: dashed hiện như nét liền ở cột hẹp. */
+.array-bar.is-comparing,
+.sort-legend-swatch.is-comparing {
   border-color: var(--state-active);
   background: linear-gradient(180deg, var(--state-active), #c58a31);
+  box-shadow: inset 0 0 0 2px var(--bar-cue);
 }
 
-.array-bar.is-swapped {
+.array-bar.is-swapped,
+.sort-legend-swatch.is-swapped {
   border-color: #ff8c9b;
-  background: linear-gradient(180deg, #ff8c9b, #d84e70);
+  background:
+    repeating-linear-gradient(to bottom, var(--bar-cue) 0 4px, transparent 4px 8px) left 1px top / 2px 100% no-repeat,
+    repeating-linear-gradient(to bottom, var(--bar-cue) 0 4px, transparent 4px 8px) right 1px top / 2px 100% no-repeat,
+    linear-gradient(180deg, #ff8c9b, #d84e70);
+  /* Cột vừa so sánh vừa đổi chỗ có cả hai lớp: đã đổi chỗ thắng, không cộng thêm vòng của đang so sánh. */
+  box-shadow: none;
 }
 
-.array-bar.is-sorted {
+.array-bar.is-sorted,
+.sort-legend-swatch.is-sorted {
   border-color: #5ce0a0;
   background: linear-gradient(180deg, #5ce0a0, #219b70);
+  box-shadow: inset 0 0 0 1px var(--bar-cue);
+}
+
+/* Mẫu thu nhỏ của một cột trong chú giải trạng thái */
+.sort-legend-swatch {
+  display: inline-block;
+  flex: none;
+  width: 10px;
+  height: 18px;
+  border: 1px solid #a58cff55;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, #a78bfa, #7654d5);
+}
+
+/* Ở màn hẹp, chú giải của Bubble và Selection (3 mục) cao hơn của Insertion (2 mục): đo Chrome 78px so với 62px ở 360px.
+   Giữ chiều cao bằng nhau để các nút điều khiển không nhảy khi đổi thuật toán (ở 1280px cả hai cùng 18px). */
+@media (max-width: 700px) {
+  .sort-legend {
+    min-height: 78px;
+  }
 }
 
 /* Nhãn "Đang chèn" của Insertion Sort: luôn giữ chỗ để khung không đổi chiều cao giữa các bước */
@@ -1090,6 +1126,7 @@ button:disabled {
 }
 
 .search-cell {
+  position: relative;
   display: flex;
   flex: 1 0 48px;
   min-width: 48px;
@@ -1176,9 +1213,14 @@ button:disabled {
   border-style: dashed;
 }
 
+/* Trạng thái ô Tìm kiếm không chỉ dựa vào màu: đang kiểm tra viền dày + ▶, tìm thấy khung kép + ✓,
+   đã kiểm tra viền nét đứt (đã loại bỏ cũng nét đứt, thêm mờ). Cue nằm trong ô (inset) nên kích thước ô không đổi.
+   Màu cue dùng lại màu chữ của chính ô để đạt >= 3:1 với nền ô: #92400e trên #fef3c7 = 6,37; #166534 trên #dcfce7 = 6,49;
+   viền nét đứt #a1a1aa trên #27272a = 5,81 (4,24 sau khi mờ 0,8) (bản đầu dùng #d97706 = 2,86, #16a34a = 3,00, #71717a = 2,45 sau khi mờ). */
 .search-cell.is-checked {
   background: #27272a;
-  border-color: #71717a;
+  border-color: #a1a1aa;
+  border-style: dashed;
   color: #a1a1aa;
   opacity: 0.8;
 }
@@ -1187,14 +1229,29 @@ button:disabled {
   background: #fef3c7;
   border-color: #d97706;
   color: #92400e;
-  box-shadow: 0 0 0 2px rgb(245 158 11 / 20%);
+  box-shadow: inset 0 0 0 2px #92400e, 0 0 0 2px rgb(245 158 11 / 20%);
 }
 
 .search-cell.is-found {
   background: #dcfce7;
   border-color: #16a34a;
   color: #166534;
-  box-shadow: 0 0 0 2px rgb(34 197 94 / 20%);
+  box-shadow: inset 0 0 0 2px #dcfce7, inset 0 0 0 3px #166534, 0 0 0 2px rgb(34 197 94 / 20%);
+}
+
+/* ▶ / ✓ ở góc trên bên trái, không đè chữ giá trị căn giữa ô (ô tối thiểu 48px). */
+.search-cell-marker {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.search-cell-marker::before {
+  content: attr(data-marker);
 }
 
 .search-legend {
@@ -1222,21 +1279,27 @@ button:disabled {
   background: #64748b;
 }
 
+/* Mẫu trong chú giải vẽ đúng kiểu viền của ô tương ứng */
 .search-legend-dot.is-current {
-  background: #f59e0b;
+  background: #fef3c7;
+  box-shadow: inset 0 0 0 3px #92400e;
 }
 
 .search-legend-dot.is-eliminated {
+  border: 1px dashed #94a3b8;
   background: #64748b;
   opacity: 0.4;
 }
 
 .search-legend-dot.is-checked {
-  background: #71717a;
+  border: 1px dashed #a1a1aa;
+  background: #27272a;
 }
 
 .search-legend-dot.is-found {
-  background: #22c55e;
+  border: 1px solid #16a34a;
+  background: #dcfce7;
+  box-shadow: inset 0 0 0 2px #dcfce7, inset 0 0 0 3px #166534;
 }
 
 .search-range-panel {
