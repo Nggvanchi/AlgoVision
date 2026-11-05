@@ -129,7 +129,7 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
   Tính hash không phải phép so sánh. Bước kết luận (không tìm thấy, đã tồn tại, đầy) không tăng cả hai.
   Mỗi lần dò probing sinh hai bước: dòng `p = (i + j) mod m` rồi dòng quyết định (trống / tombstone / so khóa).
 - Xóa probing để lại tombstone; đặt về trống làm Search khóa phía sau báo nhầm (test: xóa 10 khỏi 3, 10, 17 rồi tìm 17).
-- `src/hash-table-layout.js:8-11`: mỗi ô một hàng 48px; chaining nối phần tử sang phải (40px + 16px mũi tên); `scrollTargetFor`
+- `src/hash-table-layout.js:8-11`: mỗi ô một hàng 48px; chaining nối phần tử sang phải (40px + khe `LINK_GAP` 10px, đường nối thẳng; test `tests/hash-table-layout.test.js` giữ chuỗi dài nhất của preset va chạm, m ∈ {5, 7, 11}, vừa nội dung khung 855px ở 1280px); `scrollTargetFor`
   chọn điểm cuộn (phần tử đang xét → vừa chèn/tìm thấy → ô đang xét), bỏ qua id lạ.
 - `src/hash-table.js`: `initHashTable`, `renderHashTable` (:346), `formatLoadFactor` (:170, dấu phẩy cố định), `collisionPresetKeys`
   (:175, 3 + k·m). Giới hạn UI (`hash-table.js:34-37`): khóa 0–99, m ∈ {5, 7, 11}, chaining 15 phần tử, probing m.
@@ -178,7 +178,7 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
   Số bước: danh sách 3R + D, ma trận 3R + R·V (`graphDfs.js:21`; giới hạn chốt `dfsStepLimit` với R = V); reads bằng BFS. `currentVertexId` luôn là đỉnh ngăn xếp
   (null khi rỗng); xám = `callStackIds`.
 - `src/graph-dfs-view.js`: ngăn xếp là cột dọc, đỉnh ở trên (`renderDfsStack` :98, đủ cao 8 khung), thứ tự thăm (:134), bảng
-  vào/ra/parent/trạng thái (:163), vòng chấm `is-open`, tô đọc dở (khung xám đọc tới và gồm con ở khung trên), `describeDfsCost` (:220)
+  vào/ra/parent/trạng thái (:163; 5 cột nên có luật CSS riêng `.graph-dfs-table` sau luật của BFS: padding ngang 4px, ô không xuống dòng, `min-width: min(264px, 100%)`), vòng chấm `is-open`, tô đọc dở (khung xám đọc tới và gồm con ở khung trên), `describeDfsCost` (:220)
   cho `#graph-dfs-cost`, thẻ số lần gọi và độ sâu tối đa tới bước này (`dfsMaxDepthSoFar` :198, suy từ `parentIds`).
 - `src/graph-traversal-view.js`: cạnh cây dùng chung BFS/DFS (`graph-bfs-view.js:33` export lại tên cũ).
 - Bất biến: `assertDfsStepInvariants` (ngăn xếp = đỉnh xám và là đường đi theo parentIds, mốc 1..k).

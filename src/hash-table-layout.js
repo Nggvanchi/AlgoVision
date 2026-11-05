@@ -7,7 +7,7 @@ export const HASH_TABLE_LAYOUT = Object.freeze({
   LABEL_WIDTH: 44,
   CELL_WIDTH: 40,
   CELL_HEIGHT: 32,
-  LINK_GAP: 16,
+  LINK_GAP: 10,
   ROW_HEIGHT: 48,
   PADDING: 8,
 })
