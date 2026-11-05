@@ -185,6 +185,33 @@ button:disabled {
   padding: 0 46px;
 }
 
+/* Đích của skip link nhận focus bằng mã (tabindex="-1"): không vẽ vòng focus quanh cả vùng nội dung. */
+.main-content:focus {
+  outline: none;
+}
+
+/* Skip link: ẩn ngoài màn hình cho tới khi nhận focus (không dùng display: none vì như vậy không focus được). */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 1000;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--background);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+  transform: translateY(0);
+}
+
 .topbar {
   display: flex;
   align-items: center;
@@ -417,6 +444,13 @@ button:disabled {
   font-size: 25px;
 }
 
+/* Tiêu đề Queue đổi từ h2 sang h3 (tránh hai h2 và bước nhảy h2 -> h4): giữ đúng số đo của h2 mặc định
+   (font-size 24px, margin 0,83em = 19,92px, đậm 700) để giao diện không đổi. */
+.visualizer-header h3 {
+  margin: 0.83em 0;
+  font-size: 1.5em;
+}
+
 .visualizer-placeholder h4 {
   margin: 19px 0 0;
   color: #e8e6f3;
@@ -603,7 +637,8 @@ button:disabled {
   gap: 16px;
 }
 
-.visualizer-heading h4 {
+/* #visualizer-title là h3 (dưới h2 tiêu đề trang) nhưng giữ nguyên kiểu cũ của h4: đã đo computed style trước và sau. */
+.visualizer-heading h3 {
   margin: 0;
   color: #e8e6f3;
   font-size: 16px;

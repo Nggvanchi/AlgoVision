@@ -40,10 +40,13 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
   (đo Chrome, mảng cố định 85, 47, 62…). `#simulation-message` nằm cuối khung nên chỉ làm trang dài thêm 22,8 px, không đẩy nút điều khiển;
   trước PR này vùng đó cũng đã dao động 48,8 ↔ 71,6 px giữa các bước. Chưa xử lý; cân nhắc `min-height` cho vùng message của Sắp xếp.
 - R12: khung bảng chaining cuộn ngang 21px ở 1280px với preset va chạm nặng (svg 876px, khung 871px, scrollWidth 892px).
-- R13, R14: `pre` mã giả và `.graph-panel-frame` cuộn ngang ở 360px nhận focus bằng Tab nhưng thiếu `aria-label`/`role` (khung mảng và danh sách
-  liên kết đã có nhãn); không có skip link, mỗi lần Tab đi qua 4 mục điều hướng trước nội dung. Gộp nhóm này: sau PR `fix/ui-copy-round-2`,
-  trang Sắp xếp đi từ h2 (tiêu đề trang) sang h4 (`#visualizer-title`) vì đã bỏ h3 "Khu vực mô phỏng"; khi đổi tag cần rà CSS chọn theo `h4`
-  trước.
+- Thanh bên là `<aside>` chứa 4 nút `button.nav-item`, chưa có `<nav aria-label>`: trình đọc màn hình không có landmark điều hướng chính (skip link
+  đã giúp người dùng bàn phím bỏ qua được, nhưng danh sách landmark chỉ có complementary và main).
+- Heading "Queue Visualizer" (đổi từ h2 sang h3 ở PR `fix/a11y-landmarks`) giữ kiểu mặc định của h2 cũ: 24px, đậm 700, margin 19,92px (luật
+  `.visualizer-header h3` ở `style.css`), lớn hơn các h3 16px của Array, Stack, Linked List, BST, Hash Table, Graph. Thống nhất kiểu cần quyết định thiết kế.
+- 20 vùng cuộn (`role="group"` + tên) không có `tabindex`: Chrome tự cho focus bàn phím khi nội dung tràn, Safari có thể không, khi đó người dùng
+  bàn phím không cuộn được `pre` mã giả, khung vẽ BST/Hash/Graph, các bảng. Thêm `tabindex="0"` sẽ tạo điểm dừng Tab cả ở khung không tràn;
+  cân nhắc gắn bằng JS chỉ khi nội dung tràn. Chưa kiểm trên Safari.
 - R5, R7: chưa thống nhất giữa các trang. Chỉ báo "k / N" chỉ có ở Sắp xếp (vd "2 / 97"); Tìm kiếm, BST, Hash, Graph chỉ có câu giải thích.
   Tốc độ là `<select>` ở Sắp xếp nhưng `<input type="range">` ở các trang khác.
 - R6: chưa có phím tắt nào (→, ←, Space, Enter, n, r, p không đổi gì). Cần thiết kế, tránh xung đột khi gõ vào ô nhập.

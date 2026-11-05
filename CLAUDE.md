@@ -19,8 +19,8 @@ Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so v�
 Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
 - Đo 2026-11-05 trên Windows (Node 24.21.0, pnpm 12.5.1).
-- `pnpm test`: 810/810 pass, 0 fail, 0 skipped, 10–18 s tùy tải máy (đo 10,2 s đến 18,0 s).
-- `pnpm build`: JS 141,98 kB (gzip 40,98 kB), CSS 43,59 kB (gzip 8,69 kB), HTML 0,63 kB.
+- `pnpm test`: 826/826 pass, 0 fail, 0 skipped, 10–25 s tùy tải máy (đo 10,2 s đến 24,3 s).
+- `pnpm build`: JS 141,98 kB (gzip 40,98 kB), CSS 43,99 kB (gzip 8,79 kB), HTML 0,63 kB.
 
 ## Kiến trúc
 
