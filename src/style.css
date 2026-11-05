@@ -22,6 +22,9 @@
   /* Màu trạng thái "đang xét": cột đang so sánh và dòng mã giả đang thực thi. */
   --state-active: #f6c76a;
 
+  /* Màu của cue ngoài màu trên cột Sắp xếp (viền dày, nét đứt, viền kép): gần đen, đạt >= 3:1 với mọi màu nền cột. */
+  --bar-cue: #0d0f15;
+
   --border-color: var(--border);
   --card-background: var(--panel);
   --text-secondary: var(--muted);
@@ -788,20 +791,45 @@ button:disabled {
   transform: none;
 }
 
-/* Màu của các trạng thái trong Bubble Sort */
-.array-bar.is-comparing {
+/* Trạng thái của cột Sắp xếp: không chỉ dựa vào màu. Cue nằm TRONG cột (inset), không chiếm thêm chỗ nên hai cột kề nhau
+   không chạm; đọc được cả ở cột 7,6px (24 cột ở 360px). Mẫu trong chú giải (.sort-legend-swatch) dùng cùng quy tắc.
+   Đang so sánh: viền dày (vòng trong 2px). Đã đổi chỗ: viền nét đứt. Đã sắp xếp: viền kép (vòng trong 1px).
+   Nét đứt dựng bằng gradient vì outline: dashed hiện như nét liền ở cột hẹp. */
+.array-bar.is-comparing,
+.sort-legend-swatch.is-comparing {
   border-color: var(--state-active);
   background: linear-gradient(180deg, var(--state-active), #c58a31);
+  box-shadow: inset 0 0 0 2px var(--bar-cue);
 }
 
-.array-bar.is-swapped {
+.array-bar.is-swapped,
+.sort-legend-swatch.is-swapped {
   border-color: #ff8c9b;
-  background: linear-gradient(180deg, #ff8c9b, #d84e70);
+  background:
+    repeating-linear-gradient(to bottom, var(--bar-cue) 0 4px, transparent 4px 8px) left 1px top / 2px 100% no-repeat,
+    repeating-linear-gradient(to bottom, var(--bar-cue) 0 4px, transparent 4px 8px) right 1px top / 2px 100% no-repeat,
+    linear-gradient(180deg, #ff8c9b, #d84e70);
+  /* Cột vừa so sánh vừa đổi chỗ có cả hai lớp: đã đổi chỗ thắng, không cộng thêm vòng của đang so sánh. */
+  box-shadow: none;
 }
 
-.array-bar.is-sorted {
+.array-bar.is-sorted,
+.sort-legend-swatch.is-sorted {
   border-color: #5ce0a0;
   background: linear-gradient(180deg, #5ce0a0, #219b70);
+  box-shadow: inset 0 0 0 1px var(--bar-cue);
+}
+
+/* Mẫu thu nhỏ của một cột trong chú giải trạng thái */
+.sort-legend-swatch {
+  display: inline-block;
+  flex: none;
+  width: 10px;
+  height: 18px;
+  border: 1px solid #a58cff55;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, #a78bfa, #7654d5);
 }
 
 /* Nhãn "Đang chèn" của Insertion Sort: luôn giữ chỗ để khung không đổi chiều cao giữa các bước */

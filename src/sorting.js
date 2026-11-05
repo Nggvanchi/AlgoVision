@@ -30,6 +30,8 @@ export function initSorting(options = {}) {
   // thiếu nhãn không được làm hỏng Bubble và Selection (renderInsertionKey bỏ qua khi null).
   const insertionKeyLabel = document.querySelector('#insertion-key')
   const insertionKeyValue = document.querySelector('#insertion-key-value')
+  // Chú giải trạng thái cột: mỗi mục khai báo thuật toán dùng nó trong data-algorithms (như chú giải Tìm kiếm).
+  const sortLegendItems = document.querySelectorAll('#sort-legend [data-algorithms]')
 
   const algorithmCards = document.querySelectorAll('.algorithm-card[data-algorithm]')
   // Searching cũng có bảng Big-O cùng class: chỉ tìm trong section của Sorting.
@@ -249,6 +251,10 @@ export function initSorting(options = {}) {
     learningDisadvantages.textContent = config.disadvantages
 
     complexityTitle.textContent = config.name.toUpperCase()
+
+    sortLegendItems.forEach((item) => {
+      item.hidden = !item.dataset.algorithms.split(' ').includes(algorithm)
+    })
 
     if (complexityCards.length >= 4) {
       complexityCards[0].textContent = config.best
