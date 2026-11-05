@@ -43,6 +43,7 @@ export function initSearching(options = {}) {
   const searchTitle = document.querySelector('#search-title')
   const searchDescription = document.querySelector('#search-description')
   const searchComplexity = document.querySelector('#search-complexity')
+  const searchLegendItems = document.querySelectorAll('#search-legend [data-algorithms]')
   const searchAlgorithmCards = document.querySelectorAll('[data-search-algorithm]')
   const searchArrayElement = document.querySelector('#search-array')
   const searchRangePanel = document.querySelector('#search-range-panel')
@@ -185,7 +186,15 @@ export function initSearching(options = {}) {
       card.classList.toggle('selected', card.dataset.searchAlgorithm === algorithm)
     })
 
+    renderLegend(algorithm)
     renderLearningPanel(info)
+  }
+
+  // Chú giải chỉ liệt kê trạng thái ô mà thuật toán đang chọn thực sự dùng (xem getCellClass).
+  function renderLegend(algorithm) {
+    searchLegendItems.forEach((item) => {
+      item.hidden = !item.dataset.algorithms.split(' ').includes(algorithm)
+    })
   }
 
   function renderLearningPanel(info) {

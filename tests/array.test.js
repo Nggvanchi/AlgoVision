@@ -106,3 +106,22 @@ test('từ chối dữ liệu đầu vào không phải mảng', () => {
     TypeError,
   )
 })
+
+// Xóa khi mảng rỗng nói rõ "đang rỗng" (như Stack/Queue); index sai trên mảng không rỗng giữ thông báo cũ.
+test('xóa khi mảng rỗng ném RangeError ghi rõ mảng đang rỗng', () => {
+  assert.throws(() => removeArrayElement([], 0), (error) => error instanceof RangeError && /đang rỗng/.test(error.message))
+})
+
+test('xóa index sai trên mảng không rỗng giữ thông báo "ngoài phạm vi", không nhắc rỗng', () => {
+  for (const index of [-1, 1, 5]) {
+    assert.throws(
+      () => removeArrayElement([10], index),
+      (error) => error instanceof RangeError && /Index nằm ngoài phạm vi cho phép/.test(error.message) && !/rỗng/.test(error.message),
+      `index ${index}`,
+    )
+  }
+})
+
+test('chèn index > 0 trên mảng rỗng vẫn ghi "ngoài phạm vi" (không đổi ngoài ca xóa)', () => {
+  assert.throws(() => insertArrayElement([], 1, 10), (error) => error instanceof RangeError && /Index nằm ngoài phạm vi cho phép/.test(error.message))
+})

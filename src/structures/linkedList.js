@@ -96,6 +96,10 @@ export class LinkedList {
   }
 
   removeAt(index) {
+    if (this.size === 0) {
+      throw new RangeError('Không thể xóa phần tử vì danh sách đang rỗng.')
+    }
+
     this.validateIndex(index)
 
     let removedNode

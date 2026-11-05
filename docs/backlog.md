@@ -23,6 +23,30 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - L3, màn hình lỗi tải template (`src/bootstrap.js`): khóa nút "Thử lại" bằng `disabled` làm focus rơi về `body` trong lúc đang tải
   (đo Chrome 153: `activeElement` = `body` khi nút disabled, nút nhận lại focus khi tải thất bại). Cân nhắc `aria-disabled="true"` kèm chặn
   click trong listener để nút giữ focus; phải sửa test (h) ở `tests/bootstrap.test.js` cùng lúc (hiện kiểm `button.disabled`).
+- Bảng mốc DFS ở 360px (R10): `th` chỉ có padding 1px nên "Đỉnh vào" và "parent trạng thái" dính nhau, nhãn "chưa thăm" xuống 2 dòng trong
+  từng hàng; bảng 272px vừa khít khung, không tràn (đo Chrome 153/Linux, bước DFS(D) trên đồ thị mẫu).
+- Hai mục 360px cũ KHÔNG tái hiện (Chrome 153/Linux): chữ Big-O trung bình của linear probing rộng 223px trong thẻ 226–296px ở 320/360/390px
+  nên luôn 1 dòng, chỉ xuống 2 dòng ở 1280px trong thẻ 177px (chấp nhận); viền "ô đã dò" nằm trọn trong khung (probing: lề ≥ 6px;
+  chaining preset 14 khóa: 0/14 ô bị cắt).
+- R3, R4: màu là cue duy nhất. Sắp xếp: thanh "đang so sánh" (cam) và "đã sắp xếp" (xanh) chỉ khác màu, không có viền, ký hiệu hay chú giải
+  trạng thái. Tìm kiếm: "đã kiểm tra" chỉ khác nền xám + opacity 0,8; "đã loại bỏ" có thêm viền nét đứt. Cần cue ngoài màu, dùng lại bộ ký hiệu
+  của BST/Hash/Graph (viền dày, vòng kép, nét đứt, ▶, ✓).
+- R8, R9: tô ô không khớp lời giải thích (không lệch bước: Bubble 91, Selection 102, Insertion 92 bước đã duyệt). Insertion: "So sánh 85 với
+  giá trị cần chèn 47" chỉ tô 85, và ở bước "Dời 85 sang phải" mảng hiện `85 85` còn 47 biến mất. Selection: bước "Tìm thấy nhỏ hơn" tô (i, min mới),
+  bước "So sánh" tô (min, j), không có chú thích phân biệt.
+- R12: khung bảng chaining cuộn ngang 21px ở 1280px với preset va chạm nặng (svg 876px, khung 871px, scrollWidth 892px).
+- R13, R14: `pre` mã giả và `.graph-panel-frame` cuộn ngang ở 360px nhận focus bằng Tab nhưng thiếu `aria-label`/`role` (khung mảng và danh sách
+  liên kết đã có nhãn); không có skip link, mỗi lần Tab đi qua 4 mục điều hướng trước nội dung. Gộp nhóm này: sau PR `fix/ui-copy-round-2`,
+  trang Sắp xếp đi từ h2 (tiêu đề trang) sang h4 (`#visualizer-title`) vì đã bỏ h3 "Khu vực mô phỏng"; khi đổi tag cần rà CSS chọn theo `h4`
+  trước.
+- R5, R7: chưa thống nhất giữa các trang. Chỉ báo "k / N" chỉ có ở Sắp xếp (vd "2 / 97"); Tìm kiếm, BST, Hash, Graph chỉ có câu giải thích.
+  Tốc độ là `<select>` ở Sắp xếp nhưng `<input type="range">` ở các trang khác.
+- R6: chưa có phím tắt nào (→, ←, Space, Enter, n, r, p không đổi gì). Cần thiết kế, tránh xung đột khi gõ vào ô nhập.
+- R17: nút/ô nhập cao 38–42px ở 360px (BST, Hash: "Quay lại" 38, ô chọn 42, ô nhập 40, "Thực hiện" 39, nút preset 40; thanh tốc độ 16px);
+  trên mức tối thiểu 24px của WCAG 2.2, dưới mức khuyến nghị 44px.
+- R18: Sắp xếp không cho nhập mảng hay chọn preset (chỉ "Tạo mảng mới" ngẫu nhiên), nên không thử được mảng đã sắp xếp, đảo ngược, trùng toàn bộ.
+- `document.title` (`index.html:10`, "AlgoVision - Trực quan hóa thuật toán") và breadcrumb (`app.html:44`, "Không gian học tập / Trực quan hóa")
+  chưa đổi theo trang: đúng với mọi trang nhưng không nói đang ở đâu.
 
 ## Dọn dẹp
 - Xóa khối placeholder chết `#category-placeholder` (`public/templates/app.html`, tham chiếu trong `src/navigation.js`, CSS
