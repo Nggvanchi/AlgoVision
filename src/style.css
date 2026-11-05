@@ -185,6 +185,33 @@ button:disabled {
   padding: 0 46px;
 }
 
+/* Đích của skip link nhận focus bằng mã (tabindex="-1"): không vẽ vòng focus quanh cả vùng nội dung. */
+.main-content:focus {
+  outline: none;
+}
+
+/* Skip link: ẩn ngoài màn hình cho tới khi nhận focus (không dùng display: none vì như vậy không focus được). */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 1000;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--background);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+  transform: translateY(0);
+}
+
 .topbar {
   display: flex;
   align-items: center;
