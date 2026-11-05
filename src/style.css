@@ -3164,3 +3164,20 @@ button.dashboard-card:hover {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Màn hình lỗi khi không tải được app.html (src/bootstrap.js) */
+.load-error {
+  max-width: 480px;
+  margin: 20vh auto 16px;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.load-error-detail {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.load-error-retry {
+  margin: 0 auto;
+}
