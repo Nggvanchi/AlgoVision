@@ -211,3 +211,30 @@ test('formatBfsResult và formatDequeueCount', () => {
   assert.equal(bfsView.formatDequeueCount(steps.at(-1)), '4')
   assert.equal(bfsView.formatDequeueCount({ operation: 'neighbors' }), '—')
 })
+
+// describeBfsCost theo từng trạng thái hiển thị: bước 0 (chưa đánh dấu đỉnh nào) → "chưa bắt đầu",
+// từ bước 1 trở đi → "đang chạy", bước cuối → kết luận Big-O. Nhánh "đã kết thúc" xét trước nhánh bước 0.
+test('describeBfsCost bước 0: "chưa bắt đầu", không nói "đang chạy" (danh sách kề và ma trận kề)', () => {
+  const list = bfsFromA('list').steps
+  const matrix = bfsFromA('matrix').steps
+  assert.equal(bfsView.describeBfsCost(list[0]), 'BFS từ A chưa bắt đầu (danh sách kề): 0 lần dequeue, đã đọc 0 phần tử.')
+  assert.equal(bfsView.describeBfsCost(matrix[0]), 'BFS từ A chưa bắt đầu (ma trận kề): 0 lần dequeue, đã đọc 0 ô.')
+})
+
+test('describeBfsCost bước 1 (đã đánh dấu nguồn, chưa dequeue): đã bắt đầu nên là "đang chạy"', () => {
+  assert.equal(bfsView.describeBfsCost(bfsFromA('list').steps[1]),
+    'BFS từ A đang chạy (danh sách kề): đã 0 lần dequeue, đã đọc 0 phần tử.')
+  assert.equal(bfsView.describeBfsCost(bfsFromA('matrix').steps[1]),
+    'BFS từ A đang chạy (ma trận kề): đã 0 lần dequeue, đã đọc 0 ô.')
+})
+
+test('describeBfsCost bước đã kết thúc mà chưa có đỉnh nào (đồ thị rỗng / nguồn lạ): kết luận Big-O, không "chưa bắt đầu"', () => {
+  for (const representation of ['list', 'matrix']) {
+    const last = bfsFromA(representation).steps.at(-1)
+    const empty = { ...last, graph: buildGraph(false, 0, []), sourceId: 'khong-ton-tai', visitedIds: [], orderIds: [], reads: 0 }
+    const text = bfsView.describeBfsCost(empty)
+    assert.ok(!/chưa bắt đầu|đang chạy/.test(text), `bước đã kết thúc không được ghi trạng thái chạy dở: "${text}"`)
+    assert.ok(text.includes(representation === 'list' ? 'O(V + E)' : 'O(V²)'), `phải có kết luận Big-O: "${text}"`)
+    assert.ok(text.includes('R = 0 lần dequeue'), `phải ghi R = 0: "${text}"`)
+  }
+})

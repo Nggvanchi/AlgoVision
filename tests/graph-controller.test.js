@@ -1392,3 +1392,18 @@ test('Thẻ độ sâu ở bước cuối bằng result.maxStackDepth: Cây 3, K
     }
   })
 })
+
+test('Learning Panel BFS/DFS vừa bấm Thực hiện (bước 0): ghi "chưa bắt đầu", sang bước 1 mới là "đang chạy"', () => {
+  withGraph((ui) => {
+    ui.query('bfs', 'A')
+    assert.equal(ui.text('#graph-bfs-cost'), 'BFS từ A chưa bắt đầu (danh sách kề): 0 lần dequeue, đã đọc 0 phần tử.')
+    ui.$('#graph-next').click()
+    assert.equal(ui.text('#graph-bfs-cost'), 'BFS từ A đang chạy (danh sách kề): đã 0 lần dequeue, đã đọc 0 phần tử.')
+
+    ui.query('dfs', 'A')
+    assert.equal(ui.text('#graph-dfs-cost'),
+      'DFS từ A chưa bắt đầu (danh sách kề): 0 lần gọi, đã đọc 0 phần tử, ngăn xếp gọi chưa có khung nào.')
+    ui.$('#graph-next').click()
+    assert.match(ui.text('#graph-dfs-cost'), /^DFS từ A đang chạy \(danh sách kề\): đã 1 lần gọi/)
+  })
+})

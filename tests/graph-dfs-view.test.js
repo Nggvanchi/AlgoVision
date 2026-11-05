@@ -255,3 +255,32 @@ test('formatDfsResult', () => {
   assert.equal(dfsView.formatDfsResult(steps[5]), 'Chưa có')
   assert.equal(dfsView.formatDfsResult(steps.at(-1)), 'Tới được 4/7 đỉnh: A, B, C, D')
 })
+
+// describeDfsCost theo từng trạng thái hiển thị: bước 0 → "chưa bắt đầu", từ bước 1 → "đang chạy", bước cuối → Big-O.
+// Nhánh "đã kết thúc" xét trước nhánh bước 0.
+test('describeDfsCost bước 0: "chưa bắt đầu", không nói "đang chạy" (danh sách kề và ma trận kề)', () => {
+  const list = dfsFromA(SAMPLE_PAIRS, 'list').steps
+  const matrix = dfsFromA(SAMPLE_PAIRS, 'matrix').steps
+  assert.equal(dfsView.describeDfsCost(list[0]),
+    'DFS từ A chưa bắt đầu (danh sách kề): 0 lần gọi, đã đọc 0 phần tử, ngăn xếp gọi chưa có khung nào.')
+  assert.equal(dfsView.describeDfsCost(matrix[0]),
+    'DFS từ A chưa bắt đầu (ma trận kề): 0 lần gọi, đã đọc 0 ô, ngăn xếp gọi chưa có khung nào.')
+})
+
+test('describeDfsCost bước 1 (đã vào nguồn): đã bắt đầu nên là "đang chạy"', () => {
+  assert.equal(dfsView.describeDfsCost(dfsFromA(SAMPLE_PAIRS, 'list').steps[1]),
+    'DFS từ A đang chạy (danh sách kề): đã 1 lần gọi, đã đọc 0 phần tử, ngăn xếp gọi sâu nhất tới bước này 1 khung.')
+  assert.equal(dfsView.describeDfsCost(dfsFromA(SAMPLE_PAIRS, 'matrix').steps[1]),
+    'DFS từ A đang chạy (ma trận kề): đã 1 lần gọi, đã đọc 0 ô, ngăn xếp gọi sâu nhất tới bước này 1 khung.')
+})
+
+test('describeDfsCost bước đã kết thúc mà chưa có đỉnh nào (đồ thị rỗng / nguồn lạ): kết luận Big-O, không "chưa bắt đầu"', () => {
+  for (const representation of ['list', 'matrix']) {
+    const last = dfsFromA(SAMPLE_PAIRS, representation).steps.at(-1)
+    const empty = { ...last, graph: buildGraph(false, 0, []), sourceId: 'khong-ton-tai', visitedIds: [], parentIds: {}, reads: 0 }
+    const text = dfsView.describeDfsCost(empty)
+    assert.ok(!/chưa bắt đầu|đang chạy/.test(text), `bước đã kết thúc không được ghi trạng thái chạy dở: "${text}"`)
+    assert.ok(text.includes(representation === 'list' ? 'O(V + E)' : 'O(V²)'), `phải có kết luận Big-O: "${text}"`)
+    assert.ok(text.includes('R = 0 lần gọi'), `phải ghi R = 0: "${text}"`)
+  }
+})
