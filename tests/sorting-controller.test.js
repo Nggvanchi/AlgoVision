@@ -4,6 +4,10 @@ import assert from 'node:assert/strict'
 import { Window } from 'happy-dom'
 import { readFile } from 'node:fs/promises'
 import { createFakeScheduler } from './helpers/fake-scheduler.js'
+import { generateBubbleSortSteps } from '../src/algorithms/bubbleSort.js'
+import { generateSelectionSortSteps } from '../src/algorithms/selectionSort.js'
+import { generateInsertionSortSteps } from '../src/algorithms/insertionSort.js'
+import { getBarStateClasses } from '../src/sorting-bar-state.js'
 
 const templatePath = new URL(
   '../public/templates/app.html',
@@ -531,5 +535,112 @@ test('Bubble Sort và Selection Sort không bao giờ hiện nhãn "Đang chèn"
         clickStep(document)
       }
     }
+  })
+})
+
+// --- Chú giải trạng thái của Sắp xếp (R3) ---
+const sortLegendGenerators = {
+  bubble: generateBubbleSortSteps,
+  selection: generateSelectionSortSteps,
+  insertion: generateInsertionSortSteps,
+}
+
+const legendInputs = [
+  [50, 20, 40, 10, 30],
+  [30, 20, 10],
+  [5, 2, 8, 1, 3],
+  [4, 2, 4, 1, 2],
+  [1, 2, 3, 4, 5],
+  [9, 8, 7, 6, 5, 4, 3, 2, 1],
+]
+
+// Trạng thái cột mà một thuật toán thực sự vẽ: chạy generator rồi hỏi CHÍNH hàm getBarStateClasses mà renderBars dùng,
+// không viết lại logic xác định lớp trong test.
+function usedBarStates(generateSteps) {
+  const used = new Set()
+
+  for (const input of legendInputs) {
+    for (const step of generateSteps(input)) {
+      step.array.forEach((_, index) => {
+        getBarStateClasses(step, index).forEach((name) => used.add(name))
+      })
+    }
+  }
+
+  return used
+}
+
+function visibleSortLegend(document) {
+  return [...document.querySelectorAll('#sort-legend [data-algorithms]')]
+    .filter((item) => !item.hidden)
+    .map((item) => ({
+      state: item.dataset.state,
+      swatch: item.querySelector('.sort-legend-swatch')?.className ?? null,
+      text: item.textContent.replace(/\s+/g, ' ').trim(),
+    }))
+}
+
+const SORT_LEGEND_COMPARE_SWAP = [
+  'Đang so sánh (viền dày)',
+  'Đã đổi chỗ (viền nét đứt)',
+  'Đã sắp xếp (viền kép)',
+]
+const SORT_LEGEND_INSERTION = [
+  'Đang so sánh (viền dày, kể cả cột nằm trong đoạn đã sắp xếp)',
+  'Đã sắp xếp (viền kép)',
+]
+
+test('chú giải Sắp xếp khớp đúng các trạng thái cột mà từng thuật toán thực sự vẽ (từ generator + getBarStateClasses)', async () => {
+  await withSortingDom(({ document }) => {
+    for (const { key } of sortingAlgorithms) {
+      clickSortingCard(document, key)
+
+      const legend = visibleSortLegend(document)
+      const used = [...usedBarStates(sortLegendGenerators[key])].sort()
+
+      assert.deepEqual(
+        legend.map((item) => `is-${item.state}`).sort(),
+        used,
+        `${key}: trạng thái được vẽ so với mục chú giải đang hiện`,
+      )
+
+      for (const item of legend) {
+        assert.equal(item.swatch, `sort-legend-swatch is-${item.state}`, `${key}: mẫu của mục ${item.state}`)
+      }
+    }
+  })
+})
+
+test('chú giải Sắp xếp có chữ và nêu kiểu viền: Bubble và Selection 3 mục, Insertion 2 mục (không có đã đổi chỗ)', async () => {
+  await withSortingDom(({ document }) => {
+    const textsOf = () => visibleSortLegend(document).map((item) => item.text)
+
+    assert.deepEqual(textsOf(), SORT_LEGEND_COMPARE_SWAP, 'mặc định là Bubble Sort')
+    clickSortingCard(document, 'selection')
+    assert.deepEqual(textsOf(), SORT_LEGEND_COMPARE_SWAP)
+    clickSortingCard(document, 'insertion')
+    assert.deepEqual(textsOf(), SORT_LEGEND_INSERTION)
+  })
+})
+
+test('chú giải Sắp xếp không rò khi đổi thuật toán qua lại nhiều lần', async () => {
+  await withSortingDom(({ document }) => {
+    const expected = { bubble: SORT_LEGEND_COMPARE_SWAP, selection: SORT_LEGEND_COMPARE_SWAP, insertion: SORT_LEGEND_INSERTION }
+
+    for (const key of ['insertion', 'bubble', 'bubble', 'insertion', 'selection', 'insertion', 'selection', 'bubble']) {
+      clickSortingCard(document, key)
+      clickStep(document)
+      assert.deepEqual(visibleSortLegend(document).map((item) => item.text), expected[key], key)
+    }
+  })
+})
+
+test('chú giải Sắp xếp nằm ngay dưới #array-bars và trước #insertion-key', async () => {
+  await withSortingDom(({ document }) => {
+    const legend = document.querySelector('#sort-legend')
+
+    assert.ok(legend !== null, 'thiếu #sort-legend')
+    assert.equal(document.querySelector('#array-bars').nextElementSibling?.id, 'sort-legend')
+    assert.equal(legend.nextElementSibling?.id, 'insertion-key')
   })
 })
