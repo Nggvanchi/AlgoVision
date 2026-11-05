@@ -375,8 +375,8 @@
                 </article>
 
                 <article class="learning-block">
-                    <h4>Mã giả</h4>
-                    <pre><code id="learning-pseudocode"></code></pre>
+                    <h4 id="learning-pseudocode-title">Mã giả</h4>
+                    <pre role="group" aria-labelledby="learning-pseudocode-title"><code id="learning-pseudocode"></code></pre>
                 </article>
 
                 <article class="learning-block">
@@ -498,7 +498,7 @@
 
         <div id="search-comparison" class="search-comparison" hidden>
         <h3>Kết quả so sánh</h3>
-        <div id="comparison-array"></div>
+        <div id="comparison-array" role="group" aria-label="Mảng đã sắp xếp dùng để so sánh hai thuật toán"></div>
 
         <div class="comparison-grid">
             <div class="comparison-card">
@@ -662,8 +662,8 @@
                 </article>
 
                 <article class="learning-block">
-                    <h4>Mã giả</h4>
-                    <pre><code id="search-learning-pseudocode"></code></pre>
+                    <h4 id="search-learning-pseudocode-title">Mã giả</h4>
+                    <pre role="group" aria-labelledby="search-learning-pseudocode-title"><code id="search-learning-pseudocode"></code></pre>
                 </article>
 
                 <article class="learning-block">
@@ -827,6 +827,7 @@
         </div>
 
         <div id="array-visualizer" class="array-visualizer"
+             role="group"
              aria-label="Các phần tử trong mảng"></div>
 
         <p id="array-status" class="array-status" role="status" aria-live="polite">
@@ -915,6 +916,7 @@
         <div
         id="stack-visualizer"
         class="stack-visualizer"
+        role="group"
         aria-label="Các phần tử trong Stack"
         ></div>
 
@@ -1003,6 +1005,8 @@
                 <div
                     id="queue-visualizer"
                     class="queue-visualizer"
+                    role="group"
+                    aria-label="Các phần tử trong Queue"
                     aria-live="polite"></div>
 
                 <p id="queue-status" class="queue-status" role="status">
@@ -1108,6 +1112,7 @@
             <div
                 id="linked-list-visualizer"
                 class="linked-list-visualizer"
+                role="group"
                 aria-label="Các nút trong danh sách liên kết đơn"
             ></div>
 
@@ -1289,7 +1294,7 @@
         <span id="bst-speed-value">700 ms</span>
         </div>
 
-        <div class="bst-tree-frame" id="bst-tree-frame">
+        <div class="bst-tree-frame" id="bst-tree-frame" role="group" aria-label="Hình vẽ cây BST">
         <p class="bst-empty" id="bst-empty" hidden>Cây đang rỗng.</p>
         <svg
             id="bst-tree"
@@ -1364,7 +1369,7 @@
         <div class="learning-content bst-code-panel">
             <article class="learning-block">
                 <h4 id="bst-pseudocode-title">Mã giả: Insert</h4>
-                <pre><code id="bst-pseudocode"></code></pre>
+                <pre role="group" aria-labelledby="bst-pseudocode-title"><code id="bst-pseudocode"></code></pre>
             </article>
         </div>
 
@@ -1523,7 +1528,7 @@
         <span id="hash-table-speed-value">700 ms</span>
         </div>
 
-        <div class="hash-table-frame" id="hash-table-frame">
+        <div class="hash-table-frame" id="hash-table-frame" role="group" aria-label="Hình vẽ bảng băm">
         <svg
             id="hash-table-svg"
             class="hash-table-svg"
@@ -1605,7 +1610,7 @@
         <div class="learning-content bst-code-panel">
             <article class="learning-block">
                 <h4 id="hash-table-pseudocode-title">Mã giả: Insert (chaining)</h4>
-                <pre><code id="hash-table-pseudocode"></code></pre>
+                <pre role="group" aria-labelledby="hash-table-pseudocode-title"><code id="hash-table-pseudocode"></code></pre>
             </article>
         </div>
 
@@ -1774,7 +1779,7 @@
         <span id="graph-speed-value">700 ms</span>
         </div>
 
-        <div class="graph-frame" id="graph-frame">
+        <div class="graph-frame" id="graph-frame" role="group" aria-label="Hình vẽ đồ thị">
         <svg
             id="graph-svg"
             class="graph-svg"
@@ -1786,12 +1791,12 @@
 
         <section class="graph-bfs-panel" id="graph-bfs-panel" aria-label="Trạng thái BFS" hidden>
             <h4>Hàng đợi Q <span class="graph-panel-badge">đầu bên trái</span></h4>
-            <div class="graph-bfs-queue-frame" id="graph-bfs-queue-frame">
+            <div class="graph-bfs-queue-frame" id="graph-bfs-queue-frame" role="group" aria-label="Hàng đợi Q của BFS">
                 <ol class="graph-bfs-queue" id="graph-bfs-queue" aria-label="Hàng đợi"></ol>
             </div>
             <h4>Đã lấy khỏi hàng đợi (đã xử lý)</h4>
             <ol class="graph-bfs-order" id="graph-bfs-order" aria-label="Đã lấy khỏi hàng đợi (đã xử lý)"></ol>
-            <div class="graph-panel-frame">
+            <div class="graph-panel-frame" role="group" aria-label="Bảng khoảng cách và đỉnh cha">
                 <table class="graph-matrix graph-bfs-table" id="graph-bfs-table" aria-label="Khoảng cách và đỉnh cha"></table>
             </div>
         </section>
@@ -1800,14 +1805,14 @@
             <div class="graph-dfs-layout">
                 <div class="graph-dfs-stack-column">
                     <h4>Ngăn xếp gọi <span class="graph-panel-badge">đỉnh ở trên</span></h4>
-                    <div class="graph-dfs-stack-frame" id="graph-dfs-stack-frame">
+                    <div class="graph-dfs-stack-frame" id="graph-dfs-stack-frame" role="group" aria-label="Ngăn xếp gọi của DFS">
                         <ol class="graph-dfs-stack" id="graph-dfs-stack" aria-label="Ngăn xếp gọi"></ol>
                     </div>
                 </div>
                 <div class="graph-dfs-detail-column">
                     <h4>Thứ tự thăm (lúc vào)</h4>
                     <ol class="graph-bfs-order graph-dfs-order" id="graph-dfs-order" aria-label="Thứ tự thăm (lúc vào)"></ol>
-                    <div class="graph-panel-frame">
+                    <div class="graph-panel-frame" role="group" aria-label="Bảng mốc vào, mốc ra và đỉnh cha">
                         <table class="graph-matrix graph-bfs-table graph-dfs-table" id="graph-dfs-table" aria-label="Mốc vào, mốc ra và đỉnh cha"></table>
                     </div>
                 </div>
@@ -1817,14 +1822,14 @@
         <div class="graph-representations">
             <section class="graph-representation-panel" id="graph-list-panel">
                 <h4>Danh sách kề <span class="graph-panel-badge"></span></h4>
-                <div class="graph-panel-frame">
+                <div class="graph-panel-frame" role="group" aria-label="Danh sách kề">
                     <ul class="graph-adjacency-list" id="graph-adjacency-list" aria-label="Danh sách kề"></ul>
                 </div>
             </section>
 
             <section class="graph-representation-panel" id="graph-matrix-panel">
                 <h4>Ma trận kề <span class="graph-panel-badge"></span></h4>
-                <div class="graph-panel-frame">
+                <div class="graph-panel-frame" role="group" aria-label="Ma trận kề">
                     <table class="graph-matrix" id="graph-adjacency-matrix" aria-label="Ma trận kề"></table>
                 </div>
             </section>
@@ -1901,7 +1906,7 @@
         <div class="learning-content bst-code-panel">
             <article class="learning-block">
                 <h4 id="graph-pseudocode-title">Mã giả: Kiểm tra kề (danh sách kề)</h4>
-                <pre><code id="graph-pseudocode"></code></pre>
+                <pre role="group" aria-labelledby="graph-pseudocode-title"><code id="graph-pseudocode"></code></pre>
             </article>
         </div>
 
@@ -1924,7 +1929,7 @@
         </div>
         <p class="bst-hint" id="graph-density"></p>
 
-        <div class="graph-panel-frame">
+        <div class="graph-panel-frame" role="group" aria-label="Bảng chi phí thời gian và bộ nhớ theo cách biểu diễn">
             <table class="graph-complexity-table" id="graph-complexity-table">
                 <caption>Chi phí thời gian và bộ nhớ theo cách biểu diễn (deg(u) ≤ V − 1)</caption>
                 <thead>
