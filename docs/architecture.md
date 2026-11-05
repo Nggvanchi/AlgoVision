@@ -51,6 +51,21 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
 | paused | bật ("Tiếp tục") | tắt | bật | bật nếu bước > 0 | bật |
 | completed | bật ("Chạy lại", từ đầu) | tắt | tắt | bật nếu bước > 0 | bật |
 
+## Truy cập: landmark, heading, vùng cuộn
+
+- `app.html` bắt đầu bằng `a.skip-link[href="#main-content"]`, rồi `.app-layout`. `<main class="main-content" id="main-content" tabindex="-1">` là đích: không bao giờ bị
+  `hidden` (`navigation.js` chỉ bật tắt các `section` bên trong), nhận focus bằng mã và bỏ vòng focus (`.main-content:focus`). Skip link ẩn bằng
+  `position: fixed` + `transform` ra ngoài màn hình (không `display: none`, vì như vậy không focus được), hiện ở góc trên trái khi focus (phủ logo và h1).
+  Neo thuần, không JS: URL thêm `#main-content`, nút Back xóa hash và app giữ nguyên trang. Màn hình lỗi tải template (`bootstrap.js`) không có skip link.
+- Heading: h1 là "AlgoVision" ở thanh bên; mỗi màn hình đúng một h2 (`.page-heading h2`, hoặc h2 hero ở dashboard); cấp không nhảy quá một bậc
+  (`tests/a11y-headings.test.js`). `#visualizer-title` (Sắp xếp) và "Queue Visualizer" là h3. Luật CSS theo thẻ heading phải đổi cùng lúc với thẻ:
+  `.visualizer-heading h3`, `.visualizer-header h3`.
+- Vùng cuộn: mọi luật `overflow` auto/scroll trong `style.css` ứng với 20 phần tử (5 `pre` mã giả, `#comparison-array`, khung mảng/Stack/Queue/Linked List,
+  khung vẽ BST/Hash/Graph, 2 khung hàng đợi/ngăn xếp của BFS/DFS, 5 `.graph-panel-frame`). Mỗi vùng có `role="group"` và tên: `aria-label` tĩnh,
+  hoặc `aria-labelledby` trỏ tiêu đề h4 (5 `pre`; BST/Hash/Graph đổi chữ theo thao tác). Không đặt `tabindex`: Chrome tự cho focus khi tràn.
+  `tests/a11y-scroll-regions.test.js` tìm vùng cuộn từ chính `style.css` (`tests/helpers/css-scroll-selectors.js`) và có bảng đặc tả 20 vùng: thêm vùng cuộn mới
+  phải thêm nhãn và một dòng vào bảng đó, nếu không test đỏ.
+
 ## Sorting và Searching
 
 - `src/algorithms/*Sort.js`: bước `{ array, comparing, swapped, sortedIndices, comparisons, swaps, shifts?, key?, pseudocodeLine, message, finished? }`
@@ -179,6 +194,8 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
 - Test Big-O với số cụ thể: `tests/complexity.test.js`, `bst-complexity`, `hash-table-complexity`, `hash-table-probing-complexity`,
   `graph-complexity`. Quy mô lớn: đường thẳng/sao 300 đỉnh, ma trận 50 đỉnh vì mỗi bước giữ bản sao đồ thị
   (`tests/graph-complexity.test.js:112-116,170-208,267`).
+- `tests/helpers/app-dom.js`: `withFullApp` dựng toàn bộ app như `main.js` (mọi `init*`, scheduler giả) và `SCREENS` mở 16 màn hình thật bằng click; dùng cho test
+  nhìn cả trang (landmark, heading, vùng cuộn). Test của một module vẫn dùng helper riêng.
 - `deepFreeze` để bắt sửa nhầm snapshot: `tests/helpers/deep-freeze.js`, dùng ở 8 file test graph/hash; BST, Sorting, Searching chưa dùng.
 - Chốt an toàn số bước (`src/algorithms/stepLimit.js`): 7 generator có vòng `while` (BFS, DFS, Binary Search, BST Search, Insert,
   Delete, Min/Max) export `*StepLimit` và gọi `assertWithinStepLimit` ở đầu mỗi vòng; vượt giới hạn ném RangeError. Giới hạn:
