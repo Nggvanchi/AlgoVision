@@ -31,9 +31,9 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - R3, R4: màu là cue duy nhất. Sắp xếp: thanh "đang so sánh" (cam) và "đã sắp xếp" (xanh) chỉ khác màu, không có viền, ký hiệu hay chú giải
   trạng thái. Tìm kiếm: "đã kiểm tra" chỉ khác nền xám + opacity 0,8; "đã loại bỏ" có thêm viền nét đứt. Cần cue ngoài màu, dùng lại bộ ký hiệu
   của BST/Hash/Graph (viền dày, vòng kép, nét đứt, ▶, ✓).
-- R8, R9: tô ô không khớp lời giải thích (không lệch bước: Bubble 91, Selection 102, Insertion 92 bước đã duyệt). Insertion: "So sánh 85 với
-  giá trị cần chèn 47" chỉ tô 85, và ở bước "Dời 85 sang phải" mảng hiện `85 85` còn 47 biến mất. Selection: bước "Tìm thấy nhỏ hơn" tô (i, min mới),
-  bước "So sánh" tô (min, j), không có chú thích phân biệt.
+- Message Selection ở bước "Tìm thấy nhỏ hơn" dài hơn: 4 dòng (94,4 px) ở 360px, 3 dòng (71,6 px) ở 1280px, so với 2 dòng ở bước So sánh
+  (đo Chrome, mảng cố định 85, 47, 62…). `#simulation-message` nằm cuối khung nên chỉ làm trang dài thêm 22,8 px, không đẩy nút điều khiển;
+  trước PR này vùng đó cũng đã dao động 48,8 ↔ 71,6 px giữa các bước. Chưa xử lý; cân nhắc `min-height` cho vùng message của Sắp xếp.
 - R12: khung bảng chaining cuộn ngang 21px ở 1280px với preset va chạm nặng (svg 876px, khung 871px, scrollWidth 892px).
 - R13, R14: `pre` mã giả và `.graph-panel-frame` cuộn ngang ở 360px nhận focus bằng Tab nhưng thiếu `aria-label`/`role` (khung mảng và danh sách
   liên kết đã có nhãn); không có skip link, mỗi lần Tab đi qua 4 mục điều hướng trước nội dung. Gộp nhóm này: sau PR `fix/ui-copy-round-2`,
@@ -61,6 +61,8 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
   `tests/navigation.test.js:92`, `public/templates/app.html:13,51`. Dọn trong một commit riêng để editor không sinh diff lẫn.
 
 ## Công cụ
+- Cải tiến skill `mutation-test`: `run-isolated.mjs` in tên test đỏ và assert đầu tiên thay vì phụ thuộc chuỗi `--expect` (đã báo
+  "không thấy thông điệp" sai 7 lần trong hai PR dù đúng test đỏ; phải đọc log bằng tay để xác nhận).
 - Nâng pnpm Windows lên 12.16.1, thêm `packageManager`, bỏ dòng `version` trong CI (`.github/workflows/ci.yml`).
 - Kiểm giao diện bằng link preview Vercel của mỗi PR ở 360px và 1280px (thay cho lệnh Chrome headless của PR #5–#9,
   vốn không được lưu lại trong repo).

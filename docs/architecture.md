@@ -57,6 +57,12 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
   (`shifts`, `key` chỉ có ở Insertion Sort; `key` null ở bước đầu và bước cuối). Bước cuối `finished: true`
   (`bubbleSort.js:113`, `selectionSort.js:115`, `insertionSort.js:118`).
   Bất biến: `sortedIndices` của mỗi bước chứa `sortedIndices` của bước trước.
+- `src/sorting.js`: `renderInsertionKey` điều khiển nhãn `#insertion-key` ("Đang chèn: <key>"). Trạng thái suy ra từ bước đang hiển thị:
+  không có trường `key` (Bubble, Selection) → `hidden`; `key` null (bước đầu, bước cuối) → class `is-idle` (`visibility: hidden`, vẫn chiếm chỗ);
+  còn lại hiện chữ. Dòng key cao cố định `1.5em` để khung không nhảy giữa các bước. Nhãn không nằm trong `requiredElements`
+  (thiếu thì bỏ qua). Mảng ở bước Dời của Insertion vẫn có bản sao (`85 85`) vì key được giữ riêng, không nằm trong mảng.
+- Lời giải thích Selection đánh số vị trí từ 1; hai loại bước dùng cặp cột tô khác nhau: So sánh `[minIndex, j]`, Tìm thấy nhỏ hơn `[i, minIndex]`
+  (`selectionSort.js:45`, `:61`). `tests/fixtures/selection-sort-main.json` khóa số bước, mảng, bộ đếm, `comparing`, `pseudocodeLine` (không có `message`).
 - `linearSearch.js`, `binarySearch.js`: `(numbers, target)` → bước
   `{ index, mid, left, right, comparisons, foundIndex, finished, target, currentIndex, currentValue, pseudocodeLine, message }`.
   `currentIndex`/`currentValue` là phần tử vừa so sánh (Linear = i, Binary = mid), null ở bước 0 và bước kết luận "không tìm thấy".
