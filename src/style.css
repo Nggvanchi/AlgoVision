@@ -804,6 +804,28 @@ button:disabled {
   background: linear-gradient(180deg, #5ce0a0, #219b70);
 }
 
+/* Nhãn "Đang chèn" của Insertion Sort: luôn giữ chỗ để khung không đổi chiều cao giữa các bước */
+.insertion-key {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  min-height: 3em;
+  margin: 14px 0 0;
+  color: #858ba0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.insertion-key strong {
+  color: var(--state-active);
+  font-variant-numeric: tabular-nums;
+}
+
+.insertion-key.is-idle {
+  visibility: hidden;
+}
+
 /* Thống kê mô phỏng */
 .simulation-stats {
   display: grid;
