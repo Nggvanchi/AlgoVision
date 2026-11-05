@@ -128,3 +128,24 @@ test('từ chối vị trí không hợp lệ khi xóa hoặc lấy giá trị',
 test('không cho phép khởi tạo bằng dữ liệu không phải mảng', () => {
   assert.throws(() => new LinkedList('10,20'), TypeError)
 })
+// Xóa khi danh sách rỗng nói rõ "đang rỗng" (như Stack/Queue); vị trí sai trên danh sách không rỗng giữ thông báo cũ.
+test('xóa khi danh sách rỗng ném RangeError ghi rõ danh sách đang rỗng', () => {
+  assert.throws(() => new LinkedList().removeAt(0), (error) => error instanceof RangeError && /đang rỗng/.test(error.message))
+})
+
+test('xóa vị trí sai trên danh sách không rỗng giữ thông báo "không hợp lệ", không nhắc rỗng', () => {
+  const list = new LinkedList([10, 20])
+
+  for (const index of [-1, 2, 5]) {
+    assert.throws(
+      () => list.removeAt(index),
+      (error) => error instanceof RangeError && /Vị trí không hợp lệ/.test(error.message) && !/rỗng/.test(error.message),
+      `vị trí ${index}`,
+    )
+  }
+})
+
+test('chèn vị trí > 0 và lấy giá trị trên danh sách rỗng vẫn ghi "Vị trí không hợp lệ" (không đổi ngoài ca xóa)', () => {
+  assert.throws(() => new LinkedList().insertAt(1, 10), (error) => error instanceof RangeError && /Vị trí không hợp lệ/.test(error.message))
+  assert.throws(() => new LinkedList().getAt(0), (error) => error instanceof RangeError && /Vị trí không hợp lệ/.test(error.message))
+})

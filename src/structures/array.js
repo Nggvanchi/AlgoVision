@@ -25,6 +25,11 @@ export function insertArrayElement(numbers, index, value) {
 
 export function removeArrayElement(numbers, index) {
   validateArray(numbers)
+
+  if (numbers.length === 0) {
+    throw new RangeError('Không thể xóa phần tử vì mảng đang rỗng.')
+  }
+
   validateIndex(index, numbers.length, false)
 
   const result = [...numbers]

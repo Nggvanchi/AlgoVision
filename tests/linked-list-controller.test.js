@@ -195,3 +195,28 @@ test('khôi phục danh sách và xóa trạng thái nhập', () => {
     window.happyDOM.close()
   }
 })
+
+test('xóa khi danh sách đã rỗng hiện lỗi "đang rỗng"; xóa vị trí sai khi chưa rỗng giữ thông báo cũ', () => {
+  const { window, document, controller } = createVisualizer()
+
+  try {
+    const status = document.querySelector('#linked-list-status')
+    const removeAt = (index) => {
+      document.querySelector('#linked-list-index').value = String(index)
+      document.querySelector('#linked-list-remove').click()
+    }
+
+    removeAt(99)
+    assert.match(status.textContent, /Vị trí không hợp lệ/)
+    assert.ok(!/rỗng/.test(status.textContent), 'danh sách chưa rỗng không được ghi "rỗng"')
+
+    for (let i = 0; i < 3; i++) removeAt(0)
+    assert.deepEqual(controller.getValues(), [])
+
+    removeAt(0)
+    assert.match(status.textContent, /đang rỗng/)
+    assert.deepEqual(controller.getValues(), [])
+  } finally {
+    window.happyDOM.close()
+  }
+})

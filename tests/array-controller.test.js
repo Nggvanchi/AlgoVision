@@ -159,3 +159,31 @@ test('reset khôi phục mảng ban đầu', () => {
     window.happyDOM.close()
   }
 })
+
+test('xóa khi mảng đã rỗng hiện lỗi "đang rỗng"; xóa index sai khi chưa rỗng giữ thông báo cũ', () => {
+  const { window, document } = createArrayDOM()
+
+  try {
+    const controller = initArray({ document })
+    const status = document.querySelector('#array-status')
+    const removeAt = (index) => {
+      document.querySelector('#array-remove-index').value = String(index)
+      document.querySelector('#array-remove').click()
+    }
+
+    removeAt(99)
+    assert.equal(status.dataset.state, 'error')
+    assert.match(status.textContent, /Index nằm ngoài phạm vi cho phép/)
+    assert.ok(!/rỗng/.test(status.textContent), 'mảng chưa rỗng không được ghi "rỗng"')
+
+    for (let i = 0; i < 5; i++) removeAt(0)
+    assert.deepEqual(controller.getNumbers(), [])
+
+    removeAt(0)
+    assert.equal(status.dataset.state, 'error')
+    assert.match(status.textContent, /đang rỗng/)
+    assert.deepEqual(controller.getNumbers(), [])
+  } finally {
+    window.happyDOM.close()
+  }
+})
