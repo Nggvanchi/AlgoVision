@@ -34,7 +34,7 @@ async function setupSearching(options = {}) {
       cleanup() {
         // Dừng timer còn sống (nếu có) để test lỗi không làm treo tiến trình.
         document.querySelector('#search-pause')?.click()
-        window.happyDOM.abort()
+        window.happyDOM.close()
 
         if (previousDocument === undefined) {
           delete globalThis.document
@@ -50,7 +50,7 @@ async function setupSearching(options = {}) {
       },
     }
   } catch (error) {
-    window.happyDOM.abort()
+    window.happyDOM.close()
     globalThis.document = previousDocument
     globalThis.window = previousWindow
     throw error

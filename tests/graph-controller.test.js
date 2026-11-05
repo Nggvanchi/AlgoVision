@@ -67,7 +67,7 @@ function setupGraph() {
     activeLine: () => $('#graph-pseudocode .pseudocode-line.is-active')?.textContent ?? null,
     cleanup() {
       $('#graph-pause')?.click()
-      window.happyDOM.abort()
+      window.happyDOM.close()
     },
   }
 

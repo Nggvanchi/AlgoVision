@@ -44,7 +44,7 @@ test('khởi tạo Queue controller với dữ liệu mặc định', () => {
       'REAR',
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -64,7 +64,7 @@ test('Enqueue thêm phần tử vào cuối Queue', () => {
       '40',
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -87,7 +87,7 @@ test('Dequeue loại bỏ phần tử đầu tiên', () => {
       /10/,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -105,7 +105,7 @@ test('Front không làm thay đổi Queue', () => {
       /10/,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -124,7 +124,7 @@ test('Reset khôi phục Queue ban đầu', () => {
       3,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -143,7 +143,7 @@ test('hiển thị lỗi khi Enqueue không có giá trị', () => {
       true,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -170,6 +170,6 @@ test('thông báo khi Dequeue Queue rỗng', () => {
       true,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })

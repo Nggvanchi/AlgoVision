@@ -39,7 +39,7 @@ async function withSortingDom(run, options = {}) {
   } finally {
     // Dừng mọi timer còn sống để test lỗi không làm treo tiến trình.
     document.querySelector('#reset-sort')?.click()
-    window.happyDOM.abort()
+    window.happyDOM.close()
 
     if (previousDocument === undefined) {
       delete globalThis.document

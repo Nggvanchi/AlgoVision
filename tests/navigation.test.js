@@ -249,7 +249,7 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
     assert.equal(categoryPlaceholder.hidden, true)
     assert.equal(sortingNav.classList.contains('active'), true)
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -274,7 +274,7 @@ test('Section mô phỏng Sorting có id riêng chứa #array-bars, navigation �
     document.querySelector('.nav-item[data-page="searching"]').click()
     assert.equal(sortingSection.hidden, true)
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -324,7 +324,7 @@ test('Section cấu trúc dữ liệu được suy ra từ data-structure-target
     assert.equal(demoSection.hidden, true, 'đổi trang phải ẩn mọi section cấu trúc dữ liệu')
     assert.deepEqual(events, ['structures', 'structures', 'structures', 'structures', 'sorting'])
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -350,6 +350,6 @@ test('Thẻ cấu trúc dữ liệu không có section tương ứng: giữ nguy
     })
     assert.deepEqual(events, [])
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })

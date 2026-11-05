@@ -32,7 +32,7 @@ test('renderPseudocode tạo mỗi dòng một phần tử, giữ nguyên thụt
     assert.deepEqual(lineElements.map((line) => line.textContent), lines)
     assert.deepEqual(lineElements.map((line) => line.dataset.line), ['1', '2', '3', '4'])
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -46,7 +46,7 @@ test('renderPseudocode gán nội dung bằng textContent, không diễn giải 
     assert.ok(boldElement === null, 'Mã giả chứa thẻ HTML phải hiển thị nguyên văn, không tạo phần tử <b>')
     assert.equal(code.querySelector('.pseudocode-line').textContent, 'if A[j] < <b>x</b>')
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -66,7 +66,7 @@ test('highlightPseudocodeLine tô đúng một dòng và gắn aria-current="ste
     assert.deepEqual(getActiveLines(code), [4])
     assert.equal(code.querySelector('[data-line="2"]').hasAttribute('aria-current'), false)
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -81,7 +81,7 @@ test('highlightPseudocodeLine với null bỏ tô mọi dòng', () => {
     assert.deepEqual(getActiveLines(code), [])
     assert.equal(code.querySelectorAll('[aria-current]').length, 0)
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -96,6 +96,6 @@ test('renderPseudocode vẽ lại thì xóa dòng cũ và không còn dòng nào
     assert.equal(code.querySelectorAll('.pseudocode-line').length, 2)
     assert.deepEqual(getActiveLines(code), [])
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })

@@ -30,7 +30,7 @@ test('khởi tạo Linked List Visualizer với dữ liệu mặc định', () =
     assert.deepEqual(controller.getValues(), [10, 20, 30])
     assert.equal(controller.getSize(), 3)
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -47,7 +47,7 @@ test('thêm phần tử vào cuối danh sách', () => {
       /Đã thêm 40/,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -60,7 +60,7 @@ test('thêm phần tử vào đầu danh sách', () => {
 
     assert.deepEqual(controller.getValues(), [5, 10, 20, 30])
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -74,7 +74,7 @@ test('chèn phần tử tại vị trí được chọn', () => {
 
     assert.deepEqual(controller.getValues(), [10, 15, 20, 30])
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -91,7 +91,7 @@ test('xóa phần tử tại vị trí được chọn', () => {
       /Đã xóa giá trị 20/,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -114,7 +114,7 @@ test('tìm thấy giá trị và hiển thị vị trí', () => {
       1,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -137,7 +137,7 @@ test('thông báo khi không tìm thấy giá trị', () => {
       0,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -154,7 +154,7 @@ test('hiển thị lỗi khi giá trị cần thêm bị bỏ trống', () => {
       /Vui lòng nhập/,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -172,7 +172,7 @@ test('hiển thị lỗi khi vị trí chèn không hợp lệ', () => {
       /Vị trí không hợp lệ/,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -192,6 +192,6 @@ test('khôi phục danh sách và xóa trạng thái nhập', () => {
     assert.equal(document.querySelector('#linked-list-index').value, '')
     assert.equal(document.querySelector('#linked-list-target').value, '')
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })

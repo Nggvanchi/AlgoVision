@@ -40,7 +40,7 @@ test('khởi tạo Stack controller với dữ liệu mặc định', () => {
       /sẵn sàng/,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -59,7 +59,7 @@ test('Push thêm giá trị vào đỉnh Stack', () => {
       '40',
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -81,7 +81,7 @@ test('Pop xóa phần tử trên đỉnh Stack', () => {
       /30/,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -99,7 +99,7 @@ test('Peek không làm thay đổi Stack', () => {
       /30/,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -118,7 +118,7 @@ test('Reset khôi phục Stack ban đầu', () => {
       3,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -137,7 +137,7 @@ test('hiển thị lỗi khi Push mà không nhập giá trị', () => {
       /Vui lòng nhập giá trị/,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -165,6 +165,6 @@ test('hiển thị thông báo khi Pop Stack rỗng', () => {
       /Stack đang rỗng/,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
