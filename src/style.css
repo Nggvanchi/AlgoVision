@@ -1118,6 +1118,7 @@ button:disabled {
 }
 
 .search-cell {
+  position: relative;
   display: flex;
   flex: 1 0 48px;
   min-width: 48px;
@@ -1204,9 +1205,12 @@ button:disabled {
   border-style: dashed;
 }
 
+/* Trạng thái ô Tìm kiếm không chỉ dựa vào màu: đang kiểm tra viền dày + ▶, tìm thấy khung kép + ✓,
+   đã kiểm tra viền nét đứt (đã loại bỏ cũng nét đứt, thêm mờ). Cue nằm trong ô (inset) nên kích thước ô không đổi. */
 .search-cell.is-checked {
   background: #27272a;
   border-color: #71717a;
+  border-style: dashed;
   color: #a1a1aa;
   opacity: 0.8;
 }
@@ -1215,14 +1219,29 @@ button:disabled {
   background: #fef3c7;
   border-color: #d97706;
   color: #92400e;
-  box-shadow: 0 0 0 2px rgb(245 158 11 / 20%);
+  box-shadow: inset 0 0 0 2px #d97706, 0 0 0 2px rgb(245 158 11 / 20%);
 }
 
 .search-cell.is-found {
   background: #dcfce7;
   border-color: #16a34a;
   color: #166534;
-  box-shadow: 0 0 0 2px rgb(34 197 94 / 20%);
+  box-shadow: inset 0 0 0 2px #dcfce7, inset 0 0 0 3px #16a34a, 0 0 0 2px rgb(34 197 94 / 20%);
+}
+
+/* ▶ / ✓ ở góc trên bên trái, không đè chữ giá trị căn giữa ô (ô tối thiểu 48px). */
+.search-cell-marker {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.search-cell-marker::before {
+  content: attr(data-marker);
 }
 
 .search-legend {
@@ -1250,21 +1269,27 @@ button:disabled {
   background: #64748b;
 }
 
+/* Mẫu trong chú giải vẽ đúng kiểu viền của ô tương ứng */
 .search-legend-dot.is-current {
-  background: #f59e0b;
+  background: #fef3c7;
+  box-shadow: inset 0 0 0 3px #d97706;
 }
 
 .search-legend-dot.is-eliminated {
+  border: 1px dashed #94a3b8;
   background: #64748b;
   opacity: 0.4;
 }
 
 .search-legend-dot.is-checked {
-  background: #71717a;
+  border: 1px dashed #a1a1aa;
+  background: #27272a;
 }
 
 .search-legend-dot.is-found {
-  background: #22c55e;
+  border: 1px solid #16a34a;
+  background: #dcfce7;
+  box-shadow: inset 0 0 0 2px #dcfce7, inset 0 0 0 3px #16a34a;
 }
 
 .search-range-panel {

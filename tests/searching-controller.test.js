@@ -1457,9 +1457,12 @@ function searchCellMarkers(document) {
   return [...document.querySelectorAll('#search-array .search-cell')].map((cell, index) => ({
     index,
     state: ['is-current', 'is-found', 'is-checked', 'is-eliminated'].find((name) => cell.classList.contains(name)) ?? 'plain',
+    // Glyph nằm ở data-marker (CSS vẽ bằng ::before): textContent của marker rỗng và textContent của ô vẫn là giá trị.
+    value: cell.textContent,
     markers: [...cell.querySelectorAll('.search-cell-marker')].map((marker) => ({
-      text: marker.textContent,
+      text: marker.dataset.marker,
       ariaHidden: marker.getAttribute('aria-hidden'),
+      ownText: marker.textContent,
     })),
   }))
 }
@@ -1485,9 +1488,11 @@ test('Tìm kiếm: ở mọi bước, ▶ chỉ nằm ở ô đang kiểm tra v�
           for (const cell of searchCellMarkers(document)) {
             const want = SEARCH_MARKER_OF[cell.state]
 
+            assert.equal(cell.value, values[cell.index], `${algorithm}: giá trị ô ${cell.index + 1} không dính ký hiệu`)
+
             assert.deepEqual(
               cell.markers,
-              want === undefined ? [] : [{ text: want, ariaHidden: 'true' }],
+              want === undefined ? [] : [{ text: want, ariaHidden: 'true', ownText: '' }],
               `${algorithm}, mục tiêu ${target}, bước ${step + 1}, ô ${cell.index + 1} (${cell.state})`,
             )
           }
