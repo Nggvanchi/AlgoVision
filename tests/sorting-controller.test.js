@@ -375,3 +375,159 @@ test('cột đang so sánh trong vùng đã sắp xếp vẫn hiển thị trạ
     assert.equal(bar.classList.contains('is-sorted'), false)
   })
 })
+
+// --- Nhãn "Đang chèn" của Insertion Sort (R8) ---
+// Mảng cố định: mock Math.random theo hàng đợi giá trị rồi phát sự kiện change của ô chọn số phần tử.
+function fixSortingArray(t, window, document, values) {
+  const select = document.querySelector('#array-size')
+
+  if (![...select.options].some((option) => Number(option.value) === values.length)) {
+    const option = document.createElement('option')
+
+    option.value = String(values.length)
+    option.textContent = option.value
+    select.appendChild(option)
+  }
+
+  select.value = String(values.length)
+
+  const queue = [...values]
+
+  // generateArray: floor(random * 91) + 10. Cộng 0,5 để tránh sai số dấu phẩy động.
+  t.mock.method(Math, 'random', () => (queue.length > 0 ? (queue.shift() - 10 + 0.5) / 91 : 0.5))
+  select.dispatchEvent(new window.Event('change'))
+}
+
+// 'hidden': không phải Insertion; 'idle': Insertion nhưng chưa có key (giữ chỗ để bố cục không nhảy); 'shown': đang hiện key.
+function keyLabelState(document) {
+  const label = document.querySelector('#insertion-key')
+
+  assert.ok(label !== null, 'thiếu phần tử #insertion-key trong template')
+
+  if (label.hidden) return { state: 'hidden', text: '' }
+  if (label.classList.contains('is-idle')) return { state: 'idle', text: '' }
+
+  return { state: 'shown', text: document.querySelector('#insertion-key-value').textContent }
+}
+
+function barValues(document) {
+  return [...document.querySelectorAll('.array-bar .bar-value')].map((value) => value.textContent)
+}
+
+function clickStep(document, times = 1) {
+  for (let count = 0; count < times; count++) {
+    document.querySelector('#step-sort').click()
+  }
+}
+
+test('Insertion Sort: nhãn "Đang chèn: key" hiện theo từng bước của [85, 47], ẩn ở bước đầu và bước cuối', async (t) => {
+  await withSortingDom(({ document, window }) => {
+    clickSortingCard(document, 'insertion')
+    fixSortingArray(t, window, document, [85, 47])
+
+    // Dò tay: bước 0 khởi tạo, 1 so sánh, 2 dời, 3 chèn, 4 hoàn thành.
+    const expected = [
+      { state: 'idle', text: '', bars: ['85', '47'] },
+      { state: 'shown', text: 'Đang chèn: 47', bars: ['85', '47'] },
+      { state: 'shown', text: 'Đang chèn: 47', bars: ['85', '85'] },
+      { state: 'shown', text: 'Đang chèn: 47', bars: ['47', '85'] },
+      { state: 'idle', text: '', bars: ['47', '85'] },
+    ]
+
+    expected.forEach((want, stepIndex) => {
+      const got = keyLabelState(document)
+
+      assert.deepEqual(
+        { state: got.state, text: got.text, bars: barValues(document) },
+        want,
+        `bước ${stepIndex}`,
+      )
+
+      clickStep(document)
+    })
+  })
+})
+
+test('Insertion Sort: nhãn chỉ nói rằng giá trị đang được giữ riêng, không đổi mảng ở bước Dời (vẫn hiện 85 85)', async (t) => {
+  await withSortingDom(({ document, window }) => {
+    clickSortingCard(document, 'insertion')
+    fixSortingArray(t, window, document, [85, 47])
+    clickStep(document, 2)
+
+    assert.deepEqual(barValues(document), ['85', '85'])
+    assert.match(
+      document.querySelector('#insertion-key').textContent,
+      /giữ riêng/,
+      'nhãn phải giải thích rằng key đang được giữ riêng',
+    )
+  })
+})
+
+test('Insertion Sort: key trùng giá trị với phần tử khác vẫn hiện đúng key', async (t) => {
+  await withSortingDom(({ document, window }) => {
+    clickSortingCard(document, 'insertion')
+    fixSortingArray(t, window, document, [30, 30])
+
+    // Dò tay: 0 khởi tạo, 1 so sánh 30 với key 30 (dừng vì 30 <= 30), 2 chèn, 3 hoàn thành.
+    assert.equal(keyLabelState(document).state, 'idle')
+    clickStep(document)
+    assert.deepEqual(keyLabelState(document), { state: 'shown', text: 'Đang chèn: 30' })
+    clickStep(document)
+    assert.deepEqual(keyLabelState(document), { state: 'shown', text: 'Đang chèn: 30' })
+    clickStep(document)
+    assert.equal(keyLabelState(document).state, 'idle')
+  })
+})
+
+test('Insertion Sort: mảng 1 phần tử và mảng rỗng không bao giờ hiện nhãn', async (t) => {
+  await withSortingDom(({ document, window }) => {
+    clickSortingCard(document, 'insertion')
+
+    for (const values of [[7], []]) {
+      fixSortingArray(t, window, document, values)
+
+      // Dò tay: chỉ có bước đầu và bước hoàn thành.
+      assert.equal(keyLabelState(document).state, 'idle', `[${values}] bước 0`)
+      clickStep(document)
+      assert.equal(keyLabelState(document).state, 'idle', `[${values}] bước cuối`)
+    }
+  })
+})
+
+test('Insertion Sort: nhãn không rò sau Đặt lại, sau Tạo mảng mới và sau khi đổi thuật toán giữa chừng', async (t) => {
+  await withSortingDom(({ document, window }) => {
+    clickSortingCard(document, 'insertion')
+    fixSortingArray(t, window, document, [85, 47])
+
+    clickStep(document, 2)
+    assert.equal(keyLabelState(document).state, 'shown')
+    document.querySelector('#reset-sort').click()
+    assert.equal(keyLabelState(document).state, 'idle', 'sau Đặt lại')
+
+    clickStep(document, 2)
+    assert.equal(keyLabelState(document).state, 'shown')
+    document.querySelector('#start-button').click()
+    assert.equal(keyLabelState(document).state, 'idle', 'sau Tạo mảng mới')
+
+    clickStep(document, 2)
+    assert.equal(keyLabelState(document).state, 'shown')
+    clickSortingCard(document, 'bubble')
+    assert.equal(keyLabelState(document).state, 'hidden', 'sau khi đổi sang Bubble giữa chừng')
+    clickSortingCard(document, 'insertion')
+    assert.equal(keyLabelState(document).state, 'idle', 'quay lại Insertion: mảng mới, bước 0')
+  })
+})
+
+test('Bubble Sort và Selection Sort không bao giờ hiện nhãn "Đang chèn" ở bất kỳ bước nào', async (t) => {
+  await withSortingDom(({ document, window }) => {
+    for (const algorithm of ['bubble', 'selection']) {
+      clickSortingCard(document, algorithm)
+      fixSortingArray(t, window, document, [30, 20, 10])
+
+      for (let stepIndex = 0; stepIndex < 8; stepIndex++) {
+        assert.equal(keyLabelState(document).state, 'hidden', `${algorithm} bước ${stepIndex}`)
+        clickStep(document)
+      }
+    }
+  })
+})
