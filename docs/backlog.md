@@ -28,9 +28,14 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Hai mục 360px cũ KHÔNG tái hiện (Chrome 153/Linux): chữ Big-O trung bình của linear probing rộng 223px trong thẻ 226–296px ở 320/360/390px
   nên luôn 1 dòng, chỉ xuống 2 dòng ở 1280px trong thẻ 177px (chấp nhận); viền "ô đã dò" nằm trọn trong khung (probing: lề ≥ 6px;
   chaining preset 14 khóa: 0/14 ô bị cắt).
-- R3, R4: màu là cue duy nhất. Sắp xếp: thanh "đang so sánh" (cam) và "đã sắp xếp" (xanh) chỉ khác màu, không có viền, ký hiệu hay chú giải
-  trạng thái. Tìm kiếm: "đã kiểm tra" chỉ khác nền xám + opacity 0,8; "đã loại bỏ" có thêm viền nét đứt. Cần cue ngoài màu, dùng lại bộ ký hiệu
-  của BST/Hash/Graph (viền dày, vòng kép, nét đứt, ▶, ✓).
+- Cột Insertion đang so sánh nằm trong đoạn đã sắp xếp (khoảng 94% số cột so sánh của Insertion trong mẫu đo 300 mảng) chỉ hiện "đang so sánh",
+  mất cue "đã sắp xếp" (`is-comparing` thắng `is-sorted`, `src/sorting-bar-state.js`). Hiện cả hai phải sửa test "cột đang so sánh trong vùng
+  đã sắp xếp vẫn hiển thị trạng thái so sánh (Insertion Sort)" và cần cue kết hợp; chú giải Insertion đã ghi "kể cả cột nằm trong đoạn đã sắp xếp".
+- Ô "đã loại bỏ" của Binary Search: viền nét đứt sau `opacity: 0,4` chỉ khoảng 1,6:1 so với nền khung (tính WCAG), dưới ngưỡng 3:1 của 1.4.11.
+  Giữ nguyên ở PR `feat/sorting-state-cues` vì hành vi có từ trước; cần tăng opacity hoặc màu viền riêng cho ô này.
+- Trình đọc màn hình không nghe được trạng thái từng ô/cột: `#search-array` không có `role`/`aria-label`, ô Tìm kiếm là `div` chỉ có giá trị
+  (`▶`, `✓` là `aria-hidden`), cột Sắp xếp nằm trong `#array-bars` (`role="img"` một nhãn chung). Trạng thái chỉ được nói theo bước qua
+  `#search-message`, `#search-range-message`, `#simulation-message` (`aria-live`). Cần tên trạng thái cho từng ô/cột (aria-label hoặc chữ ẩn).
 - Message Selection ở bước "Tìm thấy nhỏ hơn" dài hơn: 4 dòng (94,4 px) ở 360px, 3 dòng (71,6 px) ở 1280px, so với 2 dòng ở bước So sánh
   (đo Chrome, mảng cố định 85, 47, 62…). `#simulation-message` nằm cuối khung nên chỉ làm trang dài thêm 22,8 px, không đẩy nút điều khiển;
   trước PR này vùng đó cũng đã dao động 48,8 ↔ 71,6 px giữa các bước. Chưa xử lý; cân nhắc `min-height` cho vùng message của Sắp xếp.
