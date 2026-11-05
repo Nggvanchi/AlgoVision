@@ -1,14 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import * as graphModule from '../src/structures/graph.js'
-
-function deepFreeze(value) {
-  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
-    Object.freeze(value)
-    Object.values(value).forEach(deepFreeze)
-  }
-  return value
-}
+import { deepFreeze } from './helpers/deep-freeze.js'
 
 // Preset Mẫu (theo slot): A–B, A–C, B–C, C–D, E–F; G cô lập.
 const SAMPLE_PAIRS = [[0, 1], [0, 2], [1, 2], [2, 3], [4, 5]]

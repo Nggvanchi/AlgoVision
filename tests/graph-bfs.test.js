@@ -3,14 +3,7 @@ import assert from 'node:assert/strict'
 import { buildGraph, listVertices } from '../src/structures/graph.js'
 import * as bfsModule from '../src/algorithms/graphBfs.js'
 import { assertBfsStepInvariants, lineText } from './helpers/graph-step-invariants.js'
-
-function deepFreeze(value) {
-  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
-    Object.freeze(value)
-    Object.values(value).forEach(deepFreeze)
-  }
-  return value
-}
+import { deepFreeze } from './helpers/deep-freeze.js'
 
 // Preset theo slot (giống src/graph.js): Mẫu A–B, A–C, B–C, C–D, E–F, G cô lập (có hướng thêm C→A);
 // Cây A–B, A–C, B–D, B–E, C–F, C–G; K6 mọi cặp u < v. C5: chu trình A–B–C–D–E–A.

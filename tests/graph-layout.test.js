@@ -2,14 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { addEdge, addVertex, buildGraph, listVertices, removeVertex } from '../src/structures/graph.js'
 import * as layoutModule from '../src/graph-layout.js'
-
-function deepFreeze(value) {
-  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
-    Object.freeze(value)
-    Object.values(value).forEach(deepFreeze)
-  }
-  return value
-}
+import { deepFreeze } from './helpers/deep-freeze.js'
 
 const SAMPLE_PAIRS = [[0, 1], [0, 2], [1, 2], [2, 3], [4, 5]]
 const VERTEX_RADIUS = 18
