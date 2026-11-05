@@ -227,6 +227,12 @@ export function describeDfsCost(step) {
   const calls = idsOf(step, 'visitedIds').length
   const depth = dfsMaxDepthSoFar(step)
 
+  // Chưa kết thúc + chưa vào đỉnh nào = bước 0; bước đã kết thúc luôn đi tiếp xuống kết luận Big-O.
+  if (!step.finished && calls === 0) {
+    return `DFS từ ${source} chưa bắt đầu (${representation}): 0 lần gọi, đã đọc 0 ${isList ? 'phần tử' : 'ô'}, `
+      + 'ngăn xếp gọi chưa có khung nào.'
+  }
+
   if (!step.finished) {
     return `DFS từ ${source} đang chạy (${representation}): đã ${calls} lần gọi, đã đọc ${step.reads} `
       + `${isList ? 'phần tử' : 'ô'}, ngăn xếp gọi sâu nhất tới bước này ${depth} khung.`

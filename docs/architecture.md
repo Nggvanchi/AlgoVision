@@ -14,7 +14,7 @@ Phần mô tả hành vi chi tiết của từng module chuyển từ CLAUDE.md 
 | Bố cục vẽ | `src/tree-layout.js:12`, `src/hash-table-layout.js:15`, `src/graph-layout.js` | Hàm thuần, không import gì, test không cần DOM |
 | View riêng | `src/pseudocode-view.js:4,19`, `src/graph-bfs-view.js`, `src/graph-dfs-view.js`, `src/graph-traversal-view.js` | View không import controller: `graph-*-view.js` chỉ import `structures/graph.js` và `algorithms/graphStep.js` (`graph-bfs-view.js:1-2`, `graph-dfs-view.js:1-2`, `graph-traversal-view.js:1`) |
 | Controller | `src/bst.js:279`, `src/hash-table.js:388`, `src/graph.js:584` (và `sorting.js:8`, `searching.js:42`) | `init*(document, { scheduler })`: nối template, thao tác, Learning Panel |
-| Template | `public/templates/app.html` | `src/main.js:16` fetch rồi gọi các `init*` |
+| Template | `public/templates/app.html` | `bootApp` (`src/bootstrap.js:46`) fetch và dựng template; `startApp` (`src/main.js:14`) gọi các `init*` sau khi dựng xong. Chỉ fetch và `response.text()` được bắt lỗi (`bootstrap.js:49-62`): lỗi thì hiện màn hình `role="alert"` + nút "Thử lại", `start` ném lỗi thì ném ra bình thường |
 | Điều hướng | `src/navigation.js:35-36,74` | Thẻ `data-structure-target="x"` mở `#x-section` (suy ra lúc init, thêm cấu trúc mới không cần sửa navigation; thẻ không có section thì click bị bỏ qua); phát `algovision:viewchange` (`detail.page`) khi đổi trang hoặc mở/đóng màn hình chi tiết |
 
 Array, Stack, Queue, Linked List là module cũ (trước giai đoạn 5): không có hàm sinh bước, không có mã giả; các lớp trên không áp dụng.
@@ -176,5 +176,6 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
   (đo 2026-11-05: sao 300 đỉnh 39–73 ms, 1000 đỉnh 0,7–1,0 s, 2000 đỉnh 5,6 s). Phần lớn thời gian test đồ thị lớn lại nằm ở bản sao
   đồ thị của từng bước (DFS sao 1000 đỉnh: 4998 bước, 4,1 s, trong đó 2,6 s là `cloneGraph`), nên sửa `buildGraph` chưa đủ để nâng
   quy mô test sao/đường thẳng lên 1000 đỉnh.
-- Thẻ số lần gọi DFS dùng chung id `#graph-dequeues` với BFS (`graph.js:654-655,770-771`, `app.html:1869-1870`); nhãn đổi theo thao tác
-  nên hiển thị đúng, chỉ là tên id gây hiểu nhầm.
+- Một thẻ số đo duyệt chung cho BFS và DFS, id `#graph-traversal-count` và `#graph-traversal-count-label`
+  (`graph.js:654-655,770-771`, `app.html:1869-1870`): BFS ghi số lần dequeue, DFS ghi số lần gọi; nhãn và giá trị đổi theo thao tác.
+  Đây là MỘT phần tử dùng chung, không phải id trùng; `tests/template-ids.test.js` chặn id trùng thật.

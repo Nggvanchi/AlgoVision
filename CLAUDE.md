@@ -19,15 +19,17 @@ Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so v�
 Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
 - Đo 2026-11-05 trên Ubuntu (Node 26.13.0, pnpm 12.16.1).
-- `pnpm test`: 754/754 pass, 0 fail, 0 skipped, khoảng 8 s.
-- `pnpm build`: JS 139,49 kB (gzip 40,28 kB), CSS 41,93 kB (gzip 8,37 kB), HTML 0,63 kB.
+- `pnpm test`: 777/777 pass, 0 fail, 0 skipped, khoảng 9 s.
+- `pnpm build`: JS 140,76 kB (gzip 40,65 kB), CSS 42,10 kB (gzip 8,42 kB), HTML 0,63 kB.
 
 ## Kiến trúc
 
 Chi tiết từng module (trường bước, công thức số bước, bất biến, giới hạn UI, dẫn chứng file:dòng): `docs/architecture.md`.
 Đọc mục tương ứng trước khi sửa một module.
 
-- `index.html` chỉ có `#app`; `src/main.js` fetch `public/templates/app.html` rồi gọi các hàm `init*`.
+- `index.html` chỉ có `#app`; `src/main.js` gọi `bootApp` (`src/bootstrap.js`): fetch `public/templates/app.html`, dựng vào `#app`, rồi mới gọi
+  các hàm `init*` (`startApp`). Fetch lỗi (reject, HTTP lỗi, đọc nội dung lỗi) thì hiện màn hình `role="alert"` có nút "Thử lại" và không gọi `init*`;
+  lỗi của chính `init*` không bị bắt.
 - Module UI: `navigation.js`, `sorting.js`, `searching.js`, `array.js`, `stack.js`, `queue.js`, `linked-list.js`,
   `bst.js`, `hash-table.js`, `graph.js`. Array, Stack, Queue, Linked List là module cũ, không có hàm sinh bước.
 - Các lớp của một module mới (BST, Hash Table, Graph): cấu trúc thuần `src/structures/*` → sinh bước `src/algorithms/*`

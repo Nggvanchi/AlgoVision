@@ -1,4 +1,5 @@
 import './style.css'
+import { bootApp } from './bootstrap.js'
 import { initSearching } from './searching.js'
 import { initSorting } from './sorting.js'
 import { initNavigation } from './navigation.js'
@@ -10,27 +11,17 @@ import { initBst } from './bst.js'
 import { initHashTable } from './hash-table.js'
 import { initGraph } from './graph.js'
 
-const app = document.querySelector('#app')
-
-async function loadAppTemplate() {
-  const response = await fetch('/templates/app.html')
-
-  if (!response.ok) {
-    throw new Error(`Không thể tải giao diện: ${response.status}`)
-  }
-
-  app.innerHTML = await response.text()
+function startApp() {
+  initNavigation(document)
+  initSorting()
+  initSearching()
+  initArray()
+  initStack()
+  initQueue(document)
+  initLinkedList(document)
+  initBst(document)
+  initHashTable(document)
+  initGraph(document)
 }
 
-await loadAppTemplate()
-
-initNavigation(document)
-initSorting()
-initSearching()
-initArray()
-initStack()
-initQueue(document)
-initLinkedList(document)
-initBst(document)
-initHashTable(document)
-initGraph(document)
+await bootApp(document.querySelector('#app'), { start: startApp })

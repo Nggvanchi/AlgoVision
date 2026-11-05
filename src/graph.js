@@ -651,8 +651,8 @@ export function initGraph(document, options = {}) {
     degree: $('#graph-degree'),
     readsLabel: $('#graph-reads-label'),
     reads: $('#graph-reads'),
-    dequeuesLabel: $('#graph-dequeues-label'),
-    dequeues: $('#graph-dequeues'),
+    dequeuesLabel: $('#graph-traversal-count-label'),
+    dequeues: $('#graph-traversal-count'),
     stackDepth: $('#graph-stack-depth'),
     result: $('#graph-result'),
   }

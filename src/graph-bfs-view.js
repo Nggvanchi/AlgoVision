@@ -186,6 +186,11 @@ export function describeBfsCost(step) {
   const dequeues = idsOf(step, 'orderIds').length
   const unit = isList ? 'phần tử' : 'ô'
 
+  // Nhánh "đã kết thúc" ở dưới được xét trước "bước 0" theo thứ tự này: chưa kết thúc + chưa đánh dấu đỉnh nào = bước 0.
+  if (!step.finished && idsOf(step, 'visitedIds').length === 0) {
+    return `BFS từ ${source} chưa bắt đầu (${representation}): 0 lần dequeue, đã đọc 0 ${unit}.`
+  }
+
   if (!step.finished) {
     return `BFS từ ${source} đang chạy (${representation}): đã ${dequeues} lần dequeue, đã đọc ${step.reads} ${unit}.`
   }
