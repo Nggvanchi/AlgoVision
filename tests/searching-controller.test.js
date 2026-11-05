@@ -1360,3 +1360,91 @@ test('Searching chạy tự động thì dòng được tô đi theo từng tick
     cleanup()
   }
 })
+
+// Chú giải màu của Tìm kiếm phải theo thuật toán đang chọn: Linear dùng is-checked (không bao giờ is-eliminated),
+// Binary dùng is-eliminated (không bao giờ is-checked). Các mục bị ẩn bằng thuộc tính hidden.
+const LEGEND_LINEAR = ['Đang kiểm tra', 'Đã kiểm tra', 'Tìm thấy']
+const LEGEND_BINARY = ['Đang kiểm tra', 'Đã loại bỏ', 'Tìm thấy']
+
+const visibleLegend = (document) => [...document.querySelectorAll('#search-legend [data-algorithms]')]
+  .filter((item) => !item.hidden)
+  .map((item) => item.textContent.replace(/\s+/g, ' ').trim())
+
+function chooseAlgorithm(app, algorithm) {
+  const select = app.document.querySelector('#search-algorithm')
+  select.value = algorithm
+  select.dispatchEvent(new app.window.Event('change'))
+}
+
+test('chú giải Tìm kiếm: Linear hiện 3 mục (không có "Đã loại bỏ"), Binary hiện 3 mục (không có "Đã kiểm tra")', async () => {
+  const app = await setupSearching()
+
+  try {
+    assert.deepEqual(visibleLegend(app.document), LEGEND_LINEAR, 'mặc định là Linear Search')
+    chooseAlgorithm(app, 'binary')
+    assert.deepEqual(visibleLegend(app.document), LEGEND_BINARY)
+    chooseAlgorithm(app, 'linear')
+    assert.deepEqual(visibleLegend(app.document), LEGEND_LINEAR)
+  } finally {
+    app.cleanup()
+  }
+})
+
+test('chú giải Tìm kiếm không rò trạng thái khi chuyển qua lại Linear và Binary nhiều lần (kể cả giữa lúc đang chạy)', async () => {
+  const app = await setupSearching()
+
+  try {
+    const { document, window } = app
+    const expected = { linear: LEGEND_LINEAR, binary: LEGEND_BINARY }
+    const sequence = ['binary', 'linear', 'linear', 'binary', 'binary', 'linear', 'binary', 'linear']
+
+    for (const [index, algorithm] of sequence.entries()) {
+      chooseAlgorithm(app, algorithm)
+      assert.deepEqual(visibleLegend(document), expected[algorithm], `lần chuyển ${index + 1} sang ${algorithm}`)
+
+      if (index % 2 === 0) {
+        const targetInput = document.querySelector('#search-target')
+        targetInput.value = document.querySelector('#search-array .search-cell').textContent
+        targetInput.dispatchEvent(new window.Event('change'))
+        document.querySelector('#search-next').click()
+        assert.deepEqual(visibleLegend(document), expected[algorithm], `sau khi chạy một bước (${algorithm})`)
+      }
+    }
+  } finally {
+    app.cleanup()
+  }
+})
+
+test('chú giải Tìm kiếm khớp đúng các trạng thái ô mà từng thuật toán thực sự dùng (đối chiếu từ lần chạy thật)', async () => {
+  const stateOf = { 'Đang kiểm tra': 'is-current', 'Đã kiểm tra': 'is-checked', 'Đã loại bỏ': 'is-eliminated', 'Tìm thấy': 'is-found' }
+
+  for (const algorithm of ['linear', 'binary']) {
+    const app = await setupSearching()
+
+    try {
+      const { document, window } = app
+      chooseAlgorithm(app, algorithm)
+      const values = [...document.querySelectorAll('#search-array .search-cell')].map((cell) => cell.textContent)
+      const used = new Set()
+
+      for (const target of [values[0], values[values.length - 1], values[Math.floor(values.length / 2)], '5']) {
+        const targetInput = document.querySelector('#search-target')
+        targetInput.value = target
+        targetInput.dispatchEvent(new window.Event('change'))
+        document.querySelector('#search-reset').click()
+
+        for (let step = 0; step < 30; step++) {
+          document.querySelector('#search-next').click()
+          for (const cell of document.querySelectorAll('#search-array .search-cell')) {
+            for (const name of cell.classList) if (name.startsWith('is-')) used.add(name)
+          }
+        }
+      }
+
+      const legendStates = visibleLegend(document).map((label) => stateOf[label])
+      assert.deepEqual([...used].sort(), [...legendStates].sort(), `${algorithm}: trạng thái ô đã dùng so với chú giải đang hiện`)
+    } finally {
+      app.cleanup()
+    }
+  }
+})
