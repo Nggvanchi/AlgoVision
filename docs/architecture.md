@@ -176,5 +176,6 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
   (đo 2026-11-05: sao 300 đỉnh 39–73 ms, 1000 đỉnh 0,7–1,0 s, 2000 đỉnh 5,6 s). Phần lớn thời gian test đồ thị lớn lại nằm ở bản sao
   đồ thị của từng bước (DFS sao 1000 đỉnh: 4998 bước, 4,1 s, trong đó 2,6 s là `cloneGraph`), nên sửa `buildGraph` chưa đủ để nâng
   quy mô test sao/đường thẳng lên 1000 đỉnh.
-- Thẻ số lần gọi DFS dùng chung id `#graph-dequeues` với BFS (`graph.js:654-655,770-771`, `app.html:1869-1870`); nhãn đổi theo thao tác
-  nên hiển thị đúng, chỉ là tên id gây hiểu nhầm.
+- Một thẻ số đo duyệt chung cho BFS và DFS, id `#graph-traversal-count` và `#graph-traversal-count-label`
+  (`graph.js:654-655,770-771`, `app.html:1869-1870`): BFS ghi số lần dequeue, DFS ghi số lần gọi; nhãn và giá trị đổi theo thao tác.
+  Đây là MỘT phần tử dùng chung, không phải id trùng; `tests/template-ids.test.js` chặn id trùng thật.

@@ -766,13 +766,13 @@ test('BFS: chọn thao tác BFS thì nhãn ô chọn đỉnh là "Đỉnh nguồ
     const label = () => ui.$('label[for="graph-source"]').textContent.trim()
     assert.equal(label(), 'Đỉnh u')
     assert.equal(ui.$('#graph-bfs-panel').hidden, true)
-    assert.equal(ui.text('#graph-dequeues'), '—')
+    assert.equal(ui.text('#graph-traversal-count'), '—')
 
     ui.change('#graph-operation', 'bfs')
     assert.equal(label(), 'Đỉnh nguồn s')
     assert.equal(ui.$('#graph-bfs-panel').hidden, false)
     assert.equal(ui.text('#graph-bfs-queue'), '(rỗng)')
-    assert.equal(ui.text('#graph-dequeues'), '0')
+    assert.equal(ui.text('#graph-traversal-count'), '0')
     assert.ok(bfsTableRows(ui).every(([, distance, parent]) => distance === '—' && parent === '—'))
 
     ui.change('#graph-operation', 'neighbors')
@@ -793,7 +793,7 @@ test('BFS Mẫu vô hướng từ A theo danh sách: 18 bước, reads 8, dequeu
     }
     assert.equal(clicks, 17)
     assert.equal(ui.text('#graph-reads'), '8')
-    assert.equal(ui.text('#graph-dequeues'), '4')
+    assert.equal(ui.text('#graph-traversal-count'), '4')
     assert.equal(ui.text('#graph-result'), 'Tới được 4/7 đỉnh: A, B, C, D')
     assert.equal(ui.activeLine(), 'return dist, parent')
     assert.deepEqual(listItems(ui, '#graph-bfs-order .graph-bfs-order-item'), ['A', 'B', 'C', 'D'])
@@ -883,7 +883,7 @@ test('Renderer rẽ nhánh theo step.operation: nạp bước BFS khi select đa
     assert.equal(badgeText(ui, 'D'), 'd=2')
     assert.equal(badgeText(ui, 'A'), 's·0')
     assert.equal(ui.activeLine(), bfsModule.listBfsPseudocode[5])
-    assert.equal(ui.text('#graph-dequeues'), '3')
+    assert.equal(ui.text('#graph-traversal-count'), '3')
   })
 })
 
@@ -909,7 +909,7 @@ test('Renderer bỏ qua id lạ trong bước BFS (orderIds, frontierIds, distan
     assert.equal(ui.document.querySelectorAll('#graph-svg .graph-edge.is-tree').length, 1)
     assert.equal(ui.document.querySelectorAll('#graph-svg .is-current').length, 0)
     assert.equal(bfsTableRows(ui).length, 3)
-    assert.equal(ui.text('#graph-dequeues'), '1')
+    assert.equal(ui.text('#graph-traversal-count'), '1')
   })
 })
 
@@ -1338,7 +1338,7 @@ test('Learning Panel DFS có hướng ghi "tổng bậc ra"; số liệu đọc 
     ui.handle.loadSteps([dfsModule.generateGraphDfsSteps(k6, 'v1', 'matrix').at(-1)])
     assert.match(ui.text('#graph-dfs-cost'), /R = 6 lần gọi \+ 36 ô đã đọc = R·V = 6·6 \(tối đa V² = 36\)/)
     assert.match(ui.text('#graph-dfs-cost'), /sâu nhất 6 khung \(tối đa V = 6\)/)
-    assert.deepEqual([ui.text('#graph-dequeues'), ui.text('#graph-stack-depth')], ['6', '6'])
+    assert.deepEqual([ui.text('#graph-traversal-count'), ui.text('#graph-stack-depth')], ['6', '6'])
   })
 })
 
@@ -1356,9 +1356,9 @@ test('Learning Panel DFS giữa chừng (vào D): ghi số đã đếm tới bư
 
 test('Thẻ số liệu: nhãn đổi theo thao tác (dequeue / gọi DFS); độ sâu "tối đa tới bước này" giữ giá trị lớn nhất khi quay lui', () => {
   withGraph((ui) => {
-    const label = () => ui.text('#graph-dequeues-label')
+    const label = () => ui.text('#graph-traversal-count-label')
     assert.equal(ui.text('#graph-stack-depth-label'), 'Độ sâu ngăn xếp DFS (tối đa tới bước này)')
-    assert.deepEqual([ui.text('#graph-dequeues'), ui.text('#graph-stack-depth')], ['—', '—'])
+    assert.deepEqual([ui.text('#graph-traversal-count'), ui.text('#graph-stack-depth')], ['—', '—'])
 
     ui.query('bfs', 'A')
     assert.equal(label(), 'Số lần dequeue (BFS)')
@@ -1366,12 +1366,12 @@ test('Thẻ số liệu: nhãn đổi theo thao tác (dequeue / gọi DFS); đ�
 
     ui.query('dfs', 'A')
     assert.equal(label(), 'Số lần gọi DFS')
-    assert.deepEqual([ui.text('#graph-dequeues'), ui.text('#graph-stack-depth')], ['0', '0'])
+    assert.deepEqual([ui.text('#graph-traversal-count'), ui.text('#graph-stack-depth')], ['0', '0'])
     clickNext(ui, 13)
-    assert.deepEqual([ui.text('#graph-dequeues'), ui.text('#graph-stack-depth')], ['4', '4'])
+    assert.deepEqual([ui.text('#graph-traversal-count'), ui.text('#graph-stack-depth')], ['4', '4'])
     clickNext(ui, 4)
     assert.match(ui.text('#graph-message'), /^Đọc hết Adj\[B\]/)
-    assert.deepEqual([ui.text('#graph-dequeues'), ui.text('#graph-stack-depth')], ['4', '4'], 'ngăn xếp chỉ còn A nhưng tối đa vẫn 4')
+    assert.deepEqual([ui.text('#graph-traversal-count'), ui.text('#graph-stack-depth')], ['4', '4'], 'ngăn xếp chỉ còn A nhưng tối đa vẫn 4')
   })
 })
 
