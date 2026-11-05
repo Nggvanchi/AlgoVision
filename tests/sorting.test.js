@@ -1,6 +1,7 @@
 
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
 
 import { generateBubbleSortSteps, bubbleSortPseudocode } from '../src/algorithms/bubbleSort.js'
 import { generateSelectionSortSteps, selectionSortPseudocode } from '../src/algorithms/selectionSort.js'
@@ -402,5 +403,42 @@ test('Bubble Sort: bước break đánh dấu toàn mảng đã sắp xếp', ()
     )
 
     assert.deepEqual(breakStep.sortedIndices, [0, 1, 2, 3, 4], `[${input}]`)
+  }
+})
+
+// --- Selection Sort: lời giải thích phân biệt bước "So sánh" và bước "Tìm thấy nhỏ hơn" (R9) ---
+// Quy ước vị trí: đánh số từ 1 (khớp "vị trí ${i + 1}" sẵn có của Selection và "vị trí ${j + 2}" của Insertion).
+
+test('Selection Sort: message nêu vị trí của hai cột được tô ở bước So sánh và bước Tìm thấy nhỏ hơn', () => {
+  const steps = generateSelectionSortSteps([30, 20, 10])
+
+  // Dò tay: i = 0: so sánh (30,20) → min mới 20; so sánh (20,10) → min mới 10; i = 1: so sánh (20,30) không đổi min.
+  assert.deepEqual(
+    steps.slice(1, 5).map((step) => step.message),
+    [
+      'So sánh giá trị nhỏ nhất hiện tại 30 (vị trí 1) với 20 (vị trí 2).',
+      'Tìm thấy 20 (vị trí 2) nhỏ hơn 30: ghi nhận làm giá trị nhỏ nhất mới. Hai cột được tô: vị trí cần đặt 1 và vị trí nhỏ nhất mới 2.',
+      'So sánh giá trị nhỏ nhất hiện tại 20 (vị trí 2) với 10 (vị trí 3).',
+      'Tìm thấy 10 (vị trí 3) nhỏ hơn 20: ghi nhận làm giá trị nhỏ nhất mới. Hai cột được tô: vị trí cần đặt 1 và vị trí nhỏ nhất mới 3.',
+    ],
+  )
+
+  const nextRound = steps.find((step, index) => index > 5 && step.comparisons === 3)
+
+  assert.equal(nextRound.message, 'So sánh giá trị nhỏ nhất hiện tại 20 (vị trí 2) với 30 (vị trí 3).')
+})
+
+// Fixture chụp từ main trước khi sửa lời giải thích (mọi trường trừ message), tạo bằng chính generator cũ.
+const selectionMainSnapshot = JSON.parse(
+  await readFile(new URL('./fixtures/selection-sort-main.json', import.meta.url), 'utf8'),
+)
+
+test('Selection Sort: ngoài message, số bước, mảng, bộ đếm, comparing, swapped, sortedIndices và pseudocodeLine giống hệt main', () => {
+  assert.equal(selectionMainSnapshot.length, 7)
+
+  for (const { input, steps: expected } of selectionMainSnapshot) {
+    const actual = generateSelectionSortSteps(input).map(({ message, ...rest }) => rest)
+
+    assert.deepEqual(actual, expected, `[${input}]`)
   }
 })
