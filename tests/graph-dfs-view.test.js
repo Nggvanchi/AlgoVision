@@ -1,4 +1,4 @@
-import test from 'node:test'
+import test, { afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { Window } from 'happy-dom'
 import { readFile } from 'node:fs/promises'
@@ -19,8 +19,13 @@ const dfsFromA = (pairs, representation) => {
   return { graph, steps: generateGraphDfsSteps(graph, idOf(graph, 'A'), representation) }
 }
 
+// Cửa sổ happy-dom chỉ được giải phóng khi close() (abort() không giải phóng DOM): đóng sau mỗi test.
+const openWindows = []
+afterEach(() => Promise.all(openWindows.splice(0).map((window) => window.happyDOM.close())))
+
 function createDocument() {
   const window = new Window()
+  openWindows.push(window)
   return { window, document: window.document }
 }
 

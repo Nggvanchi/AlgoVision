@@ -38,7 +38,7 @@ async function withApp(run) {
   } finally {
     document.querySelector('#reset-sort')?.click()
     document.querySelector('#search-pause')?.click()
-    window.happyDOM.abort()
+    window.happyDOM.close()
 
     if (previousDocument === undefined) {
       delete globalThis.document

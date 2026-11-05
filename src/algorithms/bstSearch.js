@@ -1,5 +1,6 @@
-import { validateValue } from '../structures/bst.js'
+import { getNodeCount, validateValue } from '../structures/bst.js'
 import { createBstStepFactory } from './bstStep.js'
+import { assertWithinStepLimit } from './stepLimit.js'
 
 // Sinh các bước tìm x trên BST. Mỗi bước sau bước 0 là một lần xét nút (so sánh ba nhánh tính là 1),
 // riêng bước kết luận "không tìm thấy" thì không so sánh (giống Binary Search).
@@ -19,8 +20,14 @@ const LINE = {
   NOT_FOUND: 6,
 }
 
+// Số bước: 1 (bắt đầu) + k nút được xét + 1 nếu không tìm thấy; k ≤ n nên tối đa n + 2.
+export function bstSearchStepLimit(tree) {
+  return getNodeCount(tree) + 2
+}
+
 export function generateBstSearchSteps(tree, value) {
   validateValue(value)
+  const limit = bstSearchStepLimit(tree)
 
   const createStep = createBstStepFactory('search', value)
   const steps = [createStep({ tree, message: `Bắt đầu tìm ${value} từ gốc.` })]
@@ -29,6 +36,7 @@ export function generateBstSearchSteps(tree, value) {
   let currentId = tree.rootId
 
   while (currentId !== null) {
+    assertWithinStepLimit(steps, limit, 'BST Search')
     const node = tree.nodes[currentId]
     pathIds.push(currentId)
     comparisons++

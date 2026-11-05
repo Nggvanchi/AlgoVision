@@ -1,14 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import * as hashTable from '../src/structures/hashTable.js'
-
-function deepFreeze(value) {
-  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
-    Object.freeze(value)
-    Object.values(value).forEach(deepFreeze)
-  }
-  return value
-}
+import { deepFreeze } from './helpers/deep-freeze.js'
 
 // Mô tả gọn từng ô: số = khóa, '·' = trống, 'DEL' = tombstone.
 const cellsOf = (table) => table.cells.map((cell) => {

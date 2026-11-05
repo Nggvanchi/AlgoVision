@@ -10,7 +10,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node --test"
+    "test": "node --test --test-timeout=30000"
   },
   "devDependencies": {
     "happy-dom": "^21.0.4",

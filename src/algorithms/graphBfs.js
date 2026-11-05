@@ -1,7 +1,8 @@
-import { listVertices } from '../structures/graph.js'
+import { countVertices, listVertices } from '../structures/graph.js'
 import {
-  createGraphStepFactory, labelOf, representationNames, snapshotOf, validateQuery,
+  createGraphStepFactory, labelOf, maxTraversalReads, representationNames, snapshotOf, validateQuery,
 } from './graphStep.js'
+import { assertWithinStepLimit } from './stepLimit.js'
 
 // BFS từ một nguồn s (không chạy tiếp các thành phần liên thông khác). Có hướng: chỉ đi theo cạnh ra.
 // Đánh dấu visited lúc ENQUEUE, nên mỗi đỉnh vào hàng đợi đúng một lần và dist gán một lần là đúng ngay.
@@ -116,8 +117,15 @@ function scanMatrix(graph, state, createStep, vertexId, steps) {
   }
 }
 
+// Số bước: danh sách 2R + D + 2, ma trận 2R + R·V + 2 (R = số đỉnh tới được, D = tổng bậc ra của R đỉnh).
+// Giới hạn cho chốt an toàn: thay R = V và D = tổng độ dài danh sách kề (lần chạy đúng không bao giờ vượt).
+export function bfsStepLimit(graph, representation) {
+  return 2 * countVertices(graph) + maxTraversalReads(graph, representation) + 2
+}
+
 export function generateGraphBfsSteps(graph, sourceId, representation) {
   validateQuery(graph, representation, [sourceId])
+  const limit = bfsStepLimit(graph, representation)
 
   const createStep = createGraphStepFactory('bfs', { representation, sourceId }, {
     visitedIds: [],
@@ -150,6 +158,7 @@ export function generateGraphBfsSteps(graph, sourceId, representation) {
   }))
 
   while (state.queue.length > 0) {
+    assertWithinStepLimit(steps, limit, 'BFS')
     const vertexId = state.queue.shift()
     state.order.push(vertexId)
     steps.push(createStep({

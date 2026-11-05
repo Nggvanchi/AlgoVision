@@ -1,5 +1,6 @@
-import { cloneTree, validateValue } from '../structures/bst.js'
+import { cloneTree, getNodeCount, validateValue } from '../structures/bst.js'
 import { createBstStepFactory } from './bstStep.js'
+import { assertWithinStepLimit } from './stepLimit.js'
 
 // Sinh các bước xóa x khỏi BST, đủ ba trường hợp; nút hai con dùng successor (nhỏ nhất của cây con phải).
 // comparisons đếm giống Search: mỗi nút được xét trên đường tìm z tính 1, gồm cả z.
@@ -55,8 +56,16 @@ function keepExisting(tree, ids) {
   return ids.filter((id) => Object.hasOwn(tree.nodes, id))
 }
 
+// Số bước tối đa n + 2: không tìm thấy 1 + k + 1 (k ≤ n nút đã xét); lá 1 + d + 2 với d ≤ n − 1 tổ tiên;
+// một con d + 3 với d ≤ n − 2; hai con d + m + 5 (m lần đi trái tìm successor) với d + m + 3 ≤ n
+// (tổ tiên, z, z.left, z.right và m nút trên đường tới successor là các nút khác nhau).
+export function bstDeleteStepLimit(tree) {
+  return getNodeCount(tree) + 2
+}
+
 export function generateBstDeleteSteps(tree, value) {
   validateValue(value)
+  const limit = bstDeleteStepLimit(tree)
 
   const createStep = createBstStepFactory('delete', value)
   const steps = [createStep({ tree, message: `Bắt đầu tìm ${value} để xóa.` })]
@@ -66,6 +75,7 @@ export function generateBstDeleteSteps(tree, value) {
   let zId = tree.rootId
 
   while (zId !== null && tree.nodes[zId].value !== value) {
+    assertWithinStepLimit(steps, limit, 'BST Delete')
     const node = tree.nodes[zId]
     const goLeft = value < node.value
     pathIds.push(zId)
@@ -180,6 +190,7 @@ export function generateBstDeleteSteps(tree, value) {
   }))
 
   while (tree.nodes[successorId].left !== null) {
+    assertWithinStepLimit(steps, limit, 'BST Delete')
     successorParentId = successorId
     successorId = tree.nodes[successorId].left
 

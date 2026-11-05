@@ -1,3 +1,5 @@
+import { assertWithinStepLimit } from './stepLimit.js'
+
 // Sinh các bước Binary Search trên mảng đã sắp xếp tăng dần.
 // Target được chốt một lần khi sinh bước; mỗi bước sau bước đầu là một phép so sánh,
 // riêng bước kết luận "không tìm thấy" thì không.
@@ -22,7 +24,14 @@ const LINE = {
   NOT_FOUND: 10,
 }
 
+// Số bước tối đa: bước đầu + tối đa ⌊log2 n⌋ + 1 lần so sánh (mỗi lần một bước) + bước kết luận "không tìm thấy".
+// 32 − clz32(n) = ⌊log2 n⌋ + 1 cho n ≥ 1 và 0 cho n = 0, tính bằng số nguyên (không sai số của Math.log2).
+export function binarySearchStepLimit(length) {
+  return 32 - Math.clz32(length) + 2
+}
+
 export function generateBinarySearchSteps(numbers, target) {
+  const limit = binarySearchStepLimit(numbers.length)
   const steps = []
   let comparisons = 0
   let left = 0
@@ -48,6 +57,7 @@ export function generateBinarySearchSteps(numbers, target) {
   steps.push(createStep({ message: `Bắt đầu tìm ${target}.` }))
 
   while (left <= right) {
+    assertWithinStepLimit(steps, limit, 'Binary Search')
     mid = Math.floor((left + right) / 2)
 
     const currentValue = numbers[mid]

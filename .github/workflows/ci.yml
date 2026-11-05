@@ -23,6 +23,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    # Mặc định 360 phút. Job đầy đủ mất khoảng 1 phút (Windows ~61 s ở run 41882547009); vòng lặp đồng bộ
+    # không cấp phát thì --test-timeout không bắt được, giới hạn này chặn job treo nhiều giờ.
+    timeout-minutes: 15
     steps:
       # https://github.com/actions/checkout/releases (v7.0.1, 2026-07-20)
       - uses: actions/checkout@v7

@@ -60,7 +60,7 @@ function setupHashTable() {
     activeLine: () => $('#hash-table-pseudocode .pseudocode-line.is-active')?.textContent ?? null,
     cleanup() {
       $('#hash-table-pause')?.click()
-      window.happyDOM.abort()
+      window.happyDOM.close()
     },
   }
 
@@ -473,7 +473,7 @@ test('renderHashTable bỏ qua id không có trong bảng và ô ngoài phạm v
     assert.equal(svg.querySelectorAll('.is-current, .is-found').length, 0)
     assert.equal(svg.querySelectorAll('.hash-entry.is-path').length, 1)
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 

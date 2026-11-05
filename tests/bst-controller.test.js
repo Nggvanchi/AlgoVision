@@ -53,7 +53,7 @@ function setupBst() {
     nodeByValue: (value) => document.querySelector(`#bst-tree .bst-node[data-value="${value}"]`),
     cleanup() {
       $('#bst-pause')?.click()
-      window.happyDOM.abort()
+      window.happyDOM.close()
     },
   }
 
@@ -393,7 +393,7 @@ test('renderBstTree bỏ qua id không có trong tree.nodes', () => {
     assert.equal(svg.querySelectorAll('.is-current, .is-found, .is-successor').length, 0)
     assert.equal(svg.querySelectorAll('.bst-node.is-path').length, 1)
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 

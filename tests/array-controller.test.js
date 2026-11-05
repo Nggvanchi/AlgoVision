@@ -42,7 +42,7 @@ test('khởi tạo Array Visualizer với mảng mặc định', () => {
       '10',
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -64,7 +64,7 @@ test('thêm phần tử vào cuối mảng', () => {
       6,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -83,7 +83,7 @@ test('chèn phần tử vào index được chọn', () => {
       [10, 20, 25, 30, 40, 50],
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -101,7 +101,7 @@ test('xóa phần tử theo index', () => {
       [10, 30, 40, 50],
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -119,7 +119,7 @@ test('tìm kiếm giá trị có trong mảng', () => {
       /index 2/,
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -137,7 +137,7 @@ test('hiển thị lỗi khi index không hợp lệ', () => {
       'error',
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
 
@@ -156,6 +156,6 @@ test('reset khôi phục mảng ban đầu', () => {
       [10, 20, 30, 40, 50],
     )
   } finally {
-    window.happyDOM.abort()
+    window.happyDOM.close()
   }
 })
