@@ -10,8 +10,10 @@ Tối ưu phải bắt đầu từ số đo, không từ cảm giác. Script ch�
 
 ## Lệnh
 
+Chạy từ gốc repo (đường dẫn tương đối; đường dẫn tuyệt đối của repo có dấu cách):
+
 ```
-node ${CLAUDE_SKILL_DIR}/scripts/profile-tests.mjs [file...] [--heap MB] [--timeout giây] [--json <file ngoài repo>]
+node .claude/skills/test-profile/scripts/profile-tests.mjs [file...] [--heap MB] [--timeout giây] [--json <file ngoài repo>]
 ```
 
 Không truyền file thì đo mọi `tests/**/*.test.js`. Bảng xếp theo thời gian giảm dần; cuối bảng có TỔNG, RSS lớn nhất và các file KHÔNG XANH.
