@@ -20,6 +20,10 @@ async function loadTemplate(fetchImpl) {
 function createErrorView(root, onRetry) {
   const document = root.ownerDocument
 
+  // Khối bọc căn giữa cả vùng lỗi lẫn nút (CSS .load-error-screen). Nút là anh em của vùng role="alert", không nằm trong nó.
+  const screen = document.createElement('div')
+  screen.className = 'load-error-screen'
+
   const container = document.createElement('div')
   container.className = 'load-error'
   container.setAttribute('role', 'alert')
@@ -38,7 +42,9 @@ function createErrorView(root, onRetry) {
   button.textContent = 'Thử lại'
   button.addEventListener('click', onRetry)
 
-  return { container, detail, button }
+  screen.append(container, button)
+
+  return { screen, container, detail, button }
 }
 
 // root: phần tử #app. start: khởi động các init* sau khi template đã dựng (main.js truyền bản thật,
@@ -65,7 +71,7 @@ export async function bootApp(root, { fetchImpl = (...args) => fetch(...args), s
   function showError(error) {
     if (!errorView) {
       errorView = createErrorView(root, attempt)
-      root.replaceChildren(errorView.container, errorView.button)
+      root.replaceChildren(errorView.screen)
     }
 
     errorView.detail.textContent = error?.message || 'Lỗi không xác định.'

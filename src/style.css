@@ -3165,19 +3165,25 @@ button.dashboard-card:hover {
   }
 }
 
-/* Màn hình lỗi khi không tải được app.html (src/bootstrap.js) */
+/* Màn hình lỗi khi không tải được app.html (src/bootstrap.js): khối bọc căn giữa cả vùng lỗi lẫn nút.
+   min-height (không phải height) để nội dung cao hơn viewport thì khối tự giãn thay vì cắt phần đầu. */
+.load-error-screen {
+  min-height: 100vh;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .load-error {
+  width: 100%;
   max-width: 480px;
-  margin: 20vh auto 16px;
-  padding: 0 16px;
+  margin: 0 0 16px;
   text-align: center;
 }
 
 .load-error-detail {
   color: var(--muted);
   font-size: 13px;
-}
-
-.load-error-retry {
-  margin: 0 auto;
 }
