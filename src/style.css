@@ -444,6 +444,13 @@ button:disabled {
   font-size: 25px;
 }
 
+/* Tiêu đề Queue đổi từ h2 sang h3 (tránh hai h2 và bước nhảy h2 -> h4): giữ đúng số đo của h2 mặc định
+   (font-size 24px, margin 0,83em = 19,92px, đậm 700) để giao diện không đổi. */
+.visualizer-header h3 {
+  margin: 0.83em 0;
+  font-size: 1.5em;
+}
+
 .visualizer-placeholder h4 {
   margin: 19px 0 0;
   color: #e8e6f3;
@@ -630,7 +637,8 @@ button:disabled {
   gap: 16px;
 }
 
-.visualizer-heading h4 {
+/* #visualizer-title là h3 (dưới h2 tiêu đề trang) nhưng giữ nguyên kiểu cũ của h4: đã đo computed style trước và sau. */
+.visualizer-heading h3 {
   margin: 0;
   color: #e8e6f3;
   font-size: 16px;
