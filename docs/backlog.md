@@ -18,13 +18,11 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 
 ## Giao diện
 - Click thẻ thuật toán Sorting luôn tạo mảng mới (hành vi có từ trước).
-- Rà soát giao diện ở 360px (chưa khảo sát, đầu vào cho bước rà soát giao diện): chữ Big-O của linear probing, tiêu đề bảng mốc DFS,
+- Rà soát giao diện ở 360px (chưa khảo sát, đầu vào cho bước rà soát giao diện): chữ Big-O của linear probing,
   viền "ô đã dò" bị che ở PR #6/#9.
 - L3, màn hình lỗi tải template (`src/bootstrap.js`): khóa nút "Thử lại" bằng `disabled` làm focus rơi về `body` trong lúc đang tải
   (đo Chrome 153: `activeElement` = `body` khi nút disabled, nút nhận lại focus khi tải thất bại). Cân nhắc `aria-disabled="true"` kèm chặn
   click trong listener để nút giữ focus; phải sửa test (h) ở `tests/bootstrap.test.js` cùng lúc (hiện kiểm `button.disabled`).
-- Bảng mốc DFS ở 360px (R10): `th` chỉ có padding 1px nên "Đỉnh vào" và "parent trạng thái" dính nhau, nhãn "chưa thăm" xuống 2 dòng trong
-  từng hàng; bảng 272px vừa khít khung, không tràn (đo Chrome 153/Linux, bước DFS(D) trên đồ thị mẫu).
 - Hai mục 360px cũ KHÔNG tái hiện (Chrome 153/Linux): chữ Big-O trung bình của linear probing rộng 223px trong thẻ 226–296px ở 320/360/390px
   nên luôn 1 dòng, chỉ xuống 2 dòng ở 1280px trong thẻ 177px (chấp nhận); viền "ô đã dò" nằm trọn trong khung (probing: lề ≥ 6px;
   chaining preset 14 khóa: 0/14 ô bị cắt).
@@ -39,7 +37,8 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Message Selection ở bước "Tìm thấy nhỏ hơn" dài hơn: 4 dòng (94,4 px) ở 360px, 3 dòng (71,6 px) ở 1280px, so với 2 dòng ở bước So sánh
   (đo Chrome, mảng cố định 85, 47, 62…). `#simulation-message` nằm cuối khung nên chỉ làm trang dài thêm 22,8 px, không đẩy nút điều khiển;
   trước PR này vùng đó cũng đã dao động 48,8 ↔ 71,6 px giữa các bước. Chưa xử lý; cân nhắc `min-height` cho vùng message của Sắp xếp.
-- R12: khung bảng chaining cuộn ngang 21px ở 1280px với preset va chạm nặng (svg 876px, khung 871px, scrollWidth 892px).
+- Comment đầu `src/hash-table-layout.js` ghi "để vẽ mũi tên" nhưng chuỗi chaining chỉ vẽ đường nối thẳng (`line`, không đầu mũi tên); sửa comment hoặc thêm đầu mũi tên.
+- Bảng mốc DFS (PR `fix/layout-tables`) mới đo với Consolas gốc và Courier New mô phỏng font Linux; chưa kiểm font monospace thật của Linux (Liberation/DejaVu).
 - Thanh bên là `<aside>` chứa 4 nút `button.nav-item`, chưa có `<nav aria-label>`: trình đọc màn hình không có landmark điều hướng chính (skip link
   đã giúp người dùng bàn phím bỏ qua được, nhưng danh sách landmark chỉ có complementary và main).
 - Heading "Queue Visualizer" (đổi từ h2 sang h3 ở PR `fix/a11y-landmarks`) giữ kiểu mặc định của h2 cũ: 24px, đậm 700, margin 19,92px (luật
