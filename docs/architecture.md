@@ -1,7 +1,8 @@
 # Kiến trúc AlgoVision
 
 Tài liệu tra cứu chi tiết cho người (và Claude Code) sửa một module. Tổng quan ngắn nằm trong `CLAUDE.md`.
-Dẫn chứng `file:dòng` đối chiếu với code ngày 2026-11-04 (`main` sau PR #10); khi sửa code làm lệch dòng, cập nhật theo.
+Dẫn chứng `file:dòng` đối chiếu với code ngày 2026-11-04 (`main` sau PR #10), dòng của `graphBfs.js`, `graphDfs.js` và
+`tests/graph-{bfs,dfs}.test.js` đối chiếu lại ngày 2026-11-05 (branch `chore/test-hardening`); khi sửa code làm lệch dòng, cập nhật theo.
 Phần mô tả hành vi chi tiết của từng module chuyển từ CLAUDE.md và có test tương ứng; dẫn chứng `file:dòng` chỉ gắn cho định nghĩa chính.
 
 ## Các lớp của một module (BST, Hash Table, Graph)
@@ -129,7 +130,8 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
   cạnh ra. Mỗi lần đọc phần tử Adj[u] / ô ma trận là một bước (kể cả ô 0).
 - Trường thêm qua `extraDefaults`: `visitedIds`, `frontierIds` (hàng đợi, đầu hàng ở index 0), `orderIds`, `distance`, `parentIds`.
 - Số bước: danh sách 2R + D + 2, ma trận 2R + R·V + 2 (R = số đỉnh tới được, D = tổng bậc ra của R đỉnh); reads = D hoặc R·V
-  (chú thích reads ở `graphBfs.js:15`; công thức số bước chưa ghi trong file, kiểm bởi `tests/graph-complexity.test.js`).
+  (chú thích reads ở `graphBfs.js:15`, công thức số bước ở `bfsStepLimit` `graphBfs.js:120`; kiểm bởi `tests/graph-complexity.test.js`).
+  Giới hạn chốt an toàn `bfsStepLimit` = công thức với R = V, D = tổng độ dài danh sách kề (`maxTraversalReads`, `graphStep.js:45`).
 - `src/graph-bfs-view.js`: hàng đợi (`renderBfsQueue` :72, khung cuộn ngang riêng), thứ tự lấy ra (:107), bảng dist/parent (:140),
   cạnh cây `is-tree` (có hướng chỉ khớp chiều parent → con), vòng nét đứt `is-queued`, `describeBfsCost` (:179) cho `#graph-bfs-cost`.
 - Bất biến: `assertBfsStepInvariants` trong `tests/helpers/graph-step-invariants.js`.
@@ -137,9 +139,9 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
 ### DFS (`src/algorithms/graphDfs.js`)
 - Một nguồn s, ngăn xếp tường minh (khung = đỉnh + vị trí đọc kế tiếp), thứ tự trùng DFS đệ quy (visited lúc VÀO, duyệt theo Adj).
 - Trường thêm: `visitedIds` (thứ tự thăm), `callStackIds` (đáy ở index 0), `finishedIds`, `discovery`/`finish` (t tăng 1 mỗi lần vào
-  và ra, `graphDfs.js:13`), `parentIds`. result `{ reachable, maxStackDepth }`.
+  và ra, `graphDfs.js:14`), `parentIds`. result `{ reachable, maxStackDepth }`.
 - Bước: vào (dòng 2), đọc (dòng 4, +1 reads), gọi (dòng 5, gán parent khi w CHƯA thăm), ra (dòng 6); bước "ra s" là bước cuối.
-  Số bước: danh sách 3R + D, ma trận 3R + R·V (`graphDfs.js:20`); reads bằng BFS. `currentVertexId` luôn là đỉnh ngăn xếp
+  Số bước: danh sách 3R + D, ma trận 3R + R·V (`graphDfs.js:21`; giới hạn chốt `dfsStepLimit` với R = V); reads bằng BFS. `currentVertexId` luôn là đỉnh ngăn xếp
   (null khi rỗng); xám = `callStackIds`.
 - `src/graph-dfs-view.js`: ngăn xếp là cột dọc, đỉnh ở trên (`renderDfsStack` :98, đủ cao 8 khung), thứ tự thăm (:134), bảng
   vào/ra/parent/trạng thái (:163), vòng chấm `is-open`, tô đọc dở (khung xám đọc tới và gồm con ở khung trên), `describeDfsCost` (:220)
@@ -152,21 +154,27 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
 - Bất biến bước dùng chung `tests/helpers/step-invariants.js`; module bọc mỏng (`bst-step-invariants.js`, `hash-step-invariants.js`,
   `graph-step-invariants.js` với `assertBfsStepInvariants`, `assertDfsStepInvariants`). Helper bất biến phải có test âm
   (`tests/step-invariants.test.js`, `tests/graph-bfs-invariants.test.js`, `tests/graph-dfs-invariants.test.js`).
-- Số dò tay độc lập (thứ tự thăm, số bước, reads…) cho vài đồ thị/cây mẫu, ghi trong test (ví dụ `tests/graph-bfs.test.js:107`).
+- Số dò tay độc lập (thứ tự thăm, số bước, reads…) cho vài đồ thị/cây mẫu, ghi trong test (ví dụ `tests/graph-bfs.test.js:100`).
 - Đối chiếu với cài đặt tham chiếu độc lập khi có: DFS ngăn xếp tường minh so với DFS đệ quy, mọi nguồn × 5 đồ thị × 2 chế độ
-  × 2 biểu diễn (`tests/graph-dfs.test.js:38,262-280`).
+  × 2 biểu diễn (`tests/graph-dfs.test.js:31,255-273`).
 - Test Big-O với số cụ thể: `tests/complexity.test.js`, `bst-complexity`, `hash-table-complexity`, `hash-table-probing-complexity`,
   `graph-complexity`. Quy mô lớn: đường thẳng/sao 300 đỉnh, ma trận 50 đỉnh vì mỗi bước giữ bản sao đồ thị
   (`tests/graph-complexity.test.js:112-116,170-208,267`).
-- `deepFreeze` để bắt sửa nhầm snapshot: hiện có ở 8 file test graph/hash (mỗi file tự định nghĩa); BST, Sorting, Searching chưa dùng.
+- `deepFreeze` để bắt sửa nhầm snapshot: `tests/helpers/deep-freeze.js`, dùng ở 8 file test graph/hash; BST, Sorting, Searching chưa dùng.
+- Chốt an toàn số bước (`src/algorithms/stepLimit.js`): 7 generator có vòng `while` (BFS, DFS, Binary Search, BST Search, Insert,
+  Delete, Min/Max) export `*StepLimit` và gọi `assertWithinStepLimit` ở đầu mỗi vòng; vượt giới hạn ném RangeError. Giới hạn:
+  BFS 2V + D + 2 / 2V + V² + 2, DFS 3V + D / 3V + V², Binary ⌊log2 n⌋ + 3, BST Search/Delete/MinMax n + 2, Insert max(2, 2n + 1).
+  Test: `tests/step-limit.test.js`, `graph-step-limit`, `bst-step-limit`, `binary-search-step-limit` (đầu vào xấu nhất đúng bằng giới hạn).
+- Test canh gác ở `tests/meta/`: `no-dom-in-equal` (phần tử DOM trong `assert.equal`…), `no-happy-dom-abort` (dọn cửa sổ bằng `close()`).
 - Phá thử logic (mutation, skill `mutation-test`) và ghi kết quả vào mô tả PR.
 - Kiểm trình duyệt ở 360px và 1280px: không tràn trang, console sạch. PR #5–#9 ghi đã kiểm bằng Chrome headless nhưng lệnh và
   script không được lưu lại trong repo; từ khi deploy: kiểm bằng link preview Vercel của PR.
 
 ## Lỗi đã biết liên quan cấu trúc
 
-- Generator chưa có chốt an toàn về số bước: lỗi kiểu "quên pop" làm treo/tràn heap thay vì ném lỗi rõ ràng (bảng phá thử PR #9).
 - `buildGraph` (`structures/graph.js:158-175`) gọi `addVertex`/`addEdge` lần lượt, mỗi lần tạo bản sao đồ thị: chậm ở quy mô lớn
-  (1000 đỉnh ~1,3 s).
+  (đo 2026-11-05: sao 300 đỉnh 39–73 ms, 1000 đỉnh 0,7–1,0 s, 2000 đỉnh 5,6 s). Phần lớn thời gian test đồ thị lớn lại nằm ở bản sao
+  đồ thị của từng bước (DFS sao 1000 đỉnh: 4998 bước, 4,1 s, trong đó 2,6 s là `cloneGraph`), nên sửa `buildGraph` chưa đủ để nâng
+  quy mô test sao/đường thẳng lên 1000 đỉnh.
 - Thẻ số lần gọi DFS dùng chung id `#graph-dequeues` với BFS (`graph.js:654-655,770-771`, `app.html:1869-1870`); nhãn đổi theo thao tác
   nên hiển thị đúng, chỉ là tên id gây hiểu nhầm.

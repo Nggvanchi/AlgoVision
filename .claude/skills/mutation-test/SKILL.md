@@ -7,7 +7,7 @@ description: Quy trình mutation test và đo bộ nhớ/thời gian cho test c�
 
 ## Nguyên tắc
 
-- **Mốc đối chứng trước.** Chạy đúng lệnh, đúng heap, đúng file nhưng KHÔNG có thay đổi. Nếu mốc đã đỏ hoặc đã tràn heap thì mọi kết quả ở điều kiện đó vô giá trị: tăng heap hoặc đổi cách đo, rồi chạy lại mốc. (Ví dụ thật: `tests/searching-controller.test.js` tràn heap ở 512 MB ngay cả khi xanh.)
+- **Mốc đối chứng trước.** Chạy đúng lệnh, đúng heap, đúng file nhưng KHÔNG có thay đổi. Nếu mốc đã đỏ hoặc đã tràn heap thì mọi kết quả ở điều kiện đó vô giá trị: tăng heap hoặc đổi cách đo, rồi chạy lại mốc. (Ví dụ thật: trước khi dọn cửa sổ happy-dom bằng `close()`, `tests/graph-controller.test.js` tràn heap ở 768 MB ngay cả khi xanh, nên mọi mutation trên file đó ở mức heap cũ vô giá trị. Đo 2026-11-05: file nặng nhất xanh từ 128 MB.)
 - **Mỗi lần một thay đổi**, chạy riêng test liên quan bằng `--name`, để biết chính xác assert nào đỏ.
 - **Phân biệt hai loại bằng chứng** và ghi rõ loại nào trong báo cáo:
   - *Mutation nguồn* (sửa `src/`): chứng minh test bắt được hồi quy thật.
@@ -20,9 +20,12 @@ Chạy từ gốc repo (đường dẫn tương đối; đường dẫn tuyệt 
 Chạy một test có giới hạn (script luôn exit 0; đọc dòng VERDICT):
 
 ```
-node .claude/skills/mutation-test/scripts/run-isolated.mjs <file-test> --heap 768 --timeout 60 \
+node .claude/skills/mutation-test/scripts/run-isolated.mjs <file-test> --heap 512 --timeout 60 \
   --name "<regex tên test>" --expect "<thông điệp assert mới>" --label "<nhãn>" --log <file ngoài repo>
 ```
+
+512 MB gấp 4 lần mức tối thiểu của file nặng nhất (`graph-controller.test.js` 128 MB, `searching-controller.test.js` 64 MB).
+`--expect` so với output nguyên văn: lỗi ném ra in dạng `RangeError [Error]: <thông điệp>`, nên chỉ đặt phần thông điệp.
 
 Khôi phục file:
 - File KHÔNG có sửa đổi chưa commit: `git restore <file>`.

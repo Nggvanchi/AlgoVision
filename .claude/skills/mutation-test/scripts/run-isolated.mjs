@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Chạy một file test node:test riêng lẻ, có giới hạn heap và thời gian, rồi tóm tắt kết quả.
 // Dùng:
-//   node run-isolated.mjs <file-test> [--heap 768] [--timeout 60] [--name "<regex tên test>"]
+//   node run-isolated.mjs <file-test> [--heap 512] [--timeout 60] [--name "<regex tên test>"]
 //                         [--expect "<thông điệp mong đợi>"] [--label "<nhãn>"] [--log <đường-dẫn-log>]
 // Script luôn exit 0; đọc dòng VERDICT để biết kết quả.
 import { spawnSync } from 'node:child_process'
@@ -24,7 +24,7 @@ function parseArgs(argv) {
 
 const options = parseArgs(process.argv.slice(2))
 if (!options.file) {
-  console.log('Thiếu file test. Ví dụ: node run-isolated.mjs tests/bst-controller.test.js --heap 768')
+  console.log('Thiếu file test. Ví dụ: node run-isolated.mjs tests/bst-controller.test.js --heap 512')
   process.exit(0)
 }
 

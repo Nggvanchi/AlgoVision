@@ -11,7 +11,7 @@ Mỗi giai đoạn một dòng. Chỉ bắt đầu giai đoạn mới khi ngư�
 | 7 | BST, Hash Table, Graph, BFS, DFS; dọn dẹp sau giai đoạn | Xong | #5, #6, #7, #8, #9, #10 |
 | — | Công cụ Claude Code (rule, skill, `docs/architecture.md`) | Xong | #11 |
 | — | Cấu trúc repo: CI, `.editorconfig`, LICENSE, roadmap/backlog, README | Xong | #12 |
-| — | Gia cố bộ test (test/hardening) | Kế hoạch | — |
+| — | Gia cố bộ test: dọn cửa sổ happy-dom, chốt số bước, test canh gác, timeout | Xong | branch `chore/test-hardening` |
 | 8 | Tiến độ học tập bằng `localStorage` (xử lý dữ liệu lỗi/thiếu) | Kế hoạch | — |
 | 9 | Kiểm thử tổng thể, UI/UX, deployment | Một phần: deployment xong (Vercel, tự deploy từ `main`) | — |
 
