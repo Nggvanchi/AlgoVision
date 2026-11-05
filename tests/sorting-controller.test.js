@@ -381,6 +381,8 @@ test('cột đang so sánh trong vùng đã sắp xếp vẫn hiển thị trạ
 function fixSortingArray(t, window, document, values) {
   const select = document.querySelector('#array-size')
 
+  // Ô chọn số phần tử trong giao diện thật chỉ có 8–24. Thêm option 0 và 1 chỉ để khóa nhánh phòng thủ của
+  // nhãn với mảng rỗng và mảng một phần tử: đó là trạng thái UI không có thật, không phải luồng người dùng.
   if (![...select.options].some((option) => Number(option.value) === values.length)) {
     const option = document.createElement('option')
 
