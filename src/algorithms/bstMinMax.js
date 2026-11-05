@@ -1,4 +1,6 @@
+import { getNodeCount } from '../structures/bst.js'
 import { createBstStepFactory } from './bstStep.js'
+import { assertWithinStepLimit } from './stepLimit.js'
 
 // Sinh các bước tìm giá trị nhỏ nhất (đi trái mãi) hoặc lớn nhất (đi phải mãi).
 // Kiểm tra cur.left != null không phải phép so sánh khóa nên comparisons giữ 0;
@@ -27,10 +29,16 @@ const LINE = {
   RESULT: 5,
 }
 
+// Số bước: 1 (bắt đầu) + 1 (ở gốc) + (k − 1) lần đi xuống + 1 (kết luận) với k ≤ n nút trên đường; cây rỗng 2.
+export function bstMinMaxStepLimit(tree) {
+  return getNodeCount(tree) + 2
+}
+
 export function generateBstMinMaxSteps(tree, kind) {
   if (!Object.hasOwn(bstMinMaxPseudocode, kind)) {
     throw new RangeError(`Thao tác không hợp lệ: ${kind}.`)
   }
+  const limit = bstMinMaxStepLimit(tree)
 
   const side = kind === 'min' ? 'left' : 'right'
   const label = kind === 'min' ? 'nhỏ nhất' : 'lớn nhất'
@@ -61,6 +69,7 @@ export function generateBstMinMaxSteps(tree, kind) {
   }))
 
   while (tree.nodes[currentId][side] !== null) {
+    assertWithinStepLimit(steps, limit, kind === 'min' ? 'BST Min' : 'BST Max')
     currentId = tree.nodes[currentId][side]
     pathIds.push(currentId)
 

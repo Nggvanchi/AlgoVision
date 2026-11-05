@@ -1,5 +1,6 @@
-import { insertValue, validateValue } from '../structures/bst.js'
+import { getNodeCount, insertValue, validateValue } from '../structures/bst.js'
 import { createBstStepFactory } from './bstStep.js'
+import { assertWithinStepLimit } from './stepLimit.js'
 
 // Sinh các bước chèn x vào BST (cài bằng vòng lặp). Mỗi nút trên đường đi có một bước so sánh
 // (tăng comparisons đúng 1), sau đó là bước đi xuống hoặc bước chèn (không so sánh thêm).
@@ -28,8 +29,15 @@ const LINE = {
   GO_RIGHT: 11,
 }
 
+// Số bước: 1 (bắt đầu) + 2 bước mỗi nút trên đường đi (so sánh, rồi đi xuống hoặc chèn; trùng chỉ 1) ≤ 2n + 1.
+// Cây rỗng: 2 bước (bắt đầu, tạo gốc), trả về trước vòng lặp.
+export function bstInsertStepLimit(tree) {
+  return Math.max(2, 2 * getNodeCount(tree) + 1)
+}
+
 export function generateBstInsertSteps(tree, value) {
   validateValue(value)
+  const limit = bstInsertStepLimit(tree)
 
   const createStep = createBstStepFactory('insert', value)
   const steps = [createStep({ tree, message: `Bắt đầu chèn ${value}.` })]
@@ -54,6 +62,7 @@ export function generateBstInsertSteps(tree, value) {
   let currentId = tree.rootId
 
   while (true) {
+    assertWithinStepLimit(steps, limit, 'BST Insert')
     const node = tree.nodes[currentId]
     pathIds.push(currentId)
     comparisons++
