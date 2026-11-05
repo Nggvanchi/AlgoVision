@@ -1,4 +1,4 @@
-import { cloneGraph, hasVertex } from '../structures/graph.js'
+import { adjacencyListSize, cloneGraph, countVertices, hasVertex } from '../structures/graph.js'
 
 // Khuôn bước chung cho mọi thao tác minh họa trên Graph (truy vấn ở PR Graph; BFS/DFS dùng lại qua extraDefaults).
 // Các trường lưu dữ liệu, tầng hiển thị lo định dạng chữ. Mọi id là id đỉnh ('v1', …), không phải nhãn.
@@ -38,6 +38,13 @@ export function validateQuery(graph, representation, vertexIds) {
   for (const id of vertexIds) {
     if (!hasVertex(graph, id)) throw new RangeError(`Đỉnh ${id} không có trong đồ thị.`)
   }
+}
+
+// Số lần đọc tối đa của một lần duyệt BFS/DFS (mọi đỉnh tới được): danh sách = tổng độ dài các Adj (E có hướng,
+// 2E vô hướng; adjacencyListSize còn đếm V đầu danh sách nên trừ đi), ma trận = V² ô. Dùng cho giới hạn số bước.
+export function maxTraversalReads(graph, representation) {
+  const vertexCount = countVertices(graph)
+  return representation === 'matrix' ? vertexCount * vertexCount : adjacencyListSize(graph) - vertexCount
 }
 
 // Mỗi bước nhận một bản sao đồ thị riêng: sửa bước này không ảnh hưởng bước khác hay đồ thị đầu vào.

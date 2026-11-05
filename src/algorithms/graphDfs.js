@@ -1,7 +1,8 @@
-import { listVertices } from '../structures/graph.js'
+import { countVertices, listVertices } from '../structures/graph.js'
 import {
-  createGraphStepFactory, labelOf, representationNames, snapshotOf, validateQuery,
+  createGraphStepFactory, labelOf, maxTraversalReads, representationNames, snapshotOf, validateQuery,
 } from './graphStep.js'
+import { assertWithinStepLimit } from './stepLimit.js'
 
 // DFS từ một nguồn s (không chạy tiếp các thành phần liên thông khác). Có hướng: chỉ đi theo cạnh ra.
 // Cài bằng NGĂN XẾP TƯỜNG MINH (mỗi khung: đỉnh u và vị trí kế tiếp sẽ đọc trong Adj[u] hoặc hàng u của ma trận),
@@ -119,8 +120,14 @@ function finishStep(graph, state, createStep, representation) {
   })
 }
 
+// Giới hạn cho chốt an toàn: công thức số bước với R = V và D = tổng độ dài danh sách kề.
+export function dfsStepLimit(graph, representation) {
+  return 3 * countVertices(graph) + maxTraversalReads(graph, representation)
+}
+
 export function generateGraphDfsSteps(graph, sourceId, representation) {
   validateQuery(graph, representation, [sourceId])
+  const limit = dfsStepLimit(graph, representation)
 
   const createStep = createGraphStepFactory('dfs', { representation, sourceId }, {
     visitedIds: [],
@@ -149,6 +156,7 @@ export function generateGraphDfsSteps(graph, sourceId, representation) {
   steps.push(enterStep(graph, state, createStep, sourceId))
 
   while (state.stack.length > 0) {
+    assertWithinStepLimit(steps, limit, 'DFS')
     const frame = state.stack.at(-1)
     const read = readNext(graph, representation, frame)
     if (read === null) {
