@@ -192,3 +192,23 @@ test('(h) bấm "Thử lại" hai lần khi fetch đang treo: fetch chỉ gọi 
   assert.equal(alerts(root).length, 1)
   assert.equal(buttons(root).length, 1)
 })
+
+test('(j) start ném lỗi: lỗi ném ra bình thường, không hiện màn hình "Thử lại", không retry, start gọi đúng một lần', async () => {
+  const { root } = createRoot()
+  const fake = createFakeFetch([okResponse()])
+  let starts = 0
+  await assert.rejects(
+    bootstrap.bootApp(root, {
+      fetchImpl: fake.fetchImpl,
+      start: () => {
+        starts++
+        throw new Error('init hỏng')
+      },
+    }),
+    /init hỏng/,
+  )
+  assert.equal(starts, 1, 'start chỉ được gọi một lần, không tự thử lại')
+  assert.equal(fake.calls.length, 1, 'không được fetch lại vì lỗi của start')
+  assert.equal(alerts(root).length, 0, 'lỗi của start không phải lỗi tải: không hiện vùng role="alert"')
+  assert.equal(buttons(root).length, 0, 'không có nút "Thử lại" cho lỗi của start')
+})

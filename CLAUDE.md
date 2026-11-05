@@ -19,7 +19,7 @@ Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so v�
 Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
 - Đo 2026-11-05 trên Ubuntu (Node 26.13.0, pnpm 12.16.1).
-- `pnpm test`: 776/776 pass, 0 fail, 0 skipped, khoảng 9 s.
+- `pnpm test`: 777/777 pass, 0 fail, 0 skipped, khoảng 9 s.
 - `pnpm build`: JS 140,76 kB (gzip 40,65 kB), CSS 42,10 kB (gzip 8,42 kB), HTML 0,63 kB.
 
 ## Kiến trúc

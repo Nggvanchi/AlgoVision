@@ -274,6 +274,10 @@ test('describeDfsCost bước 1 (đã vào nguồn): đã bắt đầu nên là 
     'DFS từ A đang chạy (ma trận kề): đã 1 lần gọi, đã đọc 0 ô, ngăn xếp gọi sâu nhất tới bước này 1 khung.')
 })
 
+// Bước được dựng tay vì không thể sinh bằng generator: generateGraphDfsSteps gọi validateQuery và ném lỗi
+// "Đỉnh ... không có trong đồ thị." với đồ thị rỗng hoặc nguồn không tồn tại, nên UI không bao giờ có bước như vậy.
+// describeDfsCost là hàm thuần nhận một bước bất kỳ, nên test dựng bước từ bước cuối thật rồi ép về trạng thái rỗng
+// để khóa thứ tự nhánh: "đã kết thúc" phải xét trước "bước 0".
 test('describeDfsCost bước đã kết thúc mà chưa có đỉnh nào (đồ thị rỗng / nguồn lạ): kết luận Big-O, không "chưa bắt đầu"', () => {
   for (const representation of ['list', 'matrix']) {
     const last = dfsFromA(SAMPLE_PAIRS, representation).steps.at(-1)
