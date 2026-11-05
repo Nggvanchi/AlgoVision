@@ -4,7 +4,7 @@ Việc còn tồn tại, chưa nằm trong PR nào. Thêm mục khi phát hiện
 Lộ trình giai đoạn: `docs/roadmap.md`.
 
 ## Lỗi
-- `main.js` không xử lý lỗi khi fetch template thất bại (trang trắng).
+- (không còn mục nào)
 
 ## Hiệu năng
 - `buildGraph` sao chép cả đồ thị sau mỗi lần thêm đỉnh/cạnh (O(n²)). Đo 2026-11-05: sao 300 đỉnh 39–73 ms, 1000 đỉnh 0,7–1,0 s,
@@ -26,6 +26,8 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
   `.category-preview`): không route nào bỏ `hidden` (đã thử 30 lần click mọi nút điều hướng), và `[hidden] { display: none !important }`
   chặn CSS đè. Sau PR `fix/ui-copy-and-errors` chỉ còn chữ trung tính. Trước khi xóa, kiểm `pages.structures` có dùng
   `#placeholder-title` / `#placeholder-description` không (hai phần tử này vẫn được `navigation.js` ghi).
+  Test liên quan: `tests/template-stale-copy.test.js` ("khung giới thiệu thư viện cấu trúc không hứa Tree/Graph…") đã chịu được việc
+  vắng `#placeholder-card-description`, nhưng nó vẫn kiểm `#category-placeholder .visualizer-tag` nên nên rà lại khi xóa khối.
 - Đổi tên thuộc tính nội bộ `dequeues`/`dequeuesLabel` trong `src/graph.js` cho khớp `#graph-traversal-count` (không đổi hành vi).
 - Khoảng trắng cuối dòng và newline cuối file chưa khớp `.editorconfig`: thiếu newline cuối ở `src/linked-list.js`,
   `src/structures/linkedList.js`, `tests/linked-list.test.js`; khoảng trắng cuối dòng ở `src/array.js:14`, `src/sorting.js:34`,
