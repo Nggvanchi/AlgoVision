@@ -18,14 +18,15 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 
 ## Giao diện
 - Click thẻ thuật toán Sorting luôn tạo mảng mới (hành vi có từ trước).
-- Thẻ "Cấu trúc dữ liệu" trên Tổng quan vẫn ghi "Array, Stack, Queue và Linked List", thiếu BST, Hash Table, Graph
-  (`public/templates/app.html:112-113`).
-- Khung giới thiệu của thư viện cấu trúc dữ liệu ghi "Array, Stack, Queue, Linked List, Tree và Graph sẽ được bổ sung." dù Tree
-  (BST) và Graph đã có (`public/templates/app.html:677`, `#placeholder-card-description`; không có JS nào ghi đè). Chưa kiểm trên
-  trình duyệt khi nào khung này hiện.
+- Rà soát giao diện ở 360px (chưa khảo sát, đầu vào cho bước rà soát giao diện): chữ Big-O của linear probing, tiêu đề bảng mốc DFS,
+  viền "ô đã dò" bị che ở PR #6/#9.
 
 ## Dọn dẹp
-- Thẻ số lần gọi DFS dùng chung id `#graph-dequeues` với BFS (nhãn đổi đúng, chỉ tên id gây hiểu nhầm).
+- Xóa khối placeholder chết `#category-placeholder` (`public/templates/app.html`, tham chiếu trong `src/navigation.js`, CSS
+  `.category-preview`): không route nào bỏ `hidden` (đã thử 30 lần click mọi nút điều hướng), và `[hidden] { display: none !important }`
+  chặn CSS đè. Sau PR `fix/ui-copy-and-errors` chỉ còn chữ trung tính. Trước khi xóa, kiểm `pages.structures` có dùng
+  `#placeholder-title` / `#placeholder-description` không (hai phần tử này vẫn được `navigation.js` ghi).
+- Đổi tên thuộc tính nội bộ `dequeues`/`dequeuesLabel` trong `src/graph.js` cho khớp `#graph-traversal-count` (không đổi hành vi).
 - Khoảng trắng cuối dòng và newline cuối file chưa khớp `.editorconfig`: thiếu newline cuối ở `src/linked-list.js`,
   `src/structures/linkedList.js`, `tests/linked-list.test.js`; khoảng trắng cuối dòng ở `src/array.js:14`, `src/sorting.js:34`,
   `tests/navigation.test.js:92`, `public/templates/app.html:13,51`. Dọn trong một commit riêng để editor không sinh diff lẫn.
