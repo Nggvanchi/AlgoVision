@@ -25,6 +25,10 @@ export function initSorting(options = {}) {
   const shiftCount = document.querySelector('#shift-count')
   const stepCount = document.querySelector('#step-count')
   const simulationMessage = document.querySelector('#simulation-message')
+  // Nhãn chỉ dành cho Insertion Sort nên không nằm trong requiredElements:
+  // thiếu nhãn không được làm hỏng Bubble và Selection (renderInsertionKey bỏ qua khi null).
+  const insertionKeyLabel = document.querySelector('#insertion-key')
+  const insertionKeyValue = document.querySelector('#insertion-key-value')
 
   const algorithmCards = document.querySelectorAll('.algorithm-card[data-algorithm]')
   // Searching cũng có bảng Big-O cùng class: chỉ tìm trong section của Sorting.
@@ -192,12 +196,29 @@ export function initSorting(options = {}) {
     })
   }
 
+  // Chỉ bước của Insertion Sort có trường key (null ở bước đầu và bước cuối), nên trạng thái nhãn suy ra
+  // hoàn toàn từ bước đang hiển thị: không có biến trạng thái riêng để rò sau Đặt lại hay đổi thuật toán.
+  // Insertion không có key: giữ chỗ (is-idle, visibility: hidden) để bố cục không nhảy giữa các bước.
+  function renderInsertionKey(currentStep) {
+    if (!insertionKeyLabel || !insertionKeyValue) {
+      return
+    }
+
+    const isInsertion = 'key' in currentStep
+    const hasKey = isInsertion && currentStep.key !== null
+
+    insertionKeyLabel.hidden = !isInsertion
+    insertionKeyLabel.classList.toggle('is-idle', !hasKey)
+    insertionKeyValue.textContent = hasKey ? `Đang chèn: ${currentStep.key}` : ''
+  }
+
   function renderSimulation({ step, stepIndex, stepCount: totalSteps, controls }) {
     if (!step) {
       return
     }
 
     renderBars(step)
+    renderInsertionKey(step)
     highlightPseudocodeLine(learningPseudocode, step.pseudocodeLine)
 
     comparisonCount.textContent = step.comparisons

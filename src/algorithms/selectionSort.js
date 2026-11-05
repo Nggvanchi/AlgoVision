@@ -48,10 +48,12 @@ export function generateSelectionSortSteps(inputArray) {
         comparisons,
         swaps,
         pseudocodeLine: LINE.COMPARE,
-        message: `So sánh giá trị nhỏ nhất hiện tại ${array[minIndex]} với ${array[j]}.`,
+        message: `So sánh giá trị nhỏ nhất hiện tại ${array[minIndex]} (vị trí ${minIndex + 1}) với ${array[j]} (vị trí ${j + 1}).`,
       })
 
       if (array[j] < array[minIndex]) {
+        const previousMin = array[minIndex]
+
         minIndex = j
 
         steps.push({
@@ -62,7 +64,8 @@ export function generateSelectionSortSteps(inputArray) {
           comparisons,
           swaps,
           pseudocodeLine: LINE.UPDATE_MIN,
-          message: `Tìm thấy giá trị nhỏ hơn: ${array[minIndex]}. Cập nhật vị trí nhỏ nhất.`,
+          // Cặp được tô khác bước So sánh: (vị trí cần đặt, vị trí nhỏ nhất mới), nên message nói rõ hai cột đó.
+          message: `Tìm thấy ${array[minIndex]} (vị trí ${minIndex + 1}) nhỏ hơn ${previousMin}: ghi nhận làm giá trị nhỏ nhất mới. Hai cột được tô: vị trí cần đặt ${i + 1} và vị trí nhỏ nhất mới ${minIndex + 1}.`,
         })
       }
     }
