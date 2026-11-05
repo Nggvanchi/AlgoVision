@@ -1214,10 +1214,12 @@ button:disabled {
 }
 
 /* Trạng thái ô Tìm kiếm không chỉ dựa vào màu: đang kiểm tra viền dày + ▶, tìm thấy khung kép + ✓,
-   đã kiểm tra viền nét đứt (đã loại bỏ cũng nét đứt, thêm mờ). Cue nằm trong ô (inset) nên kích thước ô không đổi. */
+   đã kiểm tra viền nét đứt (đã loại bỏ cũng nét đứt, thêm mờ). Cue nằm trong ô (inset) nên kích thước ô không đổi.
+   Màu cue dùng lại màu chữ của chính ô để đạt >= 3:1 với nền ô: #92400e trên #fef3c7 = 6,37; #166534 trên #dcfce7 = 6,49;
+   viền nét đứt #a1a1aa trên #27272a = 5,81 (4,24 sau khi mờ 0,8) (bản đầu dùng #d97706 = 2,86, #16a34a = 3,00, #71717a = 2,45 sau khi mờ). */
 .search-cell.is-checked {
   background: #27272a;
-  border-color: #71717a;
+  border-color: #a1a1aa;
   border-style: dashed;
   color: #a1a1aa;
   opacity: 0.8;
@@ -1227,14 +1229,14 @@ button:disabled {
   background: #fef3c7;
   border-color: #d97706;
   color: #92400e;
-  box-shadow: inset 0 0 0 2px #d97706, 0 0 0 2px rgb(245 158 11 / 20%);
+  box-shadow: inset 0 0 0 2px #92400e, 0 0 0 2px rgb(245 158 11 / 20%);
 }
 
 .search-cell.is-found {
   background: #dcfce7;
   border-color: #16a34a;
   color: #166534;
-  box-shadow: inset 0 0 0 2px #dcfce7, inset 0 0 0 3px #16a34a, 0 0 0 2px rgb(34 197 94 / 20%);
+  box-shadow: inset 0 0 0 2px #dcfce7, inset 0 0 0 3px #166534, 0 0 0 2px rgb(34 197 94 / 20%);
 }
 
 /* ▶ / ✓ ở góc trên bên trái, không đè chữ giá trị căn giữa ô (ô tối thiểu 48px). */
@@ -1280,7 +1282,7 @@ button:disabled {
 /* Mẫu trong chú giải vẽ đúng kiểu viền của ô tương ứng */
 .search-legend-dot.is-current {
   background: #fef3c7;
-  box-shadow: inset 0 0 0 3px #d97706;
+  box-shadow: inset 0 0 0 3px #92400e;
 }
 
 .search-legend-dot.is-eliminated {
@@ -1297,7 +1299,7 @@ button:disabled {
 .search-legend-dot.is-found {
   border: 1px solid #16a34a;
   background: #dcfce7;
-  box-shadow: inset 0 0 0 2px #dcfce7, inset 0 0 0 3px #16a34a;
+  box-shadow: inset 0 0 0 2px #dcfce7, inset 0 0 0 3px #166534;
 }
 
 .search-range-panel {
