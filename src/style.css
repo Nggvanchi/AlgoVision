@@ -832,6 +832,14 @@ button:disabled {
   background: linear-gradient(180deg, #a78bfa, #7654d5);
 }
 
+/* Ở màn hẹp, chú giải của Bubble và Selection (3 mục) cao hơn của Insertion (2 mục): đo Chrome 78px so với 62px ở 360px.
+   Giữ chiều cao bằng nhau để các nút điều khiển không nhảy khi đổi thuật toán (ở 1280px cả hai cùng 18px). */
+@media (max-width: 700px) {
+  .sort-legend {
+    min-height: 78px;
+  }
+}
+
 /* Nhãn "Đang chèn" của Insertion Sort: luôn giữ chỗ để khung không đổi chiều cao giữa các bước */
 .insertion-key {
   margin: 14px 0 0;
