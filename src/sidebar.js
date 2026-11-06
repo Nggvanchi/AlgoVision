@@ -98,6 +98,7 @@ export function initSidebar(document, { matchMedia } = {}) {
     drawerOpen = open
 
     sidebar.classList.toggle('is-open', open)
+    document.body.classList.toggle('is-drawer-open', open)
     overlay?.classList.toggle('is-open', open)
     toggleButton.setAttribute('aria-expanded', String(open))
     toggleButton.setAttribute('aria-label', open ? 'Đóng menu điều hướng' : 'Mở menu điều hướng')

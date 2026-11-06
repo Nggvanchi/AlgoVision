@@ -90,9 +90,10 @@ test('countVarUses đếm var(--ten) và không đếm tên khác có chung ti�
 // ---------------------------------------------------------------------------------------------------------------------
 
 const NEW_COLORS = [
-  ['--bg', '#0B0B14'], ['--bg-sidebar', '#0E0E19'], ['--surface', '#13131F'], ['--surface-raised', '#1A1A28'],
+  ['--bg', '#0B0B14'], ['--bg-sidebar', '#111522'], ['--surface', '#151722'], ['--surface-raised', '#1C2030'],
   ['--text-label', '#8B8FA6'], ['--purple-strong', '#6D55D9'], ['--purple-pressed', '#5B43C7'], ['--purple-soft', '#B9A8FF'],
-  ['--purple-tint', '#25213E'], ['--blue', '#60A5FA'], ['--success', '#22C55E'], ['--border-control', '#6B6B87'],
+  ['--purple-tint', '#272645'], ['--blue', '#60A5FA'], ['--success', '#22C55E'], ['--border-control', '#6B6B87'],
+  ['--purple-active', '#49318D'], ['--purple-hover', '#B09CFF'], ['--violet', '#8B5CF6'],
 ]
 
 for (const [name, value] of NEW_COLORS) {
@@ -182,10 +183,10 @@ test('comment trong :root chia token thành CŨ / MỚI ĐANG DÙNG / MỚI CHƯ
   const sections = [namesIn(at[0], at[1]), namesIn(at[1], at[2]), namesIn(at[2], raw.length)]
 
   assert.deepEqual(sections[0], [...Object.keys(OLD_VALUES), ...Object.keys(OLD_ALIASES)].sort(), 'nhóm CŨ phải là 18 token cũ')
-  assert.deepEqual(sections[1], ['--bg-sidebar', '--font-mono', '--font-ui', '--fs-md', '--fs-sm', '--fs-xs', '--purple-pressed', '--purple-strong', '--purple-tint', '--radius-sm', '--shadow-card', '--sidebar-width', '--sidebar-width-collapsed', '--space-1', '--space-2', '--space-3', '--space-4', '--space-6', '--surface-raised', '--text-label'], 'nhóm MỚI ĐANG DÙNG: 2 token font (Phase 1) và 18 token Phase 2 áp vào sidebar và nút chính')
+  assert.deepEqual(sections[1], ['--bg-sidebar', '--font-mono', '--font-ui', '--fs-md', '--fs-sm', '--fs-xs', '--purple-active', '--purple-hover', '--purple-pressed', '--purple-strong', '--radius-sm', '--shadow-card', '--sidebar-width', '--sidebar-width-collapsed', '--space-1', '--space-2', '--space-3', '--space-4', '--space-6', '--surface-raised', '--text-label'], 'nhóm MỚI ĐANG DÙNG: 2 token font (Phase 1) và 19 token Phase 2/2b áp vào sidebar và nút chính (--purple-tint đã chuyển sang CHƯA DÙNG)')
   assert.deepEqual(sections[2], [...tokens.keys()].filter((name) => !sections[0].includes(name) && !sections[1].includes(name)).sort(),
     'nhóm MỚI CHƯA DÙNG phải là phần còn lại của :root')
-  assert.ok(sections[2].length >= 18, `phải có ít nhất 18 token định nghĩa sẵn chưa dùng, thấy ${sections[2].length}`)
+  assert.ok(sections[2].length >= 20, `phải có ít nhất 20 token định nghĩa sẵn chưa dùng, thấy ${sections[2].length}`)
 })
 
 test('token "CHƯA ĐƯỢC DÙNG" quả thật chưa được luật nào tham chiếu', () => {
@@ -193,7 +194,7 @@ test('token "CHƯA ĐƯỢC DÙNG" quả thật chưa được luật nào tham 
   const unusedNames = [...raw.slice(raw.indexOf('TOKEN MỚI, CHƯA ĐƯỢC DÙNG')).matchAll(/(--[a-z0-9-]+)\s*:/g)].map((match) => match[1])
   const used = unusedNames.filter((name) => countVarUses(css, name) > 0)
 
-  assert.ok(unusedNames.length >= 18, `phải tìm thấy ít nhất 18 token chưa dùng, thấy ${unusedNames.length}`)
+  assert.ok(unusedNames.length >= 20, `phải tìm thấy ít nhất 20 token chưa dùng, thấy ${unusedNames.length}`)
   assert.deepEqual(used, [], 'các token này đã bị áp vào luật; Phase 1 chỉ định nghĩa (gồm --border-control, --blue, --success, cỡ chữ, spacing, bo góc, bóng)')
 })
 
@@ -203,7 +204,7 @@ test('token "ĐANG DÙNG" quả thật được ít nhất một luật tham chi
   const names = [...raw.slice(from, raw.indexOf('TOKEN MỚI, CHƯA ĐƯỢC DÙNG')).matchAll(/(--[a-z0-9-]+)\s*:/g)].map((match) => match[1])
   const unused = names.filter((name) => countVarUses(css, name) === 0)
 
-  assert.ok(names.length >= 20, `phải tìm thấy 20 token đang dùng, thấy ${names.length}`)
+  assert.ok(names.length >= 21, `phải tìm thấy 21 token đang dùng, thấy ${names.length}`)
   assert.deepEqual(unused, [], 'token nằm nhóm ĐANG DÙNG nhưng không luật nào tham chiếu: chuyển về nhóm CHƯA ĐƯỢC DÙNG')
 })
 
@@ -227,6 +228,8 @@ const PAIRS = [
   ['--bar-cue', '--purple', 3],
   ['--blue', '--surface', 4.5], ['--state-active', '--surface', 4.5], ['--success', '--surface', 4.5],
   ['--border-control', '--surface', 3], ['--border-control', '--bg', 3], ['--border-control', '--surface-raised', 3],
+  ['#ffffff', '--purple-active', 9.9], ['--purple-hover', '--purple-active', 3], ['--purple-hover', '--bg-sidebar', 4.5],
+  ['--purple-hover', '--surface', 4.5], ['--violet', '--bg-sidebar', 3], ['--violet', '--bg', 3],
 ]
 
 for (const [foreground, background, minimum] of PAIRS) {
@@ -238,6 +241,20 @@ for (const [foreground, background, minimum] of PAIRS) {
 
 test('--purple-tint đúng bằng #9B82FF 16% trên --bg-sidebar (tính, không gõ tay)', () => {
   assert.equal(blend(resolve('--purple'), 0.16, resolve('--bg-sidebar')), normalize(resolve('--purple-tint')))
+})
+
+test('--violet chỉ cho icon, viền, chữ lớn: chữ nhỏ trên --surface chỉ 4,21:1 và chữ trắng trên --violet chỉ 4,23:1 (cả hai dưới 4,5, vì vậy bị cấm)', () => {
+  assert.ok(contrastRatio(resolve('--violet'), resolve('--surface')) < 4.5)
+  assert.ok(contrastRatio('#ffffff', resolve('--violet')) < 4.5)
+  assert.ok(contrastRatio(resolve('--violet'), resolve('--surface')) >= 4.2, 'số đo đã ghi trong báo cáo: 4,21')
+})
+
+test('không luật nào dùng --violet làm màu chữ (color) hay chữ trắng trên nền --violet', () => {
+  const bad = sheet.rules
+    .filter((rule) => rule.declarations.some((declaration) => declaration.property === 'color' && declaration.value.includes('var(--violet)')))
+    .flatMap((rule) => rule.selectors)
+
+  assert.deepEqual(bad, [])
 })
 
 test('cấm chữ trắng trên --purple: tỉ lệ thật dưới 4,5 (vì vậy bị cấm)', () => {

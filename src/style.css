@@ -141,16 +141,18 @@
   --sidebar-width: 256px;
   --sidebar-width-collapsed: 72px;
 
-  --bg-sidebar: #0E0E19;
-  --surface-raised: #1A1A28;
+  --bg-sidebar: #111522;
+  --surface-raised: #1C2030;
 
   --text-label: #8B8FA6;
 
   /* Tím: --purple (token cũ) cho chữ nhấn, icon, vạch. KHÔNG đặt chữ trắng lên --purple (2,99:1); chữ trắng chỉ trên
-     --purple-strong hoặc --purple-pressed, chữ tối (--bg) trên --purple. --purple-tint là --purple 16% trên --bg-sidebar. */
+     --purple-strong, --purple-pressed hoặc --purple-active, chữ tối (--bg) trên --purple. --purple-active (#49318D) là nền pill của mục đang mở
+     (trắng trên đó 9,97:1); --purple-hover (#B09CFF) cho vạch active và icon hover. */
   --purple-strong: #6D55D9;
   --purple-pressed: #5B43C7;
-  --purple-tint: #25213E;
+  --purple-active: #49318D;
+  --purple-hover: #B09CFF;
 
   /* Cỡ chữ */
   --fs-xs: 12px;
@@ -175,9 +177,12 @@
      SONG SONG với token cũ ở trên, chưa thay thế chúng: --bg ứng với --background, --surface với --panel, --surface-raised
      với --panel-hover, --purple-strong với --purple-dark. */
   --bg: #0B0B14;
-  --surface: #13131F;
+  --surface: #151722;
 
   --purple-soft: #B9A8FF;
+  --purple-tint: #272645; /* --purple 16% trên --bg-sidebar; không còn dùng cho mục active (Redesign Phase 2b) */
+  /* Violet: CHỈ cho icon, viền, chữ lớn. Chữ nhỏ trên --surface chỉ 4,21:1 và chữ trắng trên --violet chỉ 4,23:1 (< 4,5). */
+  --violet: #8B5CF6;
 
   --blue: #60A5FA;
   --success: #22C55E;
@@ -245,7 +250,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   width: var(--sidebar-width);
-  padding: var(--space-6) var(--space-3) var(--space-4);
+  padding: var(--space-6) var(--space-2) var(--space-4);
   background: var(--bg-sidebar);
   border-right: 1px solid var(--border);
 }
@@ -254,22 +259,27 @@ button:disabled {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 0 var(--space-2) var(--space-6);
+  padding: 0 var(--space-3) var(--space-6);
 }
 
-/* Nền --purple-strong (không phải gradient bắt đầu ở #ad98ff): chữ trắng đạt 5,31:1 thay cho 2,41:1. */
+/* Logo: lưới 4 ô nét mảnh màu --purple, KHÔNG nền đặc (khác icon Tổng quan: một ô lệch). */
 .brand-icon {
   display: grid;
   flex: none;
   width: 42px;
   height: 42px;
   place-items: center;
-  border-radius: 13px;
-  background: var(--purple-strong);
-  color: white;
-  font-size: 24px;
-  font-weight: 700;
-  box-shadow: 0 5px 22px #7456e82b;
+  color: var(--purple);
+}
+
+.brand-icon svg {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .brand h1 {
@@ -298,6 +308,9 @@ button:disabled {
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  /* Thanh cuộn mảnh, tối: chỉ ở sidebar (không đặt trên html/body nên không đổi thanh cuộn của trang). */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
 
 .nav-list,
@@ -373,13 +386,14 @@ button:disabled {
   color: var(--text);
 }
 
-/* Mục đang mở: nền --purple-tint, vạch tím 3px bên trái, chữ đậm hơn (ba dấu hiệu ngoài màu cùng aria-current). */
+/* Mục đang mở: pill bo đều 8px THỤT VÀO 8px so với mép sidebar (padding ngang của .sidebar), nền --purple-active, chữ trắng đậm 600.
+   Khối chỉ 1,83:1 so với nền sidebar nên giữ vạch 3px --purple-hover làm cue ngoài màu dự phòng, cùng aria-current. */
 .nav-item.active,
 .nav-subitem.active {
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  background: var(--purple-tint);
-  box-shadow: inset 3px 0 0 var(--purple);
-  color: var(--text);
+  border-radius: var(--radius-sm);
+  background: var(--purple-active);
+  box-shadow: inset 3px 0 0 var(--purple-hover);
+  color: #fff;
   font-weight: 600;
 }
 
@@ -388,19 +402,48 @@ button:disabled {
   flex: none;
   width: 24px;
   place-items: center;
-  font-size: 20px;
 }
 
-.nav-subitem .nav-icon {
-  font-size: var(--fs-sm);
+.nav-icon svg,
+.sidebar-collapse-icon svg,
+.menu-button-icon svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.nav-item.active .nav-icon,
-.nav-subitem.active .nav-icon {
-  color: var(--purple);
+.nav-icon svg {
+  width: 18px;
+  height: 18px;
 }
 
-/* Thanh trên chỉ có ở <= 700px (ẩn ở màn hình rộng). Nút ☰ vẽ bằng CSS (ba vạch), không phụ thuộc glyph của font. */
+.nav-subitem .nav-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.sidebar-collapse-icon svg,
+.menu-button-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Sprite 0x0 nhưng vẫn được render (display: none làm một số trình duyệt bỏ <symbol>; [hidden] toàn cục cũng là display: none). */
+.icon-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.nav-item:not(.active):hover .nav-icon,
+.nav-subitem:not(.active):hover .nav-icon {
+  color: var(--purple-hover);
+}
+
+/* Thanh trên chỉ có ở <= 700px (ẩn ở màn hình rộng). Nút menu là icon SVG của sprite (ba vạch), không phụ thuộc glyph của font. */
 .mobile-bar {
   display: none;
   align-items: center;
@@ -422,33 +465,9 @@ button:disabled {
   cursor: pointer;
 }
 
-.menu-button-icon,
-.menu-button-icon::before,
-.menu-button-icon::after {
-  display: block;
-  width: 20px;
-  height: 2px;
-  border-radius: 1px;
-  background: currentColor;
-}
-
 .menu-button-icon {
-  position: relative;
-}
-
-.menu-button-icon::before,
-.menu-button-icon::after {
-  content: '';
-  position: absolute;
-  left: 0;
-}
-
-.menu-button-icon::before {
-  top: -6px;
-}
-
-.menu-button-icon::after {
-  top: 6px;
+  display: grid;
+  place-items: center;
 }
 
 .mobile-bar-title {
@@ -478,7 +497,6 @@ button:disabled {
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--muted);
-  font-size: 20px;
   cursor: pointer;
   transition: background 160ms ease, color 160ms ease;
 }
@@ -606,35 +624,26 @@ button:disabled {
   border-bottom: 1px solid var(--border);
 }
 
+/* Breadcrumb động (navigation.js): chỉ là chữ, không liên kết. Dấu "/" do CSS vẽ, văn bản thay thế rỗng nên trình đọc màn hình bỏ qua. */
 .breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 8px;
   margin: 0;
+  padding: 0;
   color: var(--muted);
   font-size: 12px;
+  list-style: none;
+}
+
+.breadcrumb li + li::before {
+  content: '/' / '';
+  margin-right: 8px;
 }
 
 .breadcrumb strong {
   color: #e3e4ee;
   font-weight: 500;
-}
-
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 11px;
-  border: 1px solid #343746;
-  border-radius: 20px;
-  color: #b4b9ca;
-  font-size: 11px;
-  white-space: nowrap;
-}
-
-.status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #e9b75d;
-  box-shadow: 0 0 9px #e9b75d55;
 }
 
 .page-heading {
@@ -954,6 +963,16 @@ button:disabled {
     opacity: 1;
     visibility: visible;
     transition-delay: 0s;
+  }
+
+  /* Khóa cuộn nền khi drawer mở: đo trên Chrome thật, lăn chuột trên lớp phủ làm trang phía sau cuộn (scrollY 0 -> 300). */
+  body.is-drawer-open {
+    overflow: hidden;
+  }
+
+  /* Giữ chỗ cho thanh cuộn kiểu cổ điển (15px trên Chrome Windows ở 360px): nếu không, overflow: hidden làm nó biến mất và nội dung giật ngang 15px. */
+  html {
+    scrollbar-gutter: stable;
   }
 
   .main-content {

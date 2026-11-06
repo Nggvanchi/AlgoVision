@@ -7,6 +7,7 @@ import { createFakeScheduler } from './fake-scheduler.js'
 export const template = await readFile(new URL('../../public/templates/app.html', import.meta.url), 'utf8')
 
 // options.storage: storage inject cho initProgress (mặc định dùng localStorage của cửa sổ happy-dom).
+// options.title: document.title ban đầu (index.html thật có <title>; Window mới của happy-dom thì rỗng).
 // options.matchMedia: matchMedia giả cho initSidebar (xem tests/helpers/fake-media.js).
 export async function withFullApp(run, options = {}) {
   const window = new Window()
@@ -14,6 +15,8 @@ export async function withFullApp(run, options = {}) {
   const scheduler = createFakeScheduler()
 
   document.body.innerHTML = template
+
+  if (options.title !== undefined) document.title = options.title
 
   const previousDocument = globalThis.document
   const previousWindow = globalThis.window

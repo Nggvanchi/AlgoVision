@@ -19,6 +19,24 @@ const pages = {
   },
 }
 
+const BREADCRUMB_ROOT = 'Không gian học tập'
+const TITLE_SUFFIX = 'AlgoVision'
+
+const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
+
+// Icon từ sprite trong template (`<symbol id="icon-...">`). Nút của mục con chỉ ghép id từ data-structure-target, nên không có danh sách icon
+// thứ hai trong JS; tests/sidebar-icons.test.js kiểm mỗi cấu trúc có symbol.
+function createIcon(document, symbolId) {
+  const svg = document.createElementNS(SVG_NAMESPACE, 'svg')
+  const use = document.createElementNS(SVG_NAMESPACE, 'use')
+
+  svg.setAttribute('focusable', 'false')
+  use.setAttribute('href', `#${symbolId}`)
+  svg.append(use)
+
+  return svg
+}
+
 export function initNavigation(document) {
   const navItems = document.querySelectorAll('.nav-item')
 
@@ -52,6 +70,13 @@ export function initNavigation(document) {
   let currentPage = 'dashboard'
   // Cấu trúc đang mở ở màn chi tiết (null ở thư viện và mọi trang khác). Quyết định mục con nào active/aria-current.
   let currentStructure = null
+  // Nhãn của thuật toán/cấu trúc đang mở ở màn chi tiết (null ở thư viện và trang khác); lấy từ chính DOM, không có danh sách thứ hai.
+  let currentDetail = null
+  // Tổng quan giữ tiêu đề gốc của index.html; các màn khác là "<mục cuối> - AlgoVision".
+  const baseTitle = document.title
+  const breadcrumb = document.querySelector('.topbar .breadcrumb')
+
+  const textOf = (element, fallback) => element?.textContent.replace(/\s+/g, ' ').trim() || fallback
 
   function hideAllSections() {
     dashboardSection.hidden = true
@@ -90,9 +115,39 @@ export function initNavigation(document) {
     })
   }
 
+  // Breadcrumb (chỉ chữ, mục cuối đậm) và document.title theo màn hình hiện tại. Không phát sự kiện nào.
+  function renderTopbar() {
+    const labels = [BREADCRUMB_ROOT, pages[currentPage].title]
+
+    if (currentDetail !== null) labels.push(currentDetail)
+
+    if (breadcrumb) {
+      breadcrumb.replaceChildren(
+        ...labels.map((label, index) => {
+          const item = document.createElement('li')
+
+          if (index === labels.length - 1) {
+            const last = document.createElement('strong')
+
+            last.textContent = label
+            item.append(last)
+          } else {
+            item.textContent = label
+          }
+
+          return item
+        }),
+      )
+    }
+
+    document.title = currentPage === 'dashboard' ? baseTitle : `${labels.at(-1)} - ${TITLE_SUFFIX}`
+  }
+
   // Báo cho các module mô phỏng biết màn hình vừa đổi để tự tạm dừng nếu bị ẩn.
   // topic là id chủ đề (vd 'sorting:bubble') khi mở màn chi tiết; null ở dashboard, thư viện và khi quay lại.
   function notifyViewChange(topic = null) {
+    renderTopbar()
+
     const CustomEventClass = document.defaultView?.CustomEvent ?? CustomEvent
 
     document.dispatchEvent(
@@ -112,6 +167,7 @@ export function initNavigation(document) {
   function renderPage(pageName) {
     currentPage = pageName
     currentStructure = null
+    currentDetail = null
 
     hideAllSections()
     updateNavigation()
@@ -153,6 +209,7 @@ export function initNavigation(document) {
 
     sortingLibrary.hidden = true
     sortingVisualizer.hidden = false
+    currentDetail = textOf(document.querySelector(`.algorithm-card[data-algorithm="${algorithm}"] h4`), algorithm)
     notifyViewChange(topicId('sorting', algorithm))
   }
 
@@ -161,14 +218,18 @@ export function initNavigation(document) {
 
     sortingVisualizer.hidden = true
     sortingLibrary.hidden = false
+    currentDetail = null
     notifyViewChange()
   }
+
+  const searchLabel = (algorithm) => textOf(document.querySelector(`[data-search-algorithm="${algorithm}"] h4`), algorithm)
 
   function showSearchingDetail(algorithm) {
     if (currentPage !== 'searching') return
 
     searchLibrary.hidden = true
     searchVisualizer.hidden = false
+    currentDetail = searchLabel(algorithm)
     notifyViewChange(topicId('searching', algorithm))
   }
 
@@ -177,6 +238,7 @@ export function initNavigation(document) {
 
     searchVisualizer.hidden = true
     searchLibrary.hidden = false
+    currentDetail = null
     notifyViewChange()
   }
 
@@ -219,6 +281,14 @@ export function initNavigation(document) {
     })
   })
 
+  // Đổi thuật toán bằng #search-algorithm ngay trong màn chi tiết (không phát viewchange): chỉ cập nhật breadcrumb và title.
+  document.querySelector('#search-algorithm')?.addEventListener('change', (event) => {
+    if (currentPage !== 'searching' || searchVisualizer.hidden) return
+
+    currentDetail = searchLabel(event.target.value)
+    renderTopbar()
+  })
+
   document
     .querySelector('[data-back-to-sorting-algorithms]')
     ?.addEventListener('click', showSortingLibrary)
@@ -237,6 +307,7 @@ export function initNavigation(document) {
       section.hidden = sectionTarget !== target
     })
     currentStructure = target
+    currentDetail = textOf(structureNavItems.find((item) => item.dataset.structureNav === target)?.querySelector('.nav-label'), target)
     updateNavigation()
     notifyViewChange(topicId('structure', target))
 
@@ -251,7 +322,7 @@ export function initNavigation(document) {
     })
   })
 
-  // Mục con của sidebar sinh từ chính các thẻ [data-structure-target] (nhãn và glyph lấy từ thẻ), nên danh sách chỉ có một
+  // Mục con của sidebar sinh từ chính các thẻ [data-structure-target] (nhãn lấy từ thẻ, icon là symbol SVG cùng tên), nên danh sách chỉ có một
   // nguồn. Nút dùng data-structure-nav và class nav-subitem, KHÔNG dùng data-structure-target (initProgress đếm chủ đề theo
   // thuộc tính đó) và KHÔNG dùng class nav-item (nhiều test lấy .nav-item đầu tiên).
   function renderStructureNav() {
@@ -271,7 +342,7 @@ export function initNavigation(document) {
         button.dataset.structureNav = target
         icon.className = 'nav-icon'
         icon.setAttribute('aria-hidden', 'true')
-        icon.textContent = card.querySelector('.structure-card-icon')?.textContent.trim() ?? ''
+        icon.append(createIcon(document, `icon-structure-${target}`))
         label.className = 'nav-label'
         label.textContent = card.querySelector('.structure-card-title')?.textContent.trim() ?? target
         button.append(icon, label)

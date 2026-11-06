@@ -120,7 +120,7 @@ for (const target of STRUCTURES) {
       assert.equal(subitem.classList.contains('nav-item'), false, 'class nav-item dành cho 4 mục trang: nhiều test lấy mục đầu tiên theo class này')
       assert.ok(document.querySelector(`#${target}-section`) !== null, `mục con ${target} phải có #${target}-section để mở`)
       assert.equal(textOf(subitem.querySelector('.nav-label')), textOf(card.querySelector('.structure-card-title')), 'nhãn lấy từ tiêu đề thẻ')
-      assert.equal(textOf(subitem.querySelector('.nav-icon')), textOf(card.querySelector('.structure-card-icon')), 'icon dùng lại glyph của thẻ')
+      assert.equal(subitem.querySelector('.nav-icon use')?.getAttribute('href'), `#icon-structure-${target}`, 'icon mục con là symbol SVG riêng của cấu trúc (không còn sao glyph của thẻ)')
       assert.equal(subitem.querySelector('.nav-icon').getAttribute('aria-hidden'), 'true')
     })
   })
