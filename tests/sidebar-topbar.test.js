@@ -98,6 +98,19 @@ test('đổi thuật toán bằng #search-algorithm ngay trong chi tiết Tìm k
   })
 })
 
+test('đổi #search-algorithm khi đang ở thư viện Tìm kiếm (chưa vào chi tiết): breadcrumb và title không đổi', async () => {
+  await run(({ document }) => {
+    document.querySelector('.nav-item[data-page="searching"]').click()
+
+    const select = document.querySelector('#search-algorithm')
+    select.value = 'binary'
+    select.dispatchEvent(new document.defaultView.Event('change', { bubbles: true }))
+
+    assert.deepEqual(crumbs(document), [ROOT, SEARCHING])
+    assert.equal(document.title, `${SEARCHING} - AlgoVision`)
+  })
+})
+
 test('Quay lại thư viện từ chi tiết: breadcrumb và title trở về mức thư viện; Quay lại thuật toán/tìm kiếm cũng vậy', async () => {
   await run(({ document }) => {
     document.querySelector('.nav-subitem[data-structure-nav="bst"]').click()

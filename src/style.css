@@ -621,35 +621,26 @@ button:disabled {
   border-bottom: 1px solid var(--border);
 }
 
+/* Breadcrumb động (navigation.js): chỉ là chữ, không liên kết. Dấu "/" do CSS vẽ, văn bản thay thế rỗng nên trình đọc màn hình bỏ qua. */
 .breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 8px;
   margin: 0;
+  padding: 0;
   color: var(--muted);
   font-size: 12px;
+  list-style: none;
+}
+
+.breadcrumb li + li::before {
+  content: '/' / '';
+  margin-right: 8px;
 }
 
 .breadcrumb strong {
   color: #e3e4ee;
   font-weight: 500;
-}
-
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 11px;
-  border: 1px solid #343746;
-  border-radius: 20px;
-  color: #b4b9ca;
-  font-size: 11px;
-  white-space: nowrap;
-}
-
-.status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #e9b75d;
-  box-shadow: 0 0 9px #e9b75d55;
 }
 
 .page-heading {
