@@ -398,3 +398,65 @@ test('src/main.js khởi tạo sidebar: import initSidebar và gọi SAU initNav
   assert.ok(call('initNavigation') < call('initSidebar'), 'initSidebar phải chạy sau initNavigation')
   assert.ok(call('initSidebar') < call('initProgress'), 'initSidebar nên chạy trước initProgress')
 })
+
+// --- Khóa cuộn nền khi drawer mở (đo CDP trước PR: lăn chuột trên lớp phủ làm trang phía sau cuộn 0 -> 300px; inert không chặn cuộn) ---
+
+const bodyLocked = (document) => document.body.classList.contains('is-drawer-open')
+
+test('khóa cuộn nền: mở drawer thì <body> có is-drawer-open, đóng bằng ☰ thì bỏ', async () => {
+  await withSidebar(({ document }) => {
+    assert.equal(bodyLocked(document), false)
+
+    toggleOf(document).click()
+    assert.equal(bodyLocked(document), true)
+
+    toggleOf(document).click()
+    assert.equal(bodyLocked(document), false)
+  }, { mobile: true })
+})
+
+test('khóa cuộn nền được gỡ khi đóng bằng Escape, bằng lớp phủ, bằng chọn mục và bằng chọn mục con', async () => {
+  await withSidebar(({ document }) => {
+    const closers = [
+      () => press(document, 'Escape'),
+      () => document.querySelector('.sidebar-overlay').click(),
+      () => goTo(document, 'sorting'),
+      () => document.querySelector('.nav-subitem[data-structure-nav="graph"]').click(),
+    ]
+
+    for (const close of closers) {
+      toggleOf(document).click()
+      assert.equal(bodyLocked(document), true)
+
+      close()
+      assert.equal(bodyLocked(document), false)
+    }
+  }, { mobile: true })
+})
+
+test('khóa cuộn nền được gỡ khi cửa sổ rộng ra qua 700px lúc drawer đang mở (không để trang desktop bị khóa cuộn)', async () => {
+  await withSidebar(({ document, media }) => {
+    toggleOf(document).click()
+    assert.equal(bodyLocked(document), true)
+
+    media.setMatches(false)
+    assert.equal(bodyLocked(document), false)
+  }, { mobile: true })
+})
+
+test('bấm ☰ ở màn hình rộng không khóa cuộn; thu gọn sidebar không đụng tới khóa cuộn', async () => {
+  await withSidebar(({ document }) => {
+    toggleOf(document).click()
+    collapseOf(document).click()
+
+    assert.equal(bodyLocked(document), false)
+  }, { mobile: false })
+})
+
+test('khóa cuộn chỉ là một class trên <body>, không ghi style nội tuyến (CSS quyết định overflow)', async () => {
+  await withSidebar(({ document }) => {
+    toggleOf(document).click()
+
+    assert.equal(document.body.getAttribute('style'), null)
+  }, { mobile: true })
+})

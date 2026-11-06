@@ -132,7 +132,7 @@ test('nền sidebar là --bg-sidebar; nhãn nhóm --text-label (6,00:1), chữ m
 })
 
 const SIDEBAR_BG = 'var(--bg-sidebar)'
-const ACTIVE_BG = 'var(--purple-tint)'
+const ACTIVE_BG = 'var(--purple-active)'
 const TEXT_PAIRS = [
   ['nhãn nhóm', () => requireValue('.section-label', 'color'), () => SIDEBAR_BG, 4.5],
   ['chữ mục thường', () => requireValue('.nav-item', 'color'), () => SIDEBAR_BG, 4.5],
@@ -140,13 +140,14 @@ const TEXT_PAIRS = [
   ['chữ mục hover', () => requireValue('.nav-item:hover', 'color'), () => requireValue('.nav-item:hover', 'background'), 4.5],
   ['chữ mục active', () => requireValue('.nav-item.active', 'color'), () => requireValue('.nav-item.active', 'background'), 4.5],
   ['chữ mục con active', () => requireValue('.nav-subitem.active', 'color'), () => requireValue('.nav-subitem.active', 'background'), 4.5],
-  ['icon mục active', () => requireValue('.nav-item.active .nav-icon', 'color'), () => ACTIVE_BG, 4.5],
-  ['icon mục con active', () => requireValue('.nav-subitem.active .nav-icon', 'color'), () => ACTIVE_BG, 4.5],
+  ['icon mục active (kế thừa chữ trắng)', () => requireValue('.nav-item.active', 'color'), () => ACTIVE_BG, 4.5],
+  ['icon mục con active (kế thừa chữ trắng)', () => requireValue('.nav-subitem.active', 'color'), () => ACTIVE_BG, 4.5],
+  ['icon hover --purple-hover', () => requireValue('.nav-item:hover .nav-icon', 'color'), () => requireValue('.nav-item:hover', 'background'), 4.5],
   ['chữ trên nút thu gọn', () => requireValue('.sidebar-collapse', 'color'), () => SIDEBAR_BG, 4.5],
   ['chữ tooltip', () => requireValue('.sidebar-tooltip', 'color'), () => requireValue('.sidebar-tooltip', 'background'), 4.5],
   ['chữ nút ☰', () => requireValue('.menu-button', 'color'), () => requireValue('.mobile-bar', 'background'), 4.5],
   ['chữ "AlgoVision" trên thanh trên di động', () => requireValue('.mobile-bar-title', 'color'), () => requireValue('.mobile-bar', 'background'), 4.5],
-  ['chữ trắng trên logo "A"', () => requireValue('.brand-icon', 'color'), () => requireValue('.brand-icon', 'background'), 4.5],
+  ['logo lưới --purple trên nền sidebar', () => requireValue('.brand-icon', 'color'), () => SIDEBAR_BG, 4.5],
 ]
 
 for (const [name, foreground, background, minimum] of TEXT_PAIRS) {
@@ -157,15 +158,27 @@ for (const [name, foreground, background, minimum] of TEXT_PAIRS) {
   })
 }
 
-test('vạch active 3px màu --purple đạt >= 3:1 với nền sidebar và với nền active; nền active là --purple-tint (không phải khối tím đặc)', () => {
+test('mục active là pill nền --purple-active, giữ vạch trái 3px --purple-hover (cue dự phòng: khối chỉ 1,83:1 so với nền sidebar); vạch đạt >= 3:1 với khối và với nền sidebar', () => {
   for (const selector of ['.nav-item.active', '.nav-subitem.active']) {
-    assert.equal(requireValue(selector, 'background'), 'var(--purple-tint)')
-    assert.equal(requireValue(selector, 'box-shadow'), 'inset 3px 0 0 var(--purple)', `${selector}: vạch trái 3px`)
+    assert.equal(requireValue(selector, 'background'), 'var(--purple-active)')
+    assert.equal(requireValue(selector, 'box-shadow'), 'inset 3px 0 0 var(--purple-hover)', `${selector}: vạch trái 3px`)
   }
 
-  assert.ok(ratio('var(--purple)', SIDEBAR_BG) >= 3)
-  assert.ok(ratio('var(--purple)', ACTIVE_BG) >= 3)
-  assert.equal(blend(colorOf('var(--purple)'), 0.16, colorOf(SIDEBAR_BG)), colorOf(ACTIVE_BG).toLowerCase(), '--purple-tint = --purple 16% trên --bg-sidebar')
+  assert.ok(ratio('var(--purple-hover)', SIDEBAR_BG) >= 3)
+  assert.ok(ratio('var(--purple-hover)', ACTIVE_BG) >= 3)
+  assert.ok(ratio(ACTIVE_BG, SIDEBAR_BG) < 3, 'khối active một mình KHÔNG đủ 3:1 so với nền sidebar, nên bắt buộc còn cue ngoài màu')
+})
+
+test('pill active theo ảnh: bo đều bốn góc --radius-sm (8px) và THỤT VÀO cách mép sidebar (padding ngang của .sidebar = 8px)', () => {
+  for (const selector of ['.nav-item.active', '.nav-subitem.active']) {
+    assert.equal(requireValue(selector, 'border-radius'), 'var(--radius-sm)', `${selector}: bo đều 8px`)
+  }
+
+  const padding = requireValue('.sidebar', 'padding').split(' ')
+
+  assert.equal(padding.length, 3, 'padding của .sidebar viết dạng 3 giá trị: trên, ngang, dưới')
+  assert.equal(pxOf(padding[1]), 8, `padding ngang của .sidebar = ${padding[1]}: pill thụt vào đúng 8px`)
+  assert.ok(pxOf(requireValue('.nav-item.active', 'border-radius')) === 8)
 })
 
 test('mục active có dấu hiệu ngoài màu: vạch trái, chữ đậm hơn mục thường (>= 600 so với < 600)', () => {
@@ -197,15 +210,17 @@ test('cỡ chữ của nhãn nhóm, mục, mục con, nhãn mục >= 12px ở M�
   assert.ok(pxOf(requireValue('.section-label', 'font-size')) >= 12)
 })
 
-test('logo .brand-icon: nền --purple-strong (chữ trắng đạt >= 5,31:1), thay cho gradient bắt đầu ở #ad98ff (2,41:1)', () => {
-  assert.equal(requireValue('.brand-icon', 'background'), 'var(--purple-strong)')
-  assert.ok(ratio(requireValue('.brand-icon', 'color'), requireValue('.brand-icon', 'background')) >= 5.3)
+test('logo .brand-icon: icon lưới nét mảnh màu --purple, KHÔNG nền đặc và không đổ bóng (theo ảnh tham chiếu)', () => {
+  assert.equal(requireValue('.brand-icon', 'color'), 'var(--purple)')
+  assert.ok([undefined, 'none', 'transparent'].includes(valueOf('.brand-icon', 'background')), `background = ${valueOf('.brand-icon', 'background')}`)
+  assert.equal(valueOf('.brand-icon', 'box-shadow'), undefined)
+  assert.ok(ratio('var(--purple)', SIDEBAR_BG) >= 4.5)
 })
 
-test('mục active dùng chữ --text (12,80:1 trên --purple-tint), không chỉ "vừa đủ 4,5"', () => {
-  assert.equal(requireValue('.nav-item.active', 'color'), 'var(--text)')
-  assert.equal(requireValue('.nav-subitem.active', 'color'), 'var(--text)')
-  assert.ok(ratio('var(--text)', 'var(--purple-tint)') >= 12)
+test('mục active dùng chữ trắng (9,97:1 trên --purple-active), không chỉ "vừa đủ 4,5"', () => {
+  assert.equal(requireValue('.nav-item.active', 'color'), '#fff')
+  assert.equal(requireValue('.nav-subitem.active', 'color'), '#fff')
+  assert.ok(ratio('#fff', 'var(--purple-active)') >= 9.9)
 })
 
 test('.sidebar rộng đúng var(--sidebar-width) (không gõ chết số), nên đổi token là đổi cả sidebar lẫn bài kiểm bề rộng', () => {
@@ -401,7 +416,7 @@ test('mọi token cỡ chữ/spacing/bo góc được dùng trong sidebar đều
 
   for (const rule of sheet.rules) {
     for (const declaration of rule.declarations) {
-      for (const match of declaration.value.matchAll(/var\((--(?:fs|space|radius|sidebar|bg-sidebar|surface-raised|text-label|purple-tint|purple-strong|purple-pressed)[a-z0-9-]*)\)/g)) used.add(match[1])
+      for (const match of declaration.value.matchAll(/var\((--(?:fs|space|radius|sidebar|bg-sidebar|surface-raised|text-label|purple-active|purple-hover|purple-strong|purple-pressed)[a-z0-9-]*)\)/g)) used.add(match[1])
     }
   }
 
@@ -435,4 +450,29 @@ test('nút "Thử lại" (class dashboard-primary-button load-error-retry) khôn
   const overrides = sheet.rules.filter((rule) => rule.selectors.some((selector) => selector.includes('load-error-retry')))
 
   assert.deepEqual(overrides.map((rule) => rule.selectors.join(', ')), [])
+})
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Khóa cuộn nền và thanh cuộn tối của sidebar (Redesign Phase 2b)
+// ---------------------------------------------------------------------------------------------------------------------
+
+test('khóa cuộn nền: body.is-drawer-open { overflow: hidden } chỉ trong @media (max-width: 700px)', () => {
+  assert.equal(requireValue('body.is-drawer-open', 'overflow', MOBILE), 'hidden')
+  assert.equal(valueOf('body.is-drawer-open', 'overflow'), undefined, 'không khóa cuộn ở màn hình rộng')
+})
+
+test('thanh cuộn tối riêng cho .sidebar-scroll: scrollbar-width thin, scrollbar-color var(--border) transparent (không áp toàn app)', () => {
+  assert.equal(requireValue('.sidebar-scroll', 'scrollbar-width'), 'thin')
+  assert.equal(requireValue('.sidebar-scroll', 'scrollbar-color'), 'var(--border) transparent')
+
+  const global = sheet.rules.filter((rule) => rule.selectors.some((selector) => ['*', 'html', 'body', ':root'].includes(selector)))
+    .filter((rule) => rule.declarations.some((declaration) => declaration.property.startsWith('scrollbar-')))
+
+  assert.deepEqual(global.map((rule) => rule.selectors.join(',')), [], 'thanh cuộn tối chỉ cho sidebar trong PR này')
+})
+
+test('pill active: margin/thụt vào đến từ padding của .sidebar nên trạng thái thu gọn vẫn đủ chỗ cho icon (sidebar thu gọn 72px, mục >= 40px rộng)', () => {
+  const padding = requireValue('.sidebar', 'padding').split(' ')
+
+  assert.ok(72 - 2 * pxOf(padding[1]) - 1 >= 40, 'mục thu gọn phải còn >= 40px')
 })
