@@ -188,12 +188,16 @@ test('comment trong :root chia token thành CŨ / MỚI ĐANG DÙNG / MỚI CHƯ
   assert.ok(sections[2].length >= 34, `phải có ít nhất 34 token định nghĩa sẵn, thấy ${sections[2].length}`)
 })
 
-test('token "CHƯA ĐƯỢC DÙNG" quả thật chưa được luật nào tham chiếu; token font đang dùng thì có chỗ dùng', () => {
+test('token "CHƯA ĐƯỢC DÙNG" quả thật chưa được luật nào tham chiếu', () => {
   const raw = rootRawBlock(css)
   const unusedNames = [...raw.slice(raw.indexOf('TOKEN MỚI, CHƯA ĐƯỢC DÙNG')).matchAll(/(--[a-z0-9-]+)\s*:/g)].map((match) => match[1])
   const used = unusedNames.filter((name) => countVarUses(css, name) > 0)
 
+  assert.ok(unusedNames.length >= 34, `phải tìm thấy ít nhất 34 token chưa dùng, thấy ${unusedNames.length}`)
   assert.deepEqual(used, [], 'các token này đã bị áp vào luật; Phase 1 chỉ định nghĩa (gồm --border-control, --blue, --success, cỡ chữ, spacing, bo góc, bóng)')
+})
+
+test('token font "ĐANG DÙNG": --font-ui làm font nền của :root, --font-mono dùng đúng ở 7 chỗ font mã', () => {
   assert.ok(countVarUses(css, '--font-ui') >= 1, '--font-ui phải được dùng (font của :root)')
   assert.equal(countVarUses(css, '--font-mono'), 7, '--font-mono phải được dùng đúng ở 7 chỗ font mã')
 })

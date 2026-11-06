@@ -9,6 +9,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  /* === TOKEN CŨ ===
+     18 token đang dùng, giữ NGUYÊN tên và giá trị (Redesign Phase 1, Phương án A: không đổi diện mạo).
+     Giá trị mới tương ứng chỉ áp ở Phase 2: --border sẽ thành #2A2A3D, --text-muted sẽ thành #9CA2BA. */
   --background: #0c0d12;
   --panel: #12141c;
   --panel-hover: #191b27;
@@ -32,6 +35,65 @@
   --surface-secondary: var(--panel);
   --surface-color: var(--panel-hover);
   --panel-bg: var(--panel);
+
+  /* === TOKEN MỚI, ĐANG DÙNG ===
+     Họ font. --font-ui là font nền của :root; --font-mono dành cho mọi chỗ hiển thị font mã (mã giả, bảng, danh sách). */
+  --font-ui: 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* === TOKEN MỚI, CHƯA ĐƯỢC DÙNG ===
+     Phase 1 chỉ ĐỊNH NGHĨA; chưa luật nào tham chiếu (tests/design-tokens.test.js canh gác). Bảng nền và tím mới tồn tại
+     SONG SONG với token cũ ở trên, chưa thay thế chúng: --bg ứng với --background, --surface với --panel, --surface-raised
+     với --panel-hover, --purple-strong với --purple-dark. */
+  --bg: #0B0B14;
+  --bg-sidebar: #0E0E19;
+  --surface: #13131F;
+  --surface-raised: #1A1A28;
+
+  --text-label: #8B8FA6;
+
+  /* Tím: --purple (token cũ) cho chữ nhấn, icon, vạch. KHÔNG đặt chữ trắng lên --purple (2,99:1); chữ trắng chỉ trên
+     --purple-strong hoặc --purple-pressed, chữ tối (--bg) trên --purple. --purple-tint là --purple 16% trên --bg-sidebar. */
+  --purple-strong: #6D55D9;
+  --purple-pressed: #5B43C7;
+  --purple-soft: #B9A8FF;
+  --purple-tint: #25213E;
+
+  --blue: #60A5FA;
+  --success: #22C55E;
+
+  /* Viền của điều khiển (ô nhập, nút): đạt 3:1 trên nền. --border (token cũ) chỉ để trang trí. */
+  --border-control: #6B6B87;
+
+  /* Cỡ chữ */
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-md: 14px;
+  --fs-base: 16px;
+  --fs-lg: 20px;
+  --fs-xl: 24px;
+  --fs-display: clamp(30px, 4vw, 44px);
+
+  /* Khoảng cách: bội số của 4px, tên = px / 4 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Bo góc */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* Bóng */
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --glow-purple: 0 0 0 1px rgba(155, 130, 255, 0.35), 0 8px 28px rgba(155, 130, 255, 0.18);
 }
 
 * {
