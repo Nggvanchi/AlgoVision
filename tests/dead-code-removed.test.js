@@ -29,3 +29,22 @@ for (const name of DEAD_CLASSES) {
 test('.learning-heading p vẫn còn luật riêng (chỉ bỏ vế .learning-category p trong luật chung)', () => {
   assert.match(css, /\.learning-heading p\s*\{/)
 })
+
+// Khối #category-placeholder (khung giới thiệu cũ của thư viện cấu trúc) không route nào bỏ hidden, nên chỉ còn là mã chết.
+const navigation = await readFile(new URL('../src/navigation.js', import.meta.url), 'utf8')
+
+test('khối #category-placeholder đã gỡ khỏi template, navigation.js và style.css', () => {
+  for (const id of ['category-placeholder', 'placeholder-title', 'placeholder-description', 'placeholder-card-title', 'placeholder-card-description']) {
+    assert.ok(!template.includes(`id="${id}"`), `app.html còn phần tử #${id}`)
+    assert.ok(!navigation.includes(id), `navigation.js còn nhắc ${id}`)
+  }
+
+  assert.ok(!classRule('category-preview').test(css), 'style.css còn luật .category-preview')
+  assert.ok(!template.includes('category-preview'), 'app.html còn class category-preview')
+})
+
+test('trường description của bảng pages (chỉ dùng để điền khối placeholder) đã gỡ; title vẫn còn cho breadcrumb', () => {
+  assert.ok(!/description:/.test(navigation), 'navigation.js còn trường description')
+  assert.match(navigation, /title: 'Tổng quan'/)
+  assert.match(navigation, /title: 'Cấu trúc dữ liệu'/)
+})

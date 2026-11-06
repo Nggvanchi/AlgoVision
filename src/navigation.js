@@ -1,22 +1,10 @@
 import { topicId } from './progress-store.js'
 
 const pages = {
-  dashboard: {
-    title: 'Tổng quan',
-    description: 'Khám phá không gian học tập AlgoVision.',
-  },
-  sorting: {
-    title: 'Thuật toán sắp xếp',
-    description: 'Chọn một thuật toán để bắt đầu tìm hiểu.',
-  },
-  searching: {
-    title: 'Thuật toán tìm kiếm',
-    description: 'Tìm hiểu cách xác định vị trí của một giá trị trong dữ liệu.',
-  },
-  structures: {
-    title: 'Cấu trúc dữ liệu',
-    description: 'Chọn một cấu trúc dữ liệu để khám phá cách hoạt động.',
-  },
+  dashboard: { title: 'Tổng quan' },
+  sorting: { title: 'Thuật toán sắp xếp' },
+  searching: { title: 'Thuật toán tìm kiếm' },
+  structures: { title: 'Cấu trúc dữ liệu' },
 }
 
 const BREADCRUMB_ROOT = 'Không gian học tập'
@@ -49,7 +37,6 @@ export function initNavigation(document) {
   const searchLibrary = document.querySelector('#search-algorithm-library')
   const searchVisualizer = document.querySelector('#search-section')
 
-  const categoryPlaceholder = document.querySelector('#category-placeholder')
   const structureLibrary = document.querySelector('#structure-library')
   const structureCards = [...document.querySelectorAll('[data-structure-target]')]
   // Mỗi thẻ data-structure-target="x" mở section #x-section; thêm cấu trúc mới không cần sửa file này.
@@ -60,9 +47,6 @@ export function initNavigation(document) {
       .map((target) => [target, document.querySelector(`#${target}-section`)])
       .filter(([, section]) => section !== null),
   )
-
-  const placeholderTitle = document.querySelector('#placeholder-title')
-  const placeholderDescription = document.querySelector('#placeholder-description')
 
   const structureNavList = document.querySelector('#structure-nav-list')
   let structureNavItems = []
@@ -84,7 +68,6 @@ export function initNavigation(document) {
     sortingVisualizer.hidden = true
     searchLibrary.hidden = true
     searchVisualizer.hidden = true
-    categoryPlaceholder.hidden = true
     structureLibrary.hidden = true
     structureSections.forEach((section) => {
       section.hidden = true
@@ -193,14 +176,6 @@ export function initNavigation(document) {
 
     if (pageName === 'structures') {
       structureLibrary.hidden = false
-
-      if (placeholderTitle) {
-        placeholderTitle.textContent = pages.structures.title
-      }
-
-      if (placeholderDescription) {
-        placeholderDescription.textContent = pages.structures.description
-      }
     }
   }
 

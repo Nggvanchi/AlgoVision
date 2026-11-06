@@ -1029,16 +1029,6 @@ button:disabled {
   text-align: left;
 }
 
-.category-preview {
-  display: flex;
-  min-height: 270px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 22px;
-  text-align: center;
-}
-
 .visualizer-heading {
   display: flex;
   align-items: flex-start;
