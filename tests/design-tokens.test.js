@@ -380,6 +380,28 @@ test('.gitattributes đánh dấu *.woff2 là binary', () => {
   assert.match(readFileSync(here('../.gitattributes'), 'utf8'), /^\*\.woff2\s+binary\s*$/m)
 })
 
+test('ngoại lệ khoảng trắng cuối dòng chỉ áp cho hai file OFL (văn bản giấy phép gốc có khoảng trắng cuối), không nới luật chung', () => {
+  const attributes = readFileSync(here('../.gitattributes'), 'utf8').split('\n').filter((line) => /whitespace/.test(line))
+  assert.deepEqual(attributes, ['public/fonts/OFL-*.txt -whitespace'])
+
+  const editorconfig = readFileSync(here('../.editorconfig'), 'utf8')
+  const sections = [...editorconfig.matchAll(/^\[([^\]]+)\]\s*$([^[]*)/gm)].map((match) => ({ glob: match[1], body: match[2] }))
+  const relaxed = sections.filter((section) => /trim_trailing_whitespace\s*=\s*false/.test(section.body)).map((section) => section.glob).sort()
+
+  assert.deepEqual(relaxed, ['*.md', 'public/fonts/OFL-*.txt'])
+  assert.equal(sections.find((section) => section.glob === '*')?.body.match(/trim_trailing_whitespace\s*=\s*(\w+)/)?.[1], 'true', 'luật chung [*] vẫn phải bật trim_trailing_whitespace')
+})
+
+test('hai file OFL dùng LF, không BOM và dòng 21 giữ nguyên khoảng trắng cuối của bản gốc', () => {
+  for (const file of ['OFL-BeVietnamPro.txt', 'OFL-JetBrainsMono.txt']) {
+    const bytes = readFileSync(new URL(file, FONT_DIR))
+    assert.ok(!bytes.includes(13), `${file}: không được có CR`)
+    assert.notDeepEqual([...bytes.subarray(0, 3)], [0xef, 0xbb, 0xbf], `${file}: không được có BOM`)
+    assert.equal(bytes.toString('utf8').split('\n').length - 1, 93, `${file}: giữ nguyên 93 dòng`)
+    assert.ok(bytes.toString('utf8').split('\n')[20].endsWith('embedded, '), `${file}: dòng 21 phải giữ khoảng trắng cuối của văn bản OFL gốc`)
+  }
+})
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Font mã: mọi font-family đi qua token
 // ---------------------------------------------------------------------------------------------------------------------
