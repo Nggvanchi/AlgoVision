@@ -1573,7 +1573,7 @@ button:disabled {
 
 .search-speed-control input[type="range"] {
   width: 150px;
-  accent-color: var(--accent-color, #6366f1);
+  accent-color: var(--accent-color);
   cursor: pointer;
 }
 
@@ -1683,7 +1683,7 @@ button:disabled {
   padding: 16px;
   border: 1px solid var(--border-color, #374151);
   border-radius: 12px;
-  background: var(--surface-secondary, #111827);
+  background: var(--surface-secondary);
 }
 
 .search-range-panel h4 {
@@ -1703,7 +1703,7 @@ button:disabled {
   gap: 8px;
   padding: 12px;
   border-radius: 8px;
-  background: var(--surface-color, #1f2937);
+  background: var(--surface-color);
 }
 
 .search-range-item span {
@@ -2212,7 +2212,7 @@ button.structure-card:focus-visible,
   padding: 24px;
   border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
   border-radius: 16px;
-  background: var(--panel-bg, rgba(255, 255, 255, 0.03));
+  background: var(--panel-bg);
 }
 
 .linked-list-panel-heading {
