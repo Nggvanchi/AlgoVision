@@ -96,3 +96,69 @@ export function keepKnownTopics(progress, knownTopics) {
 
   return { version: progress.version, topics }
 }
+
+// Kho tiến độ: bọc phần thuần quanh một đối tượng storage inject được (getItem/setItem/removeItem, hoặc null khi
+// localStorage không dùng được). Không hàm nào ném: ghi tiến độ không bao giờ được làm hỏng app.
+// Bản nhớ của phiên (session) giữ các lần mở khi storage lỗi hoặc có version lạ, để read() vẫn nhất quán trong phiên.
+export function createProgressStore({ storage = null, knownTopics = [], now = Date.now } = {}) {
+  const known = new Set(knownTopics)
+  let session = emptyProgress()
+  let writeFailed = false
+
+  function load() {
+    if (storage === null) return { progress: emptyProgress(), status: 'unavailable' }
+
+    try {
+      return parseProgress(storage.getItem(STORAGE_KEY))
+    } catch {
+      return { progress: emptyProgress(), status: 'unavailable' }
+    }
+  }
+
+  function read() {
+    const loaded = load()
+    const useSession = writeFailed || loaded.status === 'unavailable' || loaded.status === 'future-version'
+
+    return keepKnownTopics(useSession ? session : loaded.progress, known)
+  }
+
+  // Mỗi lần mở: đọc lại từ storage rồi ghi (không dùng bản cache), nên hai tab không đè mất lần mở của nhau.
+  function open(id) {
+    if (!known.has(id)) return false
+
+    let openedAt
+    try {
+      openedAt = now()
+      session = recordOpen(session, id, openedAt)
+    } catch {
+      return false // đồng hồ hỏng: không phải lỗi ghi, không đụng tới writeFailed
+    }
+
+    const loaded = load()
+    if (loaded.status === 'unavailable' || loaded.status === 'future-version') return false
+
+    try {
+      storage.setItem(STORAGE_KEY, serializeProgress(recordOpen(loaded.progress, id, openedAt)))
+      writeFailed = false
+      return true
+    } catch {
+      writeFailed = true
+      return false
+    }
+  }
+
+  function clear() {
+    session = emptyProgress()
+
+    if (storage === null) return false
+
+    try {
+      storage.removeItem(STORAGE_KEY)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  return { read, recordOpen: open, clear }
+}
