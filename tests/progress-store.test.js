@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import * as progress from '../src/progress-store.js'
 import { deepFreeze } from './helpers/deep-freeze.js'
 
-// Phần thuần của tiến độ học tập: không localStorage, không DOM. "Đã mở" là số lần vào màn chi tiết, không phải "hoàn thành".
+// Phần thuần của tiến độ học tập: không localStorage, không DOM. "Đã mở" chỉ là đã vào màn chi tiết của chủ đề.
 
 const entry = (firstOpenedAt, lastOpenedAt, openCount) => ({ firstOpenedAt, lastOpenedAt, openCount })
 const file = (topics, version = 1) => JSON.stringify({ version, topics })
@@ -166,7 +166,7 @@ test('parseProgress kẹp openCount quá MAX_OPEN_COUNT xuống MAX_OPEN_COUNT',
 })
 
 test('parseProgress chỉ giữ trường của lược đồ, bỏ trường lạ', () => {
-  const parsed = progress.parseProgress(file({ 'sorting:bubble': { ...entry(1, 2, 3), note: 'x', completed: true } }))
+  const parsed = progress.parseProgress(file({ 'sorting:bubble': { ...entry(1, 2, 3), note: 'x', learned: true } }))
   assert.deepEqual(parsed.progress.topics['sorting:bubble'], entry(1, 2, 3))
 })
 

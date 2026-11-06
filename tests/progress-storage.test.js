@@ -1,35 +1,13 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import * as progress from '../src/progress-store.js'
+import { memoryStorage } from './helpers/memory-storage.js'
 
 // Lớp bao quanh phần thuần: storage được inject (không localStorage thật, không DOM).
 // Mọi hàm của kho không được ném: ghi tiến độ không bao giờ được phá app.
 
 const KNOWN = ['sorting:bubble', 'sorting:selection', 'searching:linear', 'structure:bst']
-const KEY = 'algovision:progress'
-
-// Storage giả có thể ném lỗi ở từng thao tác và đếm số lần ghi.
-function memoryStorage({ initial, failGet = false, failSet = false, failRemove = false } = {}) {
-  const data = new Map(initial === undefined ? [] : [[KEY, initial]])
-  return {
-    data,
-    failSet,
-    setCalls: 0,
-    getItem(key) {
-      if (failGet) throw new Error('SecurityError')
-      return data.has(key) ? data.get(key) : null
-    },
-    setItem(key, value) {
-      this.setCalls += 1
-      if (this.failSet) throw new Error('QuotaExceededError')
-      data.set(key, String(value))
-    },
-    removeItem(key) {
-      if (failRemove) throw new Error('SecurityError')
-      data.delete(key)
-    },
-  }
-}
+const KEY = progress.STORAGE_KEY
 
 function clock(...times) {
   let index = 0
