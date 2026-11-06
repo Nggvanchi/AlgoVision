@@ -185,7 +185,7 @@ test('comment trong :root chia token thành CŨ / MỚI ĐANG DÙNG / MỚI CHƯ
   assert.deepEqual(sections[1], ['--bg-sidebar', '--font-mono', '--font-ui', '--fs-md', '--fs-sm', '--fs-xs', '--purple-pressed', '--purple-strong', '--purple-tint', '--radius-sm', '--shadow-card', '--sidebar-width', '--sidebar-width-collapsed', '--space-1', '--space-2', '--space-3', '--space-4', '--space-6', '--surface-raised', '--text-label'], 'nhóm MỚI ĐANG DÙNG: 2 token font (Phase 1) và 18 token Phase 2 áp vào sidebar và nút chính')
   assert.deepEqual(sections[2], [...tokens.keys()].filter((name) => !sections[0].includes(name) && !sections[1].includes(name)).sort(),
     'nhóm MỚI CHƯA DÙNG phải là phần còn lại của :root')
-  assert.ok(sections[2].length >= 17, `phải có ít nhất 17 token định nghĩa sẵn chưa dùng, thấy ${sections[2].length}`)
+  assert.ok(sections[2].length >= 18, `phải có ít nhất 18 token định nghĩa sẵn chưa dùng, thấy ${sections[2].length}`)
 })
 
 test('token "CHƯA ĐƯỢC DÙNG" quả thật chưa được luật nào tham chiếu', () => {
@@ -193,7 +193,7 @@ test('token "CHƯA ĐƯỢC DÙNG" quả thật chưa được luật nào tham 
   const unusedNames = [...raw.slice(raw.indexOf('TOKEN MỚI, CHƯA ĐƯỢC DÙNG')).matchAll(/(--[a-z0-9-]+)\s*:/g)].map((match) => match[1])
   const used = unusedNames.filter((name) => countVarUses(css, name) > 0)
 
-  assert.ok(unusedNames.length >= 17, `phải tìm thấy ít nhất 17 token chưa dùng, thấy ${unusedNames.length}`)
+  assert.ok(unusedNames.length >= 18, `phải tìm thấy ít nhất 18 token chưa dùng, thấy ${unusedNames.length}`)
   assert.deepEqual(used, [], 'các token này đã bị áp vào luật; Phase 1 chỉ định nghĩa (gồm --border-control, --blue, --success, cỡ chữ, spacing, bo góc, bóng)')
 })
 
