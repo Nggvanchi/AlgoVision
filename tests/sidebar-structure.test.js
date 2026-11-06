@@ -148,8 +148,9 @@ test('khối "PHIÊN BẢN AlgoVision 0.1.0" đã bỏ (không phải dữ liệ
 
 test('không có mục giả: không Learn, Progress, Settings, Visualizer, Dijkstra, Dynamic Programming, Sign Out, tìm kiếm, chuông, Dark Mode', async () => {
   await withFullApp(({ document }) => {
+    // Chỉ xét phần điều hướng: dòng phụ của logo ("Algorithm Visualizer") là chữ thật của thương hiệu.
     const sidebar = document.querySelector('.sidebar')
-    const text = textOf(sidebar)
+    const text = textOf(sidebar.querySelector('nav'))
 
     for (const fake of ['Learn', 'Progress', 'Settings', 'Visualizer', 'Dijkstra', 'Dynamic', 'Sign Out', 'Dark Mode', '34+']) {
       assert.equal(text.includes(fake), false, `sidebar không được có "${fake}"`)

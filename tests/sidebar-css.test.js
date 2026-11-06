@@ -61,7 +61,7 @@ function pxOf(expression) {
   const reference = /^var\((--[a-z0-9-]+)\)$/i.exec(text)
   const value = reference ? resolveToken(reference[1]) : text
 
-  assert.match(value, /^\d+(\.\d+)?px$/, `không đọc được px từ "${expression}"`)
+  assert.match(value, /^-?\d+(\.\d+)?px$/, `không đọc được px từ "${expression}"`)
   return Number.parseFloat(value)
 }
 
@@ -200,6 +200,26 @@ test('cỡ chữ của nhãn nhóm, mục, mục con, nhãn mục >= 12px ở M�
 test('logo .brand-icon: nền --purple-strong (chữ trắng đạt >= 5,31:1), thay cho gradient bắt đầu ở #ad98ff (2,41:1)', () => {
   assert.equal(requireValue('.brand-icon', 'background'), 'var(--purple-strong)')
   assert.ok(ratio(requireValue('.brand-icon', 'color'), requireValue('.brand-icon', 'background')) >= 5.3)
+})
+
+test('mục active dùng chữ --text (12,80:1 trên --purple-tint), không chỉ "vừa đủ 4,5"', () => {
+  assert.equal(requireValue('.nav-item.active', 'color'), 'var(--text)')
+  assert.equal(requireValue('.nav-subitem.active', 'color'), 'var(--text)')
+  assert.ok(ratio('var(--text)', 'var(--purple-tint)') >= 12)
+})
+
+test('.sidebar rộng đúng var(--sidebar-width) (không gõ chết số), nên đổi token là đổi cả sidebar lẫn bài kiểm bề rộng', () => {
+  assert.equal(requireValue('.sidebar', 'width'), 'var(--sidebar-width)')
+})
+
+test('vòng focus của mục nằm TRONG mục (outline-offset âm): .sidebar-scroll cắt vòng focus vẽ ra ngoài mép vùng cuộn', () => {
+  assert.ok(pxOf(requireValue('.nav-item:focus-visible', 'outline-offset')) < 0)
+  assert.ok(pxOf(requireValue('.nav-subitem:focus-visible', 'outline-offset')) < 0)
+})
+
+test('.sidebar-nav co lại được (flex: 1 và min-height: 0): thiếu min-height: 0 thì vùng cuộn dài ra thay vì cuộn, đẩy sidebar khỏi viewport', () => {
+  assert.match(requireValue('.sidebar-nav', 'flex'), /^1\b/)
+  assert.equal(requireValue('.sidebar-nav', 'min-height'), '0')
 })
 
 // ---------------------------------------------------------------------------------------------------------------------

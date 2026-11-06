@@ -129,17 +129,18 @@
   --panel-bg: var(--panel);
 
   /* === TOKEN MỚI, ĐANG DÙNG ===
-     Họ font. --font-ui là font nền của :root; --font-mono dành cho mọi chỗ hiển thị font mã (mã giả, bảng, danh sách). */
+     Họ font: --font-ui là font nền của :root; --font-mono dành cho mọi chỗ hiển thị font mã (mã giả, bảng, danh sách).
+     Redesign Phase 2 áp token mới vào sidebar (và nút chính): CHỈ trong luật của sidebar, không lan ra phần còn lại của trang
+     (tests/sidebar-css.test.js canh gác). Token cỡ chữ/spacing/bo góc cũng chỉ dùng trong sidebar. */
   --font-ui: 'Be Vietnam Pro', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  /* === TOKEN MỚI, CHƯA ĐƯỢC DÙNG ===
-     Phase 1 chỉ ĐỊNH NGHĨA; chưa luật nào tham chiếu (tests/design-tokens.test.js canh gác). Bảng nền và tím mới tồn tại
-     SONG SONG với token cũ ở trên, chưa thay thế chúng: --bg ứng với --background, --surface với --panel, --surface-raised
-     với --panel-hover, --purple-strong với --purple-dark. */
-  --bg: #0B0B14;
+  /* Bề rộng sidebar: 256px = tối đa 263px để chuỗi chaining 15 khóa (842px) vẫn vừa khung bảng băm ở 1280px.
+     .main-content viết SỐ trực tiếp (margin-left 256px, padding 0 40px) vì tests/hash-table-layout.test.js đọc bằng regex;
+     tests/sidebar-css.test.js khẳng định hai số khớp token. */
+  --sidebar-width: 256px;
+
   --bg-sidebar: #0E0E19;
-  --surface: #13131F;
   --surface-raised: #1A1A28;
 
   --text-label: #8B8FA6;
@@ -147,9 +148,32 @@
   /* Tím: --purple (token cũ) cho chữ nhấn, icon, vạch. KHÔNG đặt chữ trắng lên --purple (2,99:1); chữ trắng chỉ trên
      --purple-strong hoặc --purple-pressed, chữ tối (--bg) trên --purple. --purple-tint là --purple 16% trên --bg-sidebar. */
   --purple-strong: #6D55D9;
+  --purple-tint: #25213E;
+
+  /* Cỡ chữ */
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-md: 14px;
+
+  /* Khoảng cách: bội số của 4px, tên = px / 4 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+
+  /* Bo góc */
+  --radius-sm: 8px;
+
+  /* === TOKEN MỚI, CHƯA ĐƯỢC DÙNG ===
+     Chỉ ĐỊNH NGHĨA; chưa luật nào tham chiếu (tests/design-tokens.test.js canh gác). Bảng nền và tím mới tồn tại
+     SONG SONG với token cũ ở trên, chưa thay thế chúng: --bg ứng với --background, --surface với --panel, --surface-raised
+     với --panel-hover, --purple-strong với --purple-dark. */
+  --bg: #0B0B14;
+  --surface: #13131F;
+
   --purple-pressed: #5B43C7;
   --purple-soft: #B9A8FF;
-  --purple-tint: #25213E;
 
   --blue: #60A5FA;
   --success: #22C55E;
@@ -158,27 +182,18 @@
   --border-control: #6B6B87;
 
   /* Cỡ chữ */
-  --fs-xs: 12px;
-  --fs-sm: 13px;
-  --fs-md: 14px;
   --fs-base: 16px;
   --fs-lg: 20px;
   --fs-xl: 24px;
   --fs-display: clamp(30px, 4vw, 44px);
 
-  /* Khoảng cách: bội số của 4px, tên = px / 4 */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
+  /* Khoảng cách */
   --space-5: 20px;
-  --space-6: 24px;
   --space-8: 32px;
   --space-10: 40px;
   --space-12: 48px;
 
   /* Bo góc */
-  --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-pill: 999px;
@@ -226,26 +241,28 @@ button:disabled {
   z-index: 10;
   display: flex;
   flex-direction: column;
-  width: 250px;
-  padding: 28px 18px 20px;
-  background: #101118;
+  width: var(--sidebar-width);
+  padding: var(--space-6) var(--space-3) var(--space-4);
+  background: var(--bg-sidebar);
   border-right: 1px solid var(--border);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 8px 32px;
+  gap: var(--space-3);
+  padding: 0 var(--space-2) var(--space-6);
 }
 
+/* Nền --purple-strong (không phải gradient bắt đầu ở #ad98ff): chữ trắng đạt 5,31:1 thay cho 2,41:1. */
 .brand-icon {
   display: grid;
+  flex: none;
   width: 42px;
   height: 42px;
   place-items: center;
   border-radius: 13px;
-  background: linear-gradient(135deg, #ad98ff, var(--purple-dark));
+  background: var(--purple-strong);
   color: white;
   font-size: 24px;
   font-weight: 700;
@@ -260,83 +277,131 @@ button:disabled {
 }
 
 .brand p {
-  margin: 4px 0 0;
+  margin: var(--space-1) 0 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--fs-xs);
 }
 
-.sidebar-section {
+.sidebar-nav {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Vùng cuộn duy nhất của sidebar: danh sách mục co lại và cuộn khi viewport thấp, brand và đáy luôn thấy. */
+.sidebar-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.nav-list,
+.nav-sublist {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.section-label,
-.sidebar-bottom p {
-  margin: 0 0 10px;
-  padding-left: 10px;
-  color: #72788d;
-  font-size: 10px;
+.nav-list {
+  gap: var(--space-1);
+}
+
+.nav-sublist {
+  gap: 2px;
+  margin-top: var(--space-1);
+  padding-left: var(--space-6);
+}
+
+.section-label {
+  margin: 0 0 var(--space-2);
+  padding-left: var(--space-3);
+  color: var(--text-label);
+  font-size: var(--fs-xs);
   font-weight: 700;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
 }
 
-.nav-item {
+.nav-list + .section-label {
+  margin-top: var(--space-6);
+}
+
+.nav-item,
+.nav-subitem {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   width: 100%;
-  padding: 12px 13px;
-  border: 1px solid transparent;
-  border-radius: 9px;
+  border: 0;
+  border-radius: var(--radius-sm);
   background: transparent;
-  color: #a8aec1;
+  color: var(--muted);
   text-align: left;
-  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   transition: background 160ms ease, color 160ms ease;
 }
 
-.nav-item:hover {
-  background: var(--panel-hover);
-  color: white;
+.nav-item {
+  min-height: 40px;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-md);
 }
 
-.nav-item.active {
-  border-color: #6c55b83d;
-  background: #8b72f51b;
-  color: #c5b8ff;
+.nav-subitem {
+  gap: var(--space-2);
+  min-height: 36px;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-sm);
+}
+
+/* Vòng focus nằm trong mục: vùng cuộn cắt vòng focus vẽ ra ngoài (outline-offset dương của button:focus-visible). */
+.nav-item:focus-visible,
+.nav-subitem:focus-visible {
+  outline-offset: -2px;
+}
+
+.nav-item:hover,
+.nav-subitem:hover {
+  background: var(--surface-raised);
+  color: var(--text);
+}
+
+/* Mục đang mở: nền --purple-tint, vạch tím 3px bên trái, chữ đậm hơn (ba dấu hiệu ngoài màu cùng aria-current). */
+.nav-item.active,
+.nav-subitem.active {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--purple-tint);
+  box-shadow: inset 3px 0 0 var(--purple);
+  color: var(--text);
+  font-weight: 600;
 }
 
 .nav-icon {
   display: grid;
-  width: 22px;
+  flex: none;
+  width: 24px;
   place-items: center;
   font-size: 20px;
 }
 
-.sidebar-bottom {
-  margin-top: auto;
-  padding: 18px 0 0;
-  border-top: 1px solid var(--border);
+.nav-subitem .nav-icon {
+  font-size: var(--fs-sm);
 }
 
-.sidebar-bottom p {
-  padding-left: 8px;
-  margin-bottom: 8px;
-}
-
-.sidebar-bottom span {
-  padding-left: 8px;
-  color: #a1a6b9;
-  font-size: 12px;
+.nav-item.active .nav-icon,
+.nav-subitem.active .nav-icon {
+  color: var(--purple);
 }
 
 .main-content {
   max-width: 1600px;
   min-height: 100vh;
-  margin-left: 250px;
-  padding: 0 46px;
+  margin-left: 256px;
+  padding: 0 40px;
 }
 
 /* Đích của skip link nhận focus bằng mã (tabindex="-1"): không vẽ vòng focus quanh cả vùng nội dung. */
@@ -671,41 +736,13 @@ button:disabled {
   .sidebar {
     position: static;
     width: 100%;
-    padding: 16px;
+    padding: var(--space-4);
     border-right: none;
     border-bottom: 1px solid var(--border);
   }
 
   .brand {
-    padding: 0 4px 18px;
-  }
-
-  .sidebar-section {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 6px;
-  }
-
-  .section-label {
-    grid-column: 1 / -1;
-    margin-bottom: 2px;
-  }
-
-  .nav-item {
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-    padding: 10px 4px;
-    text-align: center;
-    font-size: 10px;
-  }
-
-  .nav-icon {
-    font-size: 18px;
-  }
-
-  .sidebar-bottom {
-    display: none;
+    padding: 0 var(--space-1) var(--space-4);
   }
 
   .main-content {
