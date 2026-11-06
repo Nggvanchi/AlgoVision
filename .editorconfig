@@ -14,3 +14,6 @@ trim_trailing_whitespace = false
 # Template chính thụt lề 4 dấu cách (đo 2026-11-05: 353 bước 4, 17 bước 2); mọi file khác 2 dấu cách.
 [public/templates/*.html]
 indent_size = 4
+
+[public/fonts/OFL-*.txt]
+trim_trailing_whitespace = false

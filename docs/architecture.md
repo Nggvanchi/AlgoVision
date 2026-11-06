@@ -232,6 +232,45 @@ còn `null` nên không đếm đôi. Màn chi tiết Sắp xếp không có b�
 
 Chưa xác minh trên trình duyệt thật: test chạy bằng happy-dom (xem `docs/backlog.md`).
 
+## Token thiết kế và font tự host (Redesign Phase 1)
+
+Phase 1 chỉ thêm nền móng, **không đổi diện mạo trừ font**: token trong `:root` của `src/style.css`, font tự host, gom 13 hex khớp đúng token.
+Test: `tests/design-tokens.test.js` (107 test: 41 viết riêng, 66 sinh từ bảng) và hai helper `tests/helpers/contrast.js` (tỉ lệ WCAG, có test riêng)
+và `tests/helpers/css-tokens.js` (parser nhỏ đọc `:root`, `@font-face`, `@import`, khai báo của từng luật). Mọi giá trị đọc từ `style.css`.
+
+**Ba nhóm token trong `:root`** (comment `=== TOKEN CŨ ===`, `=== TOKEN MỚI, ĐANG DÙNG ===`, `=== TOKEN MỚI, CHƯA ĐƯỢC DÙNG ===`; test kiểm mỗi token nằm đúng nhóm):
+
+| Nhóm | Token | Quy tắc |
+|---|---|---|
+| TOKEN CŨ | 18 token: 10 giá trị gốc (`--background`, `--panel`, `--panel-hover`, `--border`, `--text`, `--muted`, `--purple`, `--purple-dark`, `--state-active`, `--bar-cue`) và 8 alias (`--text-muted`, `--border-color`, `--card-background`, `--text-secondary`, `--accent-color`, `--surface-secondary`, `--surface-color`, `--panel-bg`) | giữ NGUYÊN tên và giá trị (Phương án A); test kiểm từng giá trị và từng alias |
+| TOKEN MỚI, ĐANG DÙNG | `--font-ui` (`'Be Vietnam Pro', system-ui, sans-serif`, font nền của `:root`), `--font-mono` (`'JetBrains Mono', ui-monospace, monospace`, đúng 7 chỗ font mã) | |
+| TOKEN MỚI, CHƯA ĐƯỢC DÙNG | 34 token: 12 màu (`--bg`, `--bg-sidebar`, `--surface`, `--surface-raised`, `--text-label`, `--purple-strong`, `--purple-pressed`, `--purple-soft`, `--purple-tint`, `--blue`, `--success`, `--border-control`), 7 cỡ chữ `--fs-*`, 9 spacing `--space-*` (bội số của 4, tên = px / 4), 4 bo góc `--radius-*`, 2 bóng | chỉ ĐỊNH NGHĨA; không luật nào được tham chiếu (test bắt nếu áp) |
+
+Bảng nền mới tồn tại SONG SONG với token cũ (`--bg` ứng với `--background`, `--surface` với `--panel`, `--surface-raised` với `--panel-hover`,
+`--purple-strong` với `--purple-dark`), dễ nhầm; Phase 2 sẽ chuyển `--border` sang #2A2A3D và `--text-muted` sang #9CA2BA. `--shadow-card` và `--glow-purple`
+là giá trị tạm do Phase 1 tự chọn, test chốt cứng.
+
+**Tương phản** (tính từ token thật, 29 cặp trong test): chữ trắng trên `--purple` (#9B82FF) chỉ **2,99:1, bị cấm**; chữ trắng chỉ trên `--purple-strong` (5,31)
+hoặc `--purple-pressed` (6,84), chữ tối `--bg` trên `--purple` (6,56). `--border-control` đạt 3,58:1 trên `--surface` (viền ô nhập hiện tại chỉ 1,33:1, chưa nâng).
+Ngoại lệ có chủ đích: `.dashboard-primary-button` (nút "Bắt đầu học") vẫn chữ trắng trên `--purple`; danh sách `WHITE_ON_PURPLE_KNOWN` trong test phải khớp
+chính xác (thêm vi phạm mới hoặc sửa xong đều làm test đỏ).
+
+**Font tự host** (`public/fonts`, 10 woff2 = 172.912 B, ngưỡng 175 kB; không còn `@import` hay yêu cầu tới `fonts.googleapis.com`/`fonts.gstatic.com`):
+- 10 `@font-face` ở đầu `style.css`, `font-display: swap`, `src: url('/fonts/...') format('woff2')`. Đường dẫn `/fonts/...` tuyệt đối vì `public/` được phục vụ ở gốc
+  (dev và build, không có `vite.config`). `unicode-range` lấy từ css gốc của Google nên trình duyệt chỉ tải subset thật sự dùng.
+- Be Vietnam Pro: 8 file tĩnh `be-vietnam-pro-{latin,vietnamese}-{400,500,600,700}.woff2`. JetBrains Mono: 2 file **biến thiên** (trục `wght` 400..800)
+  `jetbrains-mono-{latin,vietnamese}-variable.woff2`, khai báo `font-weight: 400 800` (test đọc bảng `fvar` của woff2 để chống đặt tên "variable" cho font tĩnh).
+- Chỉ có hai subset latin và vietnamese. Ký hiệu ngoài range (→ ∅ Θ ▶) rơi về font hệ thống; đo 2026-11-06 (Chrome 152, Windows): → ∅ Θ về Consolas, ▶ về Segoe UI Symbol.
+  Chữ và số của mọi phần tử font mã đều là JetBrains Mono tự host (`isCustomFont = true`).
+- `index.html` preload đúng MỘT face: `be-vietnam-pro-latin-400.woff2`. Đo (mạng giả lập 1,6 Mbps, trễ 150 ms, 5 lần mỗi ứng viên, bằng chứng yếu): face này vẽ 59% ký tự
+  ở màn Tổng quan và sẵn sàng sớm hơn 947 ms (1554 → 607 ms), đánh đổi FCP chậm thêm khoảng 100 ms.
+- Giấy phép SIL OFL kèm theo: `public/fonts/OFL-BeVietnamPro.txt`, `OFL-JetBrainsMono.txt`. Giữ nguyên văn bản, chỉ chuẩn hóa đuôi dòng thành LF. Dòng 21 có khoảng trắng cuối
+  là của bản gốc, nên `.gitattributes` (`public/fonts/OFL-*.txt -whitespace`) và `.editorconfig` (mục `[public/fonts/OFL-*.txt]`, `trim_trailing_whitespace = false`)
+  miễn trừ RIÊNG hai file này; test canh gác không cho nới ra ngoài. `.gitattributes` có `*.woff2 binary`.
+- JetBrains Mono rộng 0,6em mỗi ký tự, so với Consolas 0,5498em (+9,1%) ở bảy chỗ font mã (mã giả, nhãn `[i]` bảng băm, danh sách kề, ma trận kề và bảng mốc BFS/DFS,
+  bảng độ phức tạp đồ thị, hàng đợi/thứ tự thăm, ngăn xếp DFS). Đo trước/sau (Chrome 152, Windows): R12 (chuỗi chaining 14 và 15 khóa ở 1280px) không đổi; R10 (bảng DFS ở 360px)
+  bảng 257px bằng khung, không ô xuống dòng, khe nhỏ nhất giữa chữ các ô 12,98 → 11 px (360px) và 13,91 → 11,92 px (1280px), cao ô 17–19 → 19–21 px.
+
 ## Cách test một module
 
 - Bất biến bước dùng chung `tests/helpers/step-invariants.js`; module bọc mỏng (`bst-step-invariants.js`, `hash-step-invariants.js`,

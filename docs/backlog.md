@@ -17,6 +17,8 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - `tests/graph-controller.test.js` vẫn tốn 511–679 MB RSS ở heap mặc định (71 test, mỗi test nạp `app.html` vào một cửa sổ riêng).
   Ứng viên số một cho việc dùng chung cửa sổ trong PR `chore/test-consolidate`.
 - `tests/graph-complexity.test.js` giảm RSS 360 → 243 MB sau PR test-hardening dù không dùng happy-dom; chưa rõ nguyên nhân.
+- Cache font trên Vercel: mặc định `Cache-Control: public, max-age=0, must-revalidate`, nên `/fonts/*.woff2` được xác thực lại (304) ở mỗi lần tải. Cân nhắc tên file có hash hoặc header cache dài khi có `vercel.json`
+  (cấu hình Vercel hiện nằm trên Vercel, không có file trong repo).
 
 ## Giao diện
 - Nút xóa tiến độ học tập: phải làm CÙNG giao diện hiển thị ở Phase 3b vì đây là lịch sử xem của người dùng; hiện chỉ có API `clear()`
@@ -46,7 +48,8 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
   (đo Chrome, mảng cố định 85, 47, 62…). `#simulation-message` nằm cuối khung nên chỉ làm trang dài thêm 22,8 px, không đẩy nút điều khiển;
   trước PR này vùng đó cũng đã dao động 48,8 ↔ 71,6 px giữa các bước. Chưa xử lý; cân nhắc `min-height` cho vùng message của Sắp xếp.
 - Comment đầu `src/hash-table-layout.js` ghi "để vẽ mũi tên" nhưng chuỗi chaining chỉ vẽ đường nối thẳng (`line`, không đầu mũi tên); sửa comment hoặc thêm đầu mũi tên.
-- Bảng mốc DFS (PR `fix/layout-tables`) mới đo với Consolas gốc và Courier New mô phỏng font Linux; chưa kiểm font monospace thật của Linux (Liberation/DejaVu).
+- Bảng mốc DFS (PR `fix/layout-tables`): font mã nay là JetBrains Mono tự host (0,6em, cùng bề rộng ký tự với DejaVu Sans Mono của Linux) nên không còn phụ thuộc font monospace của hệ điều hành.
+  Đã đo trên Windows (Chrome 152): bảng 257px bằng khung ở 360px, khe nhỏ nhất giữa chữ các ô 11px (360px) và 11,92px (1280px), không ô nào xuống dòng; xác nhận lại trên preview Vercel (Linux thật).
 - Thanh bên là `<aside>` chứa 4 nút `button.nav-item`, chưa có `<nav aria-label>`: trình đọc màn hình không có landmark điều hướng chính (skip link
   đã giúp người dùng bàn phím bỏ qua được, nhưng danh sách landmark chỉ có complementary và main).
 - Heading "Queue Visualizer" (đổi từ h2 sang h3 ở PR `fix/a11y-landmarks`) giữ kiểu mặc định của h2 cũ: 24px, đậm 700, margin 19,92px (luật
@@ -62,6 +65,16 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - R18: Sắp xếp không cho nhập mảng hay chọn preset (chỉ "Tạo mảng mới" ngẫu nhiên), nên không thử được mảng đã sắp xếp, đảo ngược, trùng toàn bộ.
 - `document.title` (`index.html:10`, "AlgoVision - Trực quan hóa thuật toán") và breadcrumb (`app.html:44`, "Không gian học tập / Trực quan hóa")
   chưa đổi theo trang: đúng với mọi trang nhưng không nói đang ở đâu.
+- Nút "Bắt đầu học" (`.dashboard-primary-button`): chữ trắng trên `--purple` (#9B82FF) chỉ 2,99:1, dưới 4,5:1. Là ngoại lệ có chủ đích trong `tests/design-tokens.test.js` (`WHITE_ON_PURPLE_KNOWN`);
+  Phase 2 sửa bằng nền `--purple-strong` (trắng trên đó 5,31:1) và xóa khỏi danh sách ngoại lệ.
+- Viền ô nhập hiện 1,33:1 (`--border` #292c3a trên `--panel` #12141c), dưới 3:1 của WCAG 1.4.11. Nâng lên `--border-control` (#6B6B87, 3,58:1 trên `--surface`) ở PR Visualizer/Structure workspace;
+  Phase 1 mới định nghĩa token, test chặn việc áp sớm.
+- Chuyển `--border` (sang #2A2A3D), `--text-muted` (sang #9CA2BA) và bảng nền (`--background`/`--panel`/`--panel-hover` sang `--bg`/`--surface`/`--surface-raised`, `--purple-dark` sang `--purple-strong`) ở Phase 2 cùng
+  sidebar và dashboard. Hiện hai bảng nền cùng có mặt trong `:root` (nhóm TOKEN MỚI, CHƯA ĐƯỢC DÙNG), dễ nhầm.
+- `--shadow-card` (`0 8px 24px rgba(0, 0, 0, 0.35)`) và `--glow-purple` (`0 0 0 1px rgba(155, 130, 255, 0.35), 0 8px 28px rgba(155, 130, 255, 0.18)`) là giá trị tạm do Phase 1 tự chọn, test chốt cứng; xem lại ở Phase 2.
+- Ký hiệu ngoài `unicode-range` của JetBrains Mono (chỉ có latin và vietnamese) rơi về font hệ thống. Đo 2026-11-06 (Chrome 152, Windows): → và ∅ (danh sách kề) và Θ (bảng độ phức tạp đồ thị, chữ Hy Lạp) về Consolas;
+  ▶ (thứ tự thăm BFS/DFS, ngăn xếp DFS, nhãn bảng băm) về Segoe UI Symbol. Ký hiệu khác như ≤ ✓ chưa đo trong thành phần font mã. Trên Linux, fallback của `monospace`/`system-ui` chưa kiểm (xem preview Vercel).
+  Cân nhắc thêm subset greek hoặc vẽ ký hiệu bằng SVG/CSS.
 
 ## Dọn dẹp
 - Xóa khối placeholder chết `#category-placeholder` (`public/templates/app.html`, tham chiếu trong `src/navigation.js`, CSS
@@ -74,6 +87,11 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Khoảng trắng cuối dòng và newline cuối file chưa khớp `.editorconfig`: thiếu newline cuối ở `src/linked-list.js`,
   `src/structures/linkedList.js`, `tests/linked-list.test.js`; khoảng trắng cuối dòng ở `src/array.js:14`, `src/sorting.js:34`,
   `tests/navigation.test.js:92`, `public/templates/app.html:13,51`. Dọn trong một commit riêng để editor không sinh diff lẫn.
+- Gom khoảng 80 hex gần giống nhưng khác giá trị (xám ~#9ca3af/#a1a6b9/#a8aec1/#9da2b6/#969bb0/#b4b9ca; nền ~#141620/#151923/#171923/#171b24/#15151d/#101118; tím nhạt ~#c4b5fd/#c4b5ff/#c5b8ff/#c6b8ff/#c2b0ff/#c8bbff)
+  theo từng thành phần ở các PR sau, vì gộp sẽ đổi vài đơn vị màu. Sau Phase 1 còn khoảng 208 hex ngoài `:root`; màu visualization (cột, ô, nút đồ thị, `#22c55e` ×13, `#60a5fa` ×4) giữ nguyên.
+- Chuẩn hóa 17 giá trị `border-radius`, 23 cỡ chữ và 31 giá trị spacing theo token đã định nghĩa (`--radius-*`, `--fs-*`, `--space-*`); Phase 1 chưa áp luật nào (test canh gác).
+- Bốn alias chỉ dùng một chỗ, kèm giá trị dự phòng lỗi thời: `accent-color: var(--accent-color, #6366f1)`, `var(--surface-secondary, #111827)`, `var(--surface-color, #1f2937)`, `var(--panel-bg, rgba(255, 255, 255, 0.03))`.
+  Alias luôn được định nghĩa nên giá trị dự phòng không bao giờ dùng tới; dọn khi động tới các thành phần đó.
 
 ## Công cụ
 - Cải tiến skill `mutation-test`: `run-isolated.mjs` in tên test đỏ và assert đầu tiên thay vì phụ thuộc chuỗi `--expect` (đã báo
@@ -86,3 +104,7 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
   `graph-controller.test.js:706` trả về phần tử DOM nên không được canh. Cũng không bắt biến đã gán phần tử.
 - Chốt số bước ở BST Insert, Delete (2 vòng) và Min/Max mới được kiểm bằng test giới hạn (xấu nhất đúng bằng giới hạn), chưa có
   mutation nguồn riêng; PR test/hardening chỉ phá thử BFS, DFS, Binary Search và BST Search.
+- PR `chore/measure-ui` riêng để lưu script đo CDP (Chrome headless và `WebSocket` tích hợp của Node, không dependency): tràn ngang 15 màn hình ở 360/1280, bảng DFS (R10), bảng băm (R12), `CSS.getPlatformFontsForNode`,
+  byte font, layout-shift, lỗi console. Phase 1 giữ script ngoài repo; số đo trước/sau nằm ở mô tả PR.
+- Hash tên file JS của bundle Vite đổi mỗi khi CSS đổi dù JS không đổi byte nào (đo 2026-11-06: `index-DdswGc2A.js` → `BDM0k7yO` → `BbRAiLa6` → `BgwmUazq`, luôn 145.265 B); các lần build lặp trên cùng một commit cho cùng tên file.
+  Ghi nhận là hành vi của công cụ build (nghi hash tính cả đồ thị phụ thuộc CSS), không làm gì thêm. Để biết JS có đổi hay không thì so byte và `git diff --name-only`, đừng so tên file.

@@ -19,8 +19,9 @@ Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so v�
 Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
 - Đo 2026-11-06 trên Windows (Node 24.21.0, pnpm 12.5.1).
-- `pnpm test`: 958/958 pass, 0 fail, 0 skipped, 10–25 s tùy tải máy (đo 10,2 s đến 24,3 s; lần gần nhất 19,8 s).
-- `pnpm build`: JS 145,26 kB (gzip 42,09 kB), CSS 44,14 kB (gzip 8,82 kB), HTML 0,63 kB.
+- `pnpm test`: 1065/1065 pass, 0 fail, 0 skipped, 10–25 s tùy tải máy (đo 10,2 s đến 24,3 s; lần gần nhất 16,0 s).
+- `pnpm build`: JS 145,26 kB (145.265 B; gzip 42,09 kB), CSS 47,80 kB (gzip 9,38 kB), HTML 0,75 kB (746 B).
+- Font tự host: `public/fonts` có 10 woff2 = 172.912 B (ngưỡng 175 kB) và 2 giấy phép OFL; không nằm trong bundle JS/CSS.
 
 ## Kiến trúc
 
@@ -43,6 +44,8 @@ Chi tiết từng module (trường bước, công thức số bước, bất bi
   `structure:bst`) khi mở màn chi tiết, `null` ở dashboard, thư viện và khi bấm Quay lại.
 - Tiến độ học tập: `src/progress-store.js` (lõi thuần + `createProgressStore`, không DOM) và `src/progress-init.js` (`initProgress`, nơi
   DUY NHẤT chạm `localStorage`) ghi chủ đề đã MỞ vào khóa `algovision:progress`. Chưa có giao diện đọc (để Phase 3b).
+- Token thiết kế và font: `:root` của `src/style.css` chia ba nhóm (token cũ giữ nguyên, token mới đang dùng, token mới CHƯA được dùng); font Be Vietnam Pro và
+  JetBrains Mono tự host ở `public/fonts` (không dùng Google Fonts); font mã luôn qua `var(--font-mono)`. Test: `tests/design-tokens.test.js`.
 - `navigation.js`: thẻ `data-structure-target="x"` mở `#x-section`; thêm cấu trúc mới không cần sửa navigation.
 - Quy tắc theo loại file nằm ở `.claude/rules/`: `tests.md` (test), `algorithms.md` (mã thuần), `cross-platform.md` (mọi phiên).
 

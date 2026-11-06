@@ -1,7 +1,99 @@
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+/* Font tự host (public/fonts, giấy phép SIL OFL kèm theo trong cùng thư mục): Be Vietnam Pro 400-700 (tĩnh) và JetBrains Mono
+   (một file biến thiên mỗi subset, trục wght 400-800). Chỉ có hai subset latin và vietnamese; unicode-range lấy từ css gốc của
+   Google Fonts nên trình duyệt chỉ tải subset thật sự dùng tới. Đường dẫn /fonts/... là tuyệt đối vì public/ được phục vụ ở gốc
+   (dev và build). */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/be-vietnam-pro-vietnamese-400.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/be-vietnam-pro-vietnamese-500.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/be-vietnam-pro-vietnamese-600.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/be-vietnam-pro-vietnamese-700.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/be-vietnam-pro-latin-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/be-vietnam-pro-latin-500.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/be-vietnam-pro-latin-600.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/be-vietnam-pro-latin-700.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-vietnamese-variable.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin-variable.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 :root {
-  font-family: 'Be Vietnam Pro', Arial, sans-serif;
+  font-family: var(--font-ui);
   color: #e8eaf2;
   background: #0c0d12;
   font-synthesis: none;
@@ -9,6 +101,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  /* === TOKEN CŨ ===
+     18 token đang dùng, giữ NGUYÊN tên và giá trị (Redesign Phase 1, Phương án A: không đổi diện mạo).
+     Giá trị mới tương ứng chỉ áp ở Phase 2: --border sẽ thành #2A2A3D, --text-muted sẽ thành #9CA2BA. */
   --background: #0c0d12;
   --panel: #12141c;
   --panel-hover: #191b27;
@@ -32,6 +127,65 @@
   --surface-secondary: var(--panel);
   --surface-color: var(--panel-hover);
   --panel-bg: var(--panel);
+
+  /* === TOKEN MỚI, ĐANG DÙNG ===
+     Họ font. --font-ui là font nền của :root; --font-mono dành cho mọi chỗ hiển thị font mã (mã giả, bảng, danh sách). */
+  --font-ui: 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* === TOKEN MỚI, CHƯA ĐƯỢC DÙNG ===
+     Phase 1 chỉ ĐỊNH NGHĨA; chưa luật nào tham chiếu (tests/design-tokens.test.js canh gác). Bảng nền và tím mới tồn tại
+     SONG SONG với token cũ ở trên, chưa thay thế chúng: --bg ứng với --background, --surface với --panel, --surface-raised
+     với --panel-hover, --purple-strong với --purple-dark. */
+  --bg: #0B0B14;
+  --bg-sidebar: #0E0E19;
+  --surface: #13131F;
+  --surface-raised: #1A1A28;
+
+  --text-label: #8B8FA6;
+
+  /* Tím: --purple (token cũ) cho chữ nhấn, icon, vạch. KHÔNG đặt chữ trắng lên --purple (2,99:1); chữ trắng chỉ trên
+     --purple-strong hoặc --purple-pressed, chữ tối (--bg) trên --purple. --purple-tint là --purple 16% trên --bg-sidebar. */
+  --purple-strong: #6D55D9;
+  --purple-pressed: #5B43C7;
+  --purple-soft: #B9A8FF;
+  --purple-tint: #25213E;
+
+  --blue: #60A5FA;
+  --success: #22C55E;
+
+  /* Viền của điều khiển (ô nhập, nút): đạt 3:1 trên nền. --border (token cũ) chỉ để trang trí. */
+  --border-control: #6B6B87;
+
+  /* Cỡ chữ */
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-md: 14px;
+  --fs-base: 16px;
+  --fs-lg: 20px;
+  --fs-xl: 24px;
+  --fs-display: clamp(30px, 4vw, 44px);
+
+  /* Khoảng cách: bội số của 4px, tên = px / 4 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Bo góc */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* Bóng */
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --glow-purple: 0 0 0 1px rgba(155, 130, 255, 0.35), 0 8px 28px rgba(155, 130, 255, 0.18);
 }
 
 * {
@@ -91,7 +245,7 @@ button:disabled {
   height: 42px;
   place-items: center;
   border-radius: 13px;
-  background: linear-gradient(135deg, #ad98ff, #7456e8);
+  background: linear-gradient(135deg, #ad98ff, var(--purple-dark));
   color: white;
   font-size: 24px;
   font-weight: 700;
@@ -347,7 +501,7 @@ button:disabled {
 
 .algorithm-card.selected {
   border-color: var(--purple);
-  background: linear-gradient(145deg, #1a1729, #12141c 75%);
+  background: linear-gradient(145deg, #1a1729, var(--panel) 75%);
   box-shadow: inset 0 0 0 1px #9177f01a;
 }
 
@@ -410,7 +564,7 @@ button:disabled {
   justify-content: space-between;
   gap: 8px;
   padding-top: 13px;
-  border-top: 1px solid #292c3a;
+  border-top: 1px solid var(--border);
 }
 
 .card-footer span {
@@ -647,7 +801,7 @@ button:disabled {
 
 .visualizer-heading p {
   margin: 8px 0 0;
-  color: #9298ad;
+  color: var(--muted);
   font-size: 12px;
   line-height: 1.8;
 }
@@ -682,7 +836,7 @@ button:disabled {
   border: 1px solid #363849;
   border-radius: 7px;
   background: #171923;
-  color: #e8eaf2;
+  color: var(--text);
   font: inherit;
   cursor: pointer;
 }
@@ -910,13 +1064,13 @@ button:disabled {
   flex-direction: column;
   gap: 9px;
   padding: 14px;
-  border: 1px solid #292c3a;
+  border: 1px solid var(--border);
   border-radius: 9px;
   background: #141620;
 }
 
 .stat-card span {
-  color: #9298ad;
+  color: var(--muted);
   font-size: 11px;
 }
 
@@ -973,7 +1127,7 @@ button:disabled {
   border: 1px solid #363849;
   border-radius: 8px;
   background: #171923;
-  color: #e8eaf2;
+  color: var(--text);
   font: inherit;
   cursor: pointer;
 }
@@ -993,7 +1147,7 @@ button:disabled {
 
 .complexity-heading h4 {
   margin: 0;
-  color: #e8eaf2;
+  color: var(--text);
   font-size: 14px;
   font-weight: 600;
 }
@@ -1013,14 +1167,14 @@ button:disabled {
 .complexity-card {
   min-width: 0;
   padding: 15px;
-  border: 1px solid #292c3a;
+  border: 1px solid var(--border);
   border-radius: 9px;
   background: #141620;
 }
 
 .complexity-card > span {
   display: block;
-  color: #9298ad;
+  color: var(--muted);
   font-size: 11px;
   line-height: 1.7;
 }
@@ -1035,7 +1189,7 @@ button:disabled {
 
 .complexity-card p {
   margin: 9px 0 0;
-  color: #9298ad;
+  color: var(--muted);
   font-size: 11px;
   line-height: 1.8;
 }
@@ -1678,7 +1832,7 @@ button:disabled {
   max-height: 440px;
   overflow-y: auto;
   padding: 24px 16px;
-  background: #0c0d12;
+  background: var(--background);
   border: 1px dashed var(--border);
   border-radius: 12px;
 }
@@ -2212,7 +2366,7 @@ button.structure-card:focus-visible,
   width: max-content;
   min-width: 100%;
   color: #c8bbff;
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   line-height: 1.8;
   white-space: pre;
@@ -2657,7 +2811,7 @@ button.dashboard-card:hover {
 .hash-row-marker {
   fill: var(--muted);
   font-size: 12px;
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
 }
 
 .hash-row-marker {
@@ -2907,7 +3061,7 @@ button.dashboard-card:hover {
   margin: 0;
   padding: 0;
   list-style: none;
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
 }
 
@@ -2960,7 +3114,7 @@ button.dashboard-card:hover {
 .graph-matrix {
   border-collapse: separate;
   border-spacing: 2px;
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
 }
 
@@ -3021,7 +3175,7 @@ button.dashboard-card:hover {
 }
 
 .graph-complexity-table td {
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
   white-space: nowrap;
 }
 
@@ -3116,7 +3270,7 @@ button.dashboard-card:hover {
   margin: 0;
   padding: 0;
   list-style: none;
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
 }
 
@@ -3183,12 +3337,15 @@ button.dashboard-card:hover {
   border-left: 4px solid var(--state-active);
 }
 
-/* Bảng mốc DFS có 5 cột nên chật hơn bảng BFS (3 cột). Ở 360px khung chỉ rộng 272px (257px khi có thanh cuộn máy bàn); với font
-   monospace của Linux (0,6em mỗi ký tự) bảng tự nhiên rộng 272,3px, vượt khung nên "chưa thăm" xuống dòng và chữ các th dính nhau
-   (khe chỉ 4px vì th chỉ có padding mặc định 1px). Padding ngang 4px cho mọi ô (khe giữa chữ các th thành 10px), bỏ min-width 48px
-   của td và không cho ô xuống dòng. min-width 264px giữ bề rộng bảng như cũ (262,9px với Consolas) để caption không xuống thêm dòng
-   và nút điều khiển không dịch; min() với 100% để khung hẹp hơn 264px (257px) không bị tràn (min-width thắng max-width). Chỉ áp cho DFS (đứng sau luật dùng chung của .graph-bfs-table
-   nên thắng bằng thứ tự): BFS giữ nguyên. Padding dọc giữ nguyên (th 1px, td 2px) nên chiều cao hàng không đổi. */
+/* Bảng mốc DFS có 5 cột nên chật hơn bảng BFS (3 cột). Ở 360px khung chỉ rộng 272px (257px khi có thanh cuộn máy bàn). Font mã là
+   JetBrains Mono tự host (var(--font-mono), 0,6em mỗi ký tự), cùng bề rộng ký tự với font monospace của Linux mà lần rà soát PR #21 đã
+   đo: bảng tự nhiên rộng 272,3px, vượt khung nên "chưa thăm" xuống dòng và chữ các th dính nhau (khe chỉ 4px vì th chỉ có padding
+   mặc định 1px). Padding ngang 4px cho mọi ô (khe giữa chữ các th thành 10px), bỏ min-width 48px của td và không cho ô xuống dòng.
+   min-width 264px giữ bề rộng bảng như cũ (262,9px khi font mã còn là Consolas 0,55em) để caption không xuống thêm dòng và nút điều
+   khiển không dịch; min() với 100% để khung hẹp hơn 264px (257px) không bị tràn (min-width thắng max-width). Đo lại 2026-11-06 với
+   JetBrains Mono (Chrome 152, Windows): bảng 257px bằng khung ở 360px, khe nhỏ nhất giữa chữ các ô 11px (360px) và 11,92px (1280px),
+   không ô nào xuống dòng. Chỉ áp cho DFS (đứng sau luật dùng chung của .graph-bfs-table nên thắng bằng thứ tự): BFS giữ nguyên.
+   Padding dọc giữ nguyên (th 1px, td 2px). */
 .graph-dfs-table {
   min-width: min(264px, 100%);
 }
@@ -3227,7 +3384,7 @@ button.dashboard-card:hover {
   margin: 0;
   padding: 0;
   list-style: none;
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
 }
 
