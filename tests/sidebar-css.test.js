@@ -142,7 +142,7 @@ const TEXT_PAIRS = [
   ['chữ mục con active', () => requireValue('.nav-subitem.active', 'color'), () => requireValue('.nav-subitem.active', 'background'), 4.5],
   ['icon mục active (kế thừa chữ trắng)', () => requireValue('.nav-item.active', 'color'), () => ACTIVE_BG, 4.5],
   ['icon mục con active (kế thừa chữ trắng)', () => requireValue('.nav-subitem.active', 'color'), () => ACTIVE_BG, 4.5],
-  ['icon hover --purple-hover', () => requireValue('.nav-item:hover .nav-icon', 'color'), () => requireValue('.nav-item:hover', 'background'), 4.5],
+  ['icon hover --purple-hover', () => requireValue('.nav-item:not(.active):hover .nav-icon', 'color'), () => requireValue('.nav-item:hover', 'background'), 4.5],
   ['chữ trên nút thu gọn', () => requireValue('.sidebar-collapse', 'color'), () => SIDEBAR_BG, 4.5],
   ['chữ tooltip', () => requireValue('.sidebar-tooltip', 'color'), () => requireValue('.sidebar-tooltip', 'background'), 4.5],
   ['chữ nút ☰', () => requireValue('.menu-button', 'color'), () => requireValue('.mobile-bar', 'background'), 4.5],

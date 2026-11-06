@@ -210,9 +210,9 @@ test('.icon-sprite ẩn bằng position: absolute + 0x0 + overflow: hidden, KHÔ
   assert.equal(valueOf('.icon-sprite', 'display'), undefined)
 })
 
-test('icon hover: --purple-hover trên nền hover --surface-raised', () => {
-  assert.equal(valueOf('.nav-item:hover .nav-icon', 'color'), 'var(--purple-hover)')
-  assert.equal(valueOf('.nav-subitem:hover .nav-icon', 'color'), 'var(--purple-hover)')
+test('icon hover: --purple-hover trên nền hover --surface-raised, chỉ khi mục không active (icon active giữ chữ trắng)', () => {
+  assert.equal(valueOf('.nav-item:not(.active):hover .nav-icon', 'color'), 'var(--purple-hover)')
+  assert.equal(valueOf('.nav-subitem:not(.active):hover .nav-icon', 'color'), 'var(--purple-hover)')
 })
 
 test('nút thu gọn và nút menu: svg vẽ nét mảnh cùng kiểu (stroke currentColor), cỡ 20px', () => {

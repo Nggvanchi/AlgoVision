@@ -141,16 +141,18 @@
   --sidebar-width: 256px;
   --sidebar-width-collapsed: 72px;
 
-  --bg-sidebar: #0E0E19;
-  --surface-raised: #1A1A28;
+  --bg-sidebar: #111522;
+  --surface-raised: #1C2030;
 
   --text-label: #8B8FA6;
 
   /* Tím: --purple (token cũ) cho chữ nhấn, icon, vạch. KHÔNG đặt chữ trắng lên --purple (2,99:1); chữ trắng chỉ trên
-     --purple-strong hoặc --purple-pressed, chữ tối (--bg) trên --purple. --purple-tint là --purple 16% trên --bg-sidebar. */
+     --purple-strong, --purple-pressed hoặc --purple-active, chữ tối (--bg) trên --purple. --purple-active (#49318D) là nền pill của mục đang mở
+     (trắng trên đó 9,97:1); --purple-hover (#B09CFF) cho vạch active và icon hover. */
   --purple-strong: #6D55D9;
   --purple-pressed: #5B43C7;
-  --purple-tint: #25213E;
+  --purple-active: #49318D;
+  --purple-hover: #B09CFF;
 
   /* Cỡ chữ */
   --fs-xs: 12px;
@@ -175,9 +177,12 @@
      SONG SONG với token cũ ở trên, chưa thay thế chúng: --bg ứng với --background, --surface với --panel, --surface-raised
      với --panel-hover, --purple-strong với --purple-dark. */
   --bg: #0B0B14;
-  --surface: #13131F;
+  --surface: #151722;
 
   --purple-soft: #B9A8FF;
+  --purple-tint: #272645; /* --purple 16% trên --bg-sidebar; không còn dùng cho mục active (Redesign Phase 2b) */
+  /* Violet: CHỈ cho icon, viền, chữ lớn. Chữ nhỏ trên --surface chỉ 4,21:1 và chữ trắng trên --violet chỉ 4,23:1 (< 4,5). */
+  --violet: #8B5CF6;
 
   --blue: #60A5FA;
   --success: #22C55E;
@@ -245,7 +250,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   width: var(--sidebar-width);
-  padding: var(--space-6) var(--space-3) var(--space-4);
+  padding: var(--space-6) var(--space-2) var(--space-4);
   background: var(--bg-sidebar);
   border-right: 1px solid var(--border);
 }
@@ -254,7 +259,7 @@ button:disabled {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 0 var(--space-2) var(--space-6);
+  padding: 0 var(--space-3) var(--space-6);
 }
 
 /* Nền --purple-strong (không phải gradient bắt đầu ở #ad98ff): chữ trắng đạt 5,31:1 thay cho 2,41:1. */
@@ -373,13 +378,14 @@ button:disabled {
   color: var(--text);
 }
 
-/* Mục đang mở: nền --purple-tint, vạch tím 3px bên trái, chữ đậm hơn (ba dấu hiệu ngoài màu cùng aria-current). */
+/* Mục đang mở: pill bo đều 8px THỤT VÀO 8px so với mép sidebar (padding ngang của .sidebar), nền --purple-active, chữ trắng đậm 600.
+   Khối chỉ 1,83:1 so với nền sidebar nên giữ vạch 3px --purple-hover làm cue ngoài màu dự phòng, cùng aria-current. */
 .nav-item.active,
 .nav-subitem.active {
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  background: var(--purple-tint);
-  box-shadow: inset 3px 0 0 var(--purple);
-  color: var(--text);
+  border-radius: var(--radius-sm);
+  background: var(--purple-active);
+  box-shadow: inset 3px 0 0 var(--purple-hover);
+  color: #fff;
   font-weight: 600;
 }
 
@@ -395,9 +401,9 @@ button:disabled {
   font-size: var(--fs-sm);
 }
 
-.nav-item.active .nav-icon,
-.nav-subitem.active .nav-icon {
-  color: var(--purple);
+.nav-item:not(.active):hover .nav-icon,
+.nav-subitem:not(.active):hover .nav-icon {
+  color: var(--purple-hover);
 }
 
 /* Thanh trên chỉ có ở <= 700px (ẩn ở màn hình rộng). Nút ☰ vẽ bằng CSS (ba vạch), không phụ thuộc glyph của font. */
