@@ -3337,12 +3337,15 @@ button.dashboard-card:hover {
   border-left: 4px solid var(--state-active);
 }
 
-/* Bảng mốc DFS có 5 cột nên chật hơn bảng BFS (3 cột). Ở 360px khung chỉ rộng 272px (257px khi có thanh cuộn máy bàn); với font
-   monospace của Linux (0,6em mỗi ký tự) bảng tự nhiên rộng 272,3px, vượt khung nên "chưa thăm" xuống dòng và chữ các th dính nhau
-   (khe chỉ 4px vì th chỉ có padding mặc định 1px). Padding ngang 4px cho mọi ô (khe giữa chữ các th thành 10px), bỏ min-width 48px
-   của td và không cho ô xuống dòng. min-width 264px giữ bề rộng bảng như cũ (262,9px với Consolas) để caption không xuống thêm dòng
-   và nút điều khiển không dịch; min() với 100% để khung hẹp hơn 264px (257px) không bị tràn (min-width thắng max-width). Chỉ áp cho DFS (đứng sau luật dùng chung của .graph-bfs-table
-   nên thắng bằng thứ tự): BFS giữ nguyên. Padding dọc giữ nguyên (th 1px, td 2px) nên chiều cao hàng không đổi. */
+/* Bảng mốc DFS có 5 cột nên chật hơn bảng BFS (3 cột). Ở 360px khung chỉ rộng 272px (257px khi có thanh cuộn máy bàn). Font mã là
+   JetBrains Mono tự host (var(--font-mono), 0,6em mỗi ký tự), cùng bề rộng ký tự với font monospace của Linux mà lần rà soát PR #21 đã
+   đo: bảng tự nhiên rộng 272,3px, vượt khung nên "chưa thăm" xuống dòng và chữ các th dính nhau (khe chỉ 4px vì th chỉ có padding
+   mặc định 1px). Padding ngang 4px cho mọi ô (khe giữa chữ các th thành 10px), bỏ min-width 48px của td và không cho ô xuống dòng.
+   min-width 264px giữ bề rộng bảng như cũ (262,9px khi font mã còn là Consolas 0,55em) để caption không xuống thêm dòng và nút điều
+   khiển không dịch; min() với 100% để khung hẹp hơn 264px (257px) không bị tràn (min-width thắng max-width). Đo lại 2026-11-06 với
+   JetBrains Mono (Chrome 152, Windows): bảng 257px bằng khung ở 360px, khe nhỏ nhất giữa chữ các ô 11px (360px) và 11,92px (1280px),
+   không ô nào xuống dòng. Chỉ áp cho DFS (đứng sau luật dùng chung của .graph-bfs-table nên thắng bằng thứ tự): BFS giữ nguyên.
+   Padding dọc giữ nguyên (th 1px, td 2px). */
 .graph-dfs-table {
   min-width: min(264px, 100%);
 }
