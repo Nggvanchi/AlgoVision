@@ -308,6 +308,9 @@ button:disabled {
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  /* Thanh cuộn mảnh, tối: chỉ ở sidebar (không đặt trên html/body nên không đổi thanh cuộn của trang). */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
 
 .nav-list,
