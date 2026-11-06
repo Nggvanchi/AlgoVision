@@ -14,7 +14,7 @@ paths:
 - Dọn cửa sổ happy-dom bằng `window.happyDOM.close()`, không bằng `abort()`: `abort()` chỉ hủy tác vụ đang chờ, không giải phóng
   DOM (mỗi cửa sổ nạp `app.html` bị giữ khoảng 11 MB). `tests/meta/no-happy-dom-abort.test.js` chặn tự động.
 - `deepFreeze` dùng chung từ `tests/helpers/deep-freeze.js`, không định nghĩa lại trong file test.
-- `tests/meta/`: test canh gác quy tắc, quét mã nguồn của chính `tests/` (`no-dom-in-equal`, `no-happy-dom-abort`).
+- `tests/meta/`: test canh gác quy tắc, quét mã nguồn của chính `tests/` (`no-dom-in-equal`, `no-happy-dom-abort`, `progress-storage-boundary`).
 - `pnpm test` đặt `--test-timeout=30000`: chỉ bắt test async bị treo; vòng lặp đồng bộ thì do chốt số bước trong generator chặn.
 - Đếm test bằng dòng `ℹ tests` của `node --test` (grep `^test(` bỏ sót test sinh trong vòng `for`).
 - Test import module có thể chưa có export thì dùng namespace import (`import * as m`) để không làm hỏng cả file.

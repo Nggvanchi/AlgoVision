@@ -4,7 +4,9 @@ Việc còn tồn tại, chưa nằm trong PR nào. Thêm mục khi phát hiện
 Lộ trình giai đoạn: `docs/roadmap.md`.
 
 ## Lỗi
-- (không còn mục nào)
+- Cửa sổ đua rất hẹp của tiến độ học tập: hai tab đọc rồi ghi đúng cùng lúc thì tab ghi sau đè tab ghi trước và mất một lần đếm
+  `openCount` (mỗi lần mở đọc lại bản mới nhất, nên chỉ lệch khi hai cặp `getItem`/`setItem` xen kẽ; hàm `open` trong `src/progress-store.js`).
+  Chấp nhận vì chỉ lệch 1 đơn vị đếm, không mất chủ đề; `localStorage` không có khóa. Xem lại khi làm Phase 3b.
 
 ## Hiệu năng
 - `buildGraph` sao chép cả đồ thị sau mỗi lần thêm đỉnh/cạnh (O(n²)). Đo 2026-11-05: sao 300 đỉnh 39–73 ms, 1000 đỉnh 0,7–1,0 s,
@@ -17,6 +19,12 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - `tests/graph-complexity.test.js` giảm RSS 360 → 243 MB sau PR test-hardening dù không dùng happy-dom; chưa rõ nguyên nhân.
 
 ## Giao diện
+- Nút xóa tiến độ học tập: phải làm CÙNG giao diện hiển thị ở Phase 3b vì đây là lịch sử xem của người dùng; hiện chỉ có API `clear()`
+  (`src/progress-store.js`) và người dùng chỉ xóa được qua DevTools (khóa `algovision:progress`).
+- Sự kiện `storage` giữa hai tab: chưa đăng ký (chưa có giao diện đọc tiến độ); thêm khi Phase 3b hiển thị tiến độ để hai tab cùng cập nhật.
+- Thời lượng học: đã loại khỏi giai đoạn 8 vì là suy đoán (phải định nghĩa "đang học"); nếu thêm thì nâng `version` lên 2 kèm migrate.
+- Tiến độ học tập chưa kiểm trên trình duyệt thật: Chrome/Firefox/Safari, cửa sổ riêng tư (đọc `localStorage` ném lỗi, hết quota) và hai tab
+  thật; test chỉ chạy bằng happy-dom với storage giả. Kiểm trên link preview Vercel.
 - Click thẻ thuật toán Sorting luôn tạo mảng mới (hành vi có từ trước).
 - Rà soát giao diện ở 360px (chưa khảo sát, đầu vào cho bước rà soát giao diện): chữ Big-O của linear probing,
   viền "ô đã dò" bị che ở PR #6/#9.

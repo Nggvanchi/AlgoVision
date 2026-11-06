@@ -15,7 +15,7 @@ Phần mô tả hành vi chi tiết của từng module chuyển từ CLAUDE.md 
 | View riêng | `src/pseudocode-view.js:4,19`, `src/graph-bfs-view.js`, `src/graph-dfs-view.js`, `src/graph-traversal-view.js` | View không import controller: `graph-*-view.js` chỉ import `structures/graph.js` và `algorithms/graphStep.js` (`graph-bfs-view.js:1-2`, `graph-dfs-view.js:1-2`, `graph-traversal-view.js:1`) |
 | Controller | `src/bst.js:279`, `src/hash-table.js:388`, `src/graph.js:584` (và `sorting.js:8`, `searching.js:42`) | `init*(document, { scheduler })`: nối template, thao tác, Learning Panel |
 | Template | `public/templates/app.html` | `bootApp` (`src/bootstrap.js:46`) fetch và dựng template; `startApp` (`src/main.js:14`) gọi các `init*` sau khi dựng xong. Chỉ fetch và `response.text()` được bắt lỗi (`bootstrap.js:49-62`): lỗi thì hiện màn hình `role="alert"` + nút "Thử lại", `start` ném lỗi thì ném ra bình thường |
-| Điều hướng | `src/navigation.js:35-36,74` | Thẻ `data-structure-target="x"` mở `#x-section` (suy ra lúc init, thêm cấu trúc mới không cần sửa navigation; thẻ không có section thì click bị bỏ qua); phát `algovision:viewchange` (`detail.page`) khi đổi trang hoặc mở/đóng màn hình chi tiết |
+| Điều hướng | `src/navigation.js:36-44,70-80` | Thẻ `data-structure-target="x"` mở `#x-section` (suy ra lúc init, thêm cấu trúc mới không cần sửa navigation; thẻ không có section thì click bị bỏ qua); phát `algovision:viewchange` (`detail: { page, topic }`, xem mục Tiến độ học tập) khi đổi trang hoặc mở/đóng màn hình chi tiết |
 
 Array, Stack, Queue, Linked List là module cũ (trước giai đoạn 5): không có hàm sinh bước, không có mã giả; các lớp trên không áp dụng.
 Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test tìm theo id.
@@ -183,6 +183,55 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
 - `src/graph-traversal-view.js`: cạnh cây dùng chung BFS/DFS (`graph-bfs-view.js:33` export lại tên cũ).
 - Bất biến: `assertDfsStepInvariants` (ngăn xếp = đỉnh xám và là đường đi theo parentIds, mốc 1..k).
 
+## Tiến độ học tập (chủ đề đã mở)
+
+Lưu chủ đề nào đã được MỞ (vào màn hình chi tiết), mở lần đầu và gần nhất lúc nào, mở bao nhiêu lần. "Đã mở" không nói gì về mức độ đã
+học: không có trường, nhãn hay comment "hoàn thành/completed" (test canh gác chặn). Dữ liệu chỉ nằm trong `localStorage` của trình duyệt
+người dùng, không gửi đi đâu. Chưa có giao diện đọc hay xóa (Phase 3b, xem `docs/backlog.md`).
+
+| Tệp | Vai trò |
+|---|---|
+| `src/progress-store.js` | Lõi thuần (`emptyProgress`, `parseProgress`, `recordOpen`, `serializeProgress`, `keepKnownTopics`, `topicId`) và `createProgressStore({ storage, knownTopics, now })` → `{ read, recordOpen, clear }`. Không DOM, không `window`; `storage` inject được (`getItem/setItem/removeItem` hoặc `null`) |
+| `src/progress-init.js` | `initProgress(document, { storage, now })`: nghe `algovision:viewchange`, suy danh sách chủ đề từ template, trả về kho. Nơi DUY NHẤT chạm `localStorage` (`browserStorage` bọc `try/catch`) |
+| `src/main.js` | gọi `initProgress(document)` sau `initNavigation(document)` |
+
+**Lược đồ (khóa `algovision:progress`, version 1).** Một khóa duy nhất, JSON:
+`{ "version": 1, "topics": { "<id>": { "firstOpenedAt": ms, "lastOpenedAt": ms, "openCount": n } } }`. Chỉ lưu chủ đề đã mở, không có mục
+mặc định. Id có dạng `loại:tên` (regex trong `progress-store.js`): `sorting:{bubble,selection,insertion}`, `searching:{linear,binary}`,
+`structure:{array,stack,queue,linked-list,bst,hash-table,graph}` (12 chủ đề; danh sách lấy từ `data-algorithm`,
+`data-search-algorithm`, `data-structure-target` lúc `initProgress` chạy, không gõ tay). Giới hạn: chuỗi đọc ≤ 16000 ký tự
+(`MAX_STORED_LENGTH`), `openCount` ≤ 1.000.000 (`MAX_OPEN_COUNT`); 12 chủ đề chiếm dưới 2 kB. Hiện chưa có hàm migrate vì mới có version 1:
+khi nâng version phải thêm migrate cho bản cũ trong `parseProgress`.
+
+**Sự kiện `algovision:viewchange`: `detail: { page, topic }`.** `topic` là id chủ đề khi mở màn chi tiết, `null` ở dashboard, thư viện, khi bấm
+Quay lại và khi đổi trang (`navigation.js`: `notifyViewChange(topic = null)`; chỉ `showSortingDetail`, `showSearchingDetail` và handler thẻ
+cấu trúc truyền topic). `detail.page` và tên sự kiện không đổi; các listener `pause()` không đọc `topic`.
+
+**Cơ chế `currentTopic` (`initProgress`).** Biến `currentTopic` theo `detail.topic`: `null` thì đặt lại `null` và không ghi; topic mới khác
+`currentTopic` thì ghi và cập nhật; cùng topic phát liên tiếp không đếm đôi; viewchange không có `detail` coi như `null`. Màn chi tiết
+Tìm kiếm có `<select id="search-algorithm">` để đổi thuật toán ngay tại chỗ, không phát viewchange (sẽ làm mô phỏng tự pause): `initProgress`
+nghe `change` của select, chỉ ghi khi `currentTopic` bắt đầu bằng `searching:` và id mới khác `currentTopic`. Khi click thẻ,
+`navigation.js` gán select và phát `change` TRƯỚC `viewchange` (`tests/navigation-topic.test.js` cố định thứ tự này), lúc đó `currentTopic`
+còn `null` nên không đếm đôi. Màn chi tiết Sắp xếp không có bộ chọn thuật toán nên không cần cơ chế này.
+
+**Hành vi khi lỗi (đúng với code hiện tại).** Mọi hàm của kho không ném.
+
+| Tình huống | Hành vi |
+|---|---|
+| Đọc `window.localStorage` ném (cửa sổ riêng tư/bị chặn), `storage = null` | `browserStorage` trả `null`; `read()` trả bản nhớ của phiên, `recordOpen` trả `false`; app chạy bình thường |
+| `getItem` ném | Như trên (trạng thái unavailable), mỗi lần đọc lại thử lại |
+| `setItem` ném (hết quota) | Nuốt lỗi, `recordOpen` trả `false`, không thử lại; `read()` trả bản nhớ phiên cho tới lần ghi thành công kế tiếp |
+| Không có khóa | Tiến độ rỗng, không ghi gì |
+| JSON hỏng, gốc sai kiểu, thiếu/sai `version`, `topics` không phải object, chuỗi quá 16000 ký tự | Trạng thái corrupt: coi như rỗng; đọc không xóa khóa, lần ghi hợp lệ kế tiếp ghi đè |
+| Một mục sai (timestamp không nguyên/âm, `last < first`, `openCount` < 1 hoặc không nguyên, id sai dạng như `__proto__`) | Bỏ đúng mục đó, giữ mục đúng; trường lạ bị bỏ; `openCount` > 1.000.000 bị kẹp |
+| `version` > 1 | Trạng thái future-version: không đọc, KHÔNG ghi đè khóa; `recordOpen` trả `false`; phiên vẫn nhớ trong bộ nhớ; `clear()` (người dùng chủ động) vẫn xóa |
+| Chủ đề đã bị xóa khỏi app | `parseProgress` giữ mục (id đúng dạng); `read()` lọc bằng `keepKnownTopics`; mỗi lần ghi giữ nguyên mục lạ trong storage. `recordOpen` từ chối id app không biết (`false`) |
+| Hai tab | Mỗi lần mở: đọc lại bản mới nhất trong storage rồi cộng thêm 1 (không dùng cache), nên không đè mất lần mở của tab kia. KHÔNG đăng ký `storage` event. Không có `mergeProgress`/`migrate` (đã bỏ khỏi kế hoạch ban đầu) |
+| Đồng hồ trả giá trị sai hoặc ném | `recordOpen` trả `false`, không ghi, không coi là lỗi ghi (`read()` vẫn đọc storage thật) |
+| Lỗi bất ngờ ở listener | `initProgress` bọc `try/catch`: ghi tiến độ không phá điều hướng |
+
+Chưa xác minh trên trình duyệt thật: test chạy bằng happy-dom (xem `docs/backlog.md`).
+
 ## Cách test một module
 
 - Bất biến bước dùng chung `tests/helpers/step-invariants.js`; module bọc mỏng (`bst-step-invariants.js`, `hash-step-invariants.js`,
@@ -194,14 +243,15 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
 - Test Big-O với số cụ thể: `tests/complexity.test.js`, `bst-complexity`, `hash-table-complexity`, `hash-table-probing-complexity`,
   `graph-complexity`. Quy mô lớn: đường thẳng/sao 300 đỉnh, ma trận 50 đỉnh vì mỗi bước giữ bản sao đồ thị
   (`tests/graph-complexity.test.js:112-116,170-208,267`).
-- `tests/helpers/app-dom.js`: `withFullApp` dựng toàn bộ app như `main.js` (mọi `init*`, scheduler giả) và `SCREENS` mở 16 màn hình thật bằng click; dùng cho test
+- `tests/helpers/app-dom.js`: `withFullApp(run, { storage })` dựng toàn bộ app như `main.js` (mọi `init*` kể cả `initProgress`, scheduler giả; `storage` inject cho tiến độ) và `SCREENS` mở 16 màn hình thật bằng click; dùng cho test
   nhìn cả trang (landmark, heading, vùng cuộn). Test của một module vẫn dùng helper riêng.
 - `deepFreeze` để bắt sửa nhầm snapshot: `tests/helpers/deep-freeze.js`, dùng ở 8 file test graph/hash; BST, Sorting, Searching chưa dùng.
 - Chốt an toàn số bước (`src/algorithms/stepLimit.js`): 7 generator có vòng `while` (BFS, DFS, Binary Search, BST Search, Insert,
   Delete, Min/Max) export `*StepLimit` và gọi `assertWithinStepLimit` ở đầu mỗi vòng; vượt giới hạn ném RangeError. Giới hạn:
   BFS 2V + D + 2 / 2V + V² + 2, DFS 3V + D / 3V + V², Binary ⌊log2 n⌋ + 3, BST Search/Delete/MinMax n + 2, Insert max(2, 2n + 1).
   Test: `tests/step-limit.test.js`, `graph-step-limit`, `bst-step-limit`, `binary-search-step-limit` (đầu vào xấu nhất đúng bằng giới hạn).
-- Test canh gác ở `tests/meta/`: `no-dom-in-equal` (phần tử DOM trong `assert.equal`…), `no-happy-dom-abort` (dọn cửa sổ bằng `close()`).
+- Test canh gác ở `tests/meta/`: `no-dom-in-equal` (phần tử DOM trong `assert.equal`…), `no-happy-dom-abort` (dọn cửa sổ bằng `close()`),
+  `progress-storage-boundary` (`localStorage` chỉ ở `progress-init.js`; `progress-store.js` không nhắc `document`/`window`; không chữ "completed"/"hoàn thành" trong hai file tiến độ; `main.js` gọi `initProgress` sau `initNavigation`).
 - Phá thử logic (mutation, skill `mutation-test`) và ghi kết quả vào mô tả PR.
 - Kiểm trình duyệt ở 360px và 1280px: không tràn trang, console sạch. PR #5–#9 ghi đã kiểm bằng Chrome headless nhưng lệnh và
   script không được lưu lại trong repo; từ khi deploy: kiểm bằng link preview Vercel của PR.

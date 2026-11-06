@@ -3,6 +3,7 @@ import { bootApp } from './bootstrap.js'
 import { initSearching } from './searching.js'
 import { initSorting } from './sorting.js'
 import { initNavigation } from './navigation.js'
+import { initProgress } from './progress-init.js'
 import { initArray } from './array.js'
 import { initStack } from './stack.js'
 import { initQueue } from './queue.js'
@@ -13,6 +14,7 @@ import { initGraph } from './graph.js'
 
 function startApp() {
   initNavigation(document)
+  initProgress(document)
   initSorting()
   initSearching()
   initArray()

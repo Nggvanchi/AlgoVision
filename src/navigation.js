@@ -1,3 +1,4 @@
+import { topicId } from './progress-store.js'
 
 const pages = {
   dashboard: {
@@ -67,12 +68,13 @@ export function initNavigation(document) {
   }
 
   // Báo cho các module mô phỏng biết màn hình vừa đổi để tự tạm dừng nếu bị ẩn.
-  function notifyViewChange() {
+  // topic là id chủ đề (vd 'sorting:bubble') khi mở màn chi tiết; null ở dashboard, thư viện và khi quay lại.
+  function notifyViewChange(topic = null) {
     const CustomEventClass = document.defaultView?.CustomEvent ?? CustomEvent
 
     document.dispatchEvent(
       new CustomEventClass('algovision:viewchange', {
-        detail: { page: currentPage },
+        detail: { page: currentPage, topic },
       }),
     )
   }
@@ -122,12 +124,12 @@ export function initNavigation(document) {
     }
   }
 
-  function showSortingDetail() {
+  function showSortingDetail(algorithm) {
     if (currentPage !== 'sorting') return
 
     sortingLibrary.hidden = true
     sortingVisualizer.hidden = false
-    notifyViewChange()
+    notifyViewChange(topicId('sorting', algorithm))
   }
 
   function showSortingLibrary() {
@@ -138,12 +140,12 @@ export function initNavigation(document) {
     notifyViewChange()
   }
 
-  function showSearchingDetail() {
+  function showSearchingDetail(algorithm) {
     if (currentPage !== 'searching') return
 
     searchLibrary.hidden = true
     searchVisualizer.hidden = false
-    notifyViewChange()
+    notifyViewChange(topicId('searching', algorithm))
   }
 
   function showSearchingLibrary() {
@@ -167,7 +169,7 @@ export function initNavigation(document) {
   })
 
   document.querySelectorAll('.algorithm-card[data-algorithm]').forEach((card) => {
-    card.addEventListener('click', showSortingDetail)
+    card.addEventListener('click', () => showSortingDetail(card.dataset.algorithm))
   })
 
   document.querySelectorAll('[data-search-algorithm]').forEach((card) => {
@@ -189,7 +191,7 @@ export function initNavigation(document) {
         item.classList.toggle('selected', item === card)
       })
 
-      showSearchingDetail()
+      showSearchingDetail(algorithm)
     })
   })
 
@@ -212,7 +214,7 @@ export function initNavigation(document) {
       structureSections.forEach((section, sectionTarget) => {
         section.hidden = sectionTarget !== target
       })
-      notifyViewChange()
+      notifyViewChange(topicId('structure', target))
     })
   })
 

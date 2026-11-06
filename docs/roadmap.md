@@ -12,7 +12,7 @@ Mỗi giai đoạn một dòng. Chỉ bắt đầu giai đoạn mới khi ngư�
 | — | Công cụ Claude Code (rule, skill, `docs/architecture.md`) | Xong | #11 |
 | — | Cấu trúc repo: CI, `.editorconfig`, LICENSE, roadmap/backlog, README | Xong | #12 |
 | — | Gia cố bộ test: dọn cửa sổ happy-dom, chốt số bước, test canh gác, timeout | Xong | branch `chore/test-hardening` |
-| 8 | Tiến độ học tập bằng `localStorage` (xử lý dữ liệu lỗi/thiếu) | Kế hoạch | — |
+| 8 | Tiến độ học tập bằng `localStorage` (xử lý dữ liệu lỗi/thiếu) | Một phần: đã lưu dữ liệu tiến độ (chủ đề đã mở, lần mở đầu/gần nhất, số lần mở); chưa có giao diện đọc, để Phase 3b (redesign dashboard) | branch `feat/progress-storage` |
 | 9 | Kiểm thử tổng thể, UI/UX, deployment | Một phần: deployment xong (Vercel, tự deploy từ `main`) | — |
 
 Ghi chú:
