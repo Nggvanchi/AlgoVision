@@ -962,6 +962,16 @@ button:disabled {
     transition-delay: 0s;
   }
 
+  /* Khóa cuộn nền khi drawer mở: đo trên Chrome thật, lăn chuột trên lớp phủ làm trang phía sau cuộn (scrollY 0 -> 300). */
+  body.is-drawer-open {
+    overflow: hidden;
+  }
+
+  /* Giữ chỗ cho thanh cuộn kiểu cổ điển (15px trên Chrome Windows ở 360px): nếu không, overflow: hidden làm nó biến mất và nội dung giật ngang 15px. */
+  html {
+    scrollbar-gutter: stable;
+  }
+
   .main-content {
     margin-left: 0;
     padding: 0 18px;

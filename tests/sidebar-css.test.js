@@ -456,6 +456,11 @@ test('nút "Thử lại" (class dashboard-primary-button load-error-retry) khôn
 // Khóa cuộn nền và thanh cuộn tối của sidebar (Redesign Phase 2b)
 // ---------------------------------------------------------------------------------------------------------------------
 
+test('khóa cuộn nền không làm trang giật ngang: html có scrollbar-gutter: stable trong @media (max-width: 700px) (đo Chrome 360px: thanh cuộn 15px biến mất khi overflow hidden)', () => {
+  assert.equal(requireValue('html', 'scrollbar-gutter', MOBILE), 'stable')
+  assert.equal(valueOf('html', 'scrollbar-gutter'), undefined, 'màn hình rộng giữ hành vi mặc định')
+})
+
 test('khóa cuộn nền: body.is-drawer-open { overflow: hidden } chỉ trong @media (max-width: 700px)', () => {
   assert.equal(requireValue('body.is-drawer-open', 'overflow', MOBILE), 'hidden')
   assert.equal(valueOf('body.is-drawer-open', 'overflow'), undefined, 'không khóa cuộn ở màn hình rộng')
@@ -466,7 +471,7 @@ test('thanh cuộn tối riêng cho .sidebar-scroll: scrollbar-width thin, scrol
   assert.equal(requireValue('.sidebar-scroll', 'scrollbar-color'), 'var(--border) transparent')
 
   const global = sheet.rules.filter((rule) => rule.selectors.some((selector) => ['*', 'html', 'body', ':root'].includes(selector)))
-    .filter((rule) => rule.declarations.some((declaration) => declaration.property.startsWith('scrollbar-')))
+    .filter((rule) => rule.declarations.some((declaration) => ['scrollbar-width', 'scrollbar-color'].includes(declaration.property)))
 
   assert.deepEqual(global.map((rule) => rule.selectors.join(',')), [], 'thanh cuộn tối chỉ cho sidebar trong PR này')
 })
