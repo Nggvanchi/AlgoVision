@@ -182,10 +182,10 @@ test('comment trong :root chia token thành CŨ / MỚI ĐANG DÙNG / MỚI CHƯ
   const sections = [namesIn(at[0], at[1]), namesIn(at[1], at[2]), namesIn(at[2], raw.length)]
 
   assert.deepEqual(sections[0], [...Object.keys(OLD_VALUES), ...Object.keys(OLD_ALIASES)].sort(), 'nhóm CŨ phải là 18 token cũ')
-  assert.deepEqual(sections[1], ['--font-mono', '--font-ui'], 'nhóm MỚI ĐANG DÙNG chỉ có hai token font')
+  assert.deepEqual(sections[1], ['--bg-sidebar', '--font-mono', '--font-ui', '--fs-md', '--fs-sm', '--fs-xs', '--purple-pressed', '--purple-strong', '--purple-tint', '--radius-sm', '--shadow-card', '--sidebar-width', '--sidebar-width-collapsed', '--space-1', '--space-2', '--space-3', '--space-4', '--space-6', '--surface-raised', '--text-label'], 'nhóm MỚI ĐANG DÙNG: 2 token font (Phase 1) và 18 token Phase 2 áp vào sidebar và nút chính')
   assert.deepEqual(sections[2], [...tokens.keys()].filter((name) => !sections[0].includes(name) && !sections[1].includes(name)).sort(),
     'nhóm MỚI CHƯA DÙNG phải là phần còn lại của :root')
-  assert.ok(sections[2].length >= 34, `phải có ít nhất 34 token định nghĩa sẵn, thấy ${sections[2].length}`)
+  assert.ok(sections[2].length >= 17, `phải có ít nhất 17 token định nghĩa sẵn chưa dùng, thấy ${sections[2].length}`)
 })
 
 test('token "CHƯA ĐƯỢC DÙNG" quả thật chưa được luật nào tham chiếu', () => {
@@ -193,8 +193,18 @@ test('token "CHƯA ĐƯỢC DÙNG" quả thật chưa được luật nào tham 
   const unusedNames = [...raw.slice(raw.indexOf('TOKEN MỚI, CHƯA ĐƯỢC DÙNG')).matchAll(/(--[a-z0-9-]+)\s*:/g)].map((match) => match[1])
   const used = unusedNames.filter((name) => countVarUses(css, name) > 0)
 
-  assert.ok(unusedNames.length >= 34, `phải tìm thấy ít nhất 34 token chưa dùng, thấy ${unusedNames.length}`)
+  assert.ok(unusedNames.length >= 17, `phải tìm thấy ít nhất 17 token chưa dùng, thấy ${unusedNames.length}`)
   assert.deepEqual(used, [], 'các token này đã bị áp vào luật; Phase 1 chỉ định nghĩa (gồm --border-control, --blue, --success, cỡ chữ, spacing, bo góc, bóng)')
+})
+
+test('token "ĐANG DÙNG" quả thật được ít nhất một luật tham chiếu (Phase 2 áp vào sidebar, ☰ và nút chính)', () => {
+  const raw = rootRawBlock(css)
+  const from = raw.indexOf('TOKEN MỚI, ĐANG DÙNG')
+  const names = [...raw.slice(from, raw.indexOf('TOKEN MỚI, CHƯA ĐƯỢC DÙNG')).matchAll(/(--[a-z0-9-]+)\s*:/g)].map((match) => match[1])
+  const unused = names.filter((name) => countVarUses(css, name) === 0)
+
+  assert.ok(names.length >= 20, `phải tìm thấy 20 token đang dùng, thấy ${names.length}`)
+  assert.deepEqual(unused, [], 'token nằm nhóm ĐANG DÙNG nhưng không luật nào tham chiếu: chuyển về nhóm CHƯA ĐƯỢC DÙNG')
 })
 
 test('token font "ĐANG DÙNG": --font-ui làm font nền của :root, --font-mono dùng đúng ở 7 chỗ font mã', () => {
@@ -234,9 +244,9 @@ test('cấm chữ trắng trên --purple: tỉ lệ thật dưới 4,5 (vì vậ
   assert.ok(contrastRatio('#ffffff', resolve('--purple')) < 4.5)
 })
 
-// Luật đặt nền tím sáng (#9B82FF) cùng chữ trắng. .dashboard-primary-button vi phạm từ trước (2,99:1): thuộc Phase 2
-// (dashboard) và đã ghi trong docs/backlog.md. Danh sách ngoại lệ phải khớp chính xác: thêm vi phạm mới hoặc sửa xong đều làm test đỏ.
-const WHITE_ON_PURPLE_KNOWN = ['.dashboard-primary-button']
+// Luật đặt nền tím sáng (#9B82FF) cùng chữ trắng. .dashboard-primary-button từng vi phạm (2,99:1) và đã sửa ở Redesign Phase 2
+// (nền --purple-strong); danh sách ngoại lệ giờ rỗng. Danh sách phải khớp chính xác: thêm vi phạm mới làm test đỏ.
+const WHITE_ON_PURPLE_KNOWN = []
 
 function whiteOnPurpleRules() {
   const purple = new Set(['var(--purple)', 'var(--accent-color)', resolve('--purple').toLowerCase()])
@@ -426,7 +436,7 @@ test(':root dùng var(--font-ui) làm font nền', () => {
 })
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Gom hex khớp đúng token (13 chỗ, không đổi diện mạo)
+// Gom hex khớp đúng token (12 chỗ, không đổi diện mạo; .brand-icon rời bảng này ở Redesign Phase 2 vì đổi nền sang --purple-strong)
 // ---------------------------------------------------------------------------------------------------------------------
 
 const HEX_TO_TOKEN = [
@@ -442,7 +452,6 @@ const HEX_TO_TOKEN = [
   ['.complexity-card', 'border', '#292c3a', '--border'],
   ['.stack-visualizer', 'background', '#0c0d12', '--background'],
   ['.algorithm-card.selected', 'background', '#12141c', '--panel'],
-  ['.brand-icon', 'background', '#7456e8', '--purple-dark'],
 ]
 
 for (const [selector, property, was, token] of HEX_TO_TOKEN) {

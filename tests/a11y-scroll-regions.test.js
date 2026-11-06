@@ -53,6 +53,7 @@ const describe = (element) => `${element.tagName.toLowerCase()}${element.id ? `#
 
 // Bảng đặc tả: vùng cuộn → nhãn tĩnh (label) hoặc phần tử tiêu đề đặt tên (labelledby). Dùng chính khung bọc của phần tử con.
 const SPEC = [
+  { find: (d) => d.querySelector('.sidebar-scroll'), label: 'Danh sách mục điều hướng' },
   { find: (d) => d.querySelector('#learning-pseudocode').closest('pre'), labelledby: 'learning-pseudocode-title' },
   { find: (d) => d.querySelector('#search-learning-pseudocode').closest('pre'), labelledby: 'search-learning-pseudocode-title' },
   { find: (d) => d.querySelector('#bst-pseudocode').closest('pre'), labelledby: 'bst-pseudocode-title' },
@@ -81,7 +82,7 @@ test('mọi luật CSS cuộn parse được, chạy được và khớp phần 
   })
 })
 
-test('template có đúng 20 vùng cuộn, khớp bảng đặc tả (không thừa, không thiếu)', async () => {
+test('template có đúng 21 vùng cuộn, khớp bảng đặc tả (không thừa, không thiếu)', async () => {
   await withFullApp(({ document }) => {
     const found = collectScrollRegions(document)
     const specified = SPEC.map((entry) => entry.find(document))
