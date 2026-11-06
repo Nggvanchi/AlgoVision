@@ -496,7 +496,9 @@ test('#22c55e (trạng thái tìm thấy/đầu hàng đợi) vẫn viết thẳ
   assert.equal((outsideRoot.match(/#22c55e/gi) ?? []).length, 13)
 })
 
-test('#60a5fa (viền focus/hover, nhãn đầu cuối hàng đợi) vẫn viết thẳng ở đúng 4 chỗ, chưa bị đổi sang --blue', () => {
+// Từ 4 xuống 2 ở PR chore/bundle-headroom: hai chỗ bị gỡ là khai báo chết (border-color của .array-cell:hover và .array-operation-card input:focus)
+// bị khối sau ghi đè bằng var(--purple), nên màu hiển thị không đổi. Hai chỗ còn lại (viền và nhãn của hàng đợi) vẫn viết thẳng.
+test('#60a5fa (viền, nhãn đầu cuối hàng đợi) vẫn viết thẳng ở đúng 2 chỗ, chưa bị đổi sang --blue', () => {
   const outsideRoot = stripComments(css).replace(rootRawBlock(stripComments(css)), '')
-  assert.equal((outsideRoot.match(/#60a5fa/gi) ?? []).length, 4)
+  assert.equal((outsideRoot.match(/#60a5fa/gi) ?? []).length, 2)
 })

@@ -48,3 +48,47 @@ test('trường description của bảng pages (chỉ dùng để điền khối
   assert.match(navigation, /title: 'Tổng quan'/)
   assert.match(navigation, /title: 'Cấu trúc dữ liệu'/)
 })
+
+// Cùng một selector được khai báo hai lần ở cấp trên cùng: khối sau (cùng độ đặc hiệu) ghi đè khối trước, nên khai báo của
+// khối trước cho thuộc tính mà khối sau cũng khai báo là mã chết. Các selector dưới đây từng bị như vậy; không được tái phạm.
+function topLevelRules(text) {
+  const clean = text.replace(/\/\*[\s\S]*?\*\//g, '')
+  const rules = []
+  let depth = 0
+  let start = 0
+
+  for (let index = 0; index < clean.length; index++) {
+    if (clean[index] === '{') depth++
+    if (clean[index] === '}') {
+      depth--
+      if (depth === 0) {
+        const rule = clean.slice(start, index + 1)
+        const selector = rule.slice(0, rule.indexOf('{')).trim().replace(/\s+/g, ' ')
+        const body = rule.slice(rule.indexOf('{') + 1, -1)
+        if (!selector.startsWith('@')) rules.push({ selector, properties: body.split(';').map((item) => item.split(':')[0].trim()).filter(Boolean) })
+        start = index + 1
+      }
+    }
+  }
+
+  return rules
+}
+
+const DUPLICATED_SELECTORS = ['.control-button', '.array-cell', '.array-cell:hover', '.array-cell-index', '.array-operation-card input:focus']
+
+for (const selector of DUPLICATED_SELECTORS) {
+  test(`${selector}: không thuộc tính nào bị khai báo hai lần giữa các khối cùng selector`, () => {
+    const seen = new Map()
+    const repeated = []
+
+    for (const rule of topLevelRules(css).filter((item) => item.selector === selector)) {
+      for (const property of rule.properties) {
+        if (seen.has(property)) repeated.push(property)
+        seen.set(property, true)
+      }
+    }
+
+    assert.ok(seen.size > 0, `phải tìm thấy luật ${selector}`)
+    assert.deepEqual(repeated, [], `${selector} khai báo lại thuộc tính của khối trước`)
+  })
+}
