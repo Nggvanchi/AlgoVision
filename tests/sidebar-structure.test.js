@@ -246,6 +246,8 @@ test('thanh trên cho di động .mobile-bar chứa nút ☰ và không chứa l
 
     assert.ok(bar !== null, 'thiếu .mobile-bar')
     assert.equal(bar.querySelectorAll(FOCUSABLE).length, 1, 'chỉ có nút ☰ focus được')
+    assert.equal(bar.querySelector('.mobile-bar-title')?.getAttribute('aria-hidden'), 'true', 'tên thương hiệu trên thanh trên chỉ để nhìn: h1 trong sidebar đã là tên trang')
+    assert.equal(bar.querySelector('.menu-button-icon')?.getAttribute('aria-hidden'), 'true', 'ba vạch chỉ để trang trí: tên nút là aria-label')
     assert.ok(bar.querySelector('#sidebar-toggle') !== null)
     assert.ok(document.querySelector('main .topbar') !== null, '.topbar vẫn nằm trong <main>')
     assert.equal(document.querySelectorAll('.topbar').length, 1)

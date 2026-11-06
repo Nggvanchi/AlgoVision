@@ -1,6 +1,13 @@
 <a class="skip-link" href="#main-content">Bỏ qua điều hướng, tới nội dung chính</a>
 
 <div class="app-layout">
+<div class="mobile-bar">
+    <button class="menu-button" id="sidebar-toggle" type="button" aria-expanded="false" aria-controls="sidebar" aria-label="Mở menu điều hướng">
+    <span class="menu-button-icon" aria-hidden="true"></span>
+    </button>
+    <span class="mobile-bar-title" aria-hidden="true">AlgoVision</span>
+</div>
+
 <aside class="sidebar" id="sidebar">
     <div class="brand">
     <div class="brand-icon">A</div>
@@ -56,6 +63,7 @@
     </button>
     </div>
 </aside>
+<div class="sidebar-overlay" aria-hidden="true"></div>
 
 <main class="main-content" id="main-content" tabindex="-1">
     <header class="topbar">
