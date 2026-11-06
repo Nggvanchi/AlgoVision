@@ -826,18 +826,6 @@ button:disabled {
 }
 
 
-.placeholder-icon {
-  display: grid;
-  width: 48px;
-  height: 48px;
-  place-items: center;
-  border: 1px solid #4b3b72;
-  border-radius: 13px;
-  background: #8b72f51b;
-  color: #c2b0ff;
-  font-size: 25px;
-}
-
 /* Tiêu đề Queue đổi từ h2 sang h3 (tránh hai h2 và bước nhảy h2 -> h4): giữ đúng số đo của h2 mặc định
    (font-size 24px, margin 0,83em = 19,92px, đậm 700) để giao diện không đổi. */
 .visualizer-header h3 {
@@ -1491,57 +1479,10 @@ button:disabled {
   font-size: 24px;
 }
 
-.learning-heading p,
-.learning-category p {
+.learning-heading p {
   margin: 0;
   color: var(--text-secondary, #9ca3af);
   line-height: 1.6;
-}
-
-.learning-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.learning-tab {
-  padding: 10px 16px;
-  border: 1px solid var(--border-color, #303642);
-  border-radius: 10px;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.learning-tab:hover {
-  border-color: #818cf8;
-}
-
-.learning-tab.active {
-  border-color: #818cf8;
-  background: #3730a3;
-  color: #fff;
-}
-
-.learning-category {
-  padding: 20px;
-  border: 1px solid var(--border-color, #303642);
-  border-radius: 14px;
-  background: var(--card-background, #171b24);
-}
-
-.learning-category h3 {
-  margin: 0 0 10px;
-  font-size: 18px;
-}
-
-.learning-category[hidden] {
-  display: none;
 }
 
 .search-toolbar {
@@ -2284,10 +2225,6 @@ button.structure-card:focus-visible,
   color: var(--purple);
   font-size: 13px;
   font-weight: 600;
-}
-
-.structure-card-disabled {
-  opacity: 0.55;
 }
 
 @media (max-width: 600px) {
