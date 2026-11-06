@@ -4,7 +4,7 @@ import { Window } from 'happy-dom'
 import { withFullApp, template } from './helpers/app-dom.js'
 import { memoryStorage } from './helpers/memory-storage.js'
 import { initNavigation } from '../src/navigation.js'
-import * as progressStore from '../src/progress-store.js'
+import * as progressInit from '../src/progress-init.js'
 
 // initProgress nối algovision:viewchange (detail.topic) với kho tiến độ. Chỉ ghi khi MỞ màn chi tiết một chủ đề.
 
@@ -207,7 +207,7 @@ test('danh sách chủ đề suy ra từ template lúc khởi động, không g�
       'beforeend', '<button type="button" data-structure-target="demo">Demo</button>',
     )
     initNavigation(document)
-    progressStore.initProgress(document, { storage })
+    progressInit.initProgress(document, { storage })
 
     openStructure(document, 'demo')
     assert.deepEqual(counts(storage), { 'structure:demo': 1 })
@@ -276,7 +276,7 @@ test('truy cập window.localStorage ném lỗi (cửa sổ riêng tư/bị ch�
       get() { throw new window.DOMException('bị chặn', 'SecurityError') },
     })
     initNavigation(document)
-    progressStore.initProgress(document)
+    progressInit.initProgress(document)
     openStructure(document, 'bst')
     assert.equal(document.querySelector('#bst-section').hidden, false)
   } finally {
@@ -299,7 +299,7 @@ test('không đăng ký sự kiện storage (chưa có giao diện đọc tiến
       }
     }
     initNavigation(document)
-    progressStore.initProgress(document, { storage: memoryStorage() })
+    progressInit.initProgress(document, { storage: memoryStorage() })
     assert.ok(registered.includes('algovision:viewchange'), 'phải nghe algovision:viewchange')
     assert.ok(!registered.includes('storage'), 'không được nghe sự kiện storage')
   } finally {
