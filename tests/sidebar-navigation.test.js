@@ -73,6 +73,12 @@ for (const scenario of SCENARIOS) {
         }
 
         assert.equal(isShown(document.querySelector('#structure-library')), false, 'thư viện cấu trúc phải ẩn')
+
+        for (const selector of ['#dashboard-section', '.algorithm-section', '#sorting-section', '#search-algorithm-library', '#search-section']) {
+          assert.equal(isShown(document.querySelector(selector)), false, `${selector} phải ẩn sau khi mở cấu trúc`)
+        }
+
+        assert.deepEqual([...document.querySelectorAll('.nav-item.active')].map((item) => item.dataset.page), ['structures'], 'mục cha Tất cả cấu trúc active')
         assert.equal(document.querySelector('.nav-subitem.active')?.dataset.structureNav, target)
       }, { storage })
     })
@@ -294,4 +300,26 @@ test('aria-current chỉ có ở sidebar, không rò sang thẻ, nút Quay lại
       assert.equal(document.querySelectorAll('main [aria-current]').length, 0, `${screen.name}: không aria-current trong <main>`)
     }
   })
+})
+
+test('thẻ cấu trúc không có section tương ứng: KHÔNG sinh mục con (không có nút chết trong sidebar)', async () => {
+  const { Window } = await import('happy-dom')
+  const { initNavigation } = await import('../src/navigation.js')
+  const { template } = await import('./helpers/app-dom.js')
+  const window = new Window()
+  const { document } = window
+
+  try {
+    document.body.innerHTML = template
+    document.querySelector('#structure-library').insertAdjacentHTML(
+      'beforeend',
+      '<button type="button" class="structure-card" data-structure-target="ghost"><span class="structure-card-icon">?</span><span class="structure-card-title">Ghost</span></button>',
+    )
+    initNavigation(document)
+
+    assert.ok(document.querySelector('.nav-subitem[data-structure-nav="ghost"]') === null, 'không có section #ghost-section thì không có mục con')
+    assert.deepEqual([...document.querySelectorAll('.nav-subitem')].map((item) => item.dataset.structureNav), STRUCTURES)
+  } finally {
+    window.happyDOM.close()
+  }
 })
