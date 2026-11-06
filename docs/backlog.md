@@ -36,6 +36,16 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Hai mục 360px cũ KHÔNG tái hiện (Chrome 153/Linux): chữ Big-O trung bình của linear probing rộng 223px trong thẻ 226–296px ở 320/360/390px
   nên luôn 1 dòng, chỉ xuống 2 dòng ở 1280px trong thẻ 177px (chấp nhận); viền "ô đã dò" nằm trọn trong khung (probing: lề ≥ 6px;
   chaining preset 14 khóa: 0/14 ô bị cắt).
+- Khối "PHIÊN BẢN" của sidebar đã bỏ ở Redesign Phase 2 vì "AlgoVision 0.1.0" không phải dữ liệu thật (`package.json` ghi `0.0.0`, repo không có tag): hiện phiên bản thật khi có nguồn (ví dụ `package.json` hoặc tag release).
+- Glyph icon của sidebar rơi về font hệ thống: đo 2026-11-06 (Chrome 152, Windows) 9/11 glyph không dùng font tự host: ⌂ ↕ (Arial), ⌕ ▤ ⋔ ◬ (Cambria Math), ↔ (Segoe UI Semibold), ⛓ (Segoe UI Symbol); chỉ "[ ]" và "#"
+  dùng Be Vietnam Pro. Hình sẽ khác giữa Windows và Linux (chưa đo Ubuntu). Nên thay bằng SVG hoặc subset font.
+- Icon ▤ trùng giữa "Tất cả cấu trúc" và Stack trong sidebar (cả hai đều là glyph của thẻ); nhất là ở trạng thái thu gọn, hai mục nhìn như nhau (tooltip và tên truy cập vẫn phân biệt được).
+- Thanh cuộn mặc định sáng trên nền tối: `.sidebar-scroll` (và mọi vùng cuộn khác của app) chưa có `scrollbar-color`/`scrollbar-width`.
+- Nhãn "Tất cả cấu trúc" (sidebar) khác tiêu đề trang "Cấu trúc dữ liệu" (h2 của thư viện); thống nhất cách gọi.
+- Nút menu ☰ (vẽ bằng CSS) không đổi thành ✕ khi drawer mở; drawer không đổ bóng; tooltip và mũi tên nút thu gọn không có hiệu ứng mờ/xoay. Cắt để CSS vào ngưỡng 51,5 kB của Phase 2; thêm lại khi CSS còn chỗ.
+- Ngưỡng dung lượng CSS: sau Phase 2 chỉ dư 117 B so với ngưỡng 51,5 kB (CSS 51.383 B). PR sau phải xem lại ngưỡng có chủ ý (nâng ngưỡng có lý do, hoặc cắt CSS chết) thay vì lặng lẽ vượt.
+- Nâng viền ô nhập lên `--border-control` (đã có ở mục viền ô nhập 1,33:1 phía trên): làm ở PR Visualizer/Structure workspace, không ở sidebar.
+- Chưa kiểm sidebar trên thiết bị di động thật (`100dvh`, thanh địa chỉ co giãn, chạm), trình đọc màn hình thật (CDP không liệt kê `aria-current` trong cây trợ năng), Firefox/Safari (`inert`, `:focus-visible`) và preview Vercel.
 - Cột Insertion đang so sánh nằm trong đoạn đã sắp xếp (khoảng 94% số cột so sánh của Insertion trong mẫu đo 300 mảng) chỉ hiện "đang so sánh",
   mất cue "đã sắp xếp" (`is-comparing` thắng `is-sorted`, `src/sorting-bar-state.js`). Hiện cả hai phải sửa test "cột đang so sánh trong vùng
   đã sắp xếp vẫn hiển thị trạng thái so sánh (Insertion Sort)" và cần cue kết hợp; chú giải Insertion đã ghi "kể cả cột nằm trong đoạn đã sắp xếp".
@@ -50,11 +60,9 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Comment đầu `src/hash-table-layout.js` ghi "để vẽ mũi tên" nhưng chuỗi chaining chỉ vẽ đường nối thẳng (`line`, không đầu mũi tên); sửa comment hoặc thêm đầu mũi tên.
 - Bảng mốc DFS (PR `fix/layout-tables`): font mã nay là JetBrains Mono tự host (0,6em, cùng bề rộng ký tự với DejaVu Sans Mono của Linux) nên không còn phụ thuộc font monospace của hệ điều hành.
   Đã đo trên Windows (Chrome 152): bảng 257px bằng khung ở 360px, khe nhỏ nhất giữa chữ các ô 11px (360px) và 11,92px (1280px), không ô nào xuống dòng; xác nhận lại trên preview Vercel (Linux thật).
-- Thanh bên là `<aside>` chứa 4 nút `button.nav-item`, chưa có `<nav aria-label>`: trình đọc màn hình không có landmark điều hướng chính (skip link
-  đã giúp người dùng bàn phím bỏ qua được, nhưng danh sách landmark chỉ có complementary và main).
 - Heading "Queue Visualizer" (đổi từ h2 sang h3 ở PR `fix/a11y-landmarks`) giữ kiểu mặc định của h2 cũ: 24px, đậm 700, margin 19,92px (luật
   `.visualizer-header h3` ở `style.css`), lớn hơn các h3 16px của Array, Stack, Linked List, BST, Hash Table, Graph. Thống nhất kiểu cần quyết định thiết kế.
-- 20 vùng cuộn (`role="group"` + tên) không có `tabindex`: Chrome tự cho focus bàn phím khi nội dung tràn, Safari có thể không, khi đó người dùng
+- 21 vùng cuộn (`role="group"` + tên, gồm `.sidebar-scroll`) không có `tabindex`: Chrome tự cho focus bàn phím khi nội dung tràn, Safari có thể không, khi đó người dùng
   bàn phím không cuộn được `pre` mã giả, khung vẽ BST/Hash/Graph, các bảng. Thêm `tabindex="0"` sẽ tạo điểm dừng Tab cả ở khung không tràn;
   cân nhắc gắn bằng JS chỉ khi nội dung tràn. Chưa kiểm trên Safari.
 - R5, R7: chưa thống nhất giữa các trang. Chỉ báo "k / N" chỉ có ở Sắp xếp (vd "2 / 97"); Tìm kiếm, BST, Hash, Graph chỉ có câu giải thích.
@@ -63,15 +71,14 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - R17: nút/ô nhập cao 38–42px ở 360px (BST, Hash: "Quay lại" 38, ô chọn 42, ô nhập 40, "Thực hiện" 39, nút preset 40; thanh tốc độ 16px);
   trên mức tối thiểu 24px của WCAG 2.2, dưới mức khuyến nghị 44px.
 - R18: Sắp xếp không cho nhập mảng hay chọn preset (chỉ "Tạo mảng mới" ngẫu nhiên), nên không thử được mảng đã sắp xếp, đảo ngược, trùng toàn bộ.
-- `document.title` (`index.html:10`, "AlgoVision - Trực quan hóa thuật toán") và breadcrumb (`app.html:44`, "Không gian học tập / Trực quan hóa")
-  chưa đổi theo trang: đúng với mọi trang nhưng không nói đang ở đâu.
-- Nút "Bắt đầu học" (`.dashboard-primary-button`): chữ trắng trên `--purple` (#9B82FF) chỉ 2,99:1, dưới 4,5:1. Là ngoại lệ có chủ đích trong `tests/design-tokens.test.js` (`WHITE_ON_PURPLE_KNOWN`);
-  Phase 2 sửa bằng nền `--purple-strong` (trắng trên đó 5,31:1) và xóa khỏi danh sách ngoại lệ.
+- `document.title` (`index.html:10`, "AlgoVision - Trực quan hóa thuật toán") và `.topbar` trong `<main>` (breadcrumb tĩnh "Không gian học tập / Trực quan hóa" cùng huy hiệu "Đang phát triển")
+  chưa đổi theo trang: đúng với mọi trang nhưng không nói đang ở đâu. Redesign Phase 2 giữ nguyên `.topbar`; thanh trên ☰ của drawer là phần tử riêng.
 - Viền ô nhập hiện 1,33:1 (`--border` #292c3a trên `--panel` #12141c), dưới 3:1 của WCAG 1.4.11. Nâng lên `--border-control` (#6B6B87, 3,58:1 trên `--surface`) ở PR Visualizer/Structure workspace;
   Phase 1 mới định nghĩa token, test chặn việc áp sớm.
-- Chuyển `--border` (sang #2A2A3D), `--text-muted` (sang #9CA2BA) và bảng nền (`--background`/`--panel`/`--panel-hover` sang `--bg`/`--surface`/`--surface-raised`, `--purple-dark` sang `--purple-strong`) ở Phase 2 cùng
-  sidebar và dashboard. Hiện hai bảng nền cùng có mặt trong `:root` (nhóm TOKEN MỚI, CHƯA ĐƯỢC DÙNG), dễ nhầm.
-- `--shadow-card` (`0 8px 24px rgba(0, 0, 0, 0.35)`) và `--glow-purple` (`0 0 0 1px rgba(155, 130, 255, 0.35), 0 8px 28px rgba(155, 130, 255, 0.18)`) là giá trị tạm do Phase 1 tự chọn, test chốt cứng; xem lại ở Phase 2.
+- Chuyển giá trị toàn cục `--border` (sang #2A2A3D), `--text-muted` (sang #9CA2BA) và bảng nền (`--background`/`--panel`/`--panel-hover` sang `--bg`/`--surface`/`--surface-raised`, `--purple-dark` sang `--purple-strong`) trong MỘT PR riêng
+  (Redesign Phase 2 chỉ áp token mới cho sidebar và nút chính, không đổi giá trị toàn cục): cần ghi mức đổi màu, đo lại tương phản, sửa test "10 token gốc" và hàng gom hex. Hiện hai bảng nền cùng có mặt trong `:root`
+  (sidebar `--bg-sidebar` #0E0E19 và vùng nội dung `--background` #0c0d12 lệch nhẹ), dễ nhầm.
+- `--shadow-card` (`0 8px 24px rgba(0, 0, 0, 0.35)`, nay dùng cho tooltip của sidebar thu gọn) và `--glow-purple` (`0 0 0 1px rgba(155, 130, 255, 0.35), 0 8px 28px rgba(155, 130, 255, 0.18)`, chưa dùng) là giá trị tạm do Phase 1 tự chọn, test chốt cứng; xem lại khi áp rộng hơn.
 - Ký hiệu ngoài `unicode-range` của JetBrains Mono (chỉ có latin và vietnamese) rơi về font hệ thống. Đo 2026-11-06 (Chrome 152, Windows): → và ∅ (danh sách kề) và Θ (bảng độ phức tạp đồ thị, chữ Hy Lạp) về Consolas;
   ▶ (thứ tự thăm BFS/DFS, ngăn xếp DFS, nhãn bảng băm) về Segoe UI Symbol. Ký hiệu khác như ≤ ✓ chưa đo trong thành phần font mã. Trên Linux, fallback của `monospace`/`system-ui` chưa kiểm (xem preview Vercel).
   Cân nhắc thêm subset greek hoặc vẽ ký hiệu bằng SVG/CSS.
@@ -86,10 +93,10 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Đổi tên thuộc tính nội bộ `dequeues`/`dequeuesLabel` trong `src/graph.js` cho khớp `#graph-traversal-count` (không đổi hành vi).
 - Khoảng trắng cuối dòng và newline cuối file chưa khớp `.editorconfig`: thiếu newline cuối ở `src/linked-list.js`,
   `src/structures/linkedList.js`, `tests/linked-list.test.js`; khoảng trắng cuối dòng ở `src/array.js:14`, `src/sorting.js:34`,
-  `tests/navigation.test.js:92`, `public/templates/app.html:13,51`. Dọn trong một commit riêng để editor không sinh diff lẫn.
+  `tests/navigation.test.js:92`, `public/templates/app.html:78`. Dọn trong một commit riêng để editor không sinh diff lẫn.
 - Gom khoảng 80 hex gần giống nhưng khác giá trị (xám ~#9ca3af/#a1a6b9/#a8aec1/#9da2b6/#969bb0/#b4b9ca; nền ~#141620/#151923/#171923/#171b24/#15151d/#101118; tím nhạt ~#c4b5fd/#c4b5ff/#c5b8ff/#c6b8ff/#c2b0ff/#c8bbff)
   theo từng thành phần ở các PR sau, vì gộp sẽ đổi vài đơn vị màu. Sau Phase 1 còn khoảng 208 hex ngoài `:root`; màu visualization (cột, ô, nút đồ thị, `#22c55e` ×13, `#60a5fa` ×4) giữ nguyên.
-- Chuẩn hóa 17 giá trị `border-radius`, 23 cỡ chữ và 31 giá trị spacing theo token đã định nghĩa (`--radius-*`, `--fs-*`, `--space-*`); Phase 1 chưa áp luật nào (test canh gác).
+- Chuẩn hóa 17 giá trị `border-radius`, 23 cỡ chữ và 31 giá trị spacing theo token đã định nghĩa (`--radius-*`, `--fs-*`, `--space-*`); mới chỉ các luật của sidebar (Phase 2) dùng token cỡ chữ/spacing/bo góc, phần còn lại của trang chưa áp (test canh gác không cho lan ra).
 - Bốn alias chỉ dùng một chỗ, kèm giá trị dự phòng lỗi thời: `accent-color: var(--accent-color, #6366f1)`, `var(--surface-secondary, #111827)`, `var(--surface-color, #1f2937)`, `var(--panel-bg, rgba(255, 255, 255, 0.03))`.
   Alias luôn được định nghĩa nên giá trị dự phòng không bao giờ dùng tới; dọn khi động tới các thành phần đó.
 

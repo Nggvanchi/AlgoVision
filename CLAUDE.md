@@ -19,8 +19,9 @@ Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so v�
 Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
 - Đo 2026-11-06 trên Windows (Node 24.21.0, pnpm 12.5.1).
-- `pnpm test`: 1065/1065 pass, 0 fail, 0 skipped, 10–25 s tùy tải máy (đo 10,2 s đến 24,3 s; lần gần nhất 16,0 s).
-- `pnpm build`: JS 145,26 kB (145.265 B; gzip 42,09 kB), CSS 47,80 kB (gzip 9,38 kB), HTML 0,75 kB (746 B).
+- `pnpm test`: 1240/1240 pass, 0 fail, 0 skipped, 10–30 s tùy tải máy (đo 10,2 s đến 28,1 s; hai lần gần nhất 20,0 s và 28,1 s).
+- `pnpm build`: JS 148,60 kB (148.606 B; gzip 43,16 kB), CSS 51,38 kB (51.383 B; gzip 10,10 kB), HTML 0,75 kB (746 B).
+  Ngưỡng của Redesign Phase 2: JS <= 150 kB (gzip <= 43,5), CSS <= 51,5 kB (gzip <= 10,2); CSS chỉ còn dư 117 B, PR sau phải xem lại ngưỡng có chủ ý (`docs/backlog.md`).
 - Font tự host: `public/fonts` có 10 woff2 = 172.912 B (ngưỡng 175 kB) và 2 giấy phép OFL; không nằm trong bundle JS/CSS.
 
 ## Kiến trúc
@@ -31,7 +32,7 @@ Chi tiết từng module (trường bước, công thức số bước, bất bi
 - `index.html` chỉ có `#app`; `src/main.js` gọi `bootApp` (`src/bootstrap.js`): fetch `public/templates/app.html`, dựng vào `#app`, rồi mới gọi
   các hàm `init*` (`startApp`). Fetch lỗi (reject, HTTP lỗi, đọc nội dung lỗi) thì hiện màn hình `role="alert"` có nút "Thử lại" và không gọi `init*`;
   lỗi của chính `init*` không bị bắt.
-- Module UI: `navigation.js`, `sorting.js`, `searching.js`, `array.js`, `stack.js`, `queue.js`, `linked-list.js`,
+- Module UI: `navigation.js`, `sidebar.js`, `sorting.js`, `searching.js`, `array.js`, `stack.js`, `queue.js`, `linked-list.js`,
   `bst.js`, `hash-table.js`, `graph.js`. Array, Stack, Queue, Linked List là module cũ, không có hàm sinh bước.
 - Các lớp của một module mới (BST, Hash Table, Graph): cấu trúc thuần `src/structures/*` → sinh bước `src/algorithms/*`
   → bố cục `src/*-layout.js` → view → controller `init*(document, { scheduler })` → template.
@@ -42,11 +43,16 @@ Chi tiết từng module (trường bước, công thức số bước, bất bi
 - Sự kiện `algovision:viewchange` (`CustomEvent` trên `document`, `detail: { page, topic }`): `navigation.js` phát khi đổi trang hoặc
   mở/đóng màn hình chi tiết; visualizer tự `pause()` khi bị ẩn. `topic` là id chủ đề (`sorting:bubble`, `searching:linear`,
   `structure:bst`) khi mở màn chi tiết, `null` ở dashboard, thư viện và khi bấm Quay lại.
+- Sidebar (Redesign Phase 2): `<nav aria-label="Điều hướng chính">` trong `aside#sidebar` với hai nhóm (THUẬT TOÁN; CẤU TRÚC DỮ LIỆU có "Tất cả cấu trúc" và 7 mục con
+  `button.nav-subitem[data-structure-nav]` do `navigation.js` sinh từ `[data-structure-target]`). `aria-current="page"` đúng MỘT phần tử. `src/sidebar.js`
+  (`initSidebar`, gọi sau `initNavigation`): thu gọn 72px (nút `#sidebar-collapse`, tooltip) và drawer <= 700px (nút `#sidebar-toggle`, `inert`, trả focus);
+  trạng thái chỉ trong bộ nhớ, KHÔNG `localStorage`. `.main-content` viết số 256px / `0 40px` trực tiếp vì test R12 đọc bằng regex. Chi tiết: `docs/architecture.md`.
 - Tiến độ học tập: `src/progress-store.js` (lõi thuần + `createProgressStore`, không DOM) và `src/progress-init.js` (`initProgress`, nơi
   DUY NHẤT chạm `localStorage`) ghi chủ đề đã MỞ vào khóa `algovision:progress`. Chưa có giao diện đọc (để Phase 3b).
 - Token thiết kế và font: `:root` của `src/style.css` chia ba nhóm (token cũ giữ nguyên, token mới đang dùng, token mới CHƯA được dùng); font Be Vietnam Pro và
   JetBrains Mono tự host ở `public/fonts` (không dùng Google Fonts); font mã luôn qua `var(--font-mono)`. Test: `tests/design-tokens.test.js`.
-- `navigation.js`: thẻ `data-structure-target="x"` mở `#x-section`; thêm cấu trúc mới không cần sửa navigation.
+- `navigation.js`: thẻ `data-structure-target="x"` mở `#x-section`; thêm cấu trúc mới không cần sửa navigation (mục con của sidebar tự được sinh theo thẻ).
+  Mục con KHÔNG được mang `data-structure-target` (initProgress đếm chủ đề theo thuộc tính này) hay class `nav-item` (nhiều test lấy `.nav-item` đầu tiên).
 - Quy tắc theo loại file nằm ở `.claude/rules/`: `tests.md` (test), `algorithms.md` (mã thuần), `cross-platform.md` (mọi phiên).
 
 ## Quy tắc làm việc (bắt buộc)

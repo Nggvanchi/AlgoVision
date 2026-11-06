@@ -108,8 +108,9 @@ const horizontalPadding = (tokens) => px(tokens.length === 1 ? tokens[0] : token
 const borderWidth = (tokens) => px(tokens.find((token) => /^\d+(\.\d+)?px$/.test(token)))
 
 // Bề rộng nội dung của #hash-table-frame ở viewport 1280px, suy từ chính style.css thay vì gõ chết.
-// Nguồn đối chiếu: CDP (Chrome, Windows) 2026-11-05 cho khung clientWidth 871px và nội dung 855px ở 1280px có thanh cuộn
-// dọc kiểu máy bàn 15px (bản rà soát Ubuntu cũng ra 871px).
+// Nguồn đối chiếu: CDP (Chrome 152, Windows) 2026-11-06 cho khung clientWidth 877px và nội dung 861px ở 1280px có thanh cuộn
+// dọc kiểu máy bàn 15px, với sidebar 256px + padding 40px của Redesign Phase 2. Trước Phase 2 (sidebar 250px + padding 46px):
+// khung 871px, nội dung 855px (CDP 2026-11-05, bản rà soát Ubuntu cũng ra 871px). Chuỗi rộng nhất (15 khóa) là 842px.
 const DESKTOP_VIEWPORT = 1280
 const CLASSIC_SCROLLBAR = 15
 

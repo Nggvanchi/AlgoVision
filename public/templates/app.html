@@ -1,44 +1,69 @@
 <a class="skip-link" href="#main-content">Bỏ qua điều hướng, tới nội dung chính</a>
 
 <div class="app-layout">
-<aside class="sidebar">
+<div class="mobile-bar">
+    <button class="menu-button" id="sidebar-toggle" type="button" aria-expanded="false" aria-controls="sidebar" aria-label="Mở menu điều hướng">
+    <span class="menu-button-icon" aria-hidden="true"></span>
+    </button>
+    <span class="mobile-bar-title" aria-hidden="true">AlgoVision</span>
+</div>
+
+<aside class="sidebar" id="sidebar">
     <div class="brand">
     <div class="brand-icon">A</div>
-    <div>
+    <div class="brand-text">
         <h1>AlgoVision</h1>
         <p>Algorithm Visualizer</p>
     </div>
     </div>
 
-    <div class="sidebar-section">
-    <p class="section-label">KHÁM PHÁ</p>
-    
-    <button class="nav-item" data-page="dashboard">
-        <span class="nav-icon">⌂</span>
-        <span>Tổng quan</span>
-    </button>
+    <nav class="sidebar-nav" aria-label="Điều hướng chính">
+    <div class="sidebar-scroll" role="group" aria-label="Danh sách mục điều hướng">
+        <ul class="nav-list">
+        <li>
+            <button class="nav-item" data-page="dashboard" type="button">
+            <span class="nav-icon" aria-hidden="true">⌂</span>
+            <span class="nav-label">Tổng quan</span>
+            </button>
+        </li>
+        </ul>
 
-    <button class="nav-item" data-page="sorting">
-        <span class="nav-icon">↕</span>
-        <span>Sắp xếp</span>
-    </button>
+        <p class="section-label" id="nav-group-algorithms">THUẬT TOÁN</p>
+        <ul class="nav-list" aria-labelledby="nav-group-algorithms">
+        <li>
+            <button class="nav-item" data-page="sorting" type="button">
+            <span class="nav-icon" aria-hidden="true">↕</span>
+            <span class="nav-label">Sắp xếp</span>
+            </button>
+        </li>
+        <li>
+            <button class="nav-item" data-page="searching" type="button">
+            <span class="nav-icon" aria-hidden="true">⌕</span>
+            <span class="nav-label">Tìm kiếm</span>
+            </button>
+        </li>
+        </ul>
 
-    <button class="nav-item" data-page="searching">
-        <span class="nav-icon">⌕</span>
-        <span>Tìm kiếm</span>
-    </button>
-
-    <button class="nav-item" data-page="structures">
-        <span class="nav-icon">▤</span>
-        <span>Cấu trúc dữ liệu</span>
-    </button>
+        <p class="section-label" id="nav-group-structures">CẤU TRÚC DỮ LIỆU</p>
+        <ul class="nav-list" aria-labelledby="nav-group-structures">
+        <li>
+            <button class="nav-item" data-page="structures" type="button">
+            <span class="nav-icon" aria-hidden="true">▤</span>
+            <span class="nav-label">Tất cả cấu trúc</span>
+            </button>
+            <ul class="nav-sublist" id="structure-nav-list" aria-label="Từng cấu trúc dữ liệu"></ul>
+        </li>
+        </ul>
     </div>
+    </nav>
 
-    <div class="sidebar-bottom">
-    <p>PHIÊN BẢN</p>
-    <span>AlgoVision 0.1.0</span>
+    <div class="sidebar-footer">
+    <button class="sidebar-collapse" id="sidebar-collapse" type="button" aria-expanded="true" aria-controls="sidebar" aria-label="Thu gọn thanh bên">
+        <span class="sidebar-collapse-icon" aria-hidden="true">‹</span>
+    </button>
     </div>
 </aside>
+<div class="sidebar-overlay" aria-hidden="true"></div>
 
 <main class="main-content" id="main-content" tabindex="-1">
     <header class="topbar">

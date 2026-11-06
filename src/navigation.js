@@ -46,7 +46,12 @@ export function initNavigation(document) {
   const placeholderTitle = document.querySelector('#placeholder-title')
   const placeholderDescription = document.querySelector('#placeholder-description')
 
+  const structureNavList = document.querySelector('#structure-nav-list')
+  let structureNavItems = []
+
   let currentPage = 'dashboard'
+  // Cấu trúc đang mở ở màn chi tiết (null ở thư viện và mọi trang khác). Quyết định mục con nào active/aria-current.
+  let currentStructure = null
 
   function hideAllSections() {
     dashboardSection.hidden = true
@@ -61,9 +66,27 @@ export function initNavigation(document) {
     })
   }
 
-  function updateNavigation(pageName) {
+  // Mục cha (.nav-item) active theo trang; ở chi tiết một cấu trúc, mục con tương ứng cũng active. aria-current="page" chỉ
+  // nằm trên ĐÚNG MỘT phần tử: mục con khi đang ở chi tiết cấu trúc, ngược lại là .nav-item của trang (mục cha không giữ
+  // aria-current cùng lúc, nếu không trình đọc màn hình báo hai "trang hiện tại").
+  function updateNavigation() {
     navItems.forEach((item) => {
-      item.classList.toggle('active', item.dataset.page === pageName)
+      item.classList.toggle('active', item.dataset.page === currentPage)
+    })
+    structureNavItems.forEach((item) => {
+      item.classList.toggle('active', item.dataset.structureNav === currentStructure)
+    })
+
+    const current = currentStructure === null
+      ? [...navItems].find((item) => item.dataset.page === currentPage)
+      : structureNavItems.find((item) => item.dataset.structureNav === currentStructure)
+
+    ;[...navItems, ...structureNavItems].forEach((item) => {
+      if (item === current) {
+        item.setAttribute('aria-current', 'page')
+      } else {
+        item.removeAttribute('aria-current')
+      }
     })
   }
 
@@ -88,9 +111,10 @@ export function initNavigation(document) {
 
   function renderPage(pageName) {
     currentPage = pageName
+    currentStructure = null
 
     hideAllSections()
-    updateNavigation(pageName)
+    updateNavigation()
 
     if (pageHeading) {
       pageHeading.hidden = pageName === 'dashboard'
@@ -203,20 +227,72 @@ export function initNavigation(document) {
     .querySelector('[data-back-to-search-algorithms]')
     ?.addEventListener('click', showSearchingLibrary)
 
+  // Mở màn chi tiết của một cấu trúc và phát ĐÚNG MỘT viewchange (topic = structure:<tên>). Thẻ ở thư viện và mục con của
+  // sidebar dùng chung hàm này. Trả về false khi không có section tương ứng (không đổi gì, không phát sự kiện).
+  function openStructure(target) {
+    if (!structureSections.has(target)) return false
+
+    structureLibrary.hidden = true
+    structureSections.forEach((section, sectionTarget) => {
+      section.hidden = sectionTarget !== target
+    })
+    currentStructure = target
+    updateNavigation()
+    notifyViewChange(topicId('structure', target))
+
+    return true
+  }
+
   structureCards.forEach((card) => {
     card.addEventListener('click', () => {
       if (currentPage !== 'structures') return
 
-      const target = card.dataset.structureTarget
-      if (!structureSections.has(target)) return
-
-      structureLibrary.hidden = true
-      structureSections.forEach((section, sectionTarget) => {
-        section.hidden = sectionTarget !== target
-      })
-      notifyViewChange(topicId('structure', target))
+      openStructure(card.dataset.structureTarget)
     })
   })
+
+  // Mục con của sidebar sinh từ chính các thẻ [data-structure-target] (nhãn và glyph lấy từ thẻ), nên danh sách chỉ có một
+  // nguồn. Nút dùng data-structure-nav và class nav-subitem, KHÔNG dùng data-structure-target (initProgress đếm chủ đề theo
+  // thuộc tính đó) và KHÔNG dùng class nav-item (nhiều test lấy .nav-item đầu tiên).
+  function renderStructureNav() {
+    if (!structureNavList) return
+
+    structureCards
+      .filter((card) => structureSections.has(card.dataset.structureTarget))
+      .forEach((card) => {
+        const target = card.dataset.structureTarget
+        const item = document.createElement('li')
+        const button = document.createElement('button')
+        const icon = document.createElement('span')
+        const label = document.createElement('span')
+
+        button.type = 'button'
+        button.className = 'nav-subitem'
+        button.dataset.structureNav = target
+        icon.className = 'nav-icon'
+        icon.setAttribute('aria-hidden', 'true')
+        icon.textContent = card.querySelector('.structure-card-icon')?.textContent.trim() ?? ''
+        label.className = 'nav-label'
+        label.textContent = card.querySelector('.structure-card-title')?.textContent.trim() ?? target
+        button.append(icon, label)
+        item.append(button)
+        structureNavList.append(item)
+
+        button.addEventListener('click', () => {
+          // Bấm lại cấu trúc đang mở: không phát gì (không viewchange, không ghi tiến độ).
+          if (currentPage === 'structures' && currentStructure === target) return
+
+          // renderPage (không phát sự kiện) rồi openStructure: từ trang khác chỉ có MỘT viewchange, không có sự kiện
+          // topic null xen giữa (sự kiện đó sẽ làm initProgress/mô phỏng xử lý hai lần).
+          if (currentPage !== 'structures') renderPage('structures')
+          openStructure(target)
+        })
+      })
+
+    structureNavItems = [...structureNavList.querySelectorAll('.nav-subitem')]
+  }
+
+  renderStructureNav()
 
   document.querySelectorAll('[data-back-to-structures]').forEach((button) => {
     button.addEventListener('click', () => {

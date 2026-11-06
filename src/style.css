@@ -129,17 +129,19 @@
   --panel-bg: var(--panel);
 
   /* === TOKEN MỚI, ĐANG DÙNG ===
-     Họ font. --font-ui là font nền của :root; --font-mono dành cho mọi chỗ hiển thị font mã (mã giả, bảng, danh sách). */
+     Họ font: --font-ui là font nền của :root; --font-mono dành cho mọi chỗ hiển thị font mã (mã giả, bảng, danh sách).
+     Redesign Phase 2 áp token mới vào sidebar (và nút chính): CHỈ trong luật của sidebar, không lan ra phần còn lại của trang
+     (tests/sidebar-css.test.js canh gác). Token cỡ chữ/spacing/bo góc cũng chỉ dùng trong sidebar. */
   --font-ui: 'Be Vietnam Pro', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  /* === TOKEN MỚI, CHƯA ĐƯỢC DÙNG ===
-     Phase 1 chỉ ĐỊNH NGHĨA; chưa luật nào tham chiếu (tests/design-tokens.test.js canh gác). Bảng nền và tím mới tồn tại
-     SONG SONG với token cũ ở trên, chưa thay thế chúng: --bg ứng với --background, --surface với --panel, --surface-raised
-     với --panel-hover, --purple-strong với --purple-dark. */
-  --bg: #0B0B14;
+  /* Bề rộng sidebar: 256px = tối đa 263px để chuỗi chaining 15 khóa (842px) vẫn vừa khung bảng băm ở 1280px.
+     .main-content viết SỐ trực tiếp (margin-left 256px, padding 0 40px) vì tests/hash-table-layout.test.js đọc bằng regex;
+     tests/sidebar-css.test.js khẳng định hai số khớp token. */
+  --sidebar-width: 256px;
+  --sidebar-width-collapsed: 72px;
+
   --bg-sidebar: #0E0E19;
-  --surface: #13131F;
   --surface-raised: #1A1A28;
 
   --text-label: #8B8FA6;
@@ -148,8 +150,34 @@
      --purple-strong hoặc --purple-pressed, chữ tối (--bg) trên --purple. --purple-tint là --purple 16% trên --bg-sidebar. */
   --purple-strong: #6D55D9;
   --purple-pressed: #5B43C7;
-  --purple-soft: #B9A8FF;
   --purple-tint: #25213E;
+
+  /* Cỡ chữ */
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-md: 14px;
+
+  /* Khoảng cách: bội số của 4px, tên = px / 4 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+
+  /* Bo góc */
+  --radius-sm: 8px;
+
+  /* Bóng (tooltip của sidebar thu gọn) */
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+  /* === TOKEN MỚI, CHƯA ĐƯỢC DÙNG ===
+     Chỉ ĐỊNH NGHĨA; chưa luật nào tham chiếu (tests/design-tokens.test.js canh gác). Bảng nền và tím mới tồn tại
+     SONG SONG với token cũ ở trên, chưa thay thế chúng: --bg ứng với --background, --surface với --panel, --surface-raised
+     với --panel-hover, --purple-strong với --purple-dark. */
+  --bg: #0B0B14;
+  --surface: #13131F;
+
+  --purple-soft: #B9A8FF;
 
   --blue: #60A5FA;
   --success: #22C55E;
@@ -158,33 +186,23 @@
   --border-control: #6B6B87;
 
   /* Cỡ chữ */
-  --fs-xs: 12px;
-  --fs-sm: 13px;
-  --fs-md: 14px;
   --fs-base: 16px;
   --fs-lg: 20px;
   --fs-xl: 24px;
   --fs-display: clamp(30px, 4vw, 44px);
 
-  /* Khoảng cách: bội số của 4px, tên = px / 4 */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
+  /* Khoảng cách */
   --space-5: 20px;
-  --space-6: 24px;
   --space-8: 32px;
   --space-10: 40px;
   --space-12: 48px;
 
   /* Bo góc */
-  --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-pill: 999px;
 
   /* Bóng */
-  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35);
   --glow-purple: 0 0 0 1px rgba(155, 130, 255, 0.35), 0 8px 28px rgba(155, 130, 255, 0.18);
 }
 
@@ -226,26 +244,28 @@ button:disabled {
   z-index: 10;
   display: flex;
   flex-direction: column;
-  width: 250px;
-  padding: 28px 18px 20px;
-  background: #101118;
+  width: var(--sidebar-width);
+  padding: var(--space-6) var(--space-3) var(--space-4);
+  background: var(--bg-sidebar);
   border-right: 1px solid var(--border);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 8px 32px;
+  gap: var(--space-3);
+  padding: 0 var(--space-2) var(--space-6);
 }
 
+/* Nền --purple-strong (không phải gradient bắt đầu ở #ad98ff): chữ trắng đạt 5,31:1 thay cho 2,41:1. */
 .brand-icon {
   display: grid;
+  flex: none;
   width: 42px;
   height: 42px;
   place-items: center;
   border-radius: 13px;
-  background: linear-gradient(135deg, #ad98ff, var(--purple-dark));
+  background: var(--purple-strong);
   color: white;
   font-size: 24px;
   font-weight: 700;
@@ -260,83 +280,294 @@ button:disabled {
 }
 
 .brand p {
-  margin: 4px 0 0;
+  margin: var(--space-1) 0 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--fs-xs);
 }
 
-.sidebar-section {
+.sidebar-nav {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Vùng cuộn duy nhất của sidebar: danh sách mục co lại và cuộn khi viewport thấp, brand và đáy luôn thấy. */
+.sidebar-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.nav-list,
+.nav-sublist {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.section-label,
-.sidebar-bottom p {
-  margin: 0 0 10px;
-  padding-left: 10px;
-  color: #72788d;
-  font-size: 10px;
+.nav-list {
+  gap: var(--space-1);
+}
+
+.nav-sublist {
+  gap: 2px;
+  margin-top: var(--space-1);
+  padding-left: var(--space-6);
+}
+
+.section-label {
+  margin: 0 0 var(--space-2);
+  padding-left: var(--space-3);
+  color: var(--text-label);
+  font-size: var(--fs-xs);
   font-weight: 700;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
 }
 
-.nav-item {
+.nav-list + .section-label {
+  margin-top: var(--space-6);
+}
+
+.nav-item,
+.nav-subitem {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   width: 100%;
-  padding: 12px 13px;
-  border: 1px solid transparent;
-  border-radius: 9px;
+  border: 0;
+  border-radius: var(--radius-sm);
   background: transparent;
-  color: #a8aec1;
+  color: var(--muted);
   text-align: left;
-  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   transition: background 160ms ease, color 160ms ease;
 }
 
-.nav-item:hover {
-  background: var(--panel-hover);
-  color: white;
+.nav-item {
+  min-height: 40px;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-md);
 }
 
-.nav-item.active {
-  border-color: #6c55b83d;
-  background: #8b72f51b;
-  color: #c5b8ff;
+.nav-subitem {
+  gap: var(--space-2);
+  min-height: 36px;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-sm);
+}
+
+/* Vòng focus nằm trong mục: vùng cuộn cắt vòng focus vẽ ra ngoài (outline-offset dương của button:focus-visible). */
+.nav-item:focus-visible,
+.nav-subitem:focus-visible {
+  outline-offset: -2px;
+}
+
+.nav-item:hover,
+.nav-subitem:hover {
+  background: var(--surface-raised);
+  color: var(--text);
+}
+
+/* Mục đang mở: nền --purple-tint, vạch tím 3px bên trái, chữ đậm hơn (ba dấu hiệu ngoài màu cùng aria-current). */
+.nav-item.active,
+.nav-subitem.active {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--purple-tint);
+  box-shadow: inset 3px 0 0 var(--purple);
+  color: var(--text);
+  font-weight: 600;
 }
 
 .nav-icon {
   display: grid;
-  width: 22px;
+  flex: none;
+  width: 24px;
   place-items: center;
   font-size: 20px;
 }
 
-.sidebar-bottom {
-  margin-top: auto;
-  padding: 18px 0 0;
+.nav-subitem .nav-icon {
+  font-size: var(--fs-sm);
+}
+
+.nav-item.active .nav-icon,
+.nav-subitem.active .nav-icon {
+  color: var(--purple);
+}
+
+/* Thanh trên chỉ có ở <= 700px (ẩn ở màn hình rộng). Nút ☰ vẽ bằng CSS (ba vạch), không phụ thuộc glyph của font. */
+.mobile-bar {
+  display: none;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-2);
+  background: var(--bg-sidebar);
+  border-bottom: 1px solid var(--border);
+}
+
+.menu-button {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.menu-button-icon,
+.menu-button-icon::before,
+.menu-button-icon::after {
+  display: block;
+  width: 20px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+}
+
+.menu-button-icon {
+  position: relative;
+}
+
+.menu-button-icon::before,
+.menu-button-icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+
+.menu-button-icon::before {
+  top: -6px;
+}
+
+.menu-button-icon::after {
+  top: 6px;
+}
+
+.mobile-bar-title {
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+.sidebar-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-2);
+  padding-top: var(--space-3);
   border-top: 1px solid var(--border);
 }
 
-.sidebar-bottom p {
-  padding-left: 8px;
-  margin-bottom: 8px;
+.sidebar-collapse {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  font-size: 20px;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
 }
 
-.sidebar-bottom span {
-  padding-left: 8px;
-  color: #a1a6b9;
-  font-size: 12px;
+.sidebar-collapse:hover {
+  background: var(--surface-raised);
+  color: var(--text);
+}
+
+/* Tooltip tên mục khi sidebar thu gọn: một phần tử dùng chung, vị trí fixed (src/sidebar.js đặt left/top), để vùng cuộn
+   của sidebar không cắt mất. Chỉ là phần phụ: tên truy cập của mục là chữ thật trong .nav-label. */
+.sidebar-tooltip {
+  position: fixed;
+  z-index: 20;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-card);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  pointer-events: none;
+  visibility: hidden;
+  transform: translateY(-50%);
+}
+
+.sidebar-tooltip.is-visible {
+  visibility: visible;
+}
+
+/* Thu gọn (chỉ màn hình rộng): nhãn ẩn bằng clip kiểu sr-only, KHÔNG display: none, nên tên truy cập, h1 và nhãn nhóm vẫn
+   có trong cây trợ năng. Nhãn nhóm thành đường kẻ. .main-content viết số 72px (cùng giá trị --sidebar-width-collapsed). */
+@media (min-width: 701px) {
+  .app-layout.is-sidebar-collapsed .sidebar {
+    width: var(--sidebar-width-collapsed);
+  }
+
+  .app-layout.is-sidebar-collapsed .main-content {
+    margin-left: 72px;
+  }
+
+  .app-layout.is-sidebar-collapsed .nav-label,
+  .app-layout.is-sidebar-collapsed .brand-text,
+  .app-layout.is-sidebar-collapsed .section-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .app-layout.is-sidebar-collapsed .brand {
+    justify-content: center;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .app-layout.is-sidebar-collapsed .nav-item,
+  .app-layout.is-sidebar-collapsed .nav-subitem {
+    justify-content: center;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .app-layout.is-sidebar-collapsed .nav-sublist {
+    padding-left: 0;
+  }
+
+  .app-layout.is-sidebar-collapsed .nav-list[aria-labelledby] {
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border);
+  }
+
+  .app-layout.is-sidebar-collapsed .sidebar-collapse-icon {
+    transform: rotate(180deg);
+  }
 }
 
 .main-content {
   max-width: 1600px;
   min-height: 100vh;
-  margin-left: 250px;
-  padding: 0 46px;
+  margin-left: 256px;
+  padding: 0 40px;
 }
 
 /* Đích của skip link nhận focus bằng mã (tabindex="-1"): không vẽ vòng focus quanh cả vùng nội dung. */
@@ -668,44 +899,61 @@ button:disabled {
 }
 
 @media (max-width: 700px) {
+  .mobile-bar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    height: 56px;
+  }
+
+  /* Drawer: trượt từ trái, nằm dưới thanh trên (☰ vẫn bấm được để đóng). Đóng thì visibility: hidden (ra khỏi thứ tự Tab
+     và cây trợ năng) sau khi trượt xong; chỉ .brand được visible riêng để h1 AlgoVision còn trong cây trợ năng. 100vh là dự phòng
+     cho trình duyệt chưa hiểu dvh. */
   .sidebar {
-    position: static;
-    width: 100%;
-    padding: 16px;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
+    top: 56px;
+    width: min(288px, 86vw);
+    height: calc(100vh - 56px);
+    height: calc(100dvh - 56px);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 200ms ease, visibility 0s 200ms;
+  }
+
+  .sidebar.is-open {
+    transform: none;
+    visibility: visible;
+    transition-delay: 0s;
   }
 
   .brand {
-    padding: 0 4px 18px;
+    visibility: visible;
   }
 
-  .sidebar-section {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 6px;
-  }
-
-  .section-label {
-    grid-column: 1 / -1;
-    margin-bottom: 2px;
-  }
-
-  .nav-item {
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-    padding: 10px 4px;
-    text-align: center;
-    font-size: 10px;
-  }
-
-  .nav-icon {
-    font-size: 18px;
-  }
-
-  .sidebar-bottom {
+  .sidebar-footer {
     display: none;
+  }
+
+  .nav-item,
+  .nav-subitem {
+    min-height: 44px;
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    inset: 56px 0 0;
+    z-index: 9;
+    display: block;
+    background: rgba(5, 6, 12, 0.6);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 200ms ease, visibility 0s 200ms;
+  }
+
+  .sidebar-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
   }
 
   .main-content {
@@ -2461,19 +2709,20 @@ button.structure-card:focus-visible,
   justify-content: center;
   gap: 12px;
   padding: 12px 20px;
-  border: 1px solid var(--purple);
+  border: 1px solid var(--purple-strong);
   border-radius: 10px;
-  background: var(--purple);
+  background: var(--purple-strong);
   color: #fff;
   font: inherit;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .dashboard-primary-button:hover {
   transform: translateY(-2px);
-  opacity: 0.92;
+  border-color: var(--purple-pressed);
+  background: var(--purple-pressed);
 }
 
 .dashboard-content {
