@@ -72,7 +72,8 @@ test('14 symbol có hình vẽ KHÁC nhau từng đôi một (không hai mục n
     const shapes = new Map()
 
     for (const id of SYMBOLS) {
-      const shape = symbolOf(document, id)?.innerHTML.replace(/\s+/g, ' ').trim() ?? ''
+      // Sắp xếp các hình con: hai symbol vẽ cùng tập hình theo thứ tự khác nhau vẫn là CÙNG một hình.
+      const shape = [...(symbolOf(document, id)?.children ?? [])].map((child) => child.outerHTML.replace(/\s+/g, ' ').trim()).sort().join('')
 
       assert.ok(shape !== '', `${id} rỗng hoặc thiếu`)
       assert.ok(!shapes.has(shape), `${id} trùng hình với ${shapes.get(shape)}`)

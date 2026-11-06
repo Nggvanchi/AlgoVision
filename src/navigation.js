@@ -19,6 +19,21 @@ const pages = {
   },
 }
 
+const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
+
+// Icon từ sprite trong template (`<symbol id="icon-...">`). Nút của mục con chỉ ghép id từ data-structure-target, nên không có danh sách icon
+// thứ hai trong JS; tests/sidebar-icons.test.js kiểm mỗi cấu trúc có symbol.
+function createIcon(document, symbolId) {
+  const svg = document.createElementNS(SVG_NAMESPACE, 'svg')
+  const use = document.createElementNS(SVG_NAMESPACE, 'use')
+
+  svg.setAttribute('focusable', 'false')
+  use.setAttribute('href', `#${symbolId}`)
+  svg.append(use)
+
+  return svg
+}
+
 export function initNavigation(document) {
   const navItems = document.querySelectorAll('.nav-item')
 
@@ -251,7 +266,7 @@ export function initNavigation(document) {
     })
   })
 
-  // Mục con của sidebar sinh từ chính các thẻ [data-structure-target] (nhãn và glyph lấy từ thẻ), nên danh sách chỉ có một
+  // Mục con của sidebar sinh từ chính các thẻ [data-structure-target] (nhãn lấy từ thẻ, icon là symbol SVG cùng tên), nên danh sách chỉ có một
   // nguồn. Nút dùng data-structure-nav và class nav-subitem, KHÔNG dùng data-structure-target (initProgress đếm chủ đề theo
   // thuộc tính đó) và KHÔNG dùng class nav-item (nhiều test lấy .nav-item đầu tiên).
   function renderStructureNav() {
@@ -271,7 +286,7 @@ export function initNavigation(document) {
         button.dataset.structureNav = target
         icon.className = 'nav-icon'
         icon.setAttribute('aria-hidden', 'true')
-        icon.textContent = card.querySelector('.structure-card-icon')?.textContent.trim() ?? ''
+        icon.append(createIcon(document, `icon-structure-${target}`))
         label.className = 'nav-label'
         label.textContent = card.querySelector('.structure-card-title')?.textContent.trim() ?? target
         button.append(icon, label)
