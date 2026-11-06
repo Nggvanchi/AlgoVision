@@ -84,21 +84,15 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
   Cân nhắc thêm subset greek hoặc vẽ ký hiệu bằng SVG/CSS.
 
 ## Dọn dẹp
-- Xóa khối placeholder chết `#category-placeholder` (`public/templates/app.html`, tham chiếu trong `src/navigation.js`, CSS
-  `.category-preview`): không route nào bỏ `hidden` (đã thử 30 lần click mọi nút điều hướng), và `[hidden] { display: none !important }`
-  chặn CSS đè. Sau PR `fix/ui-copy-and-errors` chỉ còn chữ trung tính. Trước khi xóa, kiểm `pages.structures` có dùng
-  `#placeholder-title` / `#placeholder-description` không (hai phần tử này vẫn được `navigation.js` ghi).
-  Test liên quan: `tests/template-stale-copy.test.js` ("khung giới thiệu thư viện cấu trúc không hứa Tree/Graph…") đã chịu được việc
-  vắng `#placeholder-card-description`, nhưng nó vẫn kiểm `#category-placeholder .visualizer-tag` nên nên rà lại khi xóa khối.
 - Đổi tên thuộc tính nội bộ `dequeues`/`dequeuesLabel` trong `src/graph.js` cho khớp `#graph-traversal-count` (không đổi hành vi).
 - Khoảng trắng cuối dòng và newline cuối file chưa khớp `.editorconfig`: thiếu newline cuối ở `src/linked-list.js`,
   `src/structures/linkedList.js`, `tests/linked-list.test.js`; khoảng trắng cuối dòng ở `src/array.js:14`, `src/sorting.js:34`,
-  `tests/navigation.test.js:92`, `public/templates/app.html:78`. Dọn trong một commit riêng để editor không sinh diff lẫn.
+  `tests/navigation.test.js:88`, `public/templates/app.html:78`. Dọn trong một commit riêng để editor không sinh diff lẫn.
 - Gom khoảng 80 hex gần giống nhưng khác giá trị (xám ~#9ca3af/#a1a6b9/#a8aec1/#9da2b6/#969bb0/#b4b9ca; nền ~#141620/#151923/#171923/#171b24/#15151d/#101118; tím nhạt ~#c4b5fd/#c4b5ff/#c5b8ff/#c6b8ff/#c2b0ff/#c8bbff)
   theo từng thành phần ở các PR sau, vì gộp sẽ đổi vài đơn vị màu. Sau Phase 1 còn khoảng 208 hex ngoài `:root`; màu visualization (cột, ô, nút đồ thị, `#22c55e` ×13, `#60a5fa` ×4) giữ nguyên.
 - Chuẩn hóa 17 giá trị `border-radius`, 23 cỡ chữ và 31 giá trị spacing theo token đã định nghĩa (`--radius-*`, `--fs-*`, `--space-*`); mới chỉ các luật của sidebar (Phase 2) dùng token cỡ chữ/spacing/bo góc, phần còn lại của trang chưa áp (test canh gác không cho lan ra).
-- Bốn alias chỉ dùng một chỗ, kèm giá trị dự phòng lỗi thời: `accent-color: var(--accent-color, #6366f1)`, `var(--surface-secondary, #111827)`, `var(--surface-color, #1f2937)`, `var(--panel-bg, rgba(255, 255, 255, 0.03))`.
-  Alias luôn được định nghĩa nên giá trị dự phòng không bao giờ dùng tới; dọn khi động tới các thành phần đó.
+- Còn 22 chỗ dùng `var(--text-secondary|--border-color|--card-background, <giá trị dự phòng>)` (`style.css`): ba alias luôn được định nghĩa trong `:root` nên giá trị dự phòng không bao giờ dùng tới;
+  bỏ được bằng cách như PR `chore/bundle-headroom` (so computed style ở 360px và 1280px). Cùng loại: `.array-panel` và `.array-operation-card` còn `background`/màu viền bị luật `.array-panel, .array-operation-card` ở cuối khối Array ghi đè.
 
 ## Công cụ
 - Cải tiến skill `mutation-test`: `run-isolated.mjs` in tên test đỏ và assert đầu tiên thay vì phụ thuộc chuỗi `--expect` (đã báo
