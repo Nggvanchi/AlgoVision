@@ -18,9 +18,9 @@ pnpm dev                         # chạy thử trên trình duyệt
 Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so với mục này.
 Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
-- Đo 2026-11-05 trên Windows (Node 24.21.0, pnpm 12.5.1).
-- `pnpm test`: 828/828 pass, 0 fail, 0 skipped, 10–25 s tùy tải máy (đo 10,2 s đến 24,3 s; lần gần nhất 16,8 s).
-- `pnpm build`: JS 141,98 kB (gzip 40,98 kB), CSS 44,14 kB (gzip 8,82 kB), HTML 0,63 kB.
+- Đo 2026-11-06 trên Windows (Node 24.21.0, pnpm 12.5.1).
+- `pnpm test`: 958/958 pass, 0 fail, 0 skipped, 10–25 s tùy tải máy (đo 10,2 s đến 24,3 s; lần gần nhất 19,8 s).
+- `pnpm build`: JS 145,26 kB (gzip 42,09 kB), CSS 44,14 kB (gzip 8,82 kB), HTML 0,63 kB.
 
 ## Kiến trúc
 
@@ -38,8 +38,11 @@ Chi tiết từng module (trường bước, công thức số bước, bất bi
 - `src/simulation-controller.js`: bộ điều khiển mô phỏng dùng chung cho Sorting và Searching
   (state `idle | running | paused | completed`, một timer duy nhất, scheduler inject được).
 - `src/pseudocode-view.js`: `renderPseudocode` và `highlightPseudocodeLine`, dùng chung cho Sorting, Searching, BST, Hash Table, Graph.
-- Sự kiện `algovision:viewchange` (`CustomEvent` trên `document`, `detail.page`): `navigation.js` phát khi đổi trang hoặc
-  mở/đóng màn hình chi tiết; visualizer tự `pause()` khi bị ẩn.
+- Sự kiện `algovision:viewchange` (`CustomEvent` trên `document`, `detail: { page, topic }`): `navigation.js` phát khi đổi trang hoặc
+  mở/đóng màn hình chi tiết; visualizer tự `pause()` khi bị ẩn. `topic` là id chủ đề (`sorting:bubble`, `searching:linear`,
+  `structure:bst`) khi mở màn chi tiết, `null` ở dashboard, thư viện và khi bấm Quay lại.
+- Tiến độ học tập: `src/progress-store.js` (lõi thuần + `createProgressStore`, không DOM) và `src/progress-init.js` (`initProgress`, nơi
+  DUY NHẤT chạm `localStorage`) ghi chủ đề đã MỞ vào khóa `algovision:progress`. Chưa có giao diện đọc (để Phase 3b).
 - `navigation.js`: thẻ `data-structure-target="x"` mở `#x-section`; thêm cấu trúc mới không cần sửa navigation.
 - Quy tắc theo loại file nằm ở `.claude/rules/`: `tests.md` (test), `algorithms.md` (mã thuần), `cross-platform.md` (mọi phiên).
 
