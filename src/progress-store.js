@@ -116,11 +116,21 @@ export function createProgressStore({ storage = null, knownTopics = [], now = Da
     }
   }
 
-  function read() {
+  // Trạng thái cho giao diện đọc: dữ liệu (đã lọc theo chủ đề app biết), trạng thái kho, và dữ liệu có được lưu bền không.
+  // persisted = false khi đang hiện bản nhớ của phiên (kho không dùng được, ghi lỗi, hoặc version mới hơn).
+  function readState() {
     const loaded = load()
     const useSession = writeFailed || loaded.status === 'unavailable' || loaded.status === 'future-version'
 
-    return keepKnownTopics(useSession ? session : loaded.progress, known)
+    return {
+      progress: keepKnownTopics(useSession ? session : loaded.progress, known),
+      status: loaded.status,
+      persisted: !useSession,
+    }
+  }
+
+  function read() {
+    return readState().progress
   }
 
   // Mỗi lần mở: đọc lại từ storage rồi ghi (không dùng bản cache), nên hai tab không đè mất lần mở của nhau.
@@ -161,5 +171,5 @@ export function createProgressStore({ storage = null, knownTopics = [], now = Da
     }
   }
 
-  return { read, recordOpen: open, clear }
+  return { read, readState, recordOpen: open, clear }
 }
