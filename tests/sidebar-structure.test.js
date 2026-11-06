@@ -209,6 +209,7 @@ test('nút thu gọn #sidebar-collapse: ở đáy sidebar, mở sẵn, aria-expa
     assert.equal(button.getAttribute('aria-expanded'), 'true')
     assert.equal(button.getAttribute('aria-controls'), 'sidebar')
     assert.equal(button.getAttribute('aria-label'), 'Thu gọn thanh bên')
+    assert.equal(button.querySelector('.sidebar-collapse-icon')?.getAttribute('aria-hidden'), 'true', 'mũi tên chỉ để trang trí: tên nút là aria-label')
     assert.ok(button.closest('.sidebar-footer') !== null, 'nút nằm trong .sidebar-footer ở đáy sidebar')
     assert.ok(button.closest('nav') === null, 'nút thu gọn không phải mục điều hướng')
 

@@ -145,11 +145,11 @@ for (const item of ITEMS) {
       fire('mouseout', 'MouseEvent')
       assert.equal(tooltip.classList.contains('is-visible'), false, 'rời chuột phải ẩn tooltip')
 
-      fire('focusin', 'FocusEvent')
+      element.focus()
       assert.equal(tooltip.classList.contains('is-visible'), true, 'focus bàn phím phải hiện tooltip')
       assert.equal(tooltip.textContent.trim(), label)
 
-      fire('focusout', 'FocusEvent')
+      element.blur()
       assert.equal(tooltip.classList.contains('is-visible'), false)
     })
   })
@@ -387,4 +387,14 @@ test('drawer không đụng tới thu gọn: nút thu gọn giữ trạng thái 
     assert.equal(collapseOf(document).getAttribute('aria-expanded'), 'false')
     assert.equal(document.querySelector('.app-layout').classList.contains('is-sidebar-collapsed'), true)
   }, { mobile: true })
+})
+
+test('src/main.js khởi tạo sidebar: import initSidebar và gọi SAU initNavigation (mục con do navigation sinh), TRƯỚC initProgress', async () => {
+  const source = await readFile(new URL('../src/main.js', import.meta.url), 'utf8')
+  const call = (name) => source.indexOf(`  ${name}(document)`)
+
+  assert.match(source, /import \{ initSidebar \} from '\.\/sidebar\.js'/)
+  assert.ok(call('initNavigation') !== -1 && call('initSidebar') !== -1 && call('initProgress') !== -1, 'thiếu một trong ba lời gọi init')
+  assert.ok(call('initNavigation') < call('initSidebar'), 'initSidebar phải chạy sau initNavigation')
+  assert.ok(call('initSidebar') < call('initProgress'), 'initSidebar nên chạy trước initProgress')
 })

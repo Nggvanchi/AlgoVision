@@ -139,6 +139,7 @@
      .main-content viết SỐ trực tiếp (margin-left 256px, padding 0 40px) vì tests/hash-table-layout.test.js đọc bằng regex;
      tests/sidebar-css.test.js khẳng định hai số khớp token. */
   --sidebar-width: 256px;
+  --sidebar-width-collapsed: 72px;
 
   --bg-sidebar: #0E0E19;
   --surface-raised: #1A1A28;
@@ -164,6 +165,9 @@
 
   /* Bo góc */
   --radius-sm: 8px;
+
+  /* Bóng (tooltip của sidebar thu gọn) */
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35);
 
   /* === TOKEN MỚI, CHƯA ĐƯỢC DÙNG ===
      Chỉ ĐỊNH NGHĨA; chưa luật nào tham chiếu (tests/design-tokens.test.js canh gác). Bảng nền và tím mới tồn tại
@@ -199,7 +203,6 @@
   --radius-pill: 999px;
 
   /* Bóng */
-  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35);
   --glow-purple: 0 0 0 1px rgba(155, 130, 255, 0.35), 0 8px 28px rgba(155, 130, 255, 0.18);
 }
 
@@ -395,6 +398,118 @@ button:disabled {
 .nav-item.active .nav-icon,
 .nav-subitem.active .nav-icon {
   color: var(--purple);
+}
+
+.sidebar-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+.sidebar-collapse {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  font-size: 20px;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.sidebar-collapse:hover {
+  background: var(--surface-raised);
+  color: var(--text);
+}
+
+.sidebar-collapse-icon {
+  display: block;
+  transition: transform 160ms ease;
+}
+
+/* Tooltip tên mục khi sidebar thu gọn: một phần tử dùng chung, vị trí fixed (src/sidebar.js đặt left/top), để vùng cuộn
+   của sidebar không cắt mất. Chỉ là phần phụ: tên truy cập của mục là chữ thật trong .nav-label. */
+.sidebar-tooltip {
+  position: fixed;
+  z-index: 20;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-card);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity 120ms ease, visibility 0s 120ms;
+}
+
+.sidebar-tooltip.is-visible {
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
+}
+
+/* Thu gọn (chỉ màn hình rộng): nhãn ẩn bằng clip kiểu sr-only, KHÔNG display: none, nên tên truy cập, h1 và nhãn nhóm vẫn
+   có trong cây trợ năng. Nhãn nhóm thành đường kẻ. .main-content viết số 72px (cùng giá trị --sidebar-width-collapsed). */
+@media (min-width: 701px) {
+  .app-layout.is-sidebar-collapsed .sidebar {
+    width: var(--sidebar-width-collapsed);
+  }
+
+  .app-layout.is-sidebar-collapsed .main-content {
+    margin-left: 72px;
+  }
+
+  .app-layout.is-sidebar-collapsed .nav-label,
+  .app-layout.is-sidebar-collapsed .brand-text,
+  .app-layout.is-sidebar-collapsed .section-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .app-layout.is-sidebar-collapsed .brand {
+    justify-content: center;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .app-layout.is-sidebar-collapsed .nav-item,
+  .app-layout.is-sidebar-collapsed .nav-subitem {
+    justify-content: center;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .app-layout.is-sidebar-collapsed .nav-sublist {
+    padding-left: 0;
+  }
+
+  .app-layout.is-sidebar-collapsed .nav-list[aria-labelledby] {
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border);
+  }
+
+  .app-layout.is-sidebar-collapsed .sidebar-collapse-icon {
+    transform: rotate(180deg);
+  }
 }
 
 .main-content {

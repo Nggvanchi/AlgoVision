@@ -7,6 +7,7 @@ import { createFakeScheduler } from './fake-scheduler.js'
 export const template = await readFile(new URL('../../public/templates/app.html', import.meta.url), 'utf8')
 
 // options.storage: storage inject cho initProgress (mặc định dùng localStorage của cửa sổ happy-dom).
+// options.matchMedia: matchMedia giả cho initSidebar (xem tests/helpers/fake-media.js).
 export async function withFullApp(run, options = {}) {
   const window = new Window()
   const { document } = window
@@ -21,8 +22,9 @@ export async function withFullApp(run, options = {}) {
   globalThis.window = window
 
   try {
-    const [navigation, progressInit, sorting, searching, array, stack, queue, linkedList, bst, hashTable, graph] = await Promise.all([
+    const [navigation, sidebarModule, progressInit, sorting, searching, array, stack, queue, linkedList, bst, hashTable, graph] = await Promise.all([
       import('../../src/navigation.js'),
+      import('../../src/sidebar.js'),
       import('../../src/progress-init.js'),
       import('../../src/sorting.js'),
       import('../../src/searching.js'),
@@ -36,6 +38,7 @@ export async function withFullApp(run, options = {}) {
     ])
 
     navigation.initNavigation(document)
+    const sidebar = sidebarModule.initSidebar(document, { matchMedia: options.matchMedia })
     const progress = progressInit.initProgress(document, { storage: options.storage })
     sorting.initSorting({ scheduler })
     searching.initSearching({ scheduler })
@@ -47,7 +50,7 @@ export async function withFullApp(run, options = {}) {
     hashTable.initHashTable(document, { scheduler })
     graph.initGraph(document, { scheduler })
 
-    await run({ document, window, scheduler, progress })
+    await run({ document, window, scheduler, progress, sidebar })
   } finally {
     // Dừng mọi timer còn sống để test lỗi không làm treo tiến trình.
     for (const id of ['#reset-sort', '#search-pause', '#graph-pause']) {
