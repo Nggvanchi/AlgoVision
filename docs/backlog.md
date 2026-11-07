@@ -78,7 +78,6 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
   ▶ (thứ tự thăm BFS/DFS, ngăn xếp DFS, nhãn bảng băm) về Segoe UI Symbol. Ký hiệu khác như ≤ ✓ chưa đo trong thành phần font mã. Trên Linux, fallback của `monospace`/`system-ui` chưa kiểm (xem preview Vercel).
   Cân nhắc thêm subset greek hoặc vẽ ký hiệu bằng SVG/CSS.
 
-- Khối "Lộ trình" năm chặng (thiết kế tham chiếu 2g/2h) CHƯA làm ở Phase 3b: không có dữ liệu thật cho "chặng" nên không dựng số liệu giả hay placeholder. Cần định nghĩa chặng (danh sách chủ đề theo thứ tự học) trước.
 - Thư viện (Library) đã làm phần thẻ ở Redesign Phase 4 (tab, ô tìm, bộ lọc, sheet mobile là mục 3c, chưa làm); Visualizer/Structure workspace và token toàn cục (xem mục chuyển `--border`, `--text-muted`, bảng nền ở trên) là các giai đoạn Redesign sau.
 - Tìm kiếm nhanh (Ctrl K) và nhớ trạng thái thu gọn của sidebar giữa các lần mở: chưa làm (trạng thái sidebar hiện chỉ trong bộ nhớ của phiên). Spec v1.0 mục 7 muốn nhớ trạng thái thu gọn: khi làm phải cập nhật `tests/meta/no-web-storage.test.js` cùng PR.
 - Sidebar chưa tự thu gọn ở màn hình tablet (701–1024px): hiện chỉ có hai chế độ, rộng 256px (>= 701px) hoặc drawer (<= 700px).
