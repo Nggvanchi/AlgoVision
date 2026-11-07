@@ -110,6 +110,10 @@ Chi tiết từng module (trường bước, công thức số bước, bất bi
 
 Chạy `/resume-check`.
 
+## Thiết kế UI
+
+Đọc `docs/design/spec.md` (Spec Redesign v1.0, chép từ PDF) và `docs/design/decisions.md` (11 quyết định đã chốt) trước khi sửa UI. Hai quy tắc sản phẩm: (a) không theo dõi tiến độ cá nhân, không thêm lại Tiến độ học tập, nhãn Đã mở hay lịch sử truy cập; (b) không số giả, dữ liệu hiển thị phải là dữ liệu thật hoặc gắn nhãn "Minh họa".
+
 ## Roadmap
 
 `docs/roadmap.md` (chỉ làm giai đoạn mới khi được đồng ý).

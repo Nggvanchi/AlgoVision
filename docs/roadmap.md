@@ -25,6 +25,26 @@ Mỗi giai đoạn một dòng. Chỉ bắt đầu giai đoạn mới khi ngư�
 | — | Redesign Phase 5: khung Visualizer chung cho Sorting và Searching (tiêu đề, thanh điều khiển, thống kê, chú giải, Learning Panel) | Chưa làm (cần trần bundle riêng, duyệt riêng ở bước lập kế hoạch) | — |
 | — | Redesign Phase 6: workspace cấu trúc dữ liệu, chia hai PR: (1) Array, Stack, Queue, Linked List; (2) BST, Hash Table, Graph | Chưa làm (mỗi PR cần trần bundle riêng, duyệt riêng ở bước lập kế hoạch) | — |
 
+## Redesign v1.0 (Spec v1.0)
+
+Hướng thiết kế hiện tại: `docs/design/spec.md`; quyết định đã chốt: `docs/design/decisions.md`. R1 là PR đưa hai tài liệu này và lộ trình vào repo (chỉ docs). Mỗi PR dưới đây một nhánh ngắn từ `main`;
+số PR ghi sau khi tạo PR. Các dòng "Redesign Phase 5" và "Redesign Phase 6" ở bảng trên chưa làm và được lộ trình này thay thế.
+
+| PR | Nhánh gợi ý | Nội dung | Trạng thái | Số PR |
+|---|---|---|---|---|
+| R2 | `feat/design-tokens` | Token `--av-*`, bảng màu, vòng focus `#C4B5FD`, bảng cỡ chữ cơ bản; đổi giá trị toàn cục trong MỘT PR. Đo và đề xuất trần bundle cuối cho cả Redesign | Chưa làm | |
+| R3 | `feat/app-shell` | Nhãn nhóm "Học tập", header breadcrumb theo Spec, điểm gãy 768/1024, tablet rail 72 px; sidebar vẫn 256 px. Phải hỏi người dùng mục "Trực quan hóa" ở gốc trỏ tới đâu trước khi làm | Chưa làm | |
+| R4 | `feat/dashboard-v1` | Dashboard 3 khối: Hero (bảng minh họa gắn nhãn "Minh họa"), Nội dung nổi bật (3 thẻ), Truy cập nhanh; bỏ thẻ "Sẽ phát triển"; kiểm chứng BFS có visualizer thật trước khi đặt thẻ BFS | Chưa làm | |
+| R5a | `feat/library-tabs` | Gộp thành trang Thư viện với 2 tab (Cấu trúc dữ liệu, Giải thuật) | Chưa làm | |
+| R5b | `feat/library-filters` | Ô tìm trong trang, lọc độ khó và độ phức tạp chỉ ở tab thuật toán, chip phân loại; chỉ lọc dữ liệu thẻ thật | Chưa làm | |
+| R5c | `feat/library-cards-v1` | Thẻ thuật toán theo Spec: ký hiệu độ khó, thanh 5 đoạn `aria-hidden` | Chưa làm | |
+| R6 | `feat/visualizer-frame` | Khung Visualizer, điều khiển, tốc độ `radiogroup`, "Bước x/y", panel 3 accordion; thanh trượt bước chỉ khi controller có nhảy bước (bước lập kế hoạch phải kiểm tra) | Chưa làm | |
+| R7 | `chore/a11y-responsive-audit` | Vùng chạm 44 px, focus, `tabindex` vùng cuộn, đo Tab bằng bàn phím thật | Chưa làm | |
+
+Quy tắc cho cả lộ trình:
+- Mỗi PR xin trần bundle riêng ở bước lập kế hoạch, người dùng duyệt trước khi làm. CSS là ràng buộc chính: trần hiện tại JS <= 146,0 kB, CSS <= 49,5 kB (mục Baseline của CLAUDE.md).
+- R2 phải đo và đề xuất trần cuối cho cả Redesign (đề xuất tạm: JS <= 158 kB, CSS <= 56 kB) để người dùng duyệt một lần; các PR sau làm trong trần đó và vẫn báo byte từng commit.
+- Hai quy tắc sản phẩm trong `docs/design/decisions.md` (không theo dõi tiến độ cá nhân; không số giả) áp dụng cho mọi PR ở bảng này.
 Ghi chú:
 - Giai đoạn 1–4 gộp từ lịch sử git: CLAUDE.md và commit không ghi tên riêng từng giai đoạn; mốc duy nhất là
   "Merge PR #2, giai đoạn 4" (bản đầu tiên của CLAUDE.md, commit `718eb96`).
