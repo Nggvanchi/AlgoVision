@@ -94,8 +94,8 @@
 
 :root {
   font-family: var(--font-ui);
-  color: #e8eaf2;
-  background: #0c0d12;
+  color: var(--av-text);
+  background: var(--av-bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -136,36 +136,36 @@
   --av-space-8: 64px;
 
   /* === TOKEN CŨ ===
-     18 token đang dùng, giữ NGUYÊN tên và giá trị (Redesign Phase 1, Phương án A: không đổi diện mạo).
-     Giá trị mới tương ứng chỉ áp ở Phase 2: --border sẽ thành #2A2A3D, --text-muted sẽ thành #9CA2BA. */
-  --background: #0c0d12;
-  --panel: #12141c;
-  --panel-hover: #191b27;
-  --border: #292c3a;
-  --text: #e8eaf2;
-  --muted: #9298ad;
-  --text-muted: var(--muted);
-  --purple: #9b82ff;
-  --purple-dark: #7456e8;
+     Redesign R2: các token cũ thành ALIAS tạm trỏ vào --av-* (nguồn giá trị duy nhất). Mỗi alias có chú thích "tạm, gỡ ở R?":
+     các PR R3-R6 đổi chỗ dùng sang --av-* rồi xóa alias (tests/design-tokens.test.js đếm alias; docs/backlog.md ghi việc gỡ).
+     --purple là ngoại lệ: giữ giá trị riêng #9b82ff CHỈ cho canvas BST/Hash/Graph (Spec không quy định màu canvas), gỡ ở R6. */
+  --background: var(--av-bg); /* tạm, gỡ ở R6 */
+  --panel: var(--av-surface-1); /* tạm, gỡ ở R6 */
+  --panel-hover: var(--av-surface-2); /* tạm, gỡ ở R6 */
+  --border: var(--av-border); /* tạm, gỡ ở R6 */
+  --text: var(--av-text); /* tạm, gỡ ở R6 */
+  --muted: var(--av-text-muted); /* tạm, gỡ ở R6 */
+  --text-muted: var(--muted); /* tạm, gỡ ở R6 */
+  --purple: #9b82ff; /* tạm, gỡ ở R6: chỉ còn canvas BST/Hash/Graph */
+  --purple-dark: var(--av-primary); /* tạm, gỡ ở R6 */
 
-  /* Màu trạng thái "đang xét": cột đang so sánh và dòng mã giả đang thực thi. */
+  /* Màu trạng thái "đang xét": cột đang so sánh và dòng mã giả đang thực thi. Spec không quy định; giữ đến R6. */
   --state-active: #f6c76a;
 
   /* Màu của cue ngoài màu trên cột Sắp xếp (viền dày, nét đứt, viền kép): gần đen, đạt >= 3:1 với mọi màu nền cột. */
   --bar-cue: #0d0f15;
 
-  --border-color: var(--border);
-  --card-background: var(--panel);
-  --text-secondary: var(--muted);
-  --accent-color: var(--purple);
-  --surface-secondary: var(--panel);
-  --surface-color: var(--panel-hover);
-  --panel-bg: var(--panel);
+  --border-color: var(--border); /* tạm, gỡ ở R6 */
+  --card-background: var(--panel); /* tạm, gỡ ở R6 */
+  --text-secondary: var(--muted); /* tạm, gỡ ở R6 */
+  --accent-color: var(--av-primary-text); /* tạm, gỡ ở R6 */
+  --surface-secondary: var(--panel); /* tạm, gỡ ở R6 */
+  --surface-color: var(--panel-hover); /* tạm, gỡ ở R6 */
+  --panel-bg: var(--panel); /* tạm, gỡ ở R6 */
 
   /* === TOKEN MỚI, ĐANG DÙNG ===
      Họ font: --font-ui là font nền của :root; --font-mono dành cho mọi chỗ hiển thị font mã (mã giả, bảng, danh sách).
-     Redesign Phase 2 áp token mới vào sidebar (và nút chính): CHỈ trong luật của sidebar, không lan ra phần còn lại của trang
-     (tests/sidebar-css.test.js canh gác). Token cỡ chữ/spacing/bo góc cũng chỉ dùng trong sidebar. */
+     Token cỡ chữ/spacing/bo góc dưới đây chỉ dùng trong sidebar (tests/sidebar-css.test.js canh gác). */
   --font-ui: 'Be Vietnam Pro', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
@@ -175,25 +175,25 @@
   --sidebar-width: 256px;
   --sidebar-width-collapsed: 72px;
 
-  --bg-sidebar: #111522;
-  --surface-raised: #1C2030;
+  --bg-sidebar: var(--av-sidebar); /* tạm, gỡ ở R3 */
+  --surface-raised: var(--av-surface-2); /* tạm, gỡ ở R3 */
 
-  --text-label: #8B8FA6;
+  --text-label: var(--av-text-subtle); /* tạm, gỡ ở R3 */
 
-  /* Tím: --purple (token cũ) cho chữ nhấn, icon, vạch. KHÔNG đặt chữ trắng lên --purple (2,99:1); chữ trắng chỉ trên
-     --purple-strong, --purple-pressed hoặc --purple-active, chữ tối (--bg) trên --purple. --purple-active (#49318D) là nền pill của mục đang mở
-     (trắng trên đó 9,97:1); --purple-hover (#B09CFF) cho vạch active và icon hover. */
-  --purple-strong: #6D55D9;
-  --purple-pressed: #5B43C7;
-  --purple-active: #49318D;
-  --purple-hover: #B09CFF;
+  /* Tím của sidebar và nút chính. KHÔNG đặt chữ trắng lên --av-primary-line hay --av-primary-text (không đạt 4,5:1 với chữ nhỏ).
+     --purple-active là nền mềm của mục đang mở: rgba(139, 92, 246, 0.18) theo Spec mục 2 (nền mềm nav), chữ --av-nav-active-text.
+     --purple-hover là vạch 3px và icon hover của mục active. */
+  --purple-strong: var(--av-primary); /* tạm, gỡ ở R4 */
+  --purple-pressed: var(--av-primary-hover); /* tạm, gỡ ở R4 */
+  --purple-active: rgba(139, 92, 246, 0.18); /* tạm, gỡ ở R3 */
+  --purple-hover: var(--av-primary-text); /* tạm, gỡ ở R3 */
 
   /* Cỡ chữ */
   --fs-xs: 12px;
   --fs-sm: 13px;
   --fs-md: 14px;
 
-  /* Khoảng cách: bội số của 4px, tên = px / 4 */
+  /* Khoảng cách: bội số của 4px, tên = px / 4. Song song với --av-space-* đến khi R3-R6 chuyển hết (Spec không có 20 và 40). */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -207,42 +207,10 @@
   --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35);
 
   /* === TOKEN MỚI, CHƯA ĐƯỢC DÙNG ===
-     Chỉ ĐỊNH NGHĨA; chưa luật nào tham chiếu (tests/design-tokens.test.js canh gác). Bảng nền và tím mới tồn tại
-     SONG SONG với token cũ ở trên, chưa thay thế chúng: --bg ứng với --background, --surface với --panel, --surface-raised
-     với --panel-hover, --purple-strong với --purple-dark. */
-  --bg: #0B0B14;
-  --surface: #151722;
-
-  --purple-soft: #B9A8FF;
-  --purple-tint: #272645; /* --purple 16% trên --bg-sidebar; không còn dùng cho mục active (Redesign Phase 2b) */
-  /* Violet: CHỈ cho icon, viền, chữ lớn. Chữ nhỏ trên --surface chỉ 4,21:1 và chữ trắng trên --violet chỉ 4,23:1 (< 4,5). */
-  --violet: #8B5CF6;
-
-  --blue: #60A5FA;
-  --success: #22C55E;
-
-  /* Viền của điều khiển (ô nhập, nút): đạt 3:1 trên nền. --border (token cũ) chỉ để trang trí. */
+     Chỉ ĐỊNH NGHĨA; chưa luật nào tham chiếu (tests/design-tokens.test.js canh gác). */
+  /* Viền của điều khiển (ô nhập, nút): đạt 3:1 trên nền (quyết định 9 và 12: giữ nguyên, KHÔNG dùng --av-border-strong #2E2E44
+     chỉ 1,41:1). --border (token cũ) chỉ để trang trí. Chưa luật nào dùng: ô nhập/select hiện viết màu cứng (xem docs/backlog.md). */
   --border-control: #6B6B87;
-
-  /* Cỡ chữ */
-  --fs-base: 16px;
-  --fs-lg: 20px;
-  --fs-xl: 24px;
-  --fs-display: clamp(30px, 4vw, 44px);
-
-  /* Khoảng cách */
-  --space-5: 20px;
-  --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
-
-  /* Bo góc */
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-pill: 999px;
-
-  /* Bóng */
-  --glow-purple: 0 0 0 1px rgba(155, 130, 255, 0.35), 0 8px 28px rgba(155, 130, 255, 0.18);
 }
 
 * {
@@ -260,8 +228,8 @@ button {
 }
 
 button:focus-visible {
-  outline: 2px solid var(--purple);
-  outline-offset: 3px;
+  outline: 2px solid var(--av-focus);
+  outline-offset: 2px;
 }
 
 button:disabled {
@@ -303,7 +271,7 @@ button:disabled {
   width: 42px;
   height: 42px;
   place-items: center;
-  color: var(--purple);
+  color: var(--av-primary-text);
 }
 
 .brand-icon svg {
@@ -427,7 +395,7 @@ button:disabled {
   border-radius: var(--radius-sm);
   background: var(--purple-active);
   box-shadow: inset 3px 0 0 var(--purple-hover);
-  color: #fff;
+  color: var(--av-nav-active-text);
   font-weight: 600;
 }
 
@@ -644,7 +612,7 @@ button:disabled {
 }
 
 .skip-link:focus {
-  outline: 2px solid var(--purple);
+  outline: 2px solid var(--av-focus);
   outline-offset: 2px;
   transform: translateY(0);
 }
@@ -686,7 +654,7 @@ button:disabled {
 
 .eyebrow {
   margin: 0 0 13px;
-  color: var(--purple);
+  color: var(--av-primary-text);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 2px;
@@ -776,7 +744,7 @@ button.structure-card:hover {
 }
 
 .algorithm-card.selected {
-  border-color: var(--purple);
+  border-color: var(--av-primary-line);
   background: linear-gradient(145deg, #1a1729, var(--panel) 75%);
   box-shadow: inset 0 0 0 1px #9177f01a;
 }
@@ -862,7 +830,7 @@ button.structure-card:hover {
   margin-top: 12px;
 }
 .card-link {
-  color: var(--purple);
+  color: var(--av-primary-text);
   font-weight: 600;
 }
 
@@ -1967,8 +1935,8 @@ button.structure-card:hover {
 }
 
 .control-button:focus-visible {
-  outline: 2px solid #93c5fd;
-  outline-offset: 3px;
+  outline: 2px solid var(--av-focus);
+  outline-offset: 2px;
 }
 
 .array-panel-heading .control-button {
@@ -1988,7 +1956,7 @@ button.structure-card:hover {
 
 .array-cell:hover {
   background: #201d30;
-  border-color: var(--purple);
+  border-color: var(--av-primary-line);
 }
 
 .array-cell-index {
@@ -1996,17 +1964,17 @@ button.structure-card:hover {
 }
 
 .array-operation-card input:focus {
-  border-color: var(--purple);
+  border-color: var(--av-primary-line);
   box-shadow: 0 0 0 3px #9b82ff26;
 }
 
 .array-operation-card .control-button {
   background: var(--purple-dark);
-  border-color: var(--purple);
+  border-color: var(--av-primary-line);
 }
 
 .array-operation-card .control-button:hover {
-  background: var(--purple);
+  background: var(--av-primary-hover);
 }
 
 [hidden] {
@@ -2086,7 +2054,7 @@ button.structure-card:hover {
 
 .stack-cell.is-top {
   background: #211b38;
-  border-color: var(--purple);
+  border-color: var(--av-primary-line);
   box-shadow: 0 0 0 1px #9b82ff26;
 }
 
@@ -2180,8 +2148,8 @@ button.structure-card:hover {
 
 button.structure-card:focus-visible,
 .back-button:focus-visible {
-  outline: 2px solid var(--purple);
-  outline-offset: 3px;
+  outline: 2px solid var(--av-focus);
+  outline-offset: 2px;
 }
 
 @media (max-width: 700px) {
@@ -2459,7 +2427,7 @@ button.structure-card:focus-visible,
 .learning-heading .section-eyebrow {
   display: inline-block;
   margin-bottom: 8px;
-  color: var(--purple);
+  color: var(--av-primary-text);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.2px;
@@ -2578,7 +2546,7 @@ button.structure-card:focus-visible,
 }
 
 .back-button:hover {
-  border-color: var(--purple);
+  border-color: var(--av-primary-line);
   background: var(--panel-hover);
   color: var(--text);
 }
@@ -2668,7 +2636,7 @@ button.dashboard-card {
 }
 
 button.dashboard-card:hover {
-  border-color: var(--purple);
+  border-color: var(--av-primary-line);
   background: var(--panel-hover);
   transform: translateY(-3px);
 }
@@ -2681,7 +2649,7 @@ button.dashboard-card:hover {
   border: 1px solid var(--border);
   border-radius: 12px;
   background: rgba(139, 92, 246, 0.12);
-  color: var(--purple);
+  color: var(--av-primary-text);
   font-size: 22px;
 }
 
@@ -2698,7 +2666,7 @@ button.dashboard-card:hover {
 
 .dashboard-card-link {
   margin-top: 4px;
-  color: var(--purple);
+  color: var(--av-primary-text);
   font-size: 14px;
   font-weight: 600;
 }

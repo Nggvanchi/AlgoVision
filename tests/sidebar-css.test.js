@@ -49,7 +49,19 @@ function colorOf(expression) {
   const text = clean(expression)
   const reference = /^var\((--[a-z0-9-]+)\)$/i.exec(text)
 
-  if (reference) return resolveToken(reference[1])
+  if (reference) {
+    const value = resolveToken(reference[1])
+    const translucent = /^rgba\(\s*(\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/i.exec(value)
+
+    // Nền mềm của mục active (--purple-active, Spec mục 2: rgba) hiện ra trên nền sidebar: tính màu sau khi trộn.
+    if (translucent) {
+      const [red, green, blue] = translucent.slice(1, 4).map(Number)
+      const hex = `#${[red, green, blue].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`
+      return blend(hex, Number(translucent[4]), resolveToken('--bg-sidebar'))
+    }
+
+    return value
+  }
   if (text === 'white') return '#ffffff'
 
   assert.match(text, /^#[0-9a-f]{3,6}$/i, `không giải được màu từ "${expression}"`)
@@ -210,17 +222,17 @@ test('cỡ chữ của nhãn nhóm, mục, mục con, nhãn mục >= 12px ở M�
   assert.ok(pxOf(requireValue('.section-label', 'font-size')) >= 12)
 })
 
-test('logo .brand-icon: icon lưới nét mảnh màu --purple, KHÔNG nền đặc và không đổ bóng (theo ảnh tham chiếu)', () => {
-  assert.equal(requireValue('.brand-icon', 'color'), 'var(--purple)')
+test('logo .brand-icon: icon lưới nét mảnh màu --av-primary-text, KHÔNG nền đặc và không đổ bóng (theo ảnh tham chiếu)', () => {
+  assert.equal(requireValue('.brand-icon', 'color'), 'var(--av-primary-text)')
   assert.ok([undefined, 'none', 'transparent'].includes(valueOf('.brand-icon', 'background')), `background = ${valueOf('.brand-icon', 'background')}`)
   assert.equal(valueOf('.brand-icon', 'box-shadow'), undefined)
-  assert.ok(ratio('var(--purple)', SIDEBAR_BG) >= 4.5)
+  assert.ok(ratio('var(--av-primary-text)', SIDEBAR_BG) >= 4.5)
 })
 
-test('mục active dùng chữ trắng (9,97:1 trên --purple-active), không chỉ "vừa đủ 4,5"', () => {
-  assert.equal(requireValue('.nav-item.active', 'color'), '#fff')
-  assert.equal(requireValue('.nav-subitem.active', 'color'), '#fff')
-  assert.ok(ratio('#fff', 'var(--purple-active)') >= 9.9)
+test('mục active dùng chữ --av-nav-active-text (Spec; 11,51:1 trên nền pill --purple-active), không chỉ "vừa đủ 4,5"', () => {
+  assert.equal(requireValue('.nav-item.active', 'color'), 'var(--av-nav-active-text)')
+  assert.equal(requireValue('.nav-subitem.active', 'color'), 'var(--av-nav-active-text)')
+  assert.ok(ratio('var(--av-nav-active-text)', 'var(--purple-active)') >= 9.9)
 })
 
 test('.sidebar rộng đúng var(--sidebar-width) (không gõ chết số), nên đổi token là đổi cả sidebar lẫn bài kiểm bề rộng', () => {
