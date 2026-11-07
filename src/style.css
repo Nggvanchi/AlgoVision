@@ -711,13 +711,15 @@ button:disabled {
   white-space: nowrap;
 }
 
-.algorithm-grid {
+.algorithm-grid,
+.structure-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
 
-.algorithm-card {
+.algorithm-card,
+button.structure-card {
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -732,7 +734,8 @@ button:disabled {
     background 160ms ease, box-shadow 160ms ease;
 }
 
-.algorithm-card:hover {
+.algorithm-card:hover,
+button.structure-card:hover {
   transform: translateY(-2px);
   border-color: #5c527f;
   background: var(--panel-hover);
@@ -752,7 +755,8 @@ button:disabled {
   margin-bottom: 16px;
 }
 
-.algorithm-symbol {
+.algorithm-symbol,
+.structure-card-icon {
   display: grid;
   width: 34px;
   height: 34px;
@@ -781,14 +785,16 @@ button:disabled {
   color: #edc17a;
 }
 
-.algorithm-card h4 {
+.algorithm-card h4,
+.structure-card-title {
   margin: 0;
   color: #f1effb;
   font-size: 16px;
   font-weight: 600;
 }
 
-.algorithm-card > p {
+.algorithm-card > p,
+.structure-card-description {
   flex: 1;
   margin: 8px 0 16px;
   color: var(--muted);
@@ -818,7 +824,7 @@ button:disabled {
   font-family: var(--font-mono);
 }
 
-.card-status {
+.card-footer + .card-status {
   margin-top: 12px;
 }
 
@@ -2129,43 +2135,15 @@ button:disabled {
     flex-direction: column;
   }
 }
-/* Structure Library */
+/* Structure Library: chung khung với thẻ thuật toán (.algorithm-card), chỉ khác lưới 2 cột và biểu tượng */
 
 .structure-grid {
-  display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-  margin-top: 24px;
 }
 
-.structure-card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  min-width: 0;
-  padding: 24px;
-  color: var(--text);
-  text-align: left;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-}
-
-button.structure-card {
-  width: 100%;
-  cursor: pointer;
-  font: inherit;
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease,
-    background 0.2s ease;
-}
-
-button.structure-card:hover {
-  transform: translateY(-3px);
-  background: var(--panel-hover);
-  border-color: var(--purple);
+.structure-card-icon {
+  align-self: flex-start;
+  margin-bottom: 16px;
 }
 
 button.structure-card:focus-visible,
@@ -2174,43 +2152,9 @@ button.structure-card:focus-visible,
   outline-offset: 3px;
 }
 
-.structure-card-icon {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  color: #c4b5ff;
-  background: #211b38;
-  border-radius: 12px;
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.structure-card-title {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.structure-card-description {
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.7;
-}
-
-.structure-card-link {
-  margin-top: 8px;
-  color: var(--purple);
-  font-size: 13px;
-  font-weight: 600;
-}
-
-@media (max-width: 600px) {
+@media (max-width: 700px) {
   .structure-grid {
     grid-template-columns: 1fr;
-  }
-
-  .structure-card {
-    padding: 20px;
   }
 }
 
