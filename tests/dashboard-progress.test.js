@@ -12,9 +12,9 @@ import { initDashboardProgress } from '../src/dashboard-progress.js'
 // Không có nút xóa ở đây (xóa chỉ nằm ở trang Tiến độ).
 const KEY = 'algovision:progress'
 const FORBIDDEN = /hoàn thành|completed|streak|chuỗi ngày|thời gian học|%/i
-const T1 = Date.UTC(2026, 5, 1, 8, 30)
-const T2 = Date.UTC(2026, 5, 3, 21, 5)
-const T3 = Date.UTC(2026, 5, 4, 7, 0)
+const T1 = Date.UTC(2020, 5, 1, 8, 30)
+const T2 = Date.UTC(2020, 5, 3, 21, 5)
+const T3 = Date.UTC(2020, 5, 4, 7, 0)
 
 const entry = (firstOpenedAt, lastOpenedAt, openCount) => ({ firstOpenedAt, lastOpenedAt, openCount })
 const seed = (topics) => memoryStorage({ initial: JSON.stringify({ version: 1, topics }) })
@@ -66,6 +66,7 @@ test('mẫu và mã của khối Dashboard không có chữ cấm; mã không ch
   const source = await readFile(new URL('../src/dashboard-progress.js', import.meta.url), 'utf8')
   const block = template.slice(template.indexOf('class="dashboard-progress"'), template.indexOf('id="progress-section"'))
 
+  assert.ok(block.includes('TIẾN ĐỘ HỌC TẬP') && block.length > 200, 'đoạn template lấy được không rỗng')
   assert.doesNotMatch(source, FORBIDDEN)
   assert.doesNotMatch(block, FORBIDDEN)
   assert.doesNotMatch(source.replace(/^\s*\/\/.*$/gm, ''), /localStorage|sessionStorage|innerHTML|insertAdjacentHTML|\bstorage\b/)

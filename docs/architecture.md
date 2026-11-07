@@ -252,7 +252,7 @@ còn `null` nên không đếm đôi. Màn chi tiết Sắp xếp không có b�
   (`data-dashboard-target="progress"`). Nút hero giữ `data-dashboard-target="sorting"` và class `dashboard-primary-button`; nhãn nằm trong `#dashboard-hero-label`: người mới "Bắt đầu với Bubble Sort", người đã mở "Tiếp tục: <chủ đề mở gần nhất>",
   bấm thì mở chủ đề đó (điều hướng cũ chạy trước và về thư viện Sắp xếp rồi mới mở thẳng chủ đề). Vẽ lại khi `subscribe` báo và khi `viewchange` về `dashboard`.
 - Test: `tests/progress-navigation.test.js`, `progress-view.test.js`, `dashboard-progress.test.js`, `progress-init.test.js` (subscribe, catalog); `tests/meta/progress-storage-boundary.test.js` cũng canh `progress-view.js`.
-  Mã của `progress-view.js` được viết trước, test viết sau; bằng chứng là mutation (35 mutation: 34 bị bắt, 1 là nhánh thừa đã bỏ); `dashboard-progress.js` làm theo TDD và mutation 19/19.
+  Mã của `progress-view.js` được viết trước, test viết sau; bằng chứng là mutation (sau commit sửa lỗi review: 41 mutation, tất cả bị bắt; một mutation ban đầu là nhánh `unavailable` thừa đã bỏ); `dashboard-progress.js` làm theo TDD và mutation 19/19.
 
 Chưa xác minh trên trình duyệt thật: test chạy bằng happy-dom (xem `docs/backlog.md`).
 

@@ -163,12 +163,14 @@ function buildStats(document, summary, now) {
   const cells = [
     ['Đã mở', `${summary.opened} / ${summary.total} chủ đề`],
     ['Tổng lượt mở', String(summary.totalOpens)],
-    ['Mở gần nhất', summary.lastOpenedAt === null ? 'Chưa có' : formatOpenedAt(summary.lastOpenedAt, { now })],
+    ['Mở gần nhất', summary.lastOpenedAt === null ? 'Chưa có' : timeNode(document, summary.lastOpenedAt, now)],
   ]
 
   cells.forEach(([label, value], index) => {
     const cell = make(document, 'li', 'dashboard-card progress-stat')
-    const text = make(document, 'strong', 'progress-stat-value', value)
+    const text = typeof value === 'string' ? make(document, 'strong', 'progress-stat-value', value) : value
+
+    text.className = 'progress-stat-value'
 
     if (index === 0) {
       cell.tabIndex = -1
@@ -217,7 +219,10 @@ export function initProgressView(document, progress, { now = Date.now } = {}) {
 
   function finishClear(cleared, doneText) {
     status.textContent = cleared ? doneText : CLEAR_FAILED
-    data.querySelector('[data-progress-summary]')?.focus()
+    // Xóa dữ liệu của phiên bản mới hơn thất bại: không có ô tóm tắt, focus về chính nút đó thay vì rơi về <body>.
+    const target = data.querySelector('[data-progress-summary]') ?? futureButton
+
+    target.focus()
   }
 
   // Hai đường xóa dùng cùng khung xác nhận nhưng không lẫn nhau: đường thường từ chối khi kho đang giữ dữ liệu của phiên bản mới
@@ -230,7 +235,11 @@ export function initProgressView(document, progress, { now = Date.now } = {}) {
     message: `${message} ${irreversible}`,
     confirmLabel: 'Xóa',
     onConfirm() {
-      if ((progress.readState().status === 'future-version') !== future) return render()
+      if ((progress.readState().status === 'future-version') !== future) {
+        status.textContent = 'Dữ liệu đã thay đổi ở tab khác nên chưa xóa gì.'
+
+        return render()
+      }
 
       finishClear(progress.clear(), doneText)
     },

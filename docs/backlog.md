@@ -37,7 +37,7 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Thanh cuộn mảnh và tối mới có ở `.sidebar-scroll` (`scrollbar-width`/`scrollbar-color`, PR #25); các vùng cuộn khác của app (mã giả, khung vẽ BST/Hash/Graph, bảng) vẫn dùng thanh cuộn mặc định sáng trên nền tối.
 - Nhãn "Tất cả cấu trúc" (sidebar) khác tiêu đề trang "Cấu trúc dữ liệu" (h2 của thư viện); thống nhất cách gọi.
 - Nút menu ☰ không đổi thành ✕ khi drawer mở; drawer không đổ bóng; tooltip và mũi tên nút thu gọn không có hiệu ứng mờ/xoay. Cắt để CSS vào ngưỡng của Phase 2; thêm lại khi CSS còn chỗ.
-- Ngưỡng dung lượng bundle: sau Phase 3b chỉ dư JS 128 B (158.872 B so với ngưỡng 159 kB) và CSS 235 B (52.765 B so với ngưỡng 53 kB). PR sau phải xem lại ngưỡng có chủ ý (nâng ngưỡng có lý do, hoặc cắt mã thừa) thay vì lặng lẽ vượt.
+- Ngưỡng dung lượng bundle: sau Phase 3b chỉ dư JS 493 B (159.007 B so với ngưỡng 159,5 kB) và CSS 235 B (52.765 B so với ngưỡng 53 kB). PR sau phải xem lại ngưỡng có chủ ý (nâng ngưỡng có lý do, hoặc cắt mã thừa) thay vì lặng lẽ vượt.
   Nơi có thể cắt: chuỗi tiếng Việt lặp, ba khối `progress-*` CSS dùng chung, `progress-summary.js`.
 - Nâng viền ô nhập lên `--border-control` (đã có ở mục viền ô nhập 1,33:1 phía trên): làm ở PR Visualizer/Structure workspace, không ở sidebar.
 - Chưa kiểm sidebar trên thiết bị di động thật (`100dvh`, thanh địa chỉ co giãn, chạm), trình đọc màn hình thật (CDP không liệt kê `aria-current` trong cây trợ năng), Firefox/Safari (`inert`, `:focus-visible`) và preview Vercel.

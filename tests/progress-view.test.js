@@ -12,9 +12,9 @@ import { formatOpenedAt, isoTimestamp } from '../src/progress-summary.js'
 // navigation.js, hai đường xóa dùng chung một khung xác nhận nhưng không lẫn nhau.
 const KEY = 'algovision:progress'
 const FORBIDDEN = /hoàn thành|completed|streak|chuỗi ngày|thời gian học|%/i
-const T1 = Date.UTC(2026, 5, 1, 8, 30)
-const T2 = Date.UTC(2026, 5, 3, 21, 5)
-const T3 = Date.UTC(2026, 5, 4, 7, 0)
+const T1 = Date.UTC(2020, 5, 1, 8, 30)
+const T2 = Date.UTC(2020, 5, 3, 21, 5)
+const T3 = Date.UTC(2020, 5, 4, 7, 0)
 
 const entry = (firstOpenedAt, lastOpenedAt, openCount) => ({ firstOpenedAt, lastOpenedAt, openCount })
 const seed = (topics) => memoryStorage({ initial: JSON.stringify({ version: 1, topics }) })
@@ -219,6 +219,7 @@ test('mã và template của trang Tiến độ không có chữ cấm', async (
   const source = await readFile(new URL('../src/progress-view.js', import.meta.url), 'utf8')
   const section = template.slice(template.indexOf('id="progress-section"'), template.indexOf('class="page-heading"'))
 
+  assert.ok(section.includes('Tiến độ học tập') && section.length > 200, 'đoạn template lấy được không rỗng')
   assert.doesNotMatch(source, FORBIDDEN)
   assert.doesNotMatch(section, FORBIDDEN)
   const code = source.replace(/^\s*\/\/.*$/gm, '')
@@ -399,6 +400,7 @@ test('hai đường xóa không lẫn nhau: khung thường mở rồi kho đổ
     $(document, '#progress-confirm-clear .progress-danger').click()
 
     assert.equal(storage.data.get(KEY), FUTURE, 'dữ liệu của phiên bản mới hơn không được bị đường xóa thường xóa')
+    assert.equal(textOf($(document, '#progress-status')), 'Dữ liệu đã thay đổi ở tab khác nên chưa xóa gì.')
     assert.equal($(document, '#progress-clear-future').hidden, false)
   }, { storage })
 })
@@ -416,6 +418,25 @@ test('hai đường xóa không lẫn nhau: khung phiên bản mới hơn mở r
     $(document, '#progress-confirm-future .progress-danger').click()
 
     assert.equal(storage.data.get(KEY), normal)
+    assert.equal(textOf($(document, '#progress-status')), 'Dữ liệu đã thay đổi ở tab khác nên chưa xóa gì.')
+  }, { storage })
+})
+
+test('xóa dữ liệu phiên bản mới hơn thất bại (removeItem ném): thông báo lỗi và focus về chính nút đó, không rơi về <body>', async () => {
+  const storage = memoryStorage({ initial: FUTURE, failRemove: true })
+
+  await run(({ document }) => {
+    openProgressPage(document)
+    $(document, '#progress-clear-future').click()
+    $(document, '#progress-confirm-future .progress-danger').click()
+
+    assert.equal(
+      textOf($(document, '#progress-status')),
+      'Không xóa được dữ liệu khỏi trình duyệt. Lịch sử trong phiên này đã được làm mới.',
+    )
+    assert.ok(document.activeElement !== document.body, 'focus không được rơi về <body>')
+    assert.ok(document.activeElement === $(document, '#progress-clear-future'), 'focus về nút xóa dữ liệu phiên bản mới hơn')
+    assert.equal(storage.data.get(KEY), FUTURE)
   }, { storage })
 })
 
@@ -580,4 +601,58 @@ test('"Mở lại" ở hàng Mở gần đây cũng hoạt động và chỉ đ�
     assert.equal(stored(storage).topics['structure:bst'].openCount, 2)
     assert.equal($(document, '#bst-section').hidden, false)
   }, { storage })
+})
+
+// --- "Mở lại" cho cả 12 chủ đề của catalog (bảng id -> màn chi tiết) ---
+
+const DETAIL_SECTION = (id) => {
+  const [kind, name] = id.split(':')
+
+  return kind === 'sorting' ? '#sorting-section' : kind === 'searching' ? '#search-section' : `#${name}-section`
+}
+const ALL_TOPICS = [
+  'sorting:bubble', 'sorting:selection', 'sorting:insertion',
+  'searching:linear', 'searching:binary',
+  'structure:array', 'structure:stack', 'structure:queue', 'structure:linked-list',
+  'structure:bst', 'structure:hash-table', 'structure:graph',
+]
+
+for (const id of ALL_TOPICS) {
+  test(`Mở lại ${id}: đúng màn chi tiết (breadcrumb khớp nhãn), openCount thành 2, đúng một lần ghi`, async () => {
+    const storage = seed({ [id]: entry(1000, 2000, 1) })
+
+    await run(({ document, progress }) => {
+      openProgressPage(document)
+
+      const label = progress.catalog.find((topic) => topic.id === id).label
+      const button = $(document, `#progress-data .progress-group .progress-reopen[aria-label="Mở lại ${label}"]`)
+
+      assert.ok(button !== null, `phải có nút Mở lại ${label}`)
+      button.click()
+
+      assert.equal($(document, DETAIL_SECTION(id)).hidden, false, `màn ${DETAIL_SECTION(id)} phải hiện`)
+      assert.equal(textOf($(document, '.topbar .breadcrumb li:last-child')), label, 'breadcrumb nói đúng chủ đề vừa mở')
+      assert.equal(stored(storage).topics[id].openCount, 2)
+      assert.equal(Object.keys(stored(storage).topics).length, 1, 'không chủ đề nào khác bị ghi')
+      assert.equal(storage.setCalls, 1)
+    }, { storage })
+  })
+}
+
+test('ô "Mở gần nhất" dùng <time datetime> như các hàng; "Chưa có" khi trống', async () => {
+  await run(({ document }) => {
+    openProgressPage(document)
+
+    const time = $(document, '#progress-data .progress-stat:nth-child(3) time')
+
+    assert.equal(time.getAttribute('datetime'), isoTimestamp(T3))
+    assert.equal(textOf(time), formatOpenedAt(T3))
+  }, { storage: seed(SEEDED) })
+
+  await run(({ document }) => {
+    openProgressPage(document)
+
+    assert.ok($(document, '#progress-data .progress-stat:nth-child(3) time') === null, 'chưa có lần mở nào thì không có <time>')
+    assert.equal(stats(document)[2], 'Mở gần nhất Chưa có')
+  })
 })
