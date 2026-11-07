@@ -18,13 +18,12 @@ pnpm dev                         # chạy thử trên trình duyệt
 Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so với mục này.
 Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
-- Đo 2026-11-07 trên Ubuntu/Linux x64 (Node v26.13.0, pnpm 12.16.1).
-- `pnpm test`: 1504/1504 pass, 0 fail, 0 skipped, 16–23 s tùy tải máy (đo 16,2 s đến 22,8 s; Windows trước đây 10–30 s).
-- `pnpm build`: JS 159,01 kB (159.007 B; gzip 46,38 kB), CSS 52,83 kB (52.825 B; gzip 10,34 kB), HTML 0,75 kB (746 B).
-  Ngưỡng của Redesign Phase 3b (số đo thật làm tròn lên 0,5 kB gần nhất; nằm dưới trần đã duyệt riêng cho PR này là JS 160 kB / gzip 47 kB
-  và CSS 54,5 kB / gzip 11,2 kB): JS <= 159,5 kB (gzip <= 46,5), CSS <= 53 kB (gzip <= 10,5). JS dư 493 B, CSS dư 175 B: PR sau phải xem lại ngưỡng có chủ ý (`docs/backlog.md`).
-  Phase 3b vượt ngưỡng cũ của Phase 2 (JS 150 kB, CSS 51,5 kB) vì thêm giao diện đọc tiến độ (trang Tiến độ và khối Dashboard); trước đó PR `chore/bundle-headroom` gỡ mã chết
-  (JS -542 B, CSS -1.282 B) và ghi nhận JS gzip trên `main` đã vượt ngưỡng cũ 43,5 kB (43,54 kB).
+- Đo 2026-11-07 trên Windows 11 x64 (Node v24.21.0, pnpm 12.5.1). Baseline trước Phase 4 đo trên Ubuntu/Linux x64 (Node v26.13.0, pnpm 12.16.1).
+- `pnpm test`: 1555/1555 pass, 0 fail, 0 skipped, 44,8 s và 47,0 s (hai lần đo trên Windows; Ubuntu trước đây 16–23 s, Windows trước đây 10–30 s).
+- `pnpm build`: JS 159,52 kB (159.523 B; gzip 46,56 kB), CSS 52,22 kB (52.216 B; gzip 10,28 kB), HTML 0,75 kB (746 B).
+  Ngưỡng của Redesign Phase 4 (số đo thật của `vite build` làm tròn lên 0,5 kB gần nhất): JS <= 160 kB (gzip <= 47,0), CSS <= 52,5 kB (gzip <= 10,5).
+  JS dư 477 B, CSS dư 284 B. Đã duyệt trước: JS nâng từ 159,5 lên 160 kB và gzip từ 46,5 lên 47,0 kB; CSS thắt từ 53 xuống 52,5 kB (Phase 4 gom CSS thẻ cấu trúc vào luật thẻ thuật toán nên CSS giảm 609 B so với Phase 3b).
+  Trần riêng của PR Phase 4 (JS 160 kB / gzip 46,9 kB; CSS 56 kB / gzip 11,0 kB) hết hiệu lực khi PR merge. Phase 5 và 6 mỗi phase cần trần riêng, duyệt ở bước lập kế hoạch; không nâng ngưỡng khi chưa được duyệt.
 - Font tự host: `public/fonts` có 10 woff2 = 172.912 B (ngưỡng 175 kB) và 2 giấy phép OFL; không nằm trong bundle JS/CSS.
 
 ## Kiến trúc
@@ -35,7 +34,7 @@ Chi tiết từng module (trường bước, công thức số bước, bất bi
 - `index.html` chỉ có `#app`; `src/main.js` gọi `bootApp` (`src/bootstrap.js`): fetch `public/templates/app.html`, dựng vào `#app`, rồi mới gọi
   các hàm `init*` (`startApp`). Fetch lỗi (reject, HTTP lỗi, đọc nội dung lỗi) thì hiện màn hình `role="alert"` có nút "Thử lại" và không gọi `init*`;
   lỗi của chính `init*` không bị bắt.
-- Module UI: `navigation.js`, `sidebar.js`, `progress-view.js`, `dashboard-progress.js`, `sorting.js`, `searching.js`, `array.js`, `stack.js`, `queue.js`, `linked-list.js`,
+- Module UI: `navigation.js`, `sidebar.js`, `progress-view.js`, `dashboard-progress.js`, `library-status.js`, `sorting.js`, `searching.js`, `array.js`, `stack.js`, `queue.js`, `linked-list.js`,
   `bst.js`, `hash-table.js`, `graph.js`. Array, Stack, Queue, Linked List là module cũ, không có hàm sinh bước.
 - Các lớp của một module mới (BST, Hash Table, Graph): cấu trúc thuần `src/structures/*` → sinh bước `src/algorithms/*`
   → bố cục `src/*-layout.js` → view → controller `init*(document, { scheduler })` → template.
