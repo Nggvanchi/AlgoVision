@@ -24,7 +24,17 @@ function resolve(name, seen = new Set()) {
   const alias = /^var\((--[a-z0-9-]+)\)$/i.exec(value)
   return alias ? resolve(alias[1], seen) : value
 }
-const colorOf = (reference) => (reference.startsWith('#') ? reference : resolve(reference))
+// '--purple-active' là rgba (nền mềm Spec): tính màu hiện ra khi trộn lên nền sidebar. Còn lại: #hex hoặc token giải ra #hex.
+function colorOf(reference) {
+  if (reference.startsWith('#')) return reference
+
+  const value = resolve(reference)
+  const translucent = /^rgba\(\s*(\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/i.exec(value)
+  if (!translucent) return value
+
+  const hex = `#${translucent.slice(1, 4).map((channel) => Number(channel).toString(16).padStart(2, '0')).join('')}`
+  return blend(hex, Number(translucent[4]), resolve('--av-sidebar'))
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Helper tương phản (tests/helpers/contrast.js): helper mới phải có test, kể cả test âm
@@ -89,17 +99,35 @@ test('countVarUses đếm var(--ten) và không đếm tên khác có chung ti�
 // Hợp đồng token
 // ---------------------------------------------------------------------------------------------------------------------
 
-const NEW_COLORS = [
-  ['--bg', '#0B0B14'], ['--bg-sidebar', '#111522'], ['--surface', '#151722'], ['--surface-raised', '#1C2030'],
-  ['--text-label', '#8B8FA6'], ['--purple-strong', '#6D55D9'], ['--purple-pressed', '#5B43C7'], ['--purple-soft', '#B9A8FF'],
-  ['--purple-tint', '#272645'], ['--blue', '#60A5FA'], ['--success', '#22C55E'], ['--border-control', '#6B6B87'],
-  ['--purple-active', '#49318D'], ['--purple-hover', '#B09CFF'], ['--violet', '#8B5CF6'],
+// Redesign R2: token Phase 1/2 thành alias trỏ vào --av-* (nguồn giá trị là khối --av-*, tests/av-tokens.test.js). Test đọc giá trị
+// từ CSS: alias phải đúng là var(--av-x) và giải ra đúng giá trị của --av-x.
+const NEW_ALIASES = [
+  ['--bg-sidebar', '--av-sidebar'], ['--surface-raised', '--av-surface-2'], ['--text-label', '--av-text-subtle'],
+  ['--purple-strong', '--av-primary'], ['--purple-pressed', '--av-primary-hover'], ['--purple-hover', '--av-primary-text'],
 ]
 
-for (const [name, value] of NEW_COLORS) {
-  test(`token mới ${name} = ${value}`, () => {
-    assert.ok(tokens.has(name), `:root phải khai báo ${name}`)
-    assert.equal(normalize(tokens.get(name)), value.toLowerCase())
+for (const [name, target] of NEW_ALIASES) {
+  test(`token ${name} là alias var(${target}) và giải ra đúng giá trị ${target} trong :root`, () => {
+    assert.equal(tokens.get(name), `var(${target})`, `${name} phải là alias của ${target}`)
+    assert.equal(normalize(resolve(name)), normalize(tokens.get(target)))
+  })
+}
+
+test('token mới --border-control = #6B6B87 (quyết định 9 và 12: viền điều khiển giữ nguyên, không dùng --av-border-strong)', () => {
+  assert.ok(tokens.has('--border-control'), ':root phải khai báo --border-control')
+  assert.equal(normalize(tokens.get('--border-control')), '#6b6b87')
+})
+
+test('token --purple-active là nền mềm Spec: rgba của --av-primary-line với alpha 0,18', () => {
+  const [red, green, blue] = [1, 3, 5].map((at) => Number.parseInt(tokens.get('--av-primary-line').slice(at, at + 2), 16))
+  assert.equal(tokens.get('--purple-active'), `rgba(${red}, ${green}, ${blue}, 0.18)`)
+})
+
+// Token đã gỡ ở R2 (từng là NEW_COLORS/token chưa dùng): không còn trong :root và không luật nào nhắc.
+for (const removed of ['--bg', '--surface', '--purple-soft', '--purple-tint', '--blue', '--success', '--violet']) {
+  test(`token ${removed} đã gỡ ở R2: không còn trong :root, không luật nào tham chiếu`, () => {
+    assert.ok(!tokens.has(removed), `${removed} phải bị gỡ khỏi :root`)
+    assert.equal(countVarUses(css, removed), 0)
   })
 }
 
@@ -113,47 +141,75 @@ test('token font: --font-ui bắt đầu bằng Be Vietnam Pro, --font-mono bằ
   assert.ok(mono.includes('ui-monospace') && mono.endsWith('monospace'), `--font-mono = ${mono}`)
 })
 
-test('token cỡ chữ: 12/13/14/16/20/24 và display clamp(30px, 4vw, 44px)', () => {
-  const entries = ['--fs-xs', '--fs-sm', '--fs-md', '--fs-base', '--fs-lg', '--fs-xl', '--fs-display'].map((name) => [name, tokens.get(name)])
-  assert.deepEqual(entries, [
-    ['--fs-xs', '12px'], ['--fs-sm', '13px'], ['--fs-md', '14px'], ['--fs-base', '16px'],
-    ['--fs-lg', '20px'], ['--fs-xl', '24px'], ['--fs-display', 'clamp(30px, 4vw, 44px)'],
-  ])
+// R2 gỡ các token cỡ chữ/spacing/bo góc/bóng chưa dùng; còn lại đúng những token sidebar đang dùng (token cỡ chữ cơ bản khai báo lại ở R2 commit 4).
+test('token cỡ chữ đang dùng: 12/13/14; các cỡ chưa dùng (--fs-base/lg/xl/display) đã gỡ', () => {
+  const entries = ['--fs-xs', '--fs-sm', '--fs-md'].map((name) => [name, tokens.get(name)])
+  assert.deepEqual(entries, [['--fs-xs', '12px'], ['--fs-sm', '13px'], ['--fs-md', '14px']])
+  assert.deepEqual(['--fs-base', '--fs-lg', '--fs-xl', '--fs-display'].filter((name) => tokens.has(name)), [])
 })
 
-test('token spacing: 4, 8, 12, 16, 20, 24, 32, 40, 48 (bội số của 4, tên = px / 4)', () => {
-  const names = ['--space-1', '--space-2', '--space-3', '--space-4', '--space-5', '--space-6', '--space-8', '--space-10', '--space-12']
+test('token spacing đang dùng: 4, 8, 12, 16, 24 (bội số của 4, tên = px / 4); 5/8/10/12 chưa dùng đã gỡ', () => {
+  const names = ['--space-1', '--space-2', '--space-3', '--space-4', '--space-6']
   const values = names.map((name) => tokens.get(name))
-  assert.deepEqual(values, ['4px', '8px', '12px', '16px', '20px', '24px', '32px', '40px', '48px'])
+  assert.deepEqual(values, ['4px', '8px', '12px', '16px', '24px'])
   names.forEach((name, index) => assert.equal(Number.parseInt(values[index]) / 4, Number(name.split('-').at(-1)), `${name} phải bằng px / 4`))
+  assert.deepEqual(['--space-5', '--space-8', '--space-10', '--space-12'].filter((name) => tokens.has(name)), [])
 })
 
-test('token bo góc: 8, 12, 16 và 999px', () => {
-  assert.deepEqual(['--radius-sm', '--radius-md', '--radius-lg', '--radius-pill'].map((name) => tokens.get(name)), ['8px', '12px', '16px', '999px'])
+test('token bo góc đang dùng: --radius-sm 8px; --radius-md/lg/pill chưa dùng đã gỡ', () => {
+  assert.equal(tokens.get('--radius-sm'), '8px')
+  assert.deepEqual(['--radius-md', '--radius-lg', '--radius-pill'].filter((name) => tokens.has(name)), [])
 })
 
-test('token bóng: --shadow-card và --glow-purple', () => {
+test('token bóng: --shadow-card còn; --glow-purple chưa dùng đã gỡ', () => {
   assert.equal(tokens.get('--shadow-card'), '0 8px 24px rgba(0, 0, 0, 0.35)')
-  assert.equal(tokens.get('--glow-purple'), '0 0 0 1px rgba(155, 130, 255, 0.35), 0 8px 28px rgba(155, 130, 255, 0.18)')
+  assert.ok(!tokens.has('--glow-purple'))
 })
 
 // ---------------------------------------------------------------------------------------------------------------------
 // 18 token cũ giữ nguyên (Phương án A) và phân loại trong :root
 // ---------------------------------------------------------------------------------------------------------------------
 
-const OLD_VALUES = {
-  '--background': '#0c0d12', '--panel': '#12141c', '--panel-hover': '#191b27', '--border': '#292c3a', '--text': '#e8eaf2',
-  '--muted': '#9298ad', '--purple': '#9b82ff', '--purple-dark': '#7456e8', '--state-active': '#f6c76a', '--bar-cue': '#0d0f15',
+// Redesign R2: 7 token cũ thành alias trỏ vào --av-* (đổi diện mạo theo Spec); 3 token giữ giá trị riêng vì Spec không quy định
+// (--purple chỉ còn canvas, --state-active, --bar-cue).
+const OLD_TO_AV = {
+  '--background': '--av-bg', '--panel': '--av-surface-1', '--panel-hover': '--av-surface-2', '--border': '--av-border',
+  '--text': '--av-text', '--muted': '--av-text-muted', '--purple-dark': '--av-primary',
 }
+const OLD_VALUES = { '--purple': '#9b82ff', '--state-active': '#f6c76a', '--bar-cue': '#0d0f15' }
 const OLD_ALIASES = {
   '--text-muted': 'var(--muted)', '--border-color': 'var(--border)', '--card-background': 'var(--panel)',
-  '--text-secondary': 'var(--muted)', '--accent-color': 'var(--purple)', '--surface-secondary': 'var(--panel)',
+  '--text-secondary': 'var(--muted)', '--accent-color': 'var(--av-primary-text)', '--surface-secondary': 'var(--panel)',
   '--surface-color': 'var(--panel-hover)', '--panel-bg': 'var(--panel)',
 }
 
-test('10 token gốc cũ giữ nguyên đúng giá trị (Phương án A: chưa đổi diện mạo)', () => {
+test('7 token cũ là alias var(--av-*) và giải ra đúng giá trị Spec đọc từ :root', () => {
+  for (const [name, target] of Object.entries(OLD_TO_AV)) {
+    assert.equal(tokens.get(name), `var(${target})`, `${name} phải là alias của ${target}`)
+    assert.equal(normalize(resolve(name)), normalize(tokens.get(target)), `${name} phải giải ra giá trị của ${target}`)
+  }
+})
+
+test('3 token cũ không có tương ứng trong Spec giữ nguyên giá trị (canvas, màu "đang xét", cue ngoài màu)', () => {
   const actual = Object.fromEntries(Object.keys(OLD_VALUES).map((name) => [name, normalize(tokens.get(name) ?? '(thiếu)')]))
   assert.deepEqual(actual, OLD_VALUES)
+})
+
+// Alias tạm: mỗi alias có chú thích "tạm, gỡ ở R<n>" ngay trên dòng khai báo; số alias chỉ được GIẢM khi một PR gỡ chúng.
+const ALL_TEMPORARY = [
+  '--background', '--panel', '--panel-hover', '--border', '--text', '--muted', '--text-muted', '--purple', '--purple-dark',
+  '--border-color', '--card-background', '--text-secondary', '--accent-color', '--surface-secondary', '--surface-color', '--panel-bg',
+  '--bg-sidebar', '--surface-raised', '--text-label', '--purple-strong', '--purple-pressed', '--purple-active', '--purple-hover',
+]
+
+test('mỗi alias tạm có chú thích "tạm, gỡ ở R3..R6" và danh sách alias khớp đúng (gỡ alias nào thì sửa danh sách cùng PR)', () => {
+  const raw = rootRawBlock(css)
+  const tagged = [...raw.matchAll(/(--[a-z0-9-]+)\s*:[^;]*;\s*\/\*\s*tạm, gỡ ở R([0-9])/g)].map((match) => [match[1], Number(match[2])])
+
+  assert.deepEqual(tagged.map(([name]) => name).sort(), [...ALL_TEMPORARY].sort(), 'danh sách token có chú thích "tạm, gỡ ở R?" phải khớp danh sách alias')
+  assert.ok(tagged.every(([, release]) => release >= 3 && release <= 6), 'alias chỉ được hẹn gỡ ở R3..R6')
+  assert.equal(tagged.length, 23, '23 alias tạm sau R2 (14 trỏ thẳng --av-*, 7 alias của alias, --purple-active và --purple)')
+  assert.deepEqual(tagged.filter(([name]) => name === '--purple').map(([, release]) => release), [6], '--purple (canvas) hẹn gỡ ở R6')
 })
 
 test('8 alias cũ còn đủ và trỏ đúng token gốc cũ; mọi alias trỏ tới token có thật', () => {
@@ -182,11 +238,12 @@ test('comment trong :root chia token thành CŨ / MỚI ĐANG DÙNG / MỚI CHƯ
   const namesIn = (from, to) => [...raw.slice(from, to).matchAll(/(--[a-z0-9-]+)\s*:/g)].map((match) => match[1]).sort()
   const sections = [namesIn(at[0], at[1]), namesIn(at[1], at[2]), namesIn(at[2], raw.length)]
 
-  assert.deepEqual(sections[0], [...Object.keys(OLD_VALUES), ...Object.keys(OLD_ALIASES)].sort(), 'nhóm CŨ phải là 18 token cũ')
+  assert.deepEqual(sections[0], [...Object.keys(OLD_TO_AV), ...Object.keys(OLD_VALUES), ...Object.keys(OLD_ALIASES)].sort(), 'nhóm CŨ phải là 18 token cũ (alias tạm hoặc giữ giá trị riêng)')
   assert.deepEqual(sections[1], ['--bg-sidebar', '--font-mono', '--font-ui', '--fs-md', '--fs-sm', '--fs-xs', '--purple-active', '--purple-hover', '--purple-pressed', '--purple-strong', '--radius-sm', '--shadow-card', '--sidebar-width', '--sidebar-width-collapsed', '--space-1', '--space-2', '--space-3', '--space-4', '--space-6', '--surface-raised', '--text-label'], 'nhóm MỚI ĐANG DÙNG: 2 token font (Phase 1) và 19 token Phase 2/2b áp vào sidebar và nút chính (--purple-tint đã chuyển sang CHƯA DÙNG)')
-  assert.deepEqual(sections[2], [...tokens.keys()].filter((name) => !sections[0].includes(name) && !sections[1].includes(name)).sort(),
-    'nhóm MỚI CHƯA DÙNG phải là phần còn lại của :root')
-  assert.ok(sections[2].length >= 20, `phải có ít nhất 20 token định nghĩa sẵn chưa dùng, thấy ${sections[2].length}`)
+  assert.deepEqual(sections[2], [...tokens.keys()].filter((name) => !name.startsWith('--av-') && !sections[0].includes(name) && !sections[1].includes(name)).sort(),
+    'nhóm MỚI CHƯA DÙNG phải là phần còn lại của :root (trừ khối --av-* đứng riêng trước nhóm CŨ, tests/av-tokens.test.js canh gác)')
+  assert.ok(raw.indexOf('TOKEN --av-*') !== -1 && raw.indexOf('TOKEN --av-*') < at[0], 'khối TOKEN --av-* phải đứng trước nhóm CŨ')
+  assert.deepEqual(sections[2], ['--border-control'], 'R2 gỡ mọi token chưa dùng, TRỪ --border-control (quyết định 9 và 12)')
 })
 
 test('token "CHƯA ĐƯỢC DÙNG" quả thật chưa được luật nào tham chiếu', () => {
@@ -194,8 +251,8 @@ test('token "CHƯA ĐƯỢC DÙNG" quả thật chưa được luật nào tham 
   const unusedNames = [...raw.slice(raw.indexOf('TOKEN MỚI, CHƯA ĐƯỢC DÙNG')).matchAll(/(--[a-z0-9-]+)\s*:/g)].map((match) => match[1])
   const used = unusedNames.filter((name) => countVarUses(css, name) > 0)
 
-  assert.ok(unusedNames.length >= 20, `phải tìm thấy ít nhất 20 token chưa dùng, thấy ${unusedNames.length}`)
-  assert.deepEqual(used, [], 'các token này đã bị áp vào luật; Phase 1 chỉ định nghĩa (gồm --border-control, --blue, --success, cỡ chữ, spacing, bo góc, bóng)')
+  assert.deepEqual(unusedNames, ['--border-control'], 'nhóm CHƯA DÙNG chỉ còn --border-control')
+  assert.deepEqual(used, [], 'các token này đã bị áp vào luật; --border-control chỉ định nghĩa; chưa luật nào dùng (docs/backlog.md ghi các selector cần chuyển sang nó)')
 })
 
 test('token "ĐANG DÙNG" quả thật được ít nhất một luật tham chiếu (Phase 2 áp vào sidebar, ☰ và nút chính)', () => {
@@ -218,18 +275,19 @@ test('token font "ĐANG DÙNG": --font-ui làm font nền của :root, --font-mo
 // ---------------------------------------------------------------------------------------------------------------------
 
 const PAIRS = [
-  ['--text', '--bg', 4.5], ['--text', '--surface', 4.5], ['--text', '--surface-raised', 4.5], ['--text', '--panel', 4.5],
-  ['--muted', '--bg', 4.5], ['--muted', '--surface', 4.5], ['--muted', '--surface-raised', 4.5], ['--muted', '--panel', 4.5], ['--muted', '--background', 4.5],
-  ['--text-label', '--bg-sidebar', 4.5], ['--text-label', '--surface', 4.5], ['--text-label', '--surface-raised', 4.5],
-  ['--purple', '--bg', 4.5], ['--purple', '--surface', 4.5], ['--purple', '--surface-raised', 4.5], ['--purple', '--purple-tint', 4.5],
-  ['--purple-soft', '--purple-tint', 4.5], ['--purple-soft', '--surface', 4.5],
+  ['--text', '--av-bg', 4.5], ['--text', '--av-surface-1', 4.5], ['--text', '--surface-raised', 4.5], ['--text', '--panel', 4.5],
+  ['--muted', '--av-bg', 4.5], ['--muted', '--av-surface-1', 4.5], ['--muted', '--surface-raised', 4.5], ['--muted', '--panel', 4.5], ['--muted', '--background', 4.5],
+  ['--text-label', '--bg-sidebar', 4.5], ['--text-label', '--av-surface-1', 4.5], ['--text-label', '--surface-raised', 4.5],
+  ['--purple', '--av-bg', 4.5], ['--purple', '--av-surface-1', 4.5], ['--purple', '--surface-raised', 4.5], ['--av-primary-text', '--purple-active', 4.5],
+  ['--av-nav-active-text', '--purple-active', 4.5], ['--av-primary-text', '--av-surface-1', 4.5],
   ['#ffffff', '--purple-strong', 4.5], ['#ffffff', '--purple-pressed', 4.5], ['#ffffff', '--purple-dark', 4.5],
-  ['--bg', '--purple', 4.5],
+  ['--av-bg', '--purple', 4.5],
   ['--bar-cue', '--purple', 3],
-  ['--blue', '--surface', 4.5], ['--state-active', '--surface', 4.5], ['--success', '--surface', 4.5],
-  ['--border-control', '--surface', 3], ['--border-control', '--bg', 3], ['--border-control', '--surface-raised', 3],
-  ['#ffffff', '--purple-active', 9.9], ['--purple-hover', '--purple-active', 3], ['--purple-hover', '--bg-sidebar', 4.5],
-  ['--purple-hover', '--surface', 4.5], ['--violet', '--bg-sidebar', 3], ['--violet', '--bg', 3],
+  ['--av-accent-text', '--av-surface-1', 4.5], ['--state-active', '--av-surface-1', 4.5], ['--av-success', '--av-surface-1', 4.5],
+  ['--border-control', '--av-surface-1', 3], ['--border-control', '--av-bg', 3], ['--border-control', '--surface-raised', 3],
+  ['--av-nav-active-text', '--purple-active', 9.9], ['--purple-hover', '--purple-active', 3], ['--purple-hover', '--bg-sidebar', 4.5],
+  ['--purple-hover', '--av-surface-1', 4.5], ['--av-primary-line', '--bg-sidebar', 3], ['--av-primary-line', '--av-bg', 3],
+  ['--av-focus', '--av-bg', 3], ['--av-focus', '--av-surface-1', 3],
 ]
 
 for (const [foreground, background, minimum] of PAIRS) {
@@ -239,19 +297,19 @@ for (const [foreground, background, minimum] of PAIRS) {
   })
 }
 
-test('--purple-tint đúng bằng #9B82FF 16% trên --bg-sidebar (tính, không gõ tay)', () => {
-  assert.equal(blend(resolve('--purple'), 0.16, resolve('--bg-sidebar')), normalize(resolve('--purple-tint')))
+test('pill active hiện ra đúng bằng --av-primary-line 18% trên --av-sidebar (tính, không gõ tay)', () => {
+  assert.equal(colorOf('--purple-active'), blend(resolve('--av-primary-line'), 0.18, resolve('--av-sidebar')))
 })
 
-test('--violet chỉ cho icon, viền, chữ lớn: chữ nhỏ trên --surface chỉ 4,21:1 và chữ trắng trên --violet chỉ 4,23:1 (cả hai dưới 4,5, vì vậy bị cấm)', () => {
-  assert.ok(contrastRatio(resolve('--violet'), resolve('--surface')) < 4.5)
-  assert.ok(contrastRatio('#ffffff', resolve('--violet')) < 4.5)
-  assert.ok(contrastRatio(resolve('--violet'), resolve('--surface')) >= 4.2, 'số đo đã ghi trong báo cáo: 4,21')
+test('--av-primary-line chỉ cho icon, viền, chữ lớn: chữ nhỏ trên --av-surface-1 chỉ 4,39:1 và chữ trắng trên nó chỉ 4,23:1 (cả hai dưới 4,5, vì vậy bị cấm)', () => {
+  assert.ok(contrastRatio(resolve('--av-primary-line'), resolve('--av-surface-1')) < 4.5)
+  assert.ok(contrastRatio('#ffffff', resolve('--av-primary-line')) < 4.5)
+  assert.ok(contrastRatio(resolve('--av-primary-line'), resolve('--av-surface-1')) >= 4.3, 'số đo đã ghi trong báo cáo R2a: 4,39')
 })
 
-test('không luật nào dùng --violet làm màu chữ (color) hay chữ trắng trên nền --violet', () => {
+test('không luật nào dùng --av-primary-line làm màu chữ (color)', () => {
   const bad = sheet.rules
-    .filter((rule) => rule.declarations.some((declaration) => declaration.property === 'color' && declaration.value.includes('var(--violet)')))
+    .filter((rule) => rule.declarations.some((declaration) => declaration.property === 'color' && declaration.value.includes('var(--av-primary-line)')))
     .flatMap((rule) => rule.selectors)
 
   assert.deepEqual(bad, [])
@@ -266,7 +324,7 @@ test('cấm chữ trắng trên --purple: tỉ lệ thật dưới 4,5 (vì vậ
 const WHITE_ON_PURPLE_KNOWN = []
 
 function whiteOnPurpleRules() {
-  const purple = new Set(['var(--purple)', 'var(--accent-color)', resolve('--purple').toLowerCase()])
+  const purple = new Set(['var(--purple)', 'var(--accent-color)', 'var(--av-primary-line)', 'var(--av-primary-text)', resolve('--purple').toLowerCase()])
   const white = new Set(['#fff', '#ffffff', 'white'])
 
   return sheet.rules
@@ -453,7 +511,7 @@ test(':root dùng var(--font-ui) làm font nền', () => {
 })
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Gom hex khớp đúng token (12 chỗ, không đổi diện mạo; .brand-icon rời bảng này ở Redesign Phase 2 vì đổi nền sang --purple-strong)
+// Gom hex vào token (12 chỗ). Từ R2 các token này là alias của --av-*, nên màu hiển thị đổi theo Spec (không còn y hệt hex cũ)
 // ---------------------------------------------------------------------------------------------------------------------
 
 const HEX_TO_TOKEN = [
@@ -472,13 +530,14 @@ const HEX_TO_TOKEN = [
 ]
 
 for (const [selector, property, was, token] of HEX_TO_TOKEN) {
-  test(`${selector} { ${property} } dùng var(${token}) thay cho ${was}, giá trị token y hệt nên không đổi diện mạo`, () => {
+  test(`${selector} { ${property} } dùng var(${token}) thay cho ${was}; token là alias của ${OLD_TO_AV[token]} (R2: màu đổi theo Spec)`, () => {
     const values = declarationValues(css, selector, property)
 
     assert.ok(values.length > 0, `không thấy ${property} trong luật ${selector}`)
     assert.ok(values.every((value) => value.includes(`var(${token})`)), `${selector} ${property} = ${values.join(' | ')} phải dùng var(${token})`)
     assert.ok(values.every((value) => !value.toLowerCase().includes(was)), `${selector} còn hex ${was}`)
-    assert.equal(normalize(tokens.get(token)), was, `${token} phải đúng bằng ${was} thì gom mới không đổi màu`)
+    assert.equal(tokens.get(token), `var(${OLD_TO_AV[token]})`, `${token} phải là alias của ${OLD_TO_AV[token]}`)
+    assert.equal(normalize(resolve(token)), normalize(tokens.get(OLD_TO_AV[token])), `${token} phải giải ra giá trị Spec của ${OLD_TO_AV[token]}`)
   })
 }
 
@@ -491,14 +550,114 @@ test('màu trạng thái giữ nguyên: --state-active #f6c76a, --bar-cue #0d0f1
   assert.equal(normalize(tokens.get('--bar-cue')), '#0d0f15')
 })
 
-test('#22c55e (trạng thái tìm thấy/đầu hàng đợi) vẫn viết thẳng ở đúng 13 chỗ, chưa bị đổi sang --success', () => {
+test('#22c55e (trạng thái tìm thấy/đầu hàng đợi) vẫn viết thẳng ở đúng 13 chỗ (Spec không quy định màu trạng thái visualizer, giữ đến R6)', () => {
   const outsideRoot = stripComments(css).replace(rootRawBlock(stripComments(css)), '')
   assert.equal((outsideRoot.match(/#22c55e/gi) ?? []).length, 13)
 })
 
 // Từ 4 xuống 2 ở PR chore/bundle-headroom: hai chỗ bị gỡ là khai báo chết (border-color của .array-cell:hover và .array-operation-card input:focus)
 // bị khối sau ghi đè bằng var(--purple), nên màu hiển thị không đổi. Hai chỗ còn lại (viền và nhãn của hàng đợi) vẫn viết thẳng.
-test('#60a5fa (viền, nhãn đầu cuối hàng đợi) vẫn viết thẳng ở đúng 2 chỗ, chưa bị đổi sang --blue', () => {
+test('#60a5fa (viền, nhãn đầu cuối hàng đợi) vẫn viết thẳng ở đúng 2 chỗ (#60a5fa là màu icon nhỏ của Spec, chưa có token tên)', () => {
   const outsideRoot = stripComments(css).replace(rootRawBlock(stripComments(css)), '')
   assert.equal((outsideRoot.match(/#60a5fa/gi) ?? []).length, 2)
+})
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Redesign R2: vai trò của --purple cũ (31 chỗ: 7 chữ gồm alias, 8 viền/nền hover, 3 focus, 13 canvas)
+// ---------------------------------------------------------------------------------------------------------------------
+
+test('vòng focus theo Spec: mọi outline của :focus-visible/:focus là 2px solid var(--av-focus) với offset 2px (mục nav: offset -2px trong vùng cuộn)', () => {
+  const focusRules = sheet.rules.filter((rule) => rule.selectors.some((selector) => /:focus(-visible)?$/.test(selector)))
+  const outlines = focusRules.flatMap((rule) => rule.declarations.filter((declaration) => declaration.property === 'outline' && declaration.value !== 'none').map((declaration) => [rule.selectors.join(', '), declaration.value]))
+
+  assert.ok(outlines.length >= 4, `phải có ít nhất 4 luật vòng focus, thấy ${outlines.length}`)
+  assert.deepEqual(outlines.filter(([, value]) => value !== '2px solid var(--av-focus)'), [], 'vòng focus phải là 2px solid var(--av-focus)')
+
+  for (const rule of focusRules) {
+    const offset = rule.declarations.find((declaration) => declaration.property === 'outline-offset')
+    if (!offset) continue
+    const expected = rule.selectors.every((selector) => /^\.nav-(sub)?item:focus-visible$/.test(selector)) ? '-2px' : '2px'
+    assert.equal(offset.value, expected, `${rule.selectors.join(', ')}: outline-offset`)
+  }
+})
+
+test('luật :focus-visible chung (select, input, textarea, [tabindex], pre và vùng cuộn Chrome cho focus như #array-visualizer) dùng đúng vòng 2px solid var(--av-focus), offset 2px', () => {
+  const generic = sheet.rules.find((rule) => rule.media === null && rule.selectors.length === 1 && rule.selectors[0] === ':focus-visible')
+
+  assert.ok(generic, 'thiếu luật :focus-visible chung: phần tử không có luật riêng rơi về vòng mặc định auto gần đen của trình duyệt')
+  assert.equal(generic.declarations.find((declaration) => declaration.property === 'outline')?.value, '2px solid var(--av-focus)')
+  assert.equal(generic.declarations.find((declaration) => declaration.property === 'outline-offset')?.value, '2px')
+})
+
+test('luật focus-visible chung đứng TRƯỚC `.main-content:focus` và `.array-operation-card input` để hai luật bỏ vòng này (cùng độ ưu tiên) thắng theo thứ tự', () => {
+  const selectorsInOrder = sheet.rules.filter((rule) => rule.media === null).map((rule) => rule.selectors.join(', '))
+  const at = (selector) => selectorsInOrder.findIndex((text) => text === selector || text.split(', ').includes(selector))
+  const generic = at(':focus-visible')
+
+  assert.ok(generic !== -1)
+  assert.ok(generic < at('.main-content:focus'), 'luật chung phải trước .main-content:focus (outline: none cho vùng nội dung được focus bằng chương trình)')
+  assert.ok(generic < at('.array-operation-card input'), 'luật chung phải trước .array-operation-card input (outline: none + glow, để R7 quyết)')
+  assert.deepEqual(declarationValues(css, '.array-operation-card input', 'outline'), ['none'], 'ô nhập Mảng giữ outline: none + glow cho tới R7')
+})
+
+test('var(--purple) chỉ còn dùng cho canvas BST/Hash/Graph (13 khai báo); chữ, viền và focus đã chuyển sang --av-*', () => {
+  const users = sheet.rules.flatMap((rule) => rule.declarations.filter((declaration) => declaration.value.includes('var(--purple)')).map(() => rule.selectors.join(', ')))
+
+  assert.equal(users.length, 13)
+  assert.deepEqual(users.filter((selector) => !/^\.(bst|hash|graph)-/.test(selector)), [], 'chỗ dùng --purple ngoài canvas')
+})
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Redesign R2 commit 3: không viết cứng hex trùng hẳn màu Spec ngoài :root
+// ---------------------------------------------------------------------------------------------------------------------
+
+// Giá trị Spec đã đặt tên token: đọc từ :root (khối --av-*), không gõ lại.
+const NAMED_SPEC_COLORS = new Map([...tokens].filter(([name, value]) => /^--av-/.test(name) && /^#[0-9a-f]{6}$/i.test(value)).map(([name, value]) => [value.toLowerCase(), name]))
+
+// Ngoại lệ: hex trùng giá trị Spec nhưng Spec KHÔNG đặt tên token (R2 chưa khai báo), nên chưa thể thay. Mỗi mục có lý do; khi R3-R6
+// khai báo token tương ứng thì chuyển luật sang token và xóa mục khỏi danh sách (test mục cuối bắt mục thừa).
+const SPEC_HEX_EXCEPTIONS = [
+  ['#stack-status.is-error', '#fca5a5', 'danger-text của Spec chưa có token (R2 không khai báo giá trị Spec không tên)'],
+  ['#linked-list-status[data-type="error"]', '#fca5a5', 'danger-text của Spec chưa có token'],
+  ['.bst-error', '#fca5a5', 'danger-text của Spec chưa có token'],
+  ['.queue-cell.is-rear', '#60a5fa', 'accent-icon của Spec chưa có token'],
+  ['.queue-rear-label', '#60a5fa', 'accent-icon của Spec chưa có token'],
+]
+
+function specHexOutsideRoot() {
+  const found = []
+
+  for (const rule of sheet.rules) {
+    if (rule.selectors.length === 1 && rule.selectors[0] === ':root') continue
+    for (const declaration of rule.declarations) {
+      for (const match of declaration.value.matchAll(/#[0-9a-f]{6}\b/gi)) {
+        if (NAMED_SPEC_COLORS.has(match[0].toLowerCase())) found.push([rule.selectors.join(', '), match[0].toLowerCase(), declaration.property])
+      }
+    }
+  }
+
+  return found
+}
+
+test('không còn hex viết cứng trùng hẳn màu Spec đã có token (ngoài :root)', () => {
+  const offenders = specHexOutsideRoot().map(([selector, hex, property]) => `${selector} { ${property}: ${hex} } nên dùng var(${NAMED_SPEC_COLORS.get(hex)})`)
+  assert.deepEqual(offenders, [])
+})
+
+test('hex trùng giá trị Spec chưa có token chỉ nằm ở danh sách ngoại lệ có lý do (mỗi mục vẫn còn đúng, không thừa)', () => {
+  const unnamed = ['#fca5a5', '#60a5fa']
+  const actual = sheet.rules
+    .filter((rule) => !(rule.selectors.length === 1 && rule.selectors[0] === ':root'))
+    .flatMap((rule) => rule.declarations.flatMap((declaration) => [...declaration.value.matchAll(/#[0-9a-f]{6}\b/gi)].map((match) => [rule.selectors.join(', '), match[0].toLowerCase()])))
+    .filter(([, hex]) => unnamed.includes(hex))
+    .sort()
+
+  assert.deepEqual(actual, SPEC_HEX_EXCEPTIONS.map(([selector, hex]) => [selector, hex]).sort())
+  assert.ok(SPEC_HEX_EXCEPTIONS.every(([, , reason]) => reason.length > 10), 'mỗi ngoại lệ phải có lý do')
+})
+
+test('glow focus của ô nhập Mảng dùng rgba của --av-primary-line với alpha 0,15, không còn hex 8 chữ số #9b82ff26', () => {
+  const [red, green, blue] = [1, 3, 5].map((at) => Number.parseInt(tokens.get('--av-primary-line').slice(at, at + 2), 16))
+
+  assert.deepEqual(declarationValues(css, '.array-operation-card input:focus', 'box-shadow'), [`0 0 0 3px rgba(${red}, ${green}, ${blue}, 0.15)`])
 })

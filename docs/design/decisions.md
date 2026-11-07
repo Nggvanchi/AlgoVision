@@ -8,7 +8,7 @@ Nguồn thiết kế: `docs/design/spec.md` (chép văn bản từ `AlgoVision S
 
 **(b) Không số giả.** Mọi dữ liệu hiển thị phải là dữ liệu thật, hoặc dùng trạng thái rỗng, hoặc gắn nhãn "Minh họa" / "Dữ liệu mẫu" (Spec mục 1, 17). Ví dụ: bảng Bubble Sort "bước 3/10" ở hero Dashboard phải gắn nhãn "Minh họa"; chip tài khoản "[Tên người học]" là placeholder nên không làm.
 
-## 11 quyết định đã chốt
+## 13 quyết định đã chốt
 
 | # | Quyết định | Lý do |
 |---|---|---|
@@ -21,5 +21,7 @@ Nguồn thiết kế: `docs/design/spec.md` (chép văn bản từ `AlgoVision S
 | 7 | Sidebar giữ 256 px cho đến khi làm tablet rail. | 264 px làm hẹp khung bảng Hash Table (chuỗi chaining 15 khóa cần khung chứa được 842 px) và đụng test `sidebar-css`, `hash-table-layout`; đổi cùng lúc với rail để đo một lần. |
 | 8 | Nhập dữ liệu, chip Mẫu dữ liệu, thanh trượt bước để sau, trừ khi `src/simulation-controller.js` đã hỗ trợ nhảy bước. | Đây là chức năng mới (Sorting hiện không cho nhập mảng), không phải thay đổi giao diện; thanh trượt cần controller nhảy tới bước tùy ý. |
 | 9 | Viền ô nhập giữ `--border-control` (3,57:1), không dùng màu Spec `#2E2E44`. | Màu Spec trên `#12121C` chỉ 1,41:1, không đạt WCAG 1.4.11 (≥ 3:1) cho thành phần giao diện. |
-| 10 | Mỗi PR có trần bundle riêng, duyệt ở bước lập kế hoạch. | Trần hiện là JS ≤ 146,0 kB, CSS ≤ 49,5 kB; CSS là ràng buộc chính nên mỗi PR phải đo và xin trần trước khi làm. |
+| 10 | Mỗi PR có trần bundle riêng, duyệt ở bước lập kế hoạch. | Trần hiện là JS ≤ 146,0 kB, CSS ≤ 51,0 kB (R2); CSS là ràng buộc chính nên mỗi PR phải đo và xin trần trước khi làm. |
 | 11 | Mỗi PR một nhánh ngắn từ `main`; không tạo `feat/redesign-v1`. | Nhánh dài sống lâu dễ xung đột và khó review; PR nhỏ merge từng bước giữ `main` luôn chạy được. |
+| 12 | Viền điều khiển (ô nhập, select, nút viền) giữ `--border-control` (`#6B6B87`), không dùng `--av-border-strong`; dấu "✓" ở cột đã sắp xếp dùng `--av-text` ở R6, không dùng `#6EE7B7` trên `#1F6F5A`. | Quyết định 9 áp dụng cho mọi điều khiển; `#6EE7B7` trên `#1F6F5A` chỉ 3,96:1 (< 4,5:1) cho chữ. |
+| 13 | Lịch áp `--border-control`: R5b (ô tìm và bộ lọc ở Thư viện), R6 (điều khiển Visualizer và các toolbar), R7 đo lại toàn bộ. | `--border-control` hiện chưa luật nào dùng (R2 chỉ giữ token); áp theo màn hình để mỗi PR tự kiểm ảnh và byte. |
