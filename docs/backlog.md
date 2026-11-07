@@ -4,9 +4,7 @@ Việc còn tồn tại, chưa nằm trong PR nào. Thêm mục khi phát hiện
 Lộ trình giai đoạn: `docs/roadmap.md`.
 
 ## Lỗi
-- Cửa sổ đua rất hẹp của tiến độ học tập: hai tab đọc rồi ghi đúng cùng lúc thì tab ghi sau đè tab ghi trước và mất một lần đếm
-  `openCount` (mỗi lần mở đọc lại bản mới nhất, nên chỉ lệch khi hai cặp `getItem`/`setItem` xen kẽ; hàm `open` trong `src/progress-store.js`).
-  Chấp nhận vì chỉ lệch 1 đơn vị đếm, không mất chủ đề; `localStorage` không có khóa (giao diện Phase 3b vẽ lại theo sự kiện `storage`, nên số hiển thị tự sửa).
+- (hiện không có mục nào)
 
 ## Hiệu năng
 - `buildGraph` sao chép cả đồ thị sau mỗi lần thêm đỉnh/cạnh (O(n²)). Đo 2026-11-05: sao 300 đỉnh 39–73 ms, 1000 đỉnh 0,7–1,0 s,
@@ -22,19 +20,12 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 
 ## Giao diện
 - Thời lượng học: đã loại khỏi giai đoạn 8 vì là suy đoán (phải định nghĩa "đang học"); nếu thêm thì nâng `version` lên 2 kèm migrate.
-- Tiến độ học tập (trang Tiến độ, khối Dashboard, sự kiện `storage`) chưa kiểm trên trình duyệt thật: Firefox/Safari, cửa sổ riêng tư (đọc `localStorage` ném lỗi, hết quota),
-  `StorageEvent` thật giữa hai tab và trình đọc màn hình thật; test chỉ chạy bằng happy-dom với storage giả. Kiểm trên link preview Vercel.
-- Phần tiến độ (trang Tiến độ, khối Dashboard) chưa kiểm trên thiết bị di động thật (chạm, `100dvh`, thanh địa chỉ co giãn); mới đo bằng Chrome headless.
-- Nút "Xóa lịch sử học tập" (`#progress-clear`) khi chưa có gì để xóa dùng `aria-disabled="true"` chứ không dùng `disabled`, nên vẫn nằm trong thứ tự Tab.
-  Quyết định thiết kế đang giữ nguyên: để trình đọc màn hình nghe được lý do khóa ("Chưa có gì để xóa"); bấm không làm gì. Đổi sang `disabled` sẽ bỏ nút khỏi thứ tự Tab
-  nhưng mất lời giải thích đó và làm focus rơi về `body` nếu nút đang giữ focus.
 - Click thẻ thuật toán Sorting luôn tạo mảng mới (hành vi có từ trước).
 - Thẻ thư viện (Redesign Phase 4): `.algorithm-card.selected` chỉ là class hình ảnh (viền tím), thiếu ARIA (`aria-pressed` hoặc `aria-current`), nên trình đọc màn hình không nghe được thẻ nào đang chọn.
 - Thẻ thư viện: nhãn đếm "03 THUẬT TOÁN" và "02 THUẬT TOÁN" (`.count-label`) viết cứng trong `app.html`; thêm hoặc bớt thẻ phải sửa tay (thẻ Cấu trúc dùng nhãn "DATA STRUCTURES").
 - CSS của thẻ thư viện (kích thước, màu, bố cục, điểm gãy) chưa có test hành vi: test chỉ khóa DOM, thứ tự selector gom chung và điểm gãy 700px; giá trị hiển thị mới kiểm bằng ảnh Chrome headless (Windows) và số đo tương phản.
 - Lưới 7 thẻ cấu trúc: thẻ Graph (thứ 7) nằm lẻ, rộng một nửa, ở 820px và 1280px (2 cột, hành vi có từ trước). Giữ nguyên 2 cột; nếu muốn, cho thẻ lẻ chiếm cả hàng hoặc đổi sang 4 cột ở >= 1280px.
 - Thư viện Tìm kiếm ở 1280px: lưới `.algorithm-grid` là 3 cột nhưng chỉ có 2 thẻ nên cột thứ ba để trống (hành vi có từ trước, thấy khi rà ảnh Phase 4); cân nhắc 2 cột khi thư viện chỉ có 2 thẻ.
-- Mutant tương đương còn sống ở `src/library-status.js`: bỏ điều kiện "tin được" (`trusted && id in data.topics`) khi tính `opened` không đổi gì nhìn thấy, vì nhãn đã bị `hidden` khi dữ liệu không tin được. Không gỡ: `textContent` và class `is-opened` của phần tử ẩn vẫn đọc được qua DOM, điều kiện giữ trạng thái DOM nhất quán và chỉ tốn khoảng 11 byte.
 - Thẻ thư viện chưa kiểm trên Safari, Firefox, thiết bị di động thật và trình đọc màn hình thật; xem preview Vercel.
 - Rà soát giao diện ở 360px (chưa khảo sát, đầu vào cho bước rà soát giao diện): chữ Big-O của linear probing,
   viền "ô đã dò" bị che ở PR #6/#9.
@@ -48,8 +39,8 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Thanh cuộn mảnh và tối mới có ở `.sidebar-scroll` (`scrollbar-width`/`scrollbar-color`, PR #25); các vùng cuộn khác của app (mã giả, khung vẽ BST/Hash/Graph, bảng) vẫn dùng thanh cuộn mặc định sáng trên nền tối.
 - Nhãn "Tất cả cấu trúc" (sidebar) khác tiêu đề trang "Cấu trúc dữ liệu" (h2 của thư viện); thống nhất cách gọi.
 - Nút menu ☰ không đổi thành ✕ khi drawer mở; drawer không đổ bóng; tooltip và mũi tên nút thu gọn không có hiệu ứng mờ/xoay. Cắt để CSS vào ngưỡng của Phase 2; thêm lại khi CSS còn chỗ.
-- Ngưỡng dung lượng bundle sau Phase 4: JS 159.523 B (dư 477 B so với 160 kB), CSS 52.216 B (dư 284 B so với 52,5 kB). Phase 5 và Phase 6 mỗi phase cần trần riêng, duyệt riêng ở bước lập kế hoạch, hoặc phải cắt mã trước.
-  Nơi có thể cắt: chuỗi tiếng Việt lặp, ba khối `progress-*` CSS dùng chung, `progress-summary.js`. Đo trước Phase 4: gỡ thêm mã chết chỉ được khoảng 0,1 kB CSS và dưới 0,3 kB JS, nên không làm PR riêng.
+- Ngưỡng dung lượng bundle sau khi gỡ Tiến độ học tập: JS 145.918 B (dư 82 B so với 146,0 kB), CSS 49.085 B (dư 415 B so với 49,5 kB). Mỗi PR Redesign v1.0 cần trần riêng, duyệt riêng ở bước lập kế hoạch.
+  Nơi có thể cắt: chuỗi tiếng Việt lặp.
 - Nâng viền ô nhập lên `--border-control` (đã có ở mục viền ô nhập 1,33:1 phía trên): làm ở PR Visualizer/Structure workspace, không ở sidebar.
 - Chưa kiểm sidebar trên thiết bị di động thật (`100dvh`, thanh địa chỉ co giãn, chạm), trình đọc màn hình thật (CDP không liệt kê `aria-current` trong cây trợ năng), Firefox/Safari (`inert`, `:focus-visible`) và preview Vercel.
 - Cột Insertion đang so sánh nằm trong đoạn đã sắp xếp (khoảng 94% số cột so sánh của Insertion trong mẫu đo 300 mảng) chỉ hiện "đang so sánh",
@@ -88,17 +79,18 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
   Cân nhắc thêm subset greek hoặc vẽ ký hiệu bằng SVG/CSS.
 
 - Khối "Lộ trình" năm chặng (thiết kế tham chiếu 2g/2h) CHƯA làm ở Phase 3b: không có dữ liệu thật cho "chặng" nên không dựng số liệu giả hay placeholder. Cần định nghĩa chặng (danh sách chủ đề theo thứ tự học) trước.
-- Thư viện (Library) đã làm phần thẻ ở Redesign Phase 4 (tab, ô tìm, bộ lọc, sheet mobile là mục 3c, chưa làm); Visualizer/Structure workspace và token toàn cục (xem mục chuyển `--border`, `--text-muted`, bảng nền ở trên) là các giai đoạn Redesign sau; Phase 3b chỉ làm Dashboard và Tiến độ.
-- Tìm kiếm nhanh (Ctrl K) và nhớ trạng thái thu gọn của sidebar giữa các lần mở: chưa làm (trạng thái sidebar hiện chỉ trong bộ nhớ của phiên, không `localStorage` ngoài `progress-init.js`).
+- Thư viện (Library) đã làm phần thẻ ở Redesign Phase 4 (tab, ô tìm, bộ lọc, sheet mobile là mục 3c, chưa làm); Visualizer/Structure workspace và token toàn cục (xem mục chuyển `--border`, `--text-muted`, bảng nền ở trên) là các giai đoạn Redesign sau.
+- Tìm kiếm nhanh (Ctrl K) và nhớ trạng thái thu gọn của sidebar giữa các lần mở: chưa làm (trạng thái sidebar hiện chỉ trong bộ nhớ của phiên). Spec v1.0 mục 7 muốn nhớ trạng thái thu gọn: khi làm phải cập nhật `tests/meta/no-web-storage.test.js` cùng PR.
 - Sidebar chưa tự thu gọn ở màn hình tablet (701–1024px): hiện chỉ có hai chế độ, rộng 256px (>= 701px) hoặc drawer (<= 700px).
-- Thuật toán mới (ngoài 3 sắp xếp, 2 tìm kiếm): mỗi thuật toán thêm thẻ `data-algorithm`/`data-search-algorithm` sẽ tự vào `catalog` tiến độ (tổng "N / 12" tự đổi theo template), nhưng chữ "Sắp xếp a/3..." ở test và tài liệu phải cập nhật.
+- Thuật toán mới (ngoài 3 sắp xếp, 2 tìm kiếm): mỗi thuật toán thêm thẻ `data-algorithm`/`data-search-algorithm`; số thẻ ở `tests/library-cards.test.js` và nhãn đếm viết cứng trong `app.html` phải cập nhật tay.
 - `.control-button` hover khác nhau giữa nút bật và nút `disabled`: `.control-button:hover:not(:disabled)` (nền `#222031`, viền `#7965b6`, độ đặc hiệu cao hơn) chỉ áp khi nút bật, còn nút `disabled` rơi về
   `.control-button:hover` (nền `#1d4ed8`), nên nút bị khóa lại đổi sang xanh đậm khi rê chuột. Cần quyết định thiết kế một kiểu hover (và nút khóa không đổi khi hover) rồi gom về một luật.
-- Nút "Mở lại" trên Dashboard và trang Tiến độ dùng `.control-button` (xanh `#2563eb`) cạnh hero tím: lệch tông so với nút chính `.dashboard-primary-button`; thống nhất khi làm Visualizer/Library.
-- Nút hero (Bắt đầu với Bubble Sort / Tiếp tục: ...) chạy hai bước: điều hướng cũ của `data-dashboard-target="sorting"` về thư viện Sắp xếp, rồi `reopenTopic` mở thẳng chủ đề, nên phát thêm các `viewchange`
-  trung gian có `topic: null` trước `viewchange` có topic (chỉ một `viewchange` có topic, nên `openCount` đúng). Chấp nhận vì không đổi kết quả; sửa gọn cần đổi `navigation.js` hoặc bỏ `data-dashboard-target` ở nút hero.
 
 ## Dọn dẹp
+- `viewchange.detail.topic` và `topicId` (hàm một dòng trong `src/navigation.js`): sau khi gỡ Tiến độ học tập không mã nào trong `src` đọc `topic` (năm listener của visualizer chỉ gọi `pause()`); chỉ test
+  (`navigation-topic`, `sidebar-navigation`, `sidebar-topbar`) kiểm nó. Gỡ cả hai nếu Redesign không cần; giữ nguyên trong PR gỡ tiến độ để không đổi hợp đồng sự kiện.
+- Dữ liệu `algovision:progress` đã ghi vào `localStorage` của người dùng trước khi gỡ tiến độ vẫn nằm trong trình duyệt của họ (khoảng dưới 2 kB, không ai đọc). Không có mã xóa; nếu muốn dọn thì thêm
+  một lần `removeItem` lúc khởi động và sửa `tests/meta/no-web-storage.test.js` cùng PR (hiện canh gác cả src không được nhắc `localStorage`).
 - Đổi tên thuộc tính nội bộ `dequeues`/`dequeuesLabel` trong `src/graph.js` cho khớp `#graph-traversal-count` (không đổi hành vi).
 - Khoảng trắng cuối dòng và newline cuối file chưa khớp `.editorconfig`: thiếu newline cuối ở `src/linked-list.js`,
   `src/structures/linkedList.js`, `tests/linked-list.test.js`; khoảng trắng cuối dòng ở `src/array.js:14`, `src/sorting.js:34`,

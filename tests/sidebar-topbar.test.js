@@ -36,7 +36,7 @@ const crumbs = (document) => [...document.querySelectorAll('.topbar .breadcrumb 
 const expectedTitle = (name) => (name === 'dashboard' ? BASE_TITLE : `${EXPECTED[name].at(-1)} - AlgoVision`)
 const run = (callback, options = {}) => withFullApp(callback, { title: BASE_TITLE, ...options })
 
-test('bảng kỳ vọng phủ đúng 16 màn hình của SCREENS', () => {
+test('bảng kỳ vọng phủ đúng 15 màn hình của SCREENS', () => {
   assert.deepEqual(SCREENS.map((screen) => screen.name), Object.keys(EXPECTED))
 })
 
