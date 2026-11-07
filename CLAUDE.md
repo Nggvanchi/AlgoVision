@@ -19,7 +19,7 @@ Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so v�
 Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
 - Đo 2026-11-07 trên Windows 11 x64 (Node v24.21.0, pnpm 12.5.1). Baseline trước Phase 4 đo trên Ubuntu/Linux x64 (Node v26.13.0, pnpm 12.16.1).
-- `pnpm test`: 1313/1313 pass, 0 fail, 0 skipped, 26,3 s và 27,6 s (hai lần đo trên Windows; Ubuntu trước đây 16–23 s).
+- `pnpm test`: 1318/1318 pass, 0 fail, 0 skipped, 29,4 s (lần đo mới nhất trên `main` sau PR #30, Windows; các lần đo trước trong PR: 26,3–27,6 s; Ubuntu trước đây 16–23 s).
 - `pnpm build`: JS 145,92 kB (145.918 B; gzip 42,34 kB), CSS 49,09 kB (49.085 B; gzip 9,77 kB), HTML 0,75 kB (746 B).
   Ngưỡng sau khi gỡ Tiến độ học tập (số đo thật của `vite build` làm tròn lên 0,5 kB gần nhất): JS <= 146,0 kB (gzip <= 42,5), CSS <= 49,5 kB (gzip <= 10,0).
   JS dư 82 B, CSS dư 415 B. Đã duyệt hạ ngưỡng từ mức Phase 4 (JS 160 kB / gzip 47,0; CSS 52,5 kB / gzip 10,5) vì PR `chore/remove-learning-progress` gỡ mã và CSS của tiến độ
