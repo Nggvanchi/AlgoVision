@@ -4,10 +4,6 @@ import { initSearching } from './searching.js'
 import { initSorting } from './sorting.js'
 import { initNavigation } from './navigation.js'
 import { initSidebar } from './sidebar.js'
-import { initProgress } from './progress-init.js'
-import { initProgressView } from './progress-view.js'
-import { initDashboardProgress } from './dashboard-progress.js'
-import { initLibraryStatus } from './library-status.js'
 import { initArray } from './array.js'
 import { initStack } from './stack.js'
 import { initQueue } from './queue.js'
@@ -19,10 +15,6 @@ import { initGraph } from './graph.js'
 function startApp() {
   initNavigation(document)
   initSidebar(document)
-  const progress = initProgress(document)
-  initProgressView(document, progress)
-  initDashboardProgress(document, progress)
-  initLibraryStatus(document, progress)
   initSorting()
   initSearching()
   initArray()

@@ -4,13 +4,12 @@ import assert from 'node:assert/strict'
 import { Window } from 'happy-dom'
 
 import { template, withFullApp } from './helpers/app-dom.js'
-import { memoryStorage } from './helpers/memory-storage.js'
 
 // Redesign Phase 4 (Thư viện), thẻ thuật toán Sắp xếp và Tìm kiếm: pill độ khó (nhãn cũ), tên (h4), mô tả, hàng "Thời gian (xấu nhất)"
-// và "Bộ nhớ", trạng thái Đã mở/Chưa mở, đoạn "Trực quan hóa →". Hai hàng độ phức tạp đặt tĩnh trong app.html nên phải khớp
+// và "Bộ nhớ", đoạn "Trực quan hóa →". Hai hàng độ phức tạp đặt tĩnh trong app.html nên phải khớp
 // nguồn thật: bảng Learning Panel (do sorting.js / searching.js điền khi chọn thuật toán), được đối chiếu ở các test dưới đây.
 const textOf = (element) => element.textContent.replace(/\s+/g, ' ').trim()
-const run = (callback) => withFullApp(callback, { storage: memoryStorage() })
+const run = (callback) => withFullApp(callback)
 const goTo = (document, page) => document.querySelector(`.nav-item[data-page="${page}"]`).click()
 
 const SORTING = [
@@ -46,7 +45,7 @@ for (const item of CARDS) {
       assert.ok(card !== null, `phải có thẻ ${item.name}`)
       assert.equal(card.tagName, 'BUTTON')
       assert.equal(card.getAttribute('type'), 'button')
-      assert.equal(textOf(card.querySelector('h4')), item.title, 'h4 là nguồn nhãn cho breadcrumb, tiêu đề và Tiến độ')
+      assert.equal(textOf(card.querySelector('h4')), item.title, 'h4 là nguồn nhãn cho breadcrumb và tiêu đề')
       assert.ok(card.querySelector('.card-top .algorithm-symbol') !== null, 'biểu tượng thuật toán nằm trong .card-top')
       assert.equal(textOf(card.querySelector('.card-top .difficulty')), item.difficulty, 'nhãn độ khó giữ nguyên')
       assert.ok(textOf(card.querySelector(':scope > p')).length > 20, 'có đoạn mô tả')
@@ -64,12 +63,10 @@ for (const item of CARDS) {
     })
   })
 
-  test(`thẻ ${item.kind} ${item.title}: có trạng thái mặc định "Chưa mở" và đoạn "Trực quan hóa →"`, async () => {
+  test(`thẻ ${item.kind} ${item.title}: có đoạn "Trực quan hóa →"`, async () => {
     await run(({ document }) => {
       const card = item.find(document, item.name)
 
-      assert.equal(card.querySelectorAll('.card-state').length, 1)
-      assert.equal(textOf(card.querySelector('.card-state')), 'Chưa mở')
       assert.equal(textOf(card.querySelector('.card-link')), 'Trực quan hóa →')
     })
   })
@@ -134,15 +131,12 @@ test('mỗi thư viện giữ đúng số thẻ: 3 thẻ Sắp xếp, 2 thẻ T�
   })
 })
 
-test('template tĩnh (chưa chạy JS): 5 thẻ đều ghi "Chưa mở" và Bubble Sort là thẻ .selected, nên trang vẫn đúng trước khi JS khởi tạo', () => {
+test('template tĩnh (chưa chạy JS): Bubble Sort là thẻ .selected, nên trang vẫn đúng trước khi JS khởi tạo', () => {
   const window = new Window()
 
   try {
     window.document.body.innerHTML = template
 
-    const states = [...window.document.querySelectorAll('.algorithm-card .card-state')].map(textOf)
-
-    assert.deepEqual(states, ['Chưa mở', 'Chưa mở', 'Chưa mở', 'Chưa mở', 'Chưa mở'])
     assert.ok(window.document.querySelector('.algorithm-card[data-algorithm="bubble"]').classList.contains('selected'), 'Bubble Sort có .selected trong template')
   } finally {
     window.happyDOM.close()

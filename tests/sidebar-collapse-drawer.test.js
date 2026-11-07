@@ -4,7 +4,6 @@ import { readFile } from 'node:fs/promises'
 
 import { withFullApp } from './helpers/app-dom.js'
 import { createFakeMatchMedia } from './helpers/fake-media.js'
-import { memoryStorage } from './helpers/memory-storage.js'
 
 // Thu gọn (màn hình rộng) và drawer (màn hình hẹp) của sidebar. Trạng thái chỉ nằm trong bộ nhớ của phiên: không localStorage.
 // happy-dom không tính CSS nên "màn hình hẹp" được giả bằng matchMedia giả (tests/helpers/fake-media.js).
@@ -17,10 +16,10 @@ const press = (document, key) => document.dispatchEvent(new document.defaultView
 const goTo = (document, page) => document.querySelector(`.nav-item[data-page="${page}"]`).click()
 const isInert = (element) => element.hasAttribute('inert')
 
-function withSidebar(run, { mobile = false, storage = memoryStorage() } = {}) {
+function withSidebar(run, { mobile = false } = {}) {
   const media = createFakeMatchMedia(mobile)
 
-  return withFullApp((context) => run({ ...context, media, storage }), { storage, matchMedia: media.matchMedia })
+  return withFullApp((context) => run({ ...context, media }), { matchMedia: media.matchMedia })
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -53,7 +52,7 @@ test('thu gọn không làm mất tên: mọi nhãn vẫn nằm trong DOM, khôn
 
     collapseOf(document).click()
 
-    assert.equal(before.length, 12)
+    assert.equal(before.length, 11)
     assert.deepEqual(names(), before, 'chữ nhãn không đổi khi thu gọn')
 
     for (const element of document.querySelectorAll('.sidebar .nav-label, .sidebar .brand h1, .sidebar .section-label')) {
@@ -77,8 +76,6 @@ test('thu gọn giữ aria-current của mục đang mở và không động và
 })
 
 test('thu gọn chỉ nằm trong bộ nhớ phiên: không ghi localStorage hay sessionStorage', async () => {
-  const storage = memoryStorage()
-
   await withSidebar(({ window, document }) => {
     collapseOf(document).click()
     collapseOf(document).click()
@@ -86,8 +83,7 @@ test('thu gọn chỉ nằm trong bộ nhớ phiên: không ghi localStorage hay
 
     assert.equal(window.localStorage.length, 0)
     assert.equal(window.sessionStorage.length, 0)
-    assert.equal(storage.setCalls, 0, 'không có lần ghi tiến độ nào chỉ vì thu gọn')
-  }, { storage })
+  })
 })
 
 test('mã nguồn src/sidebar.js không nhắc localStorage, sessionStorage, cookie hay indexedDB', async () => {
@@ -307,15 +303,12 @@ test('chọn một mục con đóng drawer VÀ mở đúng cấu trúc', async (
   }, { mobile: true })
 })
 
-test('bấm lại mục con của cấu trúc đang mở: vẫn đóng drawer nhưng 0 viewchange và 0 lần ghi tiến độ', async () => {
-  const storage = memoryStorage()
-
+test('bấm lại mục con của cấu trúc đang mở: vẫn đóng drawer nhưng 0 viewchange', async () => {
   await withSidebar(({ document }) => {
     document.querySelector('.nav-subitem[data-structure-nav="bst"]').click()
 
     const log = []
     document.addEventListener('algovision:viewchange', (event) => log.push({ ...event.detail }))
-    const writes = storage.setCalls
 
     toggleOf(document).click()
     assert.equal(sidebarOf(document).classList.contains('is-open'), true)
@@ -324,8 +317,7 @@ test('bấm lại mục con của cấu trúc đang mở: vẫn đóng drawer nh
 
     assert.equal(sidebarOf(document).classList.contains('is-open'), false, 'drawer phải đóng')
     assert.deepEqual(log, [])
-    assert.equal(storage.setCalls, writes)
-  }, { mobile: true, storage })
+  }, { mobile: true })
 })
 
 test('bấm ☰ khi đang ở màn hình rộng không mở drawer (tránh trạng thái mở sót khi thu nhỏ cửa sổ)', async () => {
@@ -389,15 +381,14 @@ test('drawer không đụng tới thu gọn: nút thu gọn giữ trạng thái 
   }, { mobile: true })
 })
 
-test('src/main.js khởi tạo sidebar: import initSidebar và gọi SAU initNavigation (mục con do navigation sinh), TRƯỚC initProgress', async () => {
+test('src/main.js khởi tạo sidebar: import initSidebar và gọi SAU initNavigation (mục con do navigation sinh)', async () => {
   const source = await readFile(new URL('../src/main.js', import.meta.url), 'utf8')
-  // Tìm theo tên hàm (initProgress được gán vào biến: `const progress = initProgress(document)`), không theo thụt lề.
+  // Tìm theo tên hàm, không theo thụt lề.
   const call = (name) => source.search(new RegExp(`\\b${name}\\(document\\)`))
 
   assert.match(source, /import \{ initSidebar \} from '\.\/sidebar\.js'/)
-  assert.ok(call('initNavigation') !== -1 && call('initSidebar') !== -1 && call('initProgress') !== -1, 'thiếu một trong ba lời gọi init')
+  assert.ok(call('initNavigation') !== -1 && call('initSidebar') !== -1, 'thiếu một trong hai lời gọi init')
   assert.ok(call('initNavigation') < call('initSidebar'), 'initSidebar phải chạy sau initNavigation')
-  assert.ok(call('initSidebar') < call('initProgress'), 'initSidebar nên chạy trước initProgress')
 })
 
 // --- Khóa cuộn nền khi drawer mở (đo CDP trước PR: lăn chuột trên lớp phủ làm trang phía sau cuộn 0 -> 300px; inert không chặn cuộn) ---

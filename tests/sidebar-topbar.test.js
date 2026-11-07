@@ -2,7 +2,6 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 
 import { SCREENS, withFullApp } from './helpers/app-dom.js'
-import { memoryStorage } from './helpers/memory-storage.js'
 import { readStyle, parseStylesheet } from './helpers/css-tokens.js'
 
 // Redesign Phase 2b: .topbar có breadcrumb ĐỘNG (chữ thường, không liên kết, không landmark, không aria-current) và
@@ -16,7 +15,6 @@ const STRUCTURES = 'Cấu trúc dữ liệu'
 
 const EXPECTED = {
   dashboard: [ROOT, 'Tổng quan'],
-  progress: [ROOT, 'Tiến độ học tập'],
   'sorting-library': [ROOT, SORTING],
   'sorting-detail': [ROOT, SORTING, 'Bubble Sort'],
   'searching-library': [ROOT, SEARCHING],
@@ -38,7 +36,7 @@ const crumbs = (document) => [...document.querySelectorAll('.topbar .breadcrumb 
 const expectedTitle = (name) => (name === 'dashboard' ? BASE_TITLE : `${EXPECTED[name].at(-1)} - AlgoVision`)
 const run = (callback, options = {}) => withFullApp(callback, { title: BASE_TITLE, ...options })
 
-test('bảng kỳ vọng phủ đúng 16 màn hình của SCREENS', () => {
+test('bảng kỳ vọng phủ đúng 15 màn hình của SCREENS', () => {
   assert.deepEqual(SCREENS.map((screen) => screen.name), Object.keys(EXPECTED))
 })
 
@@ -143,9 +141,7 @@ test('mục con từ trang khác: breadcrumb và title chỉ đổi một lần 
   })
 })
 
-test('cập nhật topbar không thêm viewchange và không thêm lần ghi tiến độ: chuỗi sự kiện và số lần ghi giữ nguyên như Phase 2', async () => {
-  const storage = memoryStorage()
-
+test('cập nhật topbar không thêm viewchange: chuỗi sự kiện giữ nguyên như Phase 2', async () => {
   await run(({ document }) => {
     const log = []
     document.addEventListener('algovision:viewchange', (event) => log.push({ ...event.detail }))
@@ -161,8 +157,7 @@ test('cập nhật topbar không thêm viewchange và không thêm lần ghi ti�
       { page: 'structures', topic: 'structure:queue' },
       { page: 'structures', topic: null },
     ])
-    assert.equal(storage.setCalls, 2)
-  }, { storage })
+  })
 })
 
 test('.topbar vẫn là <header> trong <main>; không còn huy hiệu "Đang phát triển" (.status-badge, .status-dot) và chữ "Trực quan hóa" tĩnh', async () => {

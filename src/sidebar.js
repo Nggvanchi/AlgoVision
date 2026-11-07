@@ -1,6 +1,6 @@
 // Điều khiển sidebar: thu gọn (màn hình rộng), tooltip của trạng thái thu gọn và drawer (màn hình hẹp).
 // Trạng thái chỉ nằm trong bộ nhớ của phiên (mở lại trang thì về mặc định): file này KHÔNG chạm kho lưu trữ nào của
-// trình duyệt (chỉ src/progress-init.js được phép, tests/meta/progress-storage-boundary.test.js canh gác).
+// trình duyệt (tests/meta/no-web-storage.test.js canh gác).
 // Phải gọi SAU initNavigation: mục con của sidebar do navigation.js sinh ra.
 
 // Phải bằng @media (max-width: 700px) trong style.css (tests/sidebar-css.test.js so hai nơi).

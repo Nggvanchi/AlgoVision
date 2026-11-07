@@ -2,21 +2,16 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 
-import { Window } from 'happy-dom'
-
-import { template, withFullApp } from './helpers/app-dom.js'
-import { memoryStorage } from './helpers/memory-storage.js'
+import { withFullApp } from './helpers/app-dom.js'
 
 // Redesign Phase 4, giai đoạn c: thẻ Cấu trúc dữ liệu dùng cùng khung với thẻ thuật toán nhưng KHÔNG có pill độ khó,
-// KHÔNG có hàng Thời gian/Bộ nhớ, và có trạng thái "Đã mở" / "Chưa mở" (đọc từ initProgress qua kind "structure").
-// Các class/thuộc tính cũ (structure-card-title ... nguồn nhãn của sidebar, breadcrumb và Tiến độ) phải còn nguyên.
+// KHÔNG có hàng Thời gian/Bộ nhớ.
+// Các class/thuộc tính cũ (structure-card-title ... nguồn nhãn của sidebar và breadcrumb) phải còn nguyên.
 const textOf = (element) => element.textContent.replace(/\s+/g, ' ').trim()
-const run = (callback, options = {}) => withFullApp(callback, { storage: memoryStorage(), ...options })
+const run = (callback) => withFullApp(callback)
 
 const TARGETS = ['array', 'stack', 'queue', 'linked-list', 'bst', 'hash-table', 'graph']
-const goTo = (document, page) => document.querySelector(`.nav-item[data-page="${page}"]`).click()
 const card = (document, target) => document.querySelector(`#structure-library button.structure-card[data-structure-target="${target}"]`)
-const stateOf = (document, target) => card(document, target).querySelector('.card-state')
 
 const css = await readFile(new URL('../src/style.css', import.meta.url), 'utf8')
 
@@ -48,68 +43,16 @@ test('thẻ cấu trúc không có pill độ khó và không có hàng Thời g
   })
 })
 
-test('mỗi thẻ cấu trúc có đúng một trạng thái "Chưa mở" trong .card-status, cạnh liên kết .structure-card-link (cũng là .card-link)', async () => {
+test('mỗi thẻ cấu trúc có .card-status chứa liên kết .structure-card-link (cũng là .card-link)', async () => {
   await run(({ document }) => {
     for (const target of TARGETS) {
       const status = card(document, target).querySelector('.card-status')
 
       assert.ok(status, `${target}: có .card-status`)
-      assert.equal(status.querySelectorAll('.card-state').length, 1, target)
-      assert.equal(textOf(status.querySelector('.card-state')), 'Chưa mở', target)
       assert.equal(textOf(status.querySelector('.structure-card-link')), 'Mở trình mô phỏng →', target)
       assert.ok(status.querySelector('.structure-card-link').classList.contains('card-link'), `${target}: dùng chung luật .card-link`)
     }
   })
-})
-
-test('mở một cấu trúc thì đúng thẻ của nó đổi sang "Đã mở" (có is-opened), 6 thẻ còn lại giữ "Chưa mở"', async () => {
-  for (const opened of TARGETS) {
-    await run(({ document }) => {
-      goTo(document, 'structures')
-      card(document, opened).click()
-
-      for (const target of TARGETS) {
-        const isOpened = target === opened
-
-        assert.equal(textOf(stateOf(document, target)), isOpened ? 'Đã mở' : 'Chưa mở', `mở ${opened}, thẻ ${target}`)
-        assert.equal(stateOf(document, target).classList.contains('is-opened'), isOpened, `mở ${opened}, thẻ ${target}`)
-      }
-    })
-  }
-})
-
-test('dữ liệu đã lưu: cấu trúc có trong storage hiện "Đã mở" ngay khi tải trang, xóa lịch sử đưa về "Chưa mở"', async () => {
-  const topics = { 'structure:graph': { firstOpenedAt: 1_600_000_000_000, lastOpenedAt: 1_600_000_100_000, openCount: 2 } }
-  const storage = memoryStorage({ initial: JSON.stringify({ version: 1, topics }) })
-
-  await run(({ document, progress }) => {
-    assert.equal(textOf(stateOf(document, 'graph')), 'Đã mở')
-    assert.equal(textOf(stateOf(document, 'bst')), 'Chưa mở')
-
-    progress.clear()
-
-    for (const target of TARGETS) assert.equal(textOf(stateOf(document, target)), 'Chưa mở', target)
-  }, { storage })
-})
-
-test('dữ liệu hỏng: nhãn của 7 thẻ cấu trúc bị ẩn thay vì khẳng định "Chưa mở"', async () => {
-  await run(({ document }) => {
-    for (const target of TARGETS) assert.equal(stateOf(document, target).hidden, true, target)
-  }, { storage: memoryStorage({ initial: '{không phải json' }) })
-})
-
-test('template tĩnh (chưa chạy JS): 7 thẻ cấu trúc đều ghi "Chưa mở"', () => {
-  const window = new Window()
-
-  try {
-    window.document.body.innerHTML = template
-
-    const states = [...window.document.querySelectorAll('#structure-library .card-state')].map(textOf)
-
-    assert.deepEqual(states, Array(7).fill('Chưa mở'))
-  } finally {
-    window.happyDOM.close()
-  }
 })
 
 // Luật CSS của thẻ cấu trúc gom chung với thẻ thuật toán (không sao chép): selector của thẻ cấu trúc nằm cùng danh sách với selector thẻ thuật toán.

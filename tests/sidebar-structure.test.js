@@ -9,7 +9,6 @@ const FOCUSABLE = 'a[href], button, select, input, textarea, [tabindex]:not([tab
 const STRUCTURES = ['array', 'stack', 'queue', 'linked-list', 'bst', 'hash-table', 'graph']
 const NAV_ITEMS = [
   { page: 'dashboard', label: 'Tổng quan' },
-  { page: 'progress', label: 'Tiến độ học tập' },
   { page: 'sorting', label: 'Sắp xếp' },
   { page: 'searching', label: 'Tìm kiếm' },
   { page: 'structures', label: 'Tất cả cấu trúc' },
@@ -54,11 +53,11 @@ for (const { page, label } of NAV_ITEMS) {
   })
 }
 
-test('chỉ có đúng năm .nav-item (mục con KHÔNG mang class nav-item) và mọi data-page đều thuộc năm trang thật', async () => {
+test('chỉ có đúng bốn .nav-item (mục con KHÔNG mang class nav-item) và mọi data-page đều thuộc bốn trang thật', async () => {
   await withFullApp(({ document }) => {
     const pages = [...document.querySelectorAll('.nav-item')].map((item) => item.dataset.page)
 
-    assert.deepEqual(pages, ['dashboard', 'progress', 'sorting', 'searching', 'structures'])
+    assert.deepEqual(pages, ['dashboard', 'sorting', 'searching', 'structures'])
   })
 })
 
@@ -117,7 +116,7 @@ for (const target of STRUCTURES) {
       assert.ok(card !== null, `thiếu thẻ ${target}`)
       assert.equal(subitem.tagName, 'BUTTON')
       assert.equal(subitem.getAttribute('type'), 'button')
-      assert.equal(subitem.hasAttribute('data-structure-target'), false, 'data-structure-target dành cho thẻ: navigation.js và initProgress đếm theo thuộc tính này')
+      assert.equal(subitem.hasAttribute('data-structure-target'), false, 'data-structure-target dành cho thẻ: navigation.js sinh mục con từ các thẻ có thuộc tính này')
       assert.equal(subitem.classList.contains('nav-item'), false, 'class nav-item dành cho 4 mục trang: nhiều test lấy mục đầu tiên theo class này')
       assert.ok(document.querySelector(`#${target}-section`) !== null, `mục con ${target} phải có #${target}-section để mở`)
       assert.equal(textOf(subitem.querySelector('.nav-label')), textOf(card.querySelector('.structure-card-title')), 'nhãn lấy từ tiêu đề thẻ')
@@ -169,7 +168,7 @@ test('vùng cuộn của sidebar: div.sidebar-scroll role="group" có tên, nằ
     assert.equal(region.tagName, 'DIV')
     assert.equal(region.getAttribute('role'), 'group')
     assert.equal(region.getAttribute('aria-label'), 'Danh sách mục điều hướng')
-    assert.equal(region.querySelectorAll('.nav-item').length, 5)
+    assert.equal(region.querySelectorAll('.nav-item').length, 4)
     assert.equal(region.querySelectorAll('.nav-subitem').length, 7)
   })
 })
