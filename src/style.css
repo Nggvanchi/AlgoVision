@@ -1068,7 +1068,7 @@ button.structure-card:hover {
   padding: 6px 9px;
   border: 1px solid #393447;
   border-radius: 6px;
-  color: #c4b5fd;
+  color: var(--av-focus);
   font-size: 11px;
   white-space: nowrap;
 }
@@ -1139,7 +1139,7 @@ button.structure-card:hover {
   border: 1px solid #a58cff55;
   border-bottom: none;
   border-radius: 6px 6px 0 0;
-  background: linear-gradient(180deg, #a78bfa, #7654d5);
+  background: linear-gradient(180deg, var(--av-primary-text), #7654d5);
   transition: height 180ms ease, background 180ms ease;
 }
 
@@ -1265,7 +1265,7 @@ button.structure-card:hover {
   border: 1px solid #a58cff55;
   border-bottom: none;
   border-radius: 4px 4px 0 0;
-  background: linear-gradient(180deg, #a78bfa, #7654d5);
+  background: linear-gradient(180deg, var(--av-primary-text), #7654d5);
 }
 
 /* Ở màn hẹp, chú giải của Bubble và Selection (3 mục) cao hơn của Insertion (2 mục): đo Chrome 78px so với 62px ở 360px.
@@ -1429,7 +1429,7 @@ button.structure-card:hover {
 .complexity-card strong {
   display: block;
   margin-top: 10px;
-  color: #c4b5fd;
+  color: var(--av-focus);
   font-size: 24px;
   font-weight: 600;
 }
@@ -1915,7 +1915,7 @@ button.structure-card:hover {
   padding: 10px 14px;
   color: #f9fafb;
   background: #2563eb;
-  border: 1px solid #3b82f6;
+  border: 1px solid var(--av-accent);
   border-radius: 9px;
   font: inherit;
   font-size: 13px;
@@ -1965,7 +1965,7 @@ button.structure-card:hover {
 
 .array-operation-card input:focus {
   border-color: var(--av-primary-line);
-  box-shadow: 0 0 0 3px #9b82ff26;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
 }
 
 .array-operation-card .control-button {
@@ -2207,7 +2207,7 @@ button.structure-card:focus-visible,
 }
 
 .linked-list-node.is-highlighted {
-  border-color: #a78bfa;
+  border-color: var(--av-primary-text);
   background: rgba(139, 92, 246, 0.25);
   transform: translateY(-3px);
 }
@@ -2215,7 +2215,7 @@ button.structure-card:focus-visible,
 .linked-list-node-label {
   font-size: 12px;
   font-weight: 700;
-  color: #c4b5fd;
+  color: var(--av-focus);
 }
 
 .linked-list-node-value {
@@ -2232,7 +2232,7 @@ button.structure-card:focus-visible,
 .linked-list-arrow {
   flex: 0 0 auto;
   font-size: 26px;
-  color: #a78bfa;
+  color: var(--av-primary-text);
 }
 
 .linked-list-null {
@@ -2241,7 +2241,7 @@ button.structure-card:focus-visible,
   border: 1px dashed rgba(255, 255, 255, 0.3);
   border-radius: 8px;
   font-size: 13px;
-  color: #c4b5fd;
+  color: var(--av-focus);
 }
 
 .linked-list-empty {
@@ -2380,7 +2380,7 @@ button.structure-card:focus-visible,
 }
 
 .queue-status.is-error {
-    color: #f87171;
+    color: var(--av-danger);
 }
 
 .queue-operations {
@@ -2739,7 +2739,7 @@ button.dashboard-card:hover {
 }
 
 .bst-toolbar input[aria-invalid='true'] {
-  border-color: #f87171;
+  border-color: var(--av-danger);
 }
 
 .bst-hint,

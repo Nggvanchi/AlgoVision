@@ -587,3 +587,58 @@ test('var(--purple) chỉ còn dùng cho canvas BST/Hash/Graph (13 khai báo); c
   assert.equal(users.length, 13)
   assert.deepEqual(users.filter((selector) => !/^\.(bst|hash|graph)-/.test(selector)), [], 'chỗ dùng --purple ngoài canvas')
 })
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Redesign R2 commit 3: không viết cứng hex trùng hẳn màu Spec ngoài :root
+// ---------------------------------------------------------------------------------------------------------------------
+
+// Giá trị Spec đã đặt tên token: đọc từ :root (khối --av-*), không gõ lại.
+const NAMED_SPEC_COLORS = new Map([...tokens].filter(([name, value]) => /^--av-/.test(name) && /^#[0-9a-f]{6}$/i.test(value)).map(([name, value]) => [value.toLowerCase(), name]))
+
+// Ngoại lệ: hex trùng giá trị Spec nhưng Spec KHÔNG đặt tên token (R2 chưa khai báo), nên chưa thể thay. Mỗi mục có lý do; khi R3-R6
+// khai báo token tương ứng thì chuyển luật sang token và xóa mục khỏi danh sách (test mục cuối bắt mục thừa).
+const SPEC_HEX_EXCEPTIONS = [
+  ['#stack-status.is-error', '#fca5a5', 'danger-text của Spec chưa có token (R2 không khai báo giá trị Spec không tên)'],
+  ['#linked-list-status[data-type="error"]', '#fca5a5', 'danger-text của Spec chưa có token'],
+  ['.bst-error', '#fca5a5', 'danger-text của Spec chưa có token'],
+  ['.queue-cell.is-rear', '#60a5fa', 'accent-icon của Spec chưa có token'],
+  ['.queue-rear-label', '#60a5fa', 'accent-icon của Spec chưa có token'],
+]
+
+function specHexOutsideRoot() {
+  const found = []
+
+  for (const rule of sheet.rules) {
+    if (rule.selectors.length === 1 && rule.selectors[0] === ':root') continue
+    for (const declaration of rule.declarations) {
+      for (const match of declaration.value.matchAll(/#[0-9a-f]{6}\b/gi)) {
+        if (NAMED_SPEC_COLORS.has(match[0].toLowerCase())) found.push([rule.selectors.join(', '), match[0].toLowerCase(), declaration.property])
+      }
+    }
+  }
+
+  return found
+}
+
+test('không còn hex viết cứng trùng hẳn màu Spec đã có token (ngoài :root)', () => {
+  const offenders = specHexOutsideRoot().map(([selector, hex, property]) => `${selector} { ${property}: ${hex} } nên dùng var(${NAMED_SPEC_COLORS.get(hex)})`)
+  assert.deepEqual(offenders, [])
+})
+
+test('hex trùng giá trị Spec chưa có token chỉ nằm ở danh sách ngoại lệ có lý do (mỗi mục vẫn còn đúng, không thừa)', () => {
+  const unnamed = ['#fca5a5', '#60a5fa']
+  const actual = sheet.rules
+    .filter((rule) => !(rule.selectors.length === 1 && rule.selectors[0] === ':root'))
+    .flatMap((rule) => rule.declarations.flatMap((declaration) => [...declaration.value.matchAll(/#[0-9a-f]{6}\b/gi)].map((match) => [rule.selectors.join(', '), match[0].toLowerCase()])))
+    .filter(([, hex]) => unnamed.includes(hex))
+    .sort()
+
+  assert.deepEqual(actual, SPEC_HEX_EXCEPTIONS.map(([selector, hex]) => [selector, hex]).sort())
+  assert.ok(SPEC_HEX_EXCEPTIONS.every(([, , reason]) => reason.length > 10), 'mỗi ngoại lệ phải có lý do')
+})
+
+test('glow focus của ô nhập Mảng dùng rgba của --av-primary-line với alpha 0,15, không còn hex 8 chữ số #9b82ff26', () => {
+  const [red, green, blue] = [1, 3, 5].map((at) => Number.parseInt(tokens.get('--av-primary-line').slice(at, at + 2), 16))
+
+  assert.deepEqual(declarationValues(css, '.array-operation-card input:focus', 'box-shadow'), [`0 0 0 3px rgba(${red}, ${green}, ${blue}, 0.15)`])
+})
