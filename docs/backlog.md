@@ -84,6 +84,13 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Thuật toán mới (ngoài 3 sắp xếp, 2 tìm kiếm): mỗi thuật toán thêm thẻ `data-algorithm`/`data-search-algorithm`; số thẻ ở `tests/library-cards.test.js` và nhãn đếm viết cứng trong `app.html` phải cập nhật tay.
 - `.control-button` hover khác nhau giữa nút bật và nút `disabled`: `.control-button:hover:not(:disabled)` (nền `#222031`, viền `#7965b6`, độ đặc hiệu cao hơn) chỉ áp khi nút bật, còn nút `disabled` rơi về
   `.control-button:hover` (nền `#1d4ed8`), nên nút bị khóa lại đổi sang xanh đậm khi rê chuột. Cần quyết định thiết kế một kiểu hover (và nút khóa không đổi khi hover) rồi gom về một luật.
+- Redesign v1.0, header: ô tìm Ctrl K toàn cục và chip tài khoản "[Tên người học]" (avatar "?") chưa làm. Spec mục 14: chưa có thiết kế kết quả tìm kiếm hay command palette; tài khoản chỉ là placeholder (dữ liệu giả, `docs/design/decisions.md` mục 5).
+- Redesign v1.0, sidebar: Spec mục 7 muốn nhớ trạng thái thu gọn giữa các phiên. Muốn làm phải sửa `tests/meta/no-web-storage.test.js` (hiện cấm `localStorage`/`sessionStorage` trong `src`) cùng PR đó.
+- Redesign v1.0, sidebar 264 px (Spec) so với 256 px hiện tại: giữ 256 px đến khi làm tablet rail. Đổi sang 264 px cần sửa `--sidebar-width`, `tests/sidebar-css.test.js` và `tests/hash-table-layout.test.js` (chuỗi chaining 15 khóa 842 px phải vẫn vừa khung bảng băm ở 1280 px).
+- Redesign v1.0, điều hướng: Spec mục 7 có mục "Đệ quy", gộp "Ngăn xếp và hàng đợi", và mục "Trực quan hóa" ở gốc; ứng dụng không có nội dung Đệ quy và có 7 cấu trúc riêng. Chưa làm; mục "Trực quan hóa" trỏ tới đâu phải hỏi người dùng khi làm R3.
+- Redesign v1.0, Visualizer (Spec mục 10): ô nhập dữ liệu "số nguyên 1–99, tối đa 12 phần tử", chip Mẫu dữ liệu (Ngẫu nhiên, Gần sắp xếp, Đảo ngược, Có phần tử trùng) và thanh trượt bước `role="slider"` là chức năng mới. Thanh trượt cần `simulation-controller.js` nhảy tới bước tùy ý (kiểm tra khi lập kế hoạch R6); nhập mảng cho Sorting trùng với mục R18 ở trên.
+- Redesign v1.0, thẻ cấu trúc dữ liệu: Spec mục 9 và 17 muốn độ khó, phân loại, Thời gian/Bộ nhớ trên card; 7 cấu trúc chưa có nguồn dữ liệu thật cho các trường này nên Phase 4 bỏ chúng (số giả bị cấm). Cần nguồn dữ liệu thật (và đối chiếu với code, như thẻ thuật toán đối chiếu Learning Panel) trước khi thêm.
+- Artboard của Spec (ảnh PNG, trang "AlgoVision Design") không có trong repo; khi có thư mục design-source thì đặt ảnh vào `docs/design-refs/` và trỏ tới từ `docs/design/spec.md`.
 
 ## Dọn dẹp
 - `viewchange.detail.topic` và `topicId` (hàm một dòng trong `src/navigation.js`): sau khi gỡ Tiến độ học tập không mã nào trong `src` đọc `topic` (năm listener của visualizer chỉ gọi `pause()`); chỉ test
