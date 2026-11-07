@@ -98,6 +98,7 @@ function openGraphTraversal(document, operation) {
 // Mọi màn hình người dùng có thể thấy. Mỗi màn hình mở bằng thao tác thật của người dùng (click), không chỉnh hidden tay.
 export const SCREENS = [
   { name: 'dashboard', open: (document) => clickNav(document, 'dashboard') },
+  { name: 'progress', open: (document) => clickNav(document, 'progress') },
   { name: 'sorting-library', open: (document) => clickNav(document, 'sorting') },
   {
     name: 'sorting-detail',

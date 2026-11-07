@@ -16,6 +16,7 @@ const STRUCTURES = 'Cấu trúc dữ liệu'
 
 const EXPECTED = {
   dashboard: [ROOT, 'Tổng quan'],
+  progress: [ROOT, 'Tiến độ học tập'],
   'sorting-library': [ROOT, SORTING],
   'sorting-detail': [ROOT, SORTING, 'Bubble Sort'],
   'searching-library': [ROOT, SEARCHING],
@@ -37,7 +38,7 @@ const crumbs = (document) => [...document.querySelectorAll('.topbar .breadcrumb 
 const expectedTitle = (name) => (name === 'dashboard' ? BASE_TITLE : `${EXPECTED[name].at(-1)} - AlgoVision`)
 const run = (callback, options = {}) => withFullApp(callback, { title: BASE_TITLE, ...options })
 
-test('bảng kỳ vọng phủ đúng 15 màn hình của SCREENS', () => {
+test('bảng kỳ vọng phủ đúng 16 màn hình của SCREENS', () => {
   assert.deepEqual(SCREENS.map((screen) => screen.name), Object.keys(EXPECTED))
 })
 
@@ -219,9 +220,11 @@ test('sau khi gọi lại điều hướng nhiều lần, breadcrumb không nhâ
       for (const screen of SCREENS) screen.open(document)
     }
 
-    SCREENS[0].open(document)
+    const screenNamed = (name) => SCREENS.find((screen) => screen.name === name)
+
+    screenNamed('dashboard').open(document)
     assert.deepEqual(crumbs(document), EXPECTED.dashboard)
-    SCREENS[2].open(document)
+    screenNamed('sorting-detail').open(document)
     assert.deepEqual(crumbs(document), EXPECTED['sorting-detail'])
   })
 })

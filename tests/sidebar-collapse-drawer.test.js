@@ -53,7 +53,7 @@ test('thu gọn không làm mất tên: mọi nhãn vẫn nằm trong DOM, khôn
 
     collapseOf(document).click()
 
-    assert.equal(before.length, 11)
+    assert.equal(before.length, 12)
     assert.deepEqual(names(), before, 'chữ nhãn không đổi khi thu gọn')
 
     for (const element of document.querySelectorAll('.sidebar .nav-label, .sidebar .brand h1, .sidebar .section-label')) {
