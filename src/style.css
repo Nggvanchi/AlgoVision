@@ -135,6 +135,20 @@
   --av-space-7: 48px;
   --av-space-8: 64px;
 
+  /* Cỡ chữ cơ bản theo Spec mục 3 (chỉ cỡ; đậm và line-height do luật quyết). Tên do R2 chọn, Spec không đặt tên. Spec ghi khoảng ở
+     Card 16–17, Body nhỏ 13.5–14, Label nhỏ 11–12: chọn 16, 14, 12. Màn hình áp dần ở R3–R6. */
+  --av-fs-display: 40px;
+  --av-fs-hero: 34px;
+  --av-fs-page: 28px;
+  --av-fs-h2: 24px;
+  --av-fs-h3: 18px;
+  --av-fs-card: 16px;
+  --av-fs-body: 15px;
+  --av-fs-body-sm: 14px;
+  --av-fs-caption: 13px;
+  --av-fs-label: 12px;
+  --av-fs-code: 14px;
+
   /* === TOKEN CŨ ===
      Redesign R2: các token cũ thành ALIAS tạm trỏ vào --av-* (nguồn giá trị duy nhất). Mỗi alias có chú thích "tạm, gỡ ở R?":
      các PR R3-R6 đổi chỗ dùng sang --av-* rồi xóa alias (tests/design-tokens.test.js đếm alias; docs/backlog.md ghi việc gỡ).
@@ -791,7 +805,7 @@ button.structure-card:hover {
 .structure-card-title {
   margin: 0;
   color: #f1effb;
-  font-size: 16px;
+  font-size: var(--av-fs-card);
   font-weight: 600;
 }
 
@@ -875,7 +889,7 @@ button.structure-card:hover {
   border-radius: 8px;
   background: var(--purple-dark);
   color: white;
-  font-size: 12px;
+  font-size: var(--av-fs-label);
   font-weight: 600;
   cursor: pointer;
   transition: background 160ms ease, transform 160ms ease;
@@ -1800,7 +1814,7 @@ button.structure-card:hover {
 .array-operation-card h4 {
   margin: 0 0 8px;
   color: #f3f4f6;
-  font-size: 16px;
+  font-size: var(--av-fs-card);
 }
 
 .array-panel-heading p,
@@ -1918,7 +1932,7 @@ button.structure-card:hover {
   border: 1px solid var(--av-accent);
   border-radius: 9px;
   font: inherit;
-  font-size: 13px;
+  font-size: var(--av-fs-caption);
   font-weight: 600;
   cursor: pointer;
   transition:
@@ -2094,7 +2108,7 @@ button.structure-card:hover {
 
 .stack-operations .array-operation-card label {
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--av-fs-caption);
 }
 
 .stack-operations .array-operation-card input {
@@ -2537,7 +2551,7 @@ button.structure-card:focus-visible,
   background: var(--panel);
   color: var(--muted);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--av-fs-caption);
   cursor: pointer;
   transition:
     color 0.2s ease,
@@ -2654,7 +2668,7 @@ button.dashboard-card:hover {
 }
 
 .dashboard-card-title {
-  font-size: 18px;
+  font-size: var(--av-fs-h3);
   font-weight: 700;
 }
 
@@ -2667,7 +2681,7 @@ button.dashboard-card:hover {
 .dashboard-card-link {
   margin-top: 4px;
   color: var(--av-primary-text);
-  font-size: 14px;
+  font-size: var(--av-fs-body-sm);
   font-weight: 600;
 }
 
@@ -2680,7 +2694,7 @@ button.dashboard-card:hover {
   border: 1px solid var(--border);
   border-radius: 999px;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: var(--av-fs-label);
 }
 
 @media (max-width: 700px) {
