@@ -30,14 +30,6 @@ test('src/progress-store.js và src/progress-init.js không dùng chữ complete
   }
 })
 
-test('src/progress-view.js (giao diện đọc tiến độ) không chạm kho trình duyệt, không storage event, không chữ cấm kể cả trong comment', async () => {
-  const view = await readFile(new URL('progress-view.js', srcDir), 'utf8')
-
-  assert.ok(files.includes('progress-view.js'))
-  assert.ok(!/localStorage|sessionStorage|\bstorage\b/.test(view), 'dữ liệu chỉ đi qua đối tượng initProgress trả về')
-  assert.ok(!/completed|hoàn thành|streak|chuỗi ngày|thời gian học|%/i.test(view), 'chỉ nói "đã mở"; không phần trăm, không streak')
-})
-
 test('src/main.js gọi initProgress(document) sau initNavigation(document) (withFullApp không chạy main.js thật)', async () => {
   const main = await readFile(new URL('main.js', srcDir), 'utf8')
   const navigationAt = main.indexOf('initNavigation(document)\n')

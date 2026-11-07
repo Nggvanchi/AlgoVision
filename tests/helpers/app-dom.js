@@ -26,11 +26,10 @@ export async function withFullApp(run, options = {}) {
   globalThis.window = window
 
   try {
-    const [navigation, sidebarModule, progressInit, progressView, sorting, searching, array, stack, queue, linkedList, bst, hashTable, graph] = await Promise.all([
+    const [navigation, sidebarModule, progressInit, sorting, searching, array, stack, queue, linkedList, bst, hashTable, graph] = await Promise.all([
       import('../../src/navigation.js'),
       import('../../src/sidebar.js'),
       import('../../src/progress-init.js'),
-      import('../../src/progress-view.js'),
       import('../../src/sorting.js'),
       import('../../src/searching.js'),
       import('../../src/array.js'),
@@ -45,7 +44,6 @@ export async function withFullApp(run, options = {}) {
     navigation.initNavigation(document)
     const sidebar = sidebarModule.initSidebar(document, { matchMedia: options.matchMedia })
     const progress = progressInit.initProgress(document, { storage: options.storage, now: options.now })
-    progressView.initProgressView(document, progress)
     sorting.initSorting({ scheduler })
     searching.initSearching({ scheduler })
     array.initArray()
@@ -101,7 +99,6 @@ function openGraphTraversal(document, operation) {
 // Mọi màn hình người dùng có thể thấy. Mỗi màn hình mở bằng thao tác thật của người dùng (click), không chỉnh hidden tay.
 export const SCREENS = [
   { name: 'dashboard', open: (document) => clickNav(document, 'dashboard') },
-  { name: 'progress', open: (document) => clickNav(document, 'progress') },
   { name: 'sorting-library', open: (document) => clickNav(document, 'sorting') },
   {
     name: 'sorting-detail',

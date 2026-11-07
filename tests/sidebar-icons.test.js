@@ -12,13 +12,12 @@ const sheet = parseStylesheet(css)
 
 const STRUCTURES = ['array', 'stack', 'queue', 'linked-list', 'bst', 'hash-table', 'graph']
 const SYMBOLS = [
-  'icon-home', 'icon-progress', 'icon-sort', 'icon-search', 'icon-structures',
+  'icon-home', 'icon-sort', 'icon-search', 'icon-structures',
   ...STRUCTURES.map((target) => `icon-structure-${target}`),
   'icon-chevron', 'icon-menu', 'icon-logo',
 ]
 const NAV_ICON_OWNERS = [
   { name: 'Tổng quan', selector: '.nav-item[data-page="dashboard"]', symbol: 'icon-home' },
-  { name: 'Tiến độ học tập', selector: '.nav-item[data-page="progress"]', symbol: 'icon-progress' },
   { name: 'Sắp xếp', selector: '.nav-item[data-page="sorting"]', symbol: 'icon-sort' },
   { name: 'Tìm kiếm', selector: '.nav-item[data-page="searching"]', symbol: 'icon-search' },
   { name: 'Tất cả cấu trúc', selector: '.nav-item[data-page="structures"]', symbol: 'icon-structures' },
@@ -103,12 +102,12 @@ for (const owner of NAV_ICON_OWNERS) {
   })
 }
 
-test('12 icon của mục điều hướng dùng 12 symbol khác nhau, không trùng với logo; Tổng quan và logo là hai hình khác nhau', async () => {
+test('11 icon của mục điều hướng dùng 11 symbol khác nhau, không trùng với logo; Tổng quan và logo là hai hình khác nhau', async () => {
   await withFullApp(({ document }) => {
     const hrefs = NAV_ICON_OWNERS.map((owner) => hrefOf(document.querySelector(`${owner.selector} .nav-icon use`)))
     const logo = hrefOf(document.querySelector('.brand-icon use'))
 
-    assert.equal(new Set(hrefs).size, 12, `href: ${hrefs.join(', ')}`)
+    assert.equal(new Set(hrefs).size, 11, `href: ${hrefs.join(', ')}`)
     assert.equal(logo, '#icon-logo')
     assert.ok(!hrefs.includes(logo), 'logo không dùng chung symbol với mục nào')
     assert.notEqual(hrefs[0], logo, 'Tổng quan (lưới 4 ô) và logo phải là hai symbol khác nhau')

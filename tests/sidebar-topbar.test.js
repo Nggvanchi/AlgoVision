@@ -16,7 +16,6 @@ const STRUCTURES = 'Cấu trúc dữ liệu'
 
 const EXPECTED = {
   dashboard: [ROOT, 'Tổng quan'],
-  progress: [ROOT, 'Tiến độ học tập'],
   'sorting-library': [ROOT, SORTING],
   'sorting-detail': [ROOT, SORTING, 'Bubble Sort'],
   'searching-library': [ROOT, SEARCHING],
