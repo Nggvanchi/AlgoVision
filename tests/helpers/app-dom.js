@@ -26,13 +26,12 @@ export async function withFullApp(run, options = {}) {
   globalThis.window = window
 
   try {
-    const [navigation, sidebarModule, progressInit, progressView, dashboardProgress, libraryStatus, sorting, searching, array, stack, queue, linkedList, bst, hashTable, graph] = await Promise.all([
+    const [navigation, sidebarModule, progressInit, progressView, dashboardProgress, sorting, searching, array, stack, queue, linkedList, bst, hashTable, graph] = await Promise.all([
       import('../../src/navigation.js'),
       import('../../src/sidebar.js'),
       import('../../src/progress-init.js'),
       import('../../src/progress-view.js'),
       import('../../src/dashboard-progress.js'),
-      import('../../src/library-status.js'),
       import('../../src/sorting.js'),
       import('../../src/searching.js'),
       import('../../src/array.js'),
@@ -49,7 +48,6 @@ export async function withFullApp(run, options = {}) {
     const progress = progressInit.initProgress(document, { storage: options.storage, now: options.now })
     progressView.initProgressView(document, progress)
     dashboardProgress.initDashboardProgress(document, progress)
-    libraryStatus.initLibraryStatus(document, progress)
     sorting.initSorting({ scheduler })
     searching.initSearching({ scheduler })
     array.initArray()

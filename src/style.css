@@ -827,8 +827,6 @@ button.structure-card:hover {
 .card-footer + .card-status {
   margin-top: 12px;
 }
-
-.card-state.is-opened,
 .card-link {
   color: var(--purple);
   font-weight: 600;
