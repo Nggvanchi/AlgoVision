@@ -19,9 +19,9 @@ Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so v�
 Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
 - Đo 2026-11-07 trên Windows 11 x64 (Node v24.21.0, pnpm 12.5.1). Baseline trước Phase 4 đo trên Ubuntu/Linux x64 (Node v26.13.0, pnpm 12.16.1).
-- `pnpm test`: 1382/1382 pass, 0 fail, 0 skipped, 24–28 s (đo trên nhánh `feat/design-tokens` sau R2, Windows; `main` trước R2: 1318 test, 26–29 s; Ubuntu trước đây 16–23 s).
-- `pnpm build` sau R2: JS 145,92 kB (145.918 B; gzip 42,34 kB), CSS 50,16 kB (50.155 B; gzip 9,94 kB), HTML 0,75 kB (746 B). R2 không đổi JS; CSS tăng 1.070 B so với `main` (49.085 B).
-  Ngưỡng hiện hành (trần riêng của PR R2 `feat/design-tokens`, đã duyệt): JS <= 146,0 kB (gzip <= 42,5), CSS <= 51,0 kB (gzip <= 10,5). JS dư 82 B, CSS dư 845 B.
+- `pnpm test`: 1384/1384 pass, 0 fail, 0 skipped, 24–28 s (đo trên nhánh `feat/design-tokens` sau R2, Windows; `main` trước R2: 1318 test, 26–29 s; Ubuntu trước đây 16–23 s).
+- `pnpm build` sau R2: JS 145,92 kB (145.918 B; gzip 42,34 kB), CSS 50,17 kB (50.170 B; gzip 9,95 kB), HTML 0,75 kB (746 B). R2 không đổi JS; CSS tăng 1.085 B so với `main` (49.085 B).
+  Ngưỡng hiện hành (trần riêng của PR R2 `feat/design-tokens`, đã duyệt): JS <= 146,0 kB (gzip <= 42,5), CSS <= 51,0 kB (gzip <= 10,5). JS dư 82 B, CSS dư 830 B.
   Ngưỡng trước R2 (sau khi gỡ Tiến độ học tập): JS <= 146,0 kB, CSS <= 49,5 kB (gzip <= 10,0). Đã duyệt hạ ngưỡng từ mức Phase 4 (JS 160 kB / gzip 47,0; CSS 52,5 kB / gzip 10,5) vì PR `chore/remove-learning-progress` gỡ mã và CSS của tiến độ
   (JS -13,6 kB, CSS -3,1 kB so với `main` trước PR). Redesign v1.0: mỗi PR cần trần bundle riêng, duyệt ở bước lập kế hoạch; không nâng ngưỡng khi chưa được duyệt.
 - Font tự host: `public/fonts` có 10 woff2 = 172.912 B (ngưỡng 175 kB) và 2 giấy phép OFL; không nằm trong bundle JS/CSS.

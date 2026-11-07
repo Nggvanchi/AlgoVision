@@ -246,6 +246,14 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+/* Mọi phần tử còn lại (select, input, textarea, [tabindex], pre và vùng cuộn mà Chrome tự cho focus như #array-visualizer ở 360px):
+   trước đây rơi về vòng mặc định của trình duyệt (gần đen trên nền tối). Độ ưu tiên thấp nhất nên mọi luật riêng thắng; đứng TRƯỚC
+   `.main-content:focus` và `.array-operation-card input` để hai luật `outline: none` đó (R7 sẽ quyết ô nhập Mảng) vẫn thắng. */
+:focus-visible {
+  outline: 2px solid var(--av-focus);
+  outline-offset: 2px;
+}
+
 button:disabled {
   cursor: not-allowed;
   opacity: 0.5;

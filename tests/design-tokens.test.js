@@ -581,6 +581,25 @@ test('vòng focus theo Spec: mọi outline của :focus-visible/:focus là 2px s
   }
 })
 
+test('luật :focus-visible chung (select, input, textarea, [tabindex], pre và vùng cuộn Chrome cho focus như #array-visualizer) dùng đúng vòng 2px solid var(--av-focus), offset 2px', () => {
+  const generic = sheet.rules.find((rule) => rule.media === null && rule.selectors.length === 1 && rule.selectors[0] === ':focus-visible')
+
+  assert.ok(generic, 'thiếu luật :focus-visible chung: phần tử không có luật riêng rơi về vòng mặc định auto gần đen của trình duyệt')
+  assert.equal(generic.declarations.find((declaration) => declaration.property === 'outline')?.value, '2px solid var(--av-focus)')
+  assert.equal(generic.declarations.find((declaration) => declaration.property === 'outline-offset')?.value, '2px')
+})
+
+test('luật focus-visible chung đứng TRƯỚC `.main-content:focus` và `.array-operation-card input` để hai luật bỏ vòng này (cùng độ ưu tiên) thắng theo thứ tự', () => {
+  const selectorsInOrder = sheet.rules.filter((rule) => rule.media === null).map((rule) => rule.selectors.join(', '))
+  const at = (selector) => selectorsInOrder.findIndex((text) => text === selector || text.split(', ').includes(selector))
+  const generic = at(':focus-visible')
+
+  assert.ok(generic !== -1)
+  assert.ok(generic < at('.main-content:focus'), 'luật chung phải trước .main-content:focus (outline: none cho vùng nội dung được focus bằng chương trình)')
+  assert.ok(generic < at('.array-operation-card input'), 'luật chung phải trước .array-operation-card input (outline: none + glow, để R7 quyết)')
+  assert.deepEqual(declarationValues(css, '.array-operation-card input', 'outline'), ['none'], 'ô nhập Mảng giữ outline: none + glow cho tới R7')
+})
+
 test('var(--purple) chỉ còn dùng cho canvas BST/Hash/Graph (13 khai báo); chữ, viền và focus đã chuyển sang --av-*', () => {
   const users = sheet.rules.flatMap((rule) => rule.declarations.filter((declaration) => declaration.value.includes('var(--purple)')).map(() => rule.selectors.join(', ')))
 
