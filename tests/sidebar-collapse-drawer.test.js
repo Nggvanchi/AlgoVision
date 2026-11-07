@@ -53,7 +53,7 @@ test('thu gọn không làm mất tên: mọi nhãn vẫn nằm trong DOM, khôn
 
     collapseOf(document).click()
 
-    assert.equal(before.length, 11)
+    assert.equal(before.length, 12)
     assert.deepEqual(names(), before, 'chữ nhãn không đổi khi thu gọn')
 
     for (const element of document.querySelectorAll('.sidebar .nav-label, .sidebar .brand h1, .sidebar .section-label')) {
@@ -391,7 +391,8 @@ test('drawer không đụng tới thu gọn: nút thu gọn giữ trạng thái 
 
 test('src/main.js khởi tạo sidebar: import initSidebar và gọi SAU initNavigation (mục con do navigation sinh), TRƯỚC initProgress', async () => {
   const source = await readFile(new URL('../src/main.js', import.meta.url), 'utf8')
-  const call = (name) => source.indexOf(`  ${name}(document)`)
+  // Tìm theo tên hàm (initProgress được gán vào biến: `const progress = initProgress(document)`), không theo thụt lề.
+  const call = (name) => source.search(new RegExp(`\\b${name}\\(document\\)`))
 
   assert.match(source, /import \{ initSidebar \} from '\.\/sidebar\.js'/)
   assert.ok(call('initNavigation') !== -1 && call('initSidebar') !== -1 && call('initProgress') !== -1, 'thiếu một trong ba lời gọi init')

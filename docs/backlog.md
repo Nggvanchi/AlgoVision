@@ -6,7 +6,7 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 ## Lỗi
 - Cửa sổ đua rất hẹp của tiến độ học tập: hai tab đọc rồi ghi đúng cùng lúc thì tab ghi sau đè tab ghi trước và mất một lần đếm
   `openCount` (mỗi lần mở đọc lại bản mới nhất, nên chỉ lệch khi hai cặp `getItem`/`setItem` xen kẽ; hàm `open` trong `src/progress-store.js`).
-  Chấp nhận vì chỉ lệch 1 đơn vị đếm, không mất chủ đề; `localStorage` không có khóa. Xem lại khi làm Phase 3b.
+  Chấp nhận vì chỉ lệch 1 đơn vị đếm, không mất chủ đề; `localStorage` không có khóa (giao diện Phase 3b vẽ lại theo sự kiện `storage`, nên số hiển thị tự sửa).
 
 ## Hiệu năng
 - `buildGraph` sao chép cả đồ thị sau mỗi lần thêm đỉnh/cạnh (O(n²)). Đo 2026-11-05: sao 300 đỉnh 39–73 ms, 1000 đỉnh 0,7–1,0 s,
@@ -21,12 +21,9 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
   (cấu hình Vercel hiện nằm trên Vercel, không có file trong repo).
 
 ## Giao diện
-- Nút xóa tiến độ học tập: phải làm CÙNG giao diện hiển thị ở Phase 3b vì đây là lịch sử xem của người dùng; hiện chỉ có API `clear()`
-  (`src/progress-store.js`) và người dùng chỉ xóa được qua DevTools (khóa `algovision:progress`).
-- Sự kiện `storage` giữa hai tab: chưa đăng ký (chưa có giao diện đọc tiến độ); thêm khi Phase 3b hiển thị tiến độ để hai tab cùng cập nhật.
 - Thời lượng học: đã loại khỏi giai đoạn 8 vì là suy đoán (phải định nghĩa "đang học"); nếu thêm thì nâng `version` lên 2 kèm migrate.
-- Tiến độ học tập chưa kiểm trên trình duyệt thật: Chrome/Firefox/Safari, cửa sổ riêng tư (đọc `localStorage` ném lỗi, hết quota) và hai tab
-  thật; test chỉ chạy bằng happy-dom với storage giả. Kiểm trên link preview Vercel.
+- Tiến độ học tập (trang Tiến độ, khối Dashboard, sự kiện `storage`) chưa kiểm trên trình duyệt thật: Firefox/Safari, cửa sổ riêng tư (đọc `localStorage` ném lỗi, hết quota),
+  `StorageEvent` thật giữa hai tab và trình đọc màn hình thật; test chỉ chạy bằng happy-dom với storage giả. Kiểm trên link preview Vercel.
 - Click thẻ thuật toán Sorting luôn tạo mảng mới (hành vi có từ trước).
 - Rà soát giao diện ở 360px (chưa khảo sát, đầu vào cho bước rà soát giao diện): chữ Big-O của linear probing,
   viền "ô đã dò" bị che ở PR #6/#9.
@@ -37,13 +34,11 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
   nên luôn 1 dòng, chỉ xuống 2 dòng ở 1280px trong thẻ 177px (chấp nhận); viền "ô đã dò" nằm trọn trong khung (probing: lề ≥ 6px;
   chaining preset 14 khóa: 0/14 ô bị cắt).
 - Khối "PHIÊN BẢN" của sidebar đã bỏ ở Redesign Phase 2 vì "AlgoVision 0.1.0" không phải dữ liệu thật (`package.json` ghi `0.0.0`, repo không có tag): hiện phiên bản thật khi có nguồn (ví dụ `package.json` hoặc tag release).
-- Glyph icon của sidebar rơi về font hệ thống: đo 2026-11-06 (Chrome 152, Windows) 9/11 glyph không dùng font tự host: ⌂ ↕ (Arial), ⌕ ▤ ⋔ ◬ (Cambria Math), ↔ (Segoe UI Semibold), ⛓ (Segoe UI Symbol); chỉ "[ ]" và "#"
-  dùng Be Vietnam Pro. Hình sẽ khác giữa Windows và Linux (chưa đo Ubuntu). Nên thay bằng SVG hoặc subset font.
-- Icon ▤ trùng giữa "Tất cả cấu trúc" và Stack trong sidebar (cả hai đều là glyph của thẻ); nhất là ở trạng thái thu gọn, hai mục nhìn như nhau (tooltip và tên truy cập vẫn phân biệt được).
-- Thanh cuộn mặc định sáng trên nền tối: `.sidebar-scroll` (và mọi vùng cuộn khác của app) chưa có `scrollbar-color`/`scrollbar-width`.
+- Thanh cuộn mảnh và tối mới có ở `.sidebar-scroll` (`scrollbar-width`/`scrollbar-color`, PR #25); các vùng cuộn khác của app (mã giả, khung vẽ BST/Hash/Graph, bảng) vẫn dùng thanh cuộn mặc định sáng trên nền tối.
 - Nhãn "Tất cả cấu trúc" (sidebar) khác tiêu đề trang "Cấu trúc dữ liệu" (h2 của thư viện); thống nhất cách gọi.
-- Nút menu ☰ (vẽ bằng CSS) không đổi thành ✕ khi drawer mở; drawer không đổ bóng; tooltip và mũi tên nút thu gọn không có hiệu ứng mờ/xoay. Cắt để CSS vào ngưỡng 51,5 kB của Phase 2; thêm lại khi CSS còn chỗ.
-- Ngưỡng dung lượng CSS: sau Phase 2 chỉ dư 117 B so với ngưỡng 51,5 kB (CSS 51.383 B). PR sau phải xem lại ngưỡng có chủ ý (nâng ngưỡng có lý do, hoặc cắt CSS chết) thay vì lặng lẽ vượt.
+- Nút menu ☰ không đổi thành ✕ khi drawer mở; drawer không đổ bóng; tooltip và mũi tên nút thu gọn không có hiệu ứng mờ/xoay. Cắt để CSS vào ngưỡng của Phase 2; thêm lại khi CSS còn chỗ.
+- Ngưỡng dung lượng bundle: sau Phase 3b chỉ dư JS 493 B (159.007 B so với ngưỡng 159,5 kB) và CSS 175 B (52.825 B so với ngưỡng 53 kB). PR sau phải xem lại ngưỡng có chủ ý (nâng ngưỡng có lý do, hoặc cắt mã thừa) thay vì lặng lẽ vượt.
+  Nơi có thể cắt: chuỗi tiếng Việt lặp, ba khối `progress-*` CSS dùng chung, `progress-summary.js`.
 - Nâng viền ô nhập lên `--border-control` (đã có ở mục viền ô nhập 1,33:1 phía trên): làm ở PR Visualizer/Structure workspace, không ở sidebar.
 - Chưa kiểm sidebar trên thiết bị di động thật (`100dvh`, thanh địa chỉ co giãn, chạm), trình đọc màn hình thật (CDP không liệt kê `aria-current` trong cây trợ năng), Firefox/Safari (`inert`, `:focus-visible`) và preview Vercel.
 - Cột Insertion đang so sánh nằm trong đoạn đã sắp xếp (khoảng 94% số cột so sánh của Insertion trong mẫu đo 300 mảng) chỉ hiện "đang so sánh",
@@ -71,8 +66,6 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - R17: nút/ô nhập cao 38–42px ở 360px (BST, Hash: "Quay lại" 38, ô chọn 42, ô nhập 40, "Thực hiện" 39, nút preset 40; thanh tốc độ 16px);
   trên mức tối thiểu 24px của WCAG 2.2, dưới mức khuyến nghị 44px.
 - R18: Sắp xếp không cho nhập mảng hay chọn preset (chỉ "Tạo mảng mới" ngẫu nhiên), nên không thử được mảng đã sắp xếp, đảo ngược, trùng toàn bộ.
-- `document.title` (`index.html:10`, "AlgoVision - Trực quan hóa thuật toán") và `.topbar` trong `<main>` (breadcrumb tĩnh "Không gian học tập / Trực quan hóa" cùng huy hiệu "Đang phát triển")
-  chưa đổi theo trang: đúng với mọi trang nhưng không nói đang ở đâu. Redesign Phase 2 giữ nguyên `.topbar`; thanh trên ☰ của drawer là phần tử riêng.
 - Viền ô nhập hiện 1,33:1 (`--border` #292c3a trên `--panel` #12141c), dưới 3:1 của WCAG 1.4.11. Nâng lên `--border-control` (#6B6B87, 3,58:1 trên `--surface`) ở PR Visualizer/Structure workspace;
   Phase 1 mới định nghĩa token, test chặn việc áp sớm.
 - Chuyển giá trị toàn cục `--border` (sang #2A2A3D), `--text-muted` (sang #9CA2BA) và bảng nền (`--background`/`--panel`/`--panel-hover` sang `--bg`/`--surface`/`--surface-raised`, `--purple-dark` sang `--purple-strong`) trong MỘT PR riêng
@@ -82,6 +75,17 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Ký hiệu ngoài `unicode-range` của JetBrains Mono (chỉ có latin và vietnamese) rơi về font hệ thống. Đo 2026-11-06 (Chrome 152, Windows): → và ∅ (danh sách kề) và Θ (bảng độ phức tạp đồ thị, chữ Hy Lạp) về Consolas;
   ▶ (thứ tự thăm BFS/DFS, ngăn xếp DFS, nhãn bảng băm) về Segoe UI Symbol. Ký hiệu khác như ≤ ✓ chưa đo trong thành phần font mã. Trên Linux, fallback của `monospace`/`system-ui` chưa kiểm (xem preview Vercel).
   Cân nhắc thêm subset greek hoặc vẽ ký hiệu bằng SVG/CSS.
+
+- Khối "Lộ trình" năm chặng (thiết kế tham chiếu 2g/2h) CHƯA làm ở Phase 3b: không có dữ liệu thật cho "chặng" nên không dựng số liệu giả hay placeholder. Cần định nghĩa chặng (danh sách chủ đề theo thứ tự học) trước.
+- Thư viện (Library), Visualizer/Structure workspace và token toàn cục (xem mục chuyển `--border`, `--text-muted`, bảng nền ở trên) là các giai đoạn Redesign sau; Phase 3b chỉ làm Dashboard và Tiến độ.
+- Tìm kiếm nhanh (Ctrl K) và nhớ trạng thái thu gọn của sidebar giữa các lần mở: chưa làm (trạng thái sidebar hiện chỉ trong bộ nhớ của phiên, không `localStorage` ngoài `progress-init.js`).
+- Sidebar chưa tự thu gọn ở màn hình tablet (701–1024px): hiện chỉ có hai chế độ, rộng 256px (>= 701px) hoặc drawer (<= 700px).
+- Thuật toán mới (ngoài 3 sắp xếp, 2 tìm kiếm): mỗi thuật toán thêm thẻ `data-algorithm`/`data-search-algorithm` sẽ tự vào `catalog` tiến độ (tổng "N / 12" tự đổi theo template), nhưng chữ "Sắp xếp a/3..." ở test và tài liệu phải cập nhật.
+- `.control-button` hover khác nhau giữa nút bật và nút `disabled`: `.control-button:hover:not(:disabled)` (nền `#222031`, viền `#7965b6`, độ đặc hiệu cao hơn) chỉ áp khi nút bật, còn nút `disabled` rơi về
+  `.control-button:hover` (nền `#1d4ed8`), nên nút bị khóa lại đổi sang xanh đậm khi rê chuột. Cần quyết định thiết kế một kiểu hover (và nút khóa không đổi khi hover) rồi gom về một luật.
+- Nút "Mở lại" trên Dashboard và trang Tiến độ dùng `.control-button` (xanh `#2563eb`) cạnh hero tím: lệch tông so với nút chính `.dashboard-primary-button`; thống nhất khi làm Visualizer/Library.
+- Nút hero (Bắt đầu với Bubble Sort / Tiếp tục: ...) chạy hai bước: điều hướng cũ của `data-dashboard-target="sorting"` về thư viện Sắp xếp, rồi `reopenTopic` mở thẳng chủ đề, nên phát thêm các `viewchange`
+  trung gian có `topic: null` trước `viewchange` có topic (chỉ một `viewchange` có topic, nên `openCount` đúng). Chấp nhận vì không đổi kết quả; sửa gọn cần đổi `navigation.js` hoặc bỏ `data-dashboard-target` ở nút hero.
 
 ## Dọn dẹp
 - Đổi tên thuộc tính nội bộ `dequeues`/`dequeuesLabel` trong `src/graph.js` cho khớp `#graph-traversal-count` (không đổi hành vi).

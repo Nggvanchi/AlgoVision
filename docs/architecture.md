@@ -188,13 +188,16 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
 
 Lưu chủ đề nào đã được MỞ (vào màn hình chi tiết), mở lần đầu và gần nhất lúc nào, mở bao nhiêu lần. "Đã mở" không nói gì về mức độ đã
 học: không có trường, nhãn hay comment "hoàn thành/completed" (test canh gác chặn). Dữ liệu chỉ nằm trong `localStorage` của trình duyệt
-người dùng, không gửi đi đâu. Chưa có giao diện đọc hay xóa (Phase 3b, xem `docs/backlog.md`).
+người dùng, không gửi đi đâu. Giao diện đọc và xóa có từ Redesign Phase 3b (mục "Giao diện đọc tiến độ" bên dưới).
 
 | Tệp | Vai trò |
 |---|---|
-| `src/progress-store.js` | Lõi thuần (`emptyProgress`, `parseProgress`, `recordOpen`, `serializeProgress`, `keepKnownTopics`, `topicId`) và `createProgressStore({ storage, knownTopics, now })` → `{ read, recordOpen, clear }`. Không DOM, không `window`; `storage` inject được (`getItem/setItem/removeItem` hoặc `null`) |
-| `src/progress-init.js` | `initProgress(document, { storage, now })`: nghe `algovision:viewchange`, suy danh sách chủ đề từ template, trả về kho. Nơi DUY NHẤT chạm `localStorage` (`browserStorage` bọc `try/catch`) |
-| `src/main.js` | gọi `initProgress(document)` sau `initNavigation(document)` |
+| `src/progress-store.js` | Lõi thuần (`emptyProgress`, `parseProgress`, `recordOpen`, `serializeProgress`, `keepKnownTopics`, `topicId`) và `createProgressStore({ storage, knownTopics, now })` → `{ read, readState, recordOpen, clear }`. `readState()` trả `{ progress, status, persisted }`: `status` là `empty \| ok \| corrupt \| unavailable \| future-version`; `persisted` là `false` khi đang hiện bản nhớ của phiên (kho không dùng được, ghi lỗi, hoặc version mới hơn). Không DOM, không `window`; `storage` inject được (`getItem/setItem/removeItem` hoặc `null`) |
+| `src/progress-init.js` | `initProgress(document, { storage, now })`: nghe `algovision:viewchange`, suy `catalog` `[{ id, label, kind }]` từ template (nhãn từ `.algorithm-card h4`, `[data-search-algorithm] h4`, `.structure-card-title`; cùng chỗ với danh sách chủ đề hợp lệ), trả `{ read, readState, recordOpen, clear, subscribe, catalog }`. `subscribe(callback)` (trả hàm hủy) báo dữ liệu có thể đã đổi: SAU mỗi lần mở chủ đề, sau `clear()` ở tab này, và khi sự kiện `storage` trên `window` có `key === 'algovision:progress'` hoặc `key === null`; người nghe ném lỗi bị nuốt. Nơi DUY NHẤT chạm `localStorage` và `storage` event (`browserStorage` bọc `try/catch`) |
+| `src/progress-summary.js` | Hàm thuần: `summarizeProgress(progress, catalog)` → `{ total, opened, totalOpens, lastOpenedAt, groups, recent }`, `formatOpenedAt(ts, { now, timeZone })`, `isoTimestamp(ts)` |
+| `src/progress-view.js` | `initProgressView(document, progress)` vẽ `#progress-section`; xuất hàm dùng chung `createTopicRow`, `reopenTopic`, `openPage`, `progressNotice`, `createConfirmBox`, `focusMain` |
+| `src/dashboard-progress.js` | `initDashboardProgress(document, progress)`: khối `.dashboard-progress` và nút hero theo ngữ cảnh ở Dashboard |
+| `src/main.js` | gọi `const progress = initProgress(document)` sau `initNavigation(document)`, rồi `initProgressView(document, progress)` và `initDashboardProgress(document, progress)` |
 
 **Lược đồ (khóa `algovision:progress`, version 1).** Một khóa duy nhất, JSON:
 `{ "version": 1, "topics": { "<id>": { "firstOpenedAt": ms, "lastOpenedAt": ms, "openCount": n } } }`. Chỉ lưu chủ đề đã mở, không có mục
@@ -227,9 +230,29 @@ còn `null` nên không đếm đôi. Màn chi tiết Sắp xếp không có b�
 | Một mục sai (timestamp không nguyên/âm, `last < first`, `openCount` < 1 hoặc không nguyên, id sai dạng như `__proto__`) | Bỏ đúng mục đó, giữ mục đúng; trường lạ bị bỏ; `openCount` > 1.000.000 bị kẹp |
 | `version` > 1 | Trạng thái future-version: không đọc, KHÔNG ghi đè khóa; `recordOpen` trả `false`; phiên vẫn nhớ trong bộ nhớ; `clear()` (người dùng chủ động) vẫn xóa |
 | Chủ đề đã bị xóa khỏi app | `parseProgress` giữ mục (id đúng dạng); `read()` lọc bằng `keepKnownTopics`; mỗi lần ghi giữ nguyên mục lạ trong storage. `recordOpen` từ chối id app không biết (`false`) |
-| Hai tab | Mỗi lần mở: đọc lại bản mới nhất trong storage rồi cộng thêm 1 (không dùng cache), nên không đè mất lần mở của tab kia. KHÔNG đăng ký `storage` event. Không có `mergeProgress`/`migrate` (đã bỏ khỏi kế hoạch ban đầu) |
+| Hai tab | Mỗi lần mở: đọc lại bản mới nhất trong storage rồi cộng thêm 1 (không dùng cache), nên không đè mất lần mở của tab kia. `initProgress` đăng ký một listener `storage` trên `window`: tab khác đổi hoặc xóa khóa thì `subscribe` báo và giao diện vẽ lại (chưa kiểm với hai tab thật). Không có `mergeProgress`/`migrate` (đã bỏ khỏi kế hoạch ban đầu) |
 | Đồng hồ trả giá trị sai hoặc ném | `recordOpen` trả `false`, không ghi, không coi là lỗi ghi (`read()` vẫn đọc storage thật) |
 | Lỗi bất ngờ ở listener | `initProgress` bọc `try/catch`: ghi tiến độ không phá điều hướng |
+
+### Giao diện đọc tiến độ (Redesign Phase 3b)
+
+- **Trang "Tiến độ học tập"**: `navigation.js` có `pages.progress = { title: 'Tiến độ học tập' }`, `#progress-section` trong `hideAllSections` và nhánh `renderPage('progress')`; `.page-heading` ẩn cả ở trang này
+  (trước đây chỉ ở dashboard). Vào trang phát đúng MỘT `viewchange` `{ page: 'progress', topic: null }` và không ghi tiến độ; mô phỏng đang chạy vẫn tự `pause()`. Mục `button.nav-item[data-page="progress"]`
+  (symbol `icon-progress`) là mục thứ hai trong `ul` đầu của sidebar. `progress-view.js` vẽ lại CHỈ vùng dữ liệu (`#progress-data`) khi `subscribe` báo và khi vào trang; không chạm khung xác nhận đang mở.
+- **Nội dung**: ba ô (Đã mở N / 12 chủ đề, Tổng lượt mở, Mở gần nhất), ba thẻ nhóm (Sắp xếp, Tìm kiếm, Cấu trúc dữ liệu: "x / n" và danh sách chủ đề), "Mở gần đây" (tối đa 5) và khu "Dữ liệu" (nút xóa). Hàng đã mở có
+  nút "Mở lại <tên>" (`aria-label`), `<time datetime>` cho thời điểm; hàng chưa mở ghi "Chưa mở". Vùng `#progress-status` (`role="status"`, `aria-live="polite"`) luôn có trong DOM.
+- **Trạng thái**: trống (câu hướng dẫn, nút "Mở Sắp xếp", nút xóa `aria-disabled` kèm "Chưa có gì để xóa"); dữ liệu hỏng ("bị bỏ qua, lần mở tiếp theo ghi đè"); không lưu được (`persisted === false`); phiên bản mới hơn (chỉ thông báo,
+  không số liệu, không ghi đè hay chuyển đổi). Dashboard dùng chung chữ thông báo (`progressNotice`) và không có nút xóa.
+- **Hai đường xóa**, cùng một thành phần `createConfirmBox` (`role="group"`, `aria-labelledby`, focus vào Hủy khi mở, Escape hủy, không `confirm()` hay `<dialog>`): "Xóa lịch sử học tập" và, chỉ khi `status === 'future-version'`,
+  "Xóa dữ liệu của phiên bản mới hơn" (khung và câu cảnh báo riêng). Lúc xác nhận trạng thái được đọc lại: đường thường từ chối khi kho đang là phiên bản mới hơn (nếu không `clear()` xóa luôn dữ liệu đó), đường riêng từ chối khi không còn là phiên bản mới hơn.
+  Xóa xong: focus về ô tóm tắt đầu (`[data-progress-summary]`, `tabindex="-1"`) và thông báo qua `#progress-status`; `clear()` trả `false` thì thông báo không xóa được khỏi trình duyệt nhưng lịch sử phiên đã làm mới.
+- **"Mở lại" (`reopenTopic`)** dùng điều khiển có sẵn, không thêm hàm vào `navigation.js`: cấu trúc qua `button[data-structure-nav]`; Sắp xếp và Tìm kiếm qua `.nav-item[data-page]` rồi thẻ `.algorithm-card[data-algorithm]` hoặc `[data-search-algorithm]`.
+  Một lần bấm là một lần mở thật (`openCount` +1 đúng một lần; Tìm kiếm phát `change` trước `viewchange` nên không đếm đôi), rồi focus về `#main-content` (`tabindex="-1"`).
+- **Dashboard**: `.dashboard-progress` hiện "Đã mở N / 12 chủ đề", "Sắp xếp a/3 · Tìm kiếm b/2 · Cấu trúc dữ liệu c/7" và tối đa 3 hàng mở gần đây (cùng `createTopicRow` ở dạng `recent`); nút "Xem tiến độ chi tiết"
+  (`data-dashboard-target="progress"`). Nút hero giữ `data-dashboard-target="sorting"` và class `dashboard-primary-button`; nhãn nằm trong `#dashboard-hero-label`: người mới "Bắt đầu với Bubble Sort", người đã mở "Tiếp tục: <chủ đề mở gần nhất>",
+  bấm thì mở chủ đề đó (điều hướng cũ chạy trước và về thư viện Sắp xếp rồi mới mở thẳng chủ đề). Vẽ lại khi `subscribe` báo và khi `viewchange` về `dashboard`.
+- Test: `tests/progress-navigation.test.js`, `progress-view.test.js`, `dashboard-progress.test.js`, `progress-init.test.js` (subscribe, catalog); `tests/meta/progress-storage-boundary.test.js` cũng canh `progress-view.js`.
+  Mã của `progress-view.js` được viết trước, test viết sau; bằng chứng là mutation (sau commit sửa lỗi review: 41 mutation, tất cả bị bắt; một mutation ban đầu là nhánh `unavailable` thừa đã bỏ); `dashboard-progress.js` làm theo TDD và mutation 19/19.
 
 Chưa xác minh trên trình duyệt thật: test chạy bằng happy-dom (xem `docs/backlog.md`).
 
@@ -242,14 +265,14 @@ Tổng 175 test: 90 viết riêng, 85 sinh từ bảng.
 **HTML** (`public/templates/app.html`): `a.skip-link` rồi `.app-layout` gồm `.mobile-bar` (nút `#sidebar-toggle`: `aria-expanded`, `aria-controls="sidebar"`; chỉ hiện <= 700px),
 `aside.sidebar#sidebar`, `.sidebar-overlay` (`aria-hidden`), `main`. Thứ tự Tab: skip link, nút menu, sidebar, nội dung. Trong aside: `.brand` (h1 "AlgoVision"), rồi
 `<nav class="sidebar-nav" aria-label="Điều hướng chính">` chứa `div.sidebar-scroll[role="group"][aria-label="Danh sách mục điều hướng"]` (vùng cuộn thứ 21), rồi `.sidebar-footer`
-với nút thu gọn `#sidebar-collapse` (ngoài `<nav>`). Trong vùng cuộn: Tổng quan (`ul > li > button.nav-item[data-page]`), nhãn nhóm `p.section-label#nav-group-*` và `ul[aria-labelledby]`
+với nút thu gọn `#sidebar-collapse` (ngoài `<nav>`). Trong vùng cuộn: Tổng quan và Tiến độ học tập (`ul > li > button.nav-item[data-page]`), nhãn nhóm `p.section-label#nav-group-*` và `ul[aria-labelledby]`
 cho THUẬT TOÁN (Sắp xếp, Tìm kiếm) và CẤU TRÚC DỮ LIỆU ("Tất cả cấu trúc" + `ul.nav-sublist#structure-nav-list`). Mọi nút có `type="button"`; nhãn nằm trong `.nav-label`, icon
-`.nav-icon[aria-hidden]`. Khối "PHIÊN BẢN 0.1.0" đã bỏ (không phải dữ liệu thật). `.topbar` trong `<main>` giữ nguyên.
+`.nav-icon[aria-hidden]`. Khối "PHIÊN BẢN 0.1.0" đã bỏ (không phải dữ liệu thật). `.topbar` trong `<main>` có breadcrumb động (chữ, mục cuối đậm) do `renderTopbar()` của `navigation.js` cập nhật cùng `document.title` mỗi lần `notifyViewChange`; icon là sprite SVG tự vẽ ở đầu template (`<symbol id="icon-...">`).
 
 **`src/navigation.js`**
 - `openStructure(target)` (dùng chung cho thẻ ở thư viện và mục con): ẩn thư viện, hiện `#<target>-section`, đặt `currentStructure`, cập nhật điều hướng, phát ĐÚNG MỘT viewchange
   `{ page: 'structures', topic: 'structure:<tên>' }`; trả `false` (không phát gì) nếu không có section.
-- `renderStructureNav()` sinh mục con từ `[data-structure-target]` lúc init (nhãn từ `.structure-card-title`, glyph từ `.structure-card-icon`); thẻ không có section thì không có mục con.
+- `renderStructureNav()` sinh mục con từ `[data-structure-target]` lúc init (nhãn từ `.structure-card-title`, icon là symbol SVG `icon-structure-<tên>`); thẻ không có section thì không có mục con.
   Mục con dùng `data-structure-nav` và class `nav-subitem`, KHÔNG dùng `data-structure-target` (`initProgress` đếm 12 chủ đề theo thuộc tính này) và KHÔNG dùng class `nav-item`
   (nhiều test lấy `.nav-item[data-page="structures"]` đầu tiên).
 - Mục con từ trang khác gọi `renderPage('structures')` (không phát sự kiện) rồi `openStructure`, nên chỉ có một viewchange và không có sự kiện topic null xen giữa.
@@ -279,7 +302,7 @@ Trạng thái (`collapsed`, `drawerOpen`) chỉ nằm trong bộ nhớ của phi
   được `visibility: visible` riêng để h1 còn trong cây trợ năng. Cao `calc(100vh - 56px)` rồi `calc(100dvh - 56px)` (dự phòng), nằm dưới thanh trên 56px (`top: 56px`) để nút menu vẫn bấm được.
   Mở (chỉ khi `matchMedia` hẹp): class `is-open` trên sidebar và lớp phủ, `aria-expanded`/nhãn của nút menu, `#main-content` và `.skip-link` thành `inert`, focus vào `.nav-item` đầu tiên. Không `role="dialog"`,
   không bẫy focus. Đóng bằng nút menu, lớp phủ, Escape, hoặc chọn một mục (kể cả bấm lại mục con đang mở): trả focus về nút menu; riêng khi cửa sổ rộng ra qua 700px thì đóng mà KHÔNG kéo focus.
-  Nút menu vẽ bằng CSS (ba vạch, không glyph ☰) và không đổi hình khi mở. `prefers-reduced-motion` dùng luật chung sẵn có (`transition-duration: 0.01ms !important`).
+  Nút menu dùng symbol SVG `icon-menu` và không đổi hình khi mở; khi drawer mở `<body>` có class `is-drawer-open` (khóa cuộn nền, giữ chỗ thanh cuộn). `prefers-reduced-motion` dùng luật chung sẵn có (`transition-duration: 0.01ms !important`).
 
 **Token Phase 2 đang dùng** (nhóm `TOKEN MỚI, ĐANG DÙNG`, 20 token; chỉ trong luật của sidebar/tooltip/nút chính, `tests/sidebar-css.test.js` canh gác không cho cỡ chữ/spacing/bo góc lan ra ngoài):
 `--font-ui`, `--font-mono` (Phase 1); `--sidebar-width` (256px), `--sidebar-width-collapsed` (72px); `--bg-sidebar`, `--surface-raised`, `--text-label`, `--purple-strong`, `--purple-pressed`, `--purple-tint`;
@@ -345,7 +368,7 @@ chính xác (thêm vi phạm mới làm test đỏ).
 - Test Big-O với số cụ thể: `tests/complexity.test.js`, `bst-complexity`, `hash-table-complexity`, `hash-table-probing-complexity`,
   `graph-complexity`. Quy mô lớn: đường thẳng/sao 300 đỉnh, ma trận 50 đỉnh vì mỗi bước giữ bản sao đồ thị
   (`tests/graph-complexity.test.js:112-116,170-208,267`).
-- `tests/helpers/app-dom.js`: `withFullApp(run, { storage, matchMedia })` dựng toàn bộ app như `main.js` (mọi `init*` kể cả `initSidebar` và `initProgress`, scheduler giả; `storage` inject cho tiến độ, `matchMedia` giả từ `tests/helpers/fake-media.js` cho drawer; `run` nhận thêm `sidebar`) và `SCREENS` mở 15 màn hình thật bằng click; dùng cho test
+- `tests/helpers/app-dom.js`: `withFullApp(run, { storage, matchMedia, now })` dựng toàn bộ app như `main.js` (mọi `init*` kể cả `initSidebar`, `initProgress`, `initProgressView` và `initDashboardProgress`, scheduler giả; `storage` inject cho tiến độ, `matchMedia` giả từ `tests/helpers/fake-media.js` cho drawer; `run` nhận thêm `sidebar`) và `SCREENS` mở 16 màn hình thật bằng click (thêm `progress`; `options.now` inject đồng hồ cho `initProgress`); dùng cho test
   nhìn cả trang (landmark, heading, vùng cuộn). Test của một module vẫn dùng helper riêng.
 - `deepFreeze` để bắt sửa nhầm snapshot: `tests/helpers/deep-freeze.js`, dùng ở 8 file test graph/hash; BST, Sorting, Searching chưa dùng.
 - Chốt an toàn số bước (`src/algorithms/stepLimit.js`): 7 generator có vòng `while` (BFS, DFS, Binary Search, BST Search, Insert,
@@ -353,7 +376,7 @@ chính xác (thêm vi phạm mới làm test đỏ).
   BFS 2V + D + 2 / 2V + V² + 2, DFS 3V + D / 3V + V², Binary ⌊log2 n⌋ + 3, BST Search/Delete/MinMax n + 2, Insert max(2, 2n + 1).
   Test: `tests/step-limit.test.js`, `graph-step-limit`, `bst-step-limit`, `binary-search-step-limit` (đầu vào xấu nhất đúng bằng giới hạn).
 - Test canh gác ở `tests/meta/`: `no-dom-in-equal` (phần tử DOM trong `assert.equal`…), `no-happy-dom-abort` (dọn cửa sổ bằng `close()`),
-  `progress-storage-boundary` (`localStorage` chỉ ở `progress-init.js`; `progress-store.js` không nhắc `document`/`window`; không chữ "completed"/"hoàn thành" trong hai file tiến độ; `main.js` gọi `initProgress` sau `initNavigation`).
+  `progress-storage-boundary` (`localStorage` chỉ ở `progress-init.js`; `progress-store.js` không nhắc `document`/`window`; không chữ "completed"/"hoàn thành" trong hai file tiến độ; `main.js` gọi `initProgress` sau `initNavigation`; `progress-view.js` không chạm kho trình duyệt và không có chữ cấm kể cả trong comment).
 - Phá thử logic (mutation, skill `mutation-test`) và ghi kết quả vào mô tả PR.
 - Kiểm trình duyệt ở 360px và 1280px: không tràn trang, console sạch. PR #5–#9 ghi đã kiểm bằng Chrome headless nhưng lệnh và
   script không được lưu lại trong repo; từ khi deploy: kiểm bằng link preview Vercel của PR.

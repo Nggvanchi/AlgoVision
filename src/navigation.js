@@ -2,6 +2,7 @@ import { topicId } from './progress-store.js'
 
 const pages = {
   dashboard: { title: 'Tổng quan' },
+  progress: { title: 'Tiến độ học tập' },
   sorting: { title: 'Thuật toán sắp xếp' },
   searching: { title: 'Thuật toán tìm kiếm' },
   structures: { title: 'Cấu trúc dữ liệu' },
@@ -29,6 +30,7 @@ export function initNavigation(document) {
   const navItems = document.querySelectorAll('.nav-item')
 
   const dashboardSection = document.querySelector('#dashboard-section')
+  const progressSection = document.querySelector('#progress-section')
   const pageHeading = document.querySelector('.page-heading')
 
   const sortingLibrary = document.querySelector('.algorithm-section')
@@ -64,6 +66,7 @@ export function initNavigation(document) {
 
   function hideAllSections() {
     dashboardSection.hidden = true
+    progressSection.hidden = true
     sortingLibrary.hidden = true
     sortingVisualizer.hidden = true
     searchLibrary.hidden = true
@@ -156,11 +159,16 @@ export function initNavigation(document) {
     updateNavigation()
 
     if (pageHeading) {
-      pageHeading.hidden = pageName === 'dashboard'
+      pageHeading.hidden = pageName === 'dashboard' || pageName === 'progress'
     }
 
     if (pageName === 'dashboard') {
       dashboardSection.hidden = false
+      return
+    }
+
+    if (pageName === 'progress') {
+      progressSection.hidden = false
       return
     }
 

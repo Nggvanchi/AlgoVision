@@ -243,6 +243,7 @@ test('thẻ cấu trúc bấm khi KHÔNG ở trang Cấu trúc: không làm gì 
 // aria-current / active: đúng MỘT phần tử mang aria-current="page" trên mọi màn hình.
 function expectedCurrent(screenName) {
   if (screenName === 'dashboard') return '.nav-item[data-page="dashboard"]'
+  if (screenName === 'progress') return '.nav-item[data-page="progress"]'
   if (screenName.startsWith('sorting')) return '.nav-item[data-page="sorting"]'
   if (screenName.startsWith('searching')) return '.nav-item[data-page="searching"]'
   if (screenName === 'structures-library') return '.nav-item[data-page="structures"]'
