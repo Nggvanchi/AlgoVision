@@ -714,17 +714,16 @@ button:disabled {
 .algorithm-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 16px;
 }
 
 .algorithm-card {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  min-height: 200px;
-  padding: 19px;
+  padding: 20px;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--panel);
   color: var(--text);
   text-align: left;
@@ -750,7 +749,7 @@ button:disabled {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .algorithm-symbol {
@@ -766,11 +765,10 @@ button:disabled {
 }
 
 .difficulty {
-  padding: 5px 7px;
-  border-radius: 5px;
-  font-size: 9px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.4px;
 }
 
 .difficulty.easy {
@@ -786,39 +784,48 @@ button:disabled {
 .algorithm-card h4 {
   margin: 0;
   color: #f1effb;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
 }
 
 .algorithm-card > p {
   flex: 1;
-  margin: 9px 0 20px;
-  color: #9da2b6;
-  font-size: 11px;
-  line-height: 1.8;
+  margin: 8px 0 16px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .card-footer {
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.card-metric,
+.card-status {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding-top: 13px;
-  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
 }
 
-.card-footer span {
-  color: #858ba0;
-  font-size: 10px;
+.card-metric code {
+  color: var(--text);
+  font-family: var(--font-mono);
 }
 
-.card-footer code {
-  padding: 4px 7px;
-  border: 1px solid #3a354f;
-  border-radius: 5px;
-  background: #201b30;
-  color: #c6b8ff;
-  font-size: 11px;
+.card-status {
+  margin-top: 12px;
+}
+
+.card-state.is-opened,
+.card-link {
+  color: var(--purple);
+  font-weight: 600;
 }
 
 .visualizer-section {
@@ -890,7 +897,7 @@ button:disabled {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .algorithm-card:last-child {
+  .algorithm-card:last-child:nth-child(odd) {
     grid-column: 1 / -1;
   }
 }
@@ -984,12 +991,8 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
-  .algorithm-card:last-child {
+  .algorithm-card:last-child:nth-child(odd) {
     grid-column: auto;
-  }
-
-  .algorithm-card {
-    min-height: 180px;
   }
 
   .section-heading {
