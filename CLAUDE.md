@@ -18,10 +18,13 @@ pnpm dev                         # chạy thử trên trình duyệt
 Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so với mục này.
 Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
-- Đo 2026-11-06 trên Windows (Node 24.21.0, pnpm 12.5.1).
-- `pnpm test`: 1240/1240 pass, 0 fail, 0 skipped, 10–30 s tùy tải máy (đo 10,2 s đến 28,1 s; hai lần gần nhất 20,0 s và 28,1 s).
-- `pnpm build`: JS 148,60 kB (148.606 B; gzip 43,16 kB), CSS 51,38 kB (51.383 B; gzip 10,10 kB), HTML 0,75 kB (746 B).
-  Ngưỡng của Redesign Phase 2: JS <= 150 kB (gzip <= 43,5), CSS <= 51,5 kB (gzip <= 10,2); CSS chỉ còn dư 117 B, PR sau phải xem lại ngưỡng có chủ ý (`docs/backlog.md`).
+- Đo 2026-11-07 trên Ubuntu/Linux x64 (Node v26.13.0, pnpm 12.16.1).
+- `pnpm test`: 1488/1488 pass, 0 fail, 0 skipped, 16–23 s tùy tải máy (đo 16,2 s đến 22,8 s; Windows trước đây 10–30 s).
+- `pnpm build`: JS 158,87 kB (158.872 B; gzip 46,34 kB), CSS 52,77 kB (52.765 B; gzip 10,33 kB), HTML 0,75 kB (746 B).
+  Ngưỡng của Redesign Phase 3b (số đo thật làm tròn lên 0,5 kB gần nhất; nằm dưới trần đã duyệt riêng cho PR này là JS 160 kB / gzip 47 kB
+  và CSS 54,5 kB / gzip 11,2 kB): JS <= 159 kB (gzip <= 46,5), CSS <= 53 kB (gzip <= 10,5). JS dư 128 B, CSS dư 235 B: PR sau phải xem lại ngưỡng có chủ ý (`docs/backlog.md`).
+  Phase 3b vượt ngưỡng cũ của Phase 2 (JS 150 kB, CSS 51,5 kB) vì thêm giao diện đọc tiến độ (trang Tiến độ và khối Dashboard); trước đó PR `chore/bundle-headroom` gỡ mã chết
+  (JS -542 B, CSS -1.282 B) và ghi nhận JS gzip trên `main` đã vượt ngưỡng cũ 43,5 kB (43,54 kB).
 - Font tự host: `public/fonts` có 10 woff2 = 172.912 B (ngưỡng 175 kB) và 2 giấy phép OFL; không nằm trong bundle JS/CSS.
 
 ## Kiến trúc
@@ -32,7 +35,7 @@ Chi tiết từng module (trường bước, công thức số bước, bất bi
 - `index.html` chỉ có `#app`; `src/main.js` gọi `bootApp` (`src/bootstrap.js`): fetch `public/templates/app.html`, dựng vào `#app`, rồi mới gọi
   các hàm `init*` (`startApp`). Fetch lỗi (reject, HTTP lỗi, đọc nội dung lỗi) thì hiện màn hình `role="alert"` có nút "Thử lại" và không gọi `init*`;
   lỗi của chính `init*` không bị bắt.
-- Module UI: `navigation.js`, `sidebar.js`, `sorting.js`, `searching.js`, `array.js`, `stack.js`, `queue.js`, `linked-list.js`,
+- Module UI: `navigation.js`, `sidebar.js`, `progress-view.js`, `dashboard-progress.js`, `sorting.js`, `searching.js`, `array.js`, `stack.js`, `queue.js`, `linked-list.js`,
   `bst.js`, `hash-table.js`, `graph.js`. Array, Stack, Queue, Linked List là module cũ, không có hàm sinh bước.
 - Các lớp của một module mới (BST, Hash Table, Graph): cấu trúc thuần `src/structures/*` → sinh bước `src/algorithms/*`
   → bố cục `src/*-layout.js` → view → controller `init*(document, { scheduler })` → template.
@@ -42,13 +45,16 @@ Chi tiết từng module (trường bước, công thức số bước, bất bi
 - `src/pseudocode-view.js`: `renderPseudocode` và `highlightPseudocodeLine`, dùng chung cho Sorting, Searching, BST, Hash Table, Graph.
 - Sự kiện `algovision:viewchange` (`CustomEvent` trên `document`, `detail: { page, topic }`): `navigation.js` phát khi đổi trang hoặc
   mở/đóng màn hình chi tiết; visualizer tự `pause()` khi bị ẩn. `topic` là id chủ đề (`sorting:bubble`, `searching:linear`,
-  `structure:bst`) khi mở màn chi tiết, `null` ở dashboard, thư viện và khi bấm Quay lại.
+  `structure:bst`) khi mở màn chi tiết, `null` ở dashboard, trang Tiến độ (`page: 'progress'`), thư viện và khi bấm Quay lại.
 - Sidebar (Redesign Phase 2): `<nav aria-label="Điều hướng chính">` trong `aside#sidebar` với hai nhóm (THUẬT TOÁN; CẤU TRÚC DỮ LIỆU có "Tất cả cấu trúc" và 7 mục con
-  `button.nav-subitem[data-structure-nav]` do `navigation.js` sinh từ `[data-structure-target]`). `aria-current="page"` đúng MỘT phần tử. `src/sidebar.js`
+  `button.nav-subitem[data-structure-nav]` do `navigation.js` sinh từ `[data-structure-target]`; mục "Tiến độ học tập" `.nav-item[data-page="progress"]` ngay dưới Tổng quan trong `ul` đầu). `aria-current="page"` đúng MỘT phần tử. `src/sidebar.js`
   (`initSidebar`, gọi sau `initNavigation`): thu gọn 72px (nút `#sidebar-collapse`, tooltip) và drawer <= 700px (nút `#sidebar-toggle`, `inert`, trả focus);
   trạng thái chỉ trong bộ nhớ, KHÔNG `localStorage`. `.main-content` viết số 256px / `0 40px` trực tiếp vì test R12 đọc bằng regex. Chi tiết: `docs/architecture.md`.
 - Tiến độ học tập: `src/progress-store.js` (lõi thuần + `createProgressStore`, không DOM) và `src/progress-init.js` (`initProgress`, nơi
-  DUY NHẤT chạm `localStorage`) ghi chủ đề đã MỞ vào khóa `algovision:progress`. Chưa có giao diện đọc (để Phase 3b).
+  DUY NHẤT chạm `localStorage` và sự kiện `storage`) ghi chủ đề đã MỞ vào khóa `algovision:progress` và trả `{ read, readState, recordOpen, clear, subscribe, catalog }`.
+  Giao diện đọc (Phase 3b): trang "Tiến độ học tập" (`src/progress-view.js`, mục thứ hai của sidebar, `#progress-section`) và khối tiến độ cùng nút hero theo ngữ cảnh ở Dashboard
+  (`src/dashboard-progress.js`), dùng chung hàm tóm tắt `src/progress-summary.js`. "Mở lại" dùng điều khiển có sẵn của `navigation.js`; xóa chỉ ở trang Tiến độ (khung xác nhận tại chỗ,
+  đường riêng cho dữ liệu của phiên bản mới hơn). Chỉ nói "đã mở": không hoàn thành, không phần trăm, không streak.
 - Token thiết kế và font: `:root` của `src/style.css` chia ba nhóm (token cũ giữ nguyên, token mới đang dùng, token mới CHƯA được dùng); font Be Vietnam Pro và
   JetBrains Mono tự host ở `public/fonts` (không dùng Google Fonts); font mã luôn qua `var(--font-mono)`. Test: `tests/design-tokens.test.js`.
 - `navigation.js`: thẻ `data-structure-target="x"` mở `#x-section`; thêm cấu trúc mới không cần sửa navigation (mục con của sidebar tự được sinh theo thẻ).
