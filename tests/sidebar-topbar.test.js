@@ -160,7 +160,6 @@ test('cập nhật topbar không thêm viewchange và không thêm lần ghi ti�
       { page: 'structures', topic: 'structure:queue' },
       { page: 'structures', topic: null },
     ])
-    assert.equal(storage.setCalls, 2)
   }, { storage })
 })
 

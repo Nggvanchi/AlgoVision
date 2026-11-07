@@ -1,4 +1,4 @@
-import { topicId } from './progress-store.js'
+const topicId = (kind, name) => `${kind}:${name}`
 
 const pages = {
   dashboard: { title: 'Tổng quan' },

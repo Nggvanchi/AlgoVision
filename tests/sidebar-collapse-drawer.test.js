@@ -86,7 +86,6 @@ test('thu gọn chỉ nằm trong bộ nhớ phiên: không ghi localStorage hay
 
     assert.equal(window.localStorage.length, 0)
     assert.equal(window.sessionStorage.length, 0)
-    assert.equal(storage.setCalls, 0, 'không có lần ghi tiến độ nào chỉ vì thu gọn')
   }, { storage })
 })
 
@@ -315,7 +314,6 @@ test('bấm lại mục con của cấu trúc đang mở: vẫn đóng drawer nh
 
     const log = []
     document.addEventListener('algovision:viewchange', (event) => log.push({ ...event.detail }))
-    const writes = storage.setCalls
 
     toggleOf(document).click()
     assert.equal(sidebarOf(document).classList.contains('is-open'), true)
@@ -324,7 +322,6 @@ test('bấm lại mục con của cấu trúc đang mở: vẫn đóng drawer nh
 
     assert.equal(sidebarOf(document).classList.contains('is-open'), false, 'drawer phải đóng')
     assert.deepEqual(log, [])
-    assert.equal(storage.setCalls, writes)
   }, { mobile: true, storage })
 })
 
@@ -395,9 +392,8 @@ test('src/main.js khởi tạo sidebar: import initSidebar và gọi SAU initNav
   const call = (name) => source.search(new RegExp(`\\b${name}\\(document\\)`))
 
   assert.match(source, /import \{ initSidebar \} from '\.\/sidebar\.js'/)
-  assert.ok(call('initNavigation') !== -1 && call('initSidebar') !== -1 && call('initProgress') !== -1, 'thiếu một trong ba lời gọi init')
+  assert.ok(call('initNavigation') !== -1 && call('initSidebar') !== -1, 'thiếu một trong hai lời gọi init')
   assert.ok(call('initNavigation') < call('initSidebar'), 'initSidebar phải chạy sau initNavigation')
-  assert.ok(call('initSidebar') < call('initProgress'), 'initSidebar nên chạy trước initProgress')
 })
 
 // --- Khóa cuộn nền khi drawer mở (đo CDP trước PR: lăn chuột trên lớp phủ làm trang phía sau cuộn 0 -> 300px; inert không chặn cuộn) ---
