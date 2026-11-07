@@ -184,8 +184,9 @@ test('comment trong :root chia token thành CŨ / MỚI ĐANG DÙNG / MỚI CHƯ
 
   assert.deepEqual(sections[0], [...Object.keys(OLD_VALUES), ...Object.keys(OLD_ALIASES)].sort(), 'nhóm CŨ phải là 18 token cũ')
   assert.deepEqual(sections[1], ['--bg-sidebar', '--font-mono', '--font-ui', '--fs-md', '--fs-sm', '--fs-xs', '--purple-active', '--purple-hover', '--purple-pressed', '--purple-strong', '--radius-sm', '--shadow-card', '--sidebar-width', '--sidebar-width-collapsed', '--space-1', '--space-2', '--space-3', '--space-4', '--space-6', '--surface-raised', '--text-label'], 'nhóm MỚI ĐANG DÙNG: 2 token font (Phase 1) và 19 token Phase 2/2b áp vào sidebar và nút chính (--purple-tint đã chuyển sang CHƯA DÙNG)')
-  assert.deepEqual(sections[2], [...tokens.keys()].filter((name) => !sections[0].includes(name) && !sections[1].includes(name)).sort(),
-    'nhóm MỚI CHƯA DÙNG phải là phần còn lại của :root')
+  assert.deepEqual(sections[2], [...tokens.keys()].filter((name) => !name.startsWith('--av-') && !sections[0].includes(name) && !sections[1].includes(name)).sort(),
+    'nhóm MỚI CHƯA DÙNG phải là phần còn lại của :root (trừ khối --av-* đứng riêng trước nhóm CŨ, tests/av-tokens.test.js canh gác)')
+  assert.ok(raw.indexOf('TOKEN --av-*') !== -1 && raw.indexOf('TOKEN --av-*') < at[0], 'khối TOKEN --av-* phải đứng trước nhóm CŨ')
   assert.ok(sections[2].length >= 20, `phải có ít nhất 20 token định nghĩa sẵn chưa dùng, thấy ${sections[2].length}`)
 })
 

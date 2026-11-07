@@ -101,6 +101,40 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  /* === TOKEN --av-* (Redesign R2, Spec v1.0 mục 2) ===
+     Nguồn giá trị duy nhất của bảng màu và khoảng cách mới (tests/av-tokens.test.js canh gác). Chỉ khai báo những giá trị Spec
+     đã đặt tên hoặc R2 cần; giá trị Spec không tên và chưa dùng (chữ/nền trạng thái, canvas...) chưa khai báo. */
+  --av-bg: #0B0B12;
+  --av-sidebar: #0E0E16;
+  --av-surface-1: #12121C;
+  --av-surface-2: #1A1A28;
+  --av-surface-3: #1E1E2C;
+  --av-border: #272738;
+  --av-border-strong: #2E2E44;
+  --av-border-dashed: #3A3A52;
+  --av-text: #ECECF4;
+  --av-text-muted: #A1A1B5;
+  --av-text-subtle: #8A8AA0;
+  --av-primary: #7C3AED;
+  --av-primary-hover: #6D28D9;
+  --av-primary-text: #A78BFA;
+  --av-primary-line: #8B5CF6;
+  --av-accent: #3B82F6;
+  --av-accent-text: #93C5FD;
+  --av-success: #34D399;
+  --av-warning: #FBBF24;
+  --av-danger: #F87171;
+  --av-focus: #C4B5FD;
+  --av-nav-active-text: #DDD6FE;
+  --av-space-1: 4px;
+  --av-space-2: 8px;
+  --av-space-3: 12px;
+  --av-space-4: 16px;
+  --av-space-5: 24px;
+  --av-space-6: 32px;
+  --av-space-7: 48px;
+  --av-space-8: 64px;
+
   /* === TOKEN CŨ ===
      18 token đang dùng, giữ NGUYÊN tên và giá trị (Redesign Phase 1, Phương án A: không đổi diện mạo).
      Giá trị mới tương ứng chỉ áp ở Phase 2: --border sẽ thành #2A2A3D, --text-muted sẽ thành #9CA2BA. */
