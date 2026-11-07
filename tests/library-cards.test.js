@@ -1,7 +1,9 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import { withFullApp } from './helpers/app-dom.js'
+import { Window } from 'happy-dom'
+
+import { template, withFullApp } from './helpers/app-dom.js'
 import { memoryStorage } from './helpers/memory-storage.js'
 
 // Redesign Phase 4 (Thư viện), thẻ thuật toán Sắp xếp và Tìm kiếm: pill độ khó (nhãn cũ), tên (h4), mô tả, hàng "Thời gian (xấu nhất)"
@@ -130,4 +132,19 @@ test('mỗi thư viện giữ đúng số thẻ: 3 thẻ Sắp xếp, 2 thẻ T�
     assert.equal(document.querySelectorAll('#search-algorithm-library .algorithm-card').length, 2)
     assert.equal(document.querySelectorAll('#sorting-algorithm-library .algorithm-card').length, 3)
   })
+})
+
+test('template tĩnh (chưa chạy JS): 5 thẻ đều ghi "Chưa mở" và Bubble Sort là thẻ .selected, nên trang vẫn đúng trước khi JS khởi tạo', () => {
+  const window = new Window()
+
+  try {
+    window.document.body.innerHTML = template
+
+    const states = [...window.document.querySelectorAll('.algorithm-card .card-state')].map(textOf)
+
+    assert.deepEqual(states, ['Chưa mở', 'Chưa mở', 'Chưa mở', 'Chưa mở', 'Chưa mở'])
+    assert.ok(window.document.querySelector('.algorithm-card[data-algorithm="bubble"]').classList.contains('selected'), 'Bubble Sort có .selected trong template')
+  } finally {
+    window.happyDOM.close()
+  }
 })

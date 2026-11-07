@@ -828,6 +828,10 @@ button:disabled {
   font-weight: 600;
 }
 
+.card-link {
+  margin-left: auto;
+}
+
 .visualizer-section {
   margin-top: 38px;
 }
