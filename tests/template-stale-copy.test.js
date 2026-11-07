@@ -19,16 +19,16 @@ test('app.html không còn cụm hứa hẹn tính năng sắp có', () => {
   }
 })
 
-test('khung giới thiệu thư viện cấu trúc không hứa Tree/Graph "sẽ có" dù BST và Graph đã tồn tại', () => {
+test('phần đầu thư viện cấu trúc không hứa Tree/Graph "sẽ có" dù BST và Graph đã tồn tại', () => {
   const window = new Window()
   try {
     window.document.body.innerHTML = template
-    // Khối placeholder là mã chết và sẽ bị xóa (docs/backlog.md): vắng phần tử thì không còn chữ nào để kiểm, không phải lỗi.
-    const description = window.document.querySelector('#placeholder-card-description')
-    const text = description === null ? '' : description.textContent.replace(/\s+/g, ' ').trim()
-    assert.ok(!/Tree|Graph/.test(text), `mô tả khung không được nhắc Tree/Graph như cấu trúc chưa có: "${text}"`)
-    const tag = window.document.querySelector('#category-placeholder .visualizer-tag')
-    assert.ok(tag === null, 'khung giới thiệu không còn nhãn trạng thái "SẮP RA MẮT"')
+    // Khối #category-placeholder (khung giới thiệu cũ) đã gỡ ở PR chore/bundle-headroom; test giữ ý cũ trên phần đầu thật của thư viện.
+    const heading = window.document.querySelector('#structure-library .section-heading')
+    assert.ok(heading !== null, 'phải có phần đầu (.section-heading) của #structure-library')
+    const text = heading.textContent.replace(/\s+/g, ' ').trim()
+    assert.ok(!/Tree|Graph|sắp|sẽ/i.test(text), `phần đầu thư viện không được hứa cấu trúc chưa có: "${text}"`)
+    assert.ok(window.document.querySelector('#structure-library .visualizer-tag')?.textContent.trim() === 'DATA STRUCTURES', 'nhãn của thư viện là DATA STRUCTURES, không phải nhãn trạng thái kiểu SẮP RA MẮT')
   } finally {
     window.happyDOM.close()
   }

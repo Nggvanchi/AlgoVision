@@ -826,18 +826,6 @@ button:disabled {
 }
 
 
-.placeholder-icon {
-  display: grid;
-  width: 48px;
-  height: 48px;
-  place-items: center;
-  border: 1px solid #4b3b72;
-  border-radius: 13px;
-  background: #8b72f51b;
-  color: #c2b0ff;
-  font-size: 25px;
-}
-
 /* Tiêu đề Queue đổi từ h2 sang h3 (tránh hai h2 và bước nhảy h2 -> h4): giữ đúng số đo của h2 mặc định
    (font-size 24px, margin 0,83em = 19,92px, đậm 700) để giao diện không đổi. */
 .visualizer-header h3 {
@@ -1041,16 +1029,6 @@ button:disabled {
   text-align: left;
 }
 
-.category-preview {
-  display: flex;
-  min-height: 270px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 22px;
-  text-align: center;
-}
-
 .visualizer-heading {
   display: flex;
   align-items: flex-start;
@@ -1218,17 +1196,6 @@ button:disabled {
   align-items: center;
   gap: 10px;
   margin-top: 24px;
-}
-
-.control-button {
-  padding: 10px 14px;
-  border: 1px solid #363849;
-  border-radius: 8px;
-  background: #171923;
-  color: #d6d8e5;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background 160ms ease, border-color 160ms ease;
 }
 
 .control-button:hover:not(:disabled) {
@@ -1491,57 +1458,10 @@ button:disabled {
   font-size: 24px;
 }
 
-.learning-heading p,
-.learning-category p {
+.learning-heading p {
   margin: 0;
   color: var(--text-secondary, #9ca3af);
   line-height: 1.6;
-}
-
-.learning-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.learning-tab {
-  padding: 10px 16px;
-  border: 1px solid var(--border-color, #303642);
-  border-radius: 10px;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.learning-tab:hover {
-  border-color: #818cf8;
-}
-
-.learning-tab.active {
-  border-color: #818cf8;
-  background: #3730a3;
-  color: #fff;
-}
-
-.learning-category {
-  padding: 20px;
-  border: 1px solid var(--border-color, #303642);
-  border-radius: 14px;
-  background: var(--card-background, #171b24);
-}
-
-.learning-category h3 {
-  margin: 0 0 10px;
-  font-size: 18px;
-}
-
-.learning-category[hidden] {
-  display: none;
 }
 
 .search-toolbar {
@@ -1653,7 +1573,7 @@ button:disabled {
 
 .search-speed-control input[type="range"] {
   width: 150px;
-  accent-color: var(--accent-color, #6366f1);
+  accent-color: var(--accent-color);
   cursor: pointer;
 }
 
@@ -1763,7 +1683,7 @@ button:disabled {
   padding: 16px;
   border: 1px solid var(--border-color, #374151);
   border-radius: 12px;
-  background: var(--surface-secondary, #111827);
+  background: var(--surface-secondary);
 }
 
 .search-range-panel h4 {
@@ -1783,7 +1703,7 @@ button:disabled {
   gap: 8px;
   padding: 12px;
   border-radius: 8px;
-  background: var(--surface-color, #1f2937);
+  background: var(--surface-color);
 }
 
 .search-range-item span {
@@ -1895,7 +1815,6 @@ button:disabled {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: #202938;
   border: 1px solid #3b4960;
   border-radius: 12px;
   transition:
@@ -1905,8 +1824,6 @@ button:disabled {
 }
 
 .array-cell:hover {
-  background: #29374b;
-  border-color: #60a5fa;
   transform: translateY(-3px);
 }
 
@@ -1918,7 +1835,6 @@ button:disabled {
 }
 
 .array-cell-index {
-  color: #93c5fd;
   font-size: 12px;
 }
 
@@ -1979,11 +1895,6 @@ button:disabled {
 
 .array-operation-card input::placeholder {
   color: #6b7280;
-}
-
-.array-operation-card input:focus {
-  border-color: #60a5fa;
-  box-shadow: 0 0 0 3px rgb(96 165 250 / 15%);
 }
 
 .control-button {
@@ -2286,10 +2197,6 @@ button.structure-card:focus-visible,
   font-weight: 600;
 }
 
-.structure-card-disabled {
-  opacity: 0.55;
-}
-
 @media (max-width: 600px) {
   .structure-grid {
     grid-template-columns: 1fr;
@@ -2305,7 +2212,7 @@ button.structure-card:focus-visible,
   padding: 24px;
   border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
   border-radius: 16px;
-  background: var(--panel-bg, rgba(255, 255, 255, 0.03));
+  background: var(--panel-bg);
 }
 
 .linked-list-panel-heading {

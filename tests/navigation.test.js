@@ -34,9 +34,6 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
       '#sorting-section',
     )
     const searchSection = document.querySelector('#search-section')
-    const categoryPlaceholder = document.querySelector(
-      '#category-placeholder',
-    )
     const structureLibrary = document.querySelector('#structure-library')
     const arraySection = document.querySelector('#array-section')
     const stackSection = document.querySelector('#stack-section')
@@ -76,7 +73,6 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
     assert.equal(stackSection.hidden, true)
     assert.equal(queueSection.hidden, true)
     assert.equal(linkedListSection.hidden, true)
-    assert.equal(categoryPlaceholder.hidden, true)
 
     // Chuyển từ Dashboard sang trang Sorting
     dashboardSection
@@ -116,7 +112,6 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
     assert.equal(stackSection.hidden, true)
     assert.equal(queueSection.hidden, true)
     assert.equal(linkedListSection.hidden, true)
-    assert.equal(categoryPlaceholder.hidden, true)
     assert.equal(searchingNav.classList.contains('active'), true)
 
     // Mở Binary Search
@@ -143,7 +138,6 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
     assert.equal(linkedListSection.hidden, true)
     assert.equal(searchSection.hidden, true)
     assert.equal(algorithmSection.hidden, true)
-    assert.equal(categoryPlaceholder.hidden, true)
     assert.equal(structuresNav.classList.contains('active'), true)
 
     // Mở Array Visualizer
@@ -246,7 +240,6 @@ test('điều hướng hoạt động đúng giữa các trang và cấu trúc d
     assert.equal(stackSection.hidden, true)
     assert.equal(queueSection.hidden, true)
     assert.equal(linkedListSection.hidden, true)
-    assert.equal(categoryPlaceholder.hidden, true)
     assert.equal(sortingNav.classList.contains('active'), true)
   } finally {
     window.happyDOM.close()
@@ -344,7 +337,7 @@ test('Thẻ cấu trúc dữ liệu không có section tương ứng: giữ nguy
     assert.doesNotThrow(() => card.click())
     assert.equal(document.querySelector('#structure-library').hidden, false, 'thư viện vẫn hiện')
     document.querySelectorAll('.visualizer-section').forEach((section) => {
-      if (!['category-placeholder', 'structure-library'].includes(section.id)) {
+      if (section.id !== 'structure-library') {
         assert.equal(section.hidden, true, `${section.id} không được hiện`)
       }
     })
