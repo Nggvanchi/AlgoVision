@@ -3,13 +3,12 @@ import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 
 import { withFullApp } from './helpers/app-dom.js'
-import { memoryStorage } from './helpers/memory-storage.js'
 
 // Redesign Phase 4, giai đoạn c: thẻ Cấu trúc dữ liệu dùng cùng khung với thẻ thuật toán nhưng KHÔNG có pill độ khó,
 // KHÔNG có hàng Thời gian/Bộ nhớ.
-// Các class/thuộc tính cũ (structure-card-title ... nguồn nhãn của sidebar, breadcrumb và Tiến độ) phải còn nguyên.
+// Các class/thuộc tính cũ (structure-card-title ... nguồn nhãn của sidebar và breadcrumb) phải còn nguyên.
 const textOf = (element) => element.textContent.replace(/\s+/g, ' ').trim()
-const run = (callback, options = {}) => withFullApp(callback, { storage: memoryStorage(), ...options })
+const run = (callback) => withFullApp(callback)
 
 const TARGETS = ['array', 'stack', 'queue', 'linked-list', 'bst', 'hash-table', 'graph']
 const card = (document, target) => document.querySelector(`#structure-library button.structure-card[data-structure-target="${target}"]`)

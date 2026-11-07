@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises'
 import { initNavigation } from '../src/navigation.js'
 
 // algovision:viewchange mang detail { page, topic }: topic là id chủ đề khi mở màn chi tiết, null ở mọi chỗ khác.
-// Tiến độ học tập (progress-store) dựa vào hợp đồng này để biết chủ đề nào vừa được mở.
+// Hợp đồng viewchange.detail.topic. Hiện không mã nào trong src đọc topic (chỉ test); gỡ hay giữ do Redesign quyết định (docs/backlog.md).
 
 const template = await readFile(new URL('../public/templates/app.html', import.meta.url), 'utf8')
 
@@ -92,7 +92,7 @@ test('Quay lại từ chi tiết Tìm kiếm: topic là null', () => {
   })
 })
 
-test('click thẻ Tìm kiếm: sự kiện change của #search-algorithm đến TRƯỚC viewchange (initProgress dựa vào thứ tự này)', () => {
+test('click thẻ Tìm kiếm: sự kiện change của #search-algorithm đến TRƯỚC viewchange', () => {
   withNavigation(({ document }) => {
     goTo(document, 'searching')
     const order = []

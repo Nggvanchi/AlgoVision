@@ -298,8 +298,8 @@ export function initNavigation(document) {
   })
 
   // Mục con của sidebar sinh từ chính các thẻ [data-structure-target] (nhãn lấy từ thẻ, icon là symbol SVG cùng tên), nên danh sách chỉ có một
-  // nguồn. Nút dùng data-structure-nav và class nav-subitem, KHÔNG dùng data-structure-target (initProgress đếm chủ đề theo
-  // thuộc tính đó) và KHÔNG dùng class nav-item (nhiều test lấy .nav-item đầu tiên).
+  // nguồn. Nút dùng data-structure-nav và class nav-subitem, KHÔNG dùng data-structure-target (thuộc tính của thẻ: mục con
+  // được sinh từ chính các thẻ có thuộc tính đó) và KHÔNG dùng class nav-item (nhiều test lấy .nav-item đầu tiên).
   function renderStructureNav() {
     if (!structureNavList) return
 
@@ -325,11 +325,11 @@ export function initNavigation(document) {
         structureNavList.append(item)
 
         button.addEventListener('click', () => {
-          // Bấm lại cấu trúc đang mở: không phát gì (không viewchange, không ghi tiến độ).
+          // Bấm lại cấu trúc đang mở: không phát gì (không viewchange).
           if (currentPage === 'structures' && currentStructure === target) return
 
           // renderPage (không phát sự kiện) rồi openStructure: từ trang khác chỉ có MỘT viewchange, không có sự kiện
-          // topic null xen giữa (sự kiện đó sẽ làm initProgress/mô phỏng xử lý hai lần).
+          // topic null xen giữa (sự kiện đó sẽ làm mô phỏng xử lý hai lần).
           if (currentPage !== 'structures') renderPage('structures')
           openStructure(target)
         })

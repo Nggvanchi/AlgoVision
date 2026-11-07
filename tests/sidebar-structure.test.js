@@ -116,7 +116,7 @@ for (const target of STRUCTURES) {
       assert.ok(card !== null, `thiếu thẻ ${target}`)
       assert.equal(subitem.tagName, 'BUTTON')
       assert.equal(subitem.getAttribute('type'), 'button')
-      assert.equal(subitem.hasAttribute('data-structure-target'), false, 'data-structure-target dành cho thẻ: navigation.js và initProgress đếm theo thuộc tính này')
+      assert.equal(subitem.hasAttribute('data-structure-target'), false, 'data-structure-target dành cho thẻ: navigation.js sinh mục con từ các thẻ có thuộc tính này')
       assert.equal(subitem.classList.contains('nav-item'), false, 'class nav-item dành cho 4 mục trang: nhiều test lấy mục đầu tiên theo class này')
       assert.ok(document.querySelector(`#${target}-section`) !== null, `mục con ${target} phải có #${target}-section để mở`)
       assert.equal(textOf(subitem.querySelector('.nav-label')), textOf(card.querySelector('.structure-card-title')), 'nhãn lấy từ tiêu đề thẻ')

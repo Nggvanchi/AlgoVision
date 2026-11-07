@@ -4,13 +4,12 @@ import assert from 'node:assert/strict'
 import { Window } from 'happy-dom'
 
 import { template, withFullApp } from './helpers/app-dom.js'
-import { memoryStorage } from './helpers/memory-storage.js'
 
 // Redesign Phase 4 (Thư viện), thẻ thuật toán Sắp xếp và Tìm kiếm: pill độ khó (nhãn cũ), tên (h4), mô tả, hàng "Thời gian (xấu nhất)"
 // và "Bộ nhớ", đoạn "Trực quan hóa →". Hai hàng độ phức tạp đặt tĩnh trong app.html nên phải khớp
 // nguồn thật: bảng Learning Panel (do sorting.js / searching.js điền khi chọn thuật toán), được đối chiếu ở các test dưới đây.
 const textOf = (element) => element.textContent.replace(/\s+/g, ' ').trim()
-const run = (callback) => withFullApp(callback, { storage: memoryStorage() })
+const run = (callback) => withFullApp(callback)
 const goTo = (document, page) => document.querySelector(`.nav-item[data-page="${page}"]`).click()
 
 const SORTING = [
@@ -46,7 +45,7 @@ for (const item of CARDS) {
       assert.ok(card !== null, `phải có thẻ ${item.name}`)
       assert.equal(card.tagName, 'BUTTON')
       assert.equal(card.getAttribute('type'), 'button')
-      assert.equal(textOf(card.querySelector('h4')), item.title, 'h4 là nguồn nhãn cho breadcrumb, tiêu đề và Tiến độ')
+      assert.equal(textOf(card.querySelector('h4')), item.title, 'h4 là nguồn nhãn cho breadcrumb và tiêu đề')
       assert.ok(card.querySelector('.card-top .algorithm-symbol') !== null, 'biểu tượng thuật toán nằm trong .card-top')
       assert.equal(textOf(card.querySelector('.card-top .difficulty')), item.difficulty, 'nhãn độ khó giữ nguyên')
       assert.ok(textOf(card.querySelector(':scope > p')).length > 20, 'có đoạn mô tả')

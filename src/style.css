@@ -2681,12 +2681,6 @@ button.dashboard-card:hover {
   font-size: 12px;
 }
 
-/* Khoảng cách dọc do gap của .dashboard-progress-main đảm nhiệm. */
-
-/* Trang Tiến độ học tập (Redesign Phase 3b). Tái dùng .dashboard-card, .control-button, .dashboard-primary-button, .eyebrow. */
-
-/* .eyebrow gốc cỡ 10px; nhãn mới của khối tiến độ cỡ 12px (chữ nhỏ nhất của trang là 12px). */
-
 @media (max-width: 700px) {
   .dashboard-section {
     gap: 28px;

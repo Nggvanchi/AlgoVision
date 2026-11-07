@@ -2,7 +2,6 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 
 import { SCREENS, withFullApp } from './helpers/app-dom.js'
-import { memoryStorage } from './helpers/memory-storage.js'
 import { readStyle, parseStylesheet } from './helpers/css-tokens.js'
 
 // Redesign Phase 2b: .topbar có breadcrumb ĐỘNG (chữ thường, không liên kết, không landmark, không aria-current) và
@@ -142,9 +141,7 @@ test('mục con từ trang khác: breadcrumb và title chỉ đổi một lần 
   })
 })
 
-test('cập nhật topbar không thêm viewchange và không thêm lần ghi tiến độ: chuỗi sự kiện và số lần ghi giữ nguyên như Phase 2', async () => {
-  const storage = memoryStorage()
-
+test('cập nhật topbar không thêm viewchange: chuỗi sự kiện giữ nguyên như Phase 2', async () => {
   await run(({ document }) => {
     const log = []
     document.addEventListener('algovision:viewchange', (event) => log.push({ ...event.detail }))
@@ -160,7 +157,7 @@ test('cập nhật topbar không thêm viewchange và không thêm lần ghi ti�
       { page: 'structures', topic: 'structure:queue' },
       { page: 'structures', topic: null },
     ])
-  }, { storage })
+  })
 })
 
 test('.topbar vẫn là <header> trong <main>; không còn huy hiệu "Đang phát triển" (.status-badge, .status-dot) và chữ "Trực quan hóa" tĩnh', async () => {

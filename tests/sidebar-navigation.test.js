@@ -2,13 +2,11 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 
 import { SCREENS, isShown, withFullApp } from './helpers/app-dom.js'
-import { memoryStorage } from './helpers/memory-storage.js'
 
 // Mục con của sidebar (button.nav-subitem[data-structure-nav]) mở thẳng một cấu trúc. Hợp đồng quan trọng nhất:
-// mỗi lần bấm phát ĐÚNG MỘT algovision:viewchange { page: 'structures', topic: 'structure:<tên>' } và ghi ĐÚNG MỘT lần openCount,
-// không có sự kiện topic null xen giữa (nếu có thì mô phỏng/tiến độ sẽ chạy hai lần).
+// mỗi lần bấm phát ĐÚNG MỘT algovision:viewchange { page: 'structures', topic: 'structure:<tên>' },
+// không có sự kiện topic null xen giữa (nếu có thì mô phỏng sẽ chạy hai lần).
 const STRUCTURES = ['array', 'stack', 'queue', 'linked-list', 'bst', 'hash-table', 'graph']
-const KEY = 'algovision:progress'
 const SORT_DELAY = 650
 
 const goTo = (document, page) => document.querySelector(`.nav-item[data-page="${page}"]`).click()
@@ -19,11 +17,6 @@ function subitem(document, target) {
   return element
 }
 const cardOf = (document, target) => document.querySelector(`[data-structure-target="${target}"]`)
-const counts = (storage) => {
-  const text = storage.data.get(KEY)
-
-  return text === undefined ? {} : Object.fromEntries(Object.entries(JSON.parse(text).topics).map(([id, entry]) => [id, entry.openCount]))
-}
 const otherThan = (target) => STRUCTURES[(STRUCTURES.indexOf(target) + 1) % STRUCTURES.length]
 
 function recordViewChanges(document) {
@@ -51,9 +44,7 @@ const SCENARIOS = [
 
 for (const scenario of SCENARIOS) {
   for (const target of STRUCTURES) {
-    test(`mục con "${target}" ${scenario.name}: đúng MỘT viewchange {structures, structure:${target}} và đúng MỘT lần ghi openCount`, async () => {
-      const storage = memoryStorage()
-
+    test(`mục con "${target}" ${scenario.name}: đúng MỘT viewchange {structures, structure:${target}}`, async () => {
       await withFullApp(({ document, scheduler }) => {
         scenario.prepare(document, target, scheduler)
 
@@ -76,7 +67,7 @@ for (const scenario of SCENARIOS) {
 
         assert.deepEqual([...document.querySelectorAll('.nav-item.active')].map((item) => item.dataset.page), ['structures'], 'mục cha Tất cả cấu trúc active')
         assert.equal(document.querySelector('.nav-subitem.active')?.dataset.structureNav, target)
-      }, { storage })
+      })
     })
   }
 }
@@ -93,9 +84,7 @@ test('mục con mở từ Sắp xếp đang chạy: mô phỏng được tạm d
   })
 })
 
-test('bấm lại mục con của cấu trúc đang mở: 0 viewchange, 0 lần ghi, màn hình giữ nguyên', async () => {
-  const storage = memoryStorage()
-
+test('bấm lại mục con của cấu trúc đang mở: 0 viewchange, màn hình giữ nguyên', async () => {
   await withFullApp(({ document }) => {
     subitem(document, 'hash-table').click()
 
@@ -107,12 +96,10 @@ test('bấm lại mục con của cấu trúc đang mở: 0 viewchange, 0 lần 
     assert.deepEqual(log, [])
     assert.equal(isShown(document.querySelector('#hash-table-section')), true)
     assert.equal(document.querySelectorAll('[aria-current]').length, 1)
-  }, { storage })
+  })
 })
 
-test('Quay lại thư viện rồi bấm lại mục con vừa mở: mở lại, openCount thành 2, vẫn một sự kiện và một lần ghi', async () => {
-  const storage = memoryStorage()
-
+test('Quay lại thư viện rồi bấm lại mục con vừa mở: mở lại, vẫn đúng một sự kiện', async () => {
   await withFullApp(({ document }) => {
     subitem(document, 'bst').click()
     document.querySelector('#bst-section [data-back-to-structures]').click()
@@ -122,24 +109,20 @@ test('Quay lại thư viện rồi bấm lại mục con vừa mở: mở lại,
     subitem(document, 'bst').click()
 
     assert.deepEqual(log, [{ page: 'structures', topic: 'structure:bst' }])
-  }, { storage })
+  })
 })
 
-test('đi lần lượt qua cả 7 mục con: mỗi cấu trúc ghi đúng một lần, tổng 7 lần ghi, 7 sự kiện có topic', async () => {
-  const storage = memoryStorage()
-
+test('đi lần lượt qua cả 7 mục con: mỗi cấu trúc đúng một viewchange, tổng 7 sự kiện có topic', async () => {
   await withFullApp(({ document }) => {
     const log = recordViewChanges(document)
 
     for (const target of STRUCTURES) subitem(document, target).click()
 
     assert.deepEqual(log, STRUCTURES.map((target) => ({ page: 'structures', topic: `structure:${target}` })))
-  }, { storage })
+  })
 })
 
-test('Quay lại (data-back-to-structures) từ chi tiết: đúng một viewchange {structures, null}, 0 lần ghi, mục cha giữ aria-current, không mục con nào active', async () => {
-  const storage = memoryStorage()
-
+test('Quay lại (data-back-to-structures) từ chi tiết: đúng một viewchange {structures, null}, mục cha giữ aria-current, không mục con nào active', async () => {
   await withFullApp(({ document }) => {
     subitem(document, 'graph').click()
 
@@ -151,12 +134,10 @@ test('Quay lại (data-back-to-structures) từ chi tiết: đúng một viewcha
     assert.equal(document.querySelector('.nav-item[data-page="structures"]').getAttribute('aria-current'), 'page')
     assert.equal(document.querySelectorAll('[aria-current]').length, 1)
     assert.equal(document.querySelectorAll('.nav-subitem.active, .nav-subitem[aria-current]').length, 0)
-  }, { storage })
+  })
 })
 
-test('bấm .nav-item (kể cả "Tất cả cấu trúc" khi đang ở chi tiết): đúng một viewchange {page, null}, không ghi tiến độ', async () => {
-  const storage = memoryStorage()
-
+test('bấm .nav-item (kể cả "Tất cả cấu trúc" khi đang ở chi tiết): đúng một viewchange {page, null}', async () => {
   await withFullApp(({ document }) => {
     subitem(document, 'queue').click()
 
@@ -171,12 +152,10 @@ test('bấm .nav-item (kể cả "Tất cả cấu trúc" khi đang ở chi ti�
       assert.deepEqual(log.splice(0), [{ page, topic: null }])
     }
 
-  }, { storage })
+  })
 })
 
-test('bấm thẻ cấu trúc ở thư viện: vẫn đúng một viewchange và một lần ghi như trước, và mục con tương ứng được đánh dấu', async () => {
-  const storage = memoryStorage()
-
+test('bấm thẻ cấu trúc ở thư viện: vẫn đúng một viewchange như trước, và mục con tương ứng được đánh dấu', async () => {
   await withFullApp(({ document }) => {
     goTo(document, 'structures')
 
@@ -187,7 +166,7 @@ test('bấm thẻ cấu trúc ở thư viện: vẫn đúng một viewchange và
     assert.deepEqual(log, [{ page: 'structures', topic: 'structure:stack' }])
     assert.equal(subitem(document, 'stack').getAttribute('aria-current'), 'page')
     assert.equal(subitem(document, 'stack').classList.contains('active'), true)
-  }, { storage })
+  })
 })
 
 test('thẻ cấu trúc bấm khi KHÔNG ở trang Cấu trúc: không làm gì (giữ lớp bảo vệ currentPage)', async () => {
