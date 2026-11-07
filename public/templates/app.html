@@ -111,7 +111,7 @@
                 class="dashboard-primary-button"
                 data-dashboard-target="sorting"
             >
-                Bắt đầu học
+                <span id="dashboard-hero-label">Bắt đầu học</span>
                 <span aria-hidden="true">→</span>
             </button>
         </div>
@@ -178,16 +178,13 @@
         </section>
 
         <section class="dashboard-progress">
-            <div>
-                <p class="eyebrow">LỘ TRÌNH HỌC TẬP</p>
-                <h3>Theo dõi hành trình của bạn</h3>
-                <p>
-                    Khu vực này sẽ được phát triển để ghi nhận
-                    chủ đề đã học, bài tập đã hoàn thành và tiến độ
-                    của từng nhóm kiến thức.
-                </p>
+            <div class="dashboard-progress-main">
+                <p class="eyebrow">TIẾN ĐỘ HỌC TẬP</p>
+                <h3>Chủ đề bạn đã mở</h3>
+                <p id="dashboard-progress-notice" class="progress-notice" hidden></p>
+                <div id="dashboard-progress-body" class="dashboard-progress-body"></div>
+                <button class="control-button progress-detail" type="button" data-dashboard-target="progress">Xem tiến độ chi tiết</button>
             </div>
-            <span class="dashboard-progress-icon" aria-hidden="true">↗</span>
         </section>
     </section>
 

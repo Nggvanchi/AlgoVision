@@ -6,8 +6,8 @@ import { readFile } from 'node:fs/promises'
 const template = await readFile(new URL('../public/templates/app.html', import.meta.url), 'utf8')
 
 // Cụm hứa hẹn tính năng "sắp có" đã lỗi thời khi cấu trúc đó có thật.
-// "Sẽ phát triển" của thẻ Thuật toán nâng cao và "sẽ được phát triển" của Lộ trình học tập là trạng thái
-// thật của dự án nên không nằm trong danh sách này.
+// "Sẽ phát triển" của thẻ Thuật toán nâng cao là trạng thái thật của dự án nên không nằm trong danh sách này
+// (khối tiến độ ở Dashboard không còn chữ giữ chỗ "sẽ được phát triển").
 const STALE_PHRASES = [
   /sẽ được bổ sung/i, /sắp ra mắt/i, /sắp có/i, /coming soon/i,
   /sẽ được phát triển ở bước tiếp theo/i, /PREVIEW/,

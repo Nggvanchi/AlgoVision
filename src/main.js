@@ -6,6 +6,7 @@ import { initNavigation } from './navigation.js'
 import { initSidebar } from './sidebar.js'
 import { initProgress } from './progress-init.js'
 import { initProgressView } from './progress-view.js'
+import { initDashboardProgress } from './dashboard-progress.js'
 import { initArray } from './array.js'
 import { initStack } from './stack.js'
 import { initQueue } from './queue.js'
@@ -19,6 +20,7 @@ function startApp() {
   initSidebar(document)
   const progress = initProgress(document)
   initProgressView(document, progress)
+  initDashboardProgress(document, progress)
   initSorting()
   initSearching()
   initArray()

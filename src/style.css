@@ -2743,8 +2743,9 @@ button.dashboard-card:hover {
   background: var(--panel);
 }
 
+/* Khoảng cách dọc do gap của .dashboard-progress-main đảm nhiệm. */
 .dashboard-progress h3 {
-  margin: 12px 0;
+  margin: 0;
   font-size: 21px;
 }
 
@@ -2756,10 +2757,17 @@ button.dashboard-card:hover {
   line-height: 1.8;
 }
 
-.dashboard-progress-icon {
-  flex-shrink: 0;
-  color: var(--purple);
-  font-size: 28px;
+.dashboard-progress-main,
+.dashboard-progress-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.progress-detail {
+  align-self: flex-start;
 }
 
 /* Trang Tiến độ học tập (Redesign Phase 3b). Tái dùng .dashboard-card, .control-button, .dashboard-primary-button, .eyebrow. */
@@ -2880,6 +2888,7 @@ button.dashboard-card:hover {
 
 .progress-reopen,
 .progress-clear,
+.progress-detail,
 .progress-confirm .control-button {
   min-height: 44px;
 }
