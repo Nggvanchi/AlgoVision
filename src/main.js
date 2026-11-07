@@ -16,7 +16,7 @@ import { initGraph } from './graph.js'
 function startApp() {
   initNavigation(document)
   initSidebar(document)
-  initProgress(document)
+  const progress = initProgress(document)
   initSorting()
   initSearching()
   initArray()

@@ -284,7 +284,7 @@ test('truy cập window.localStorage ném lỗi (cửa sổ riêng tư/bị ch�
   }
 })
 
-test('không đăng ký sự kiện storage (chưa có giao diện đọc tiến độ)', () => {
+test('đăng ký đúng một listener sự kiện storage, trên window (giao diện đọc tiến độ cần biết tab khác đổi dữ liệu)', () => {
   const window = new Window()
   const { document } = window
   const registered = []
@@ -294,15 +294,204 @@ test('không đăng ký sự kiện storage (chưa có giao diện đọc tiến
     for (const target of [window, document]) {
       const original = target.addEventListener.bind(target)
       target.addEventListener = (type, ...rest) => {
-        registered.push(type)
+        registered.push([target === window ? 'window' : 'document', type])
         return original(type, ...rest)
       }
     }
     initNavigation(document)
     progressInit.initProgress(document, { storage: memoryStorage() })
-    assert.ok(registered.includes('algovision:viewchange'), 'phải nghe algovision:viewchange')
-    assert.ok(!registered.includes('storage'), 'không được nghe sự kiện storage')
+    assert.ok(registered.some(([, type]) => type === 'algovision:viewchange'), 'phải nghe algovision:viewchange')
+    assert.deepEqual(registered.filter(([, type]) => type === 'storage'), [['window', 'storage']])
   } finally {
     window.happyDOM.close()
   }
+})
+
+// --- subscribe, catalog, readState (giao diện đọc tiến độ dựa vào đây) ---
+
+const storageEvent = (window, key) => new window.StorageEvent('storage', { key })
+
+test('catalog: 12 chủ đề {id, label, kind} lấy từ chính thẻ trong template, nhãn đã rút gọn khoảng trắng', async () => {
+  await withFullApp(({ document, progress }) => {
+    assert.equal(progress.catalog.length, 12)
+    assert.deepEqual(progress.catalog.map((topic) => topic.id).sort(), [...ALL_TOPICS].sort())
+    assert.deepEqual(
+      [...new Set(progress.catalog.map((topic) => topic.kind))].sort(),
+      ['searching', 'sorting', 'structure'],
+    )
+
+    const byId = Object.fromEntries(progress.catalog.map((topic) => [topic.id, topic]))
+    const text = (selector) => document.querySelector(selector).textContent.replace(/\s+/g, ' ').trim()
+
+    assert.equal(byId['sorting:bubble'].label, text('.algorithm-card[data-algorithm="bubble"] h4'))
+    assert.equal(byId['searching:binary'].label, text('[data-search-algorithm="binary"] h4'))
+    assert.equal(byId['structure:hash-table'].label, text('[data-structure-target="hash-table"] .structure-card-title'))
+    assert.ok(progress.catalog.every((topic) => topic.label !== '' && !/\s{2,}/.test(topic.label)))
+  }, { storage: memoryStorage() })
+})
+
+test('catalog đi theo template, không có danh sách thứ hai: thẻ thêm trước init xuất hiện với nhãn của thẻ', () => {
+  const window = new Window()
+  const { document } = window
+
+  try {
+    document.body.innerHTML = template
+    document.querySelector('#structure-library').insertAdjacentHTML(
+      'beforeend',
+      '<button type="button" data-structure-target="demo"><span class="structure-card-title"> Cây   Demo </span></button>',
+    )
+    initNavigation(document)
+
+    const progress = progressInit.initProgress(document, { storage: memoryStorage() })
+
+    assert.deepEqual(progress.catalog.find((topic) => topic.id === 'structure:demo'), {
+      id: 'structure:demo', label: 'Cây Demo', kind: 'structure',
+    })
+  } finally {
+    window.happyDOM.close()
+  }
+})
+
+test('readState: trả { progress, status, persisted } của kho và đi cùng clear()', async () => {
+  await withFullApp(({ document, progress }) => {
+    assert.deepEqual(progress.readState(), { progress: { version: 1, topics: {} }, status: 'empty', persisted: true })
+    openSorting(document, 'bubble')
+    assert.equal(progress.readState().status, 'ok')
+    assert.deepEqual(Object.keys(progress.readState().progress.topics), ['sorting:bubble'])
+  }, { storage: memoryStorage() })
+})
+
+test('subscribe: gọi sau MỖI lần mở chủ đề, và lúc gọi thì đã đọc được lần mở vừa ghi', async () => {
+  await withFullApp(({ document, progress }) => {
+    const seen = []
+    progress.subscribe(() => seen.push(Object.keys(progress.read().topics)))
+
+    openSorting(document, 'bubble')
+    assert.deepEqual(seen, [['sorting:bubble']])
+    openStructure(document, 'bst')
+    assert.deepEqual(seen, [['sorting:bubble'], ['sorting:bubble', 'structure:bst']])
+  }, { storage: memoryStorage() })
+})
+
+test('subscribe: thứ tự listener viewchange không ảnh hưởng (đăng ký trước hay sau initProgress đều thấy lần mở)', async () => {
+  await withFullApp(({ document, progress }) => {
+    let opens = null
+    document.addEventListener('algovision:viewchange', () => {
+      opens = Object.keys(progress.read().topics).length
+    })
+    const calls = []
+    progress.subscribe(() => calls.push(Object.keys(progress.read().topics).length))
+    openStructure(document, 'graph')
+    assert.deepEqual(calls, [1])
+    assert.ok(opens !== null)
+  }, { storage: memoryStorage() })
+})
+
+test('subscribe: không gọi khi đổi trang, bấm Quay lại, hay mở chủ đề app không biết', async () => {
+  await withFullApp(({ document, progress }) => {
+    let calls = 0
+    progress.subscribe(() => { calls += 1 })
+
+    for (const page of ['sorting', 'searching', 'structures', 'dashboard']) goTo(document, page)
+    emitViewChange(document, { page: 'structures', topic: 'structure:ghost' })
+    assert.equal(calls, 0)
+  }, { storage: memoryStorage() })
+})
+
+test('subscribe: gọi đúng một lần sau clear() ở tab này, kể cả khi storage từ chối xóa', async () => {
+  for (const storage of [memoryStorage(), memoryStorage({ failRemove: true })]) {
+    await withFullApp(({ progress }) => {
+      let calls = 0
+      progress.subscribe(() => { calls += 1 })
+      progress.clear()
+      assert.equal(calls, 1)
+    }, { storage })
+  }
+})
+
+test('subscribe: recordOpen gọi trực tiếp trên kết quả của initProgress cũng thông báo', async () => {
+  await withFullApp(({ progress }) => {
+    let calls = 0
+    progress.subscribe(() => { calls += 1 })
+    assert.equal(progress.recordOpen('structure:bst'), true)
+    assert.equal(calls, 1)
+  }, { storage: memoryStorage() })
+})
+
+test('subscribe: sự kiện storage với khóa algovision:progress và với key null (clear() ở tab khác) đều thông báo', async () => {
+  await withFullApp(({ window, progress }) => {
+    let calls = 0
+    progress.subscribe(() => { calls += 1 })
+
+    window.dispatchEvent(storageEvent(window, KEY))
+    assert.equal(calls, 1)
+    window.dispatchEvent(storageEvent(window, null))
+    assert.equal(calls, 2)
+  }, { storage: memoryStorage() })
+})
+
+test('subscribe: bỏ qua sự kiện storage của khóa khác', async () => {
+  await withFullApp(({ window, progress }) => {
+    let calls = 0
+    progress.subscribe(() => { calls += 1 })
+
+    window.dispatchEvent(storageEvent(window, 'khac'))
+    window.dispatchEvent(storageEvent(window, ''))
+    window.dispatchEvent(storageEvent(window, 'algovision:progress2'))
+    window.dispatchEvent(new window.Event('storage'))
+    assert.equal(calls, 0)
+  }, { storage: memoryStorage() })
+})
+
+test('subscribe: trả về hàm hủy đăng ký; hủy hai lần không ném', async () => {
+  await withFullApp(({ document, window, progress }) => {
+    let calls = 0
+    const unsubscribe = progress.subscribe(() => { calls += 1 })
+
+    openSorting(document, 'bubble')
+    assert.equal(calls, 1)
+    unsubscribe()
+    unsubscribe()
+    openStructure(document, 'bst')
+    window.dispatchEvent(storageEvent(window, KEY))
+    progress.clear()
+    assert.equal(calls, 1)
+  }, { storage: memoryStorage() })
+})
+
+test('subscribe: người nghe ném lỗi không làm hỏng điều hướng, ghi tiến độ hay người nghe khác', async () => {
+  await withFullApp(({ document, window, progress }) => {
+    let calls = 0
+    progress.subscribe(() => { throw new Error('hỏng') })
+    progress.subscribe(() => { calls += 1 })
+
+    openSorting(document, 'bubble')
+    assert.equal(document.querySelector('#sorting-section').hidden, false)
+    window.dispatchEvent(storageEvent(window, null))
+    progress.clear()
+    assert.equal(calls, 3)
+  }, { storage: memoryStorage() })
+})
+
+test('subscribe: hủy đăng ký ngay trong lúc được gọi không làm bỏ sót người nghe kế tiếp', async () => {
+  await withFullApp(({ window, progress }) => {
+    const order = []
+    const first = progress.subscribe(() => { order.push('a'); first() })
+    progress.subscribe(() => order.push('b'))
+
+    window.dispatchEvent(storageEvent(window, KEY))
+    window.dispatchEvent(storageEvent(window, KEY))
+    assert.deepEqual(order, ['a', 'b', 'b'])
+  }, { storage: memoryStorage() })
+})
+
+test('storage không dùng được: subscribe vẫn hoạt động và readState báo unavailable', async () => {
+  await withFullApp(({ document, progress }) => {
+    let calls = 0
+    progress.subscribe(() => { calls += 1 })
+    openSorting(document, 'bubble')
+    assert.equal(calls, 1)
+    assert.equal(progress.readState().status, 'unavailable')
+    assert.equal(progress.readState().persisted, false)
+  }, { storage: null })
 })
