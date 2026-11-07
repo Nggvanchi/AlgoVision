@@ -7,6 +7,7 @@ import { isShown, withFullApp, template } from './helpers/app-dom.js'
 import { memoryStorage } from './helpers/memory-storage.js'
 import { initProgressView, createConfirmBox } from '../src/progress-view.js'
 import { formatOpenedAt, isoTimestamp } from '../src/progress-summary.js'
+import { readStyle, declarationValues } from './helpers/css-tokens.js'
 
 // Trang "Tiến độ học tập": vẽ lại từ readState/catalog/subscribe của initProgress, mở lại chủ đề bằng điều khiển có sẵn của
 // navigation.js, hai đường xóa dùng chung một khung xác nhận nhưng không lẫn nhau.
@@ -655,4 +656,27 @@ test('ô "Mở gần nhất" dùng <time datetime> như các hàng; "Chưa có" 
     assert.ok($(document, '#progress-data .progress-stat:nth-child(3) time') === null, 'chưa có lần mở nào thì không có <time>')
     assert.equal(stats(document)[2], 'Mở gần nhất Chưa có')
   })
+})
+
+// --- CSS: chữ nhãn không nhỏ hơn 12px (.eyebrow gốc là 10px) và nút cao >= 44px ---
+
+test('nhãn "THEO NHÓM" và eyebrow của khối tiến độ Dashboard cỡ >= 12px (luật .eyebrow gốc là 10px)', () => {
+  const css = readStyle()
+
+  for (const selector of ['.progress-label', '.dashboard-progress .eyebrow']) {
+    const values = declarationValues(css, selector, 'font-size')
+
+    assert.ok(values.length > 0, `${selector} phải đặt font-size`)
+    assert.ok(values.every((value) => parseFloat(value) >= 12), `${selector}: font-size ${values.join(', ')} phải >= 12px`)
+  }
+})
+
+test('mọi nút của khối tiến độ cao tối thiểu 44px (khai báo min-height)', () => {
+  const css = readStyle()
+
+  for (const selector of ['.progress-reopen', '.progress-clear', '.progress-detail', '.progress-confirm .control-button']) {
+    const values = declarationValues(css, selector, 'min-height')
+
+    assert.ok(values.some((value) => parseFloat(value) >= 44), `${selector}: min-height ${values.join(', ')} phải >= 44px`)
+  }
 })

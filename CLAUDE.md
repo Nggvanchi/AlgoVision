@@ -19,10 +19,10 @@ Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so v�
 Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
 - Đo 2026-11-07 trên Ubuntu/Linux x64 (Node v26.13.0, pnpm 12.16.1).
-- `pnpm test`: 1502/1502 pass, 0 fail, 0 skipped, 16–23 s tùy tải máy (đo 16,2 s đến 22,8 s; Windows trước đây 10–30 s).
-- `pnpm build`: JS 159,01 kB (159.007 B; gzip 46,38 kB), CSS 52,77 kB (52.765 B; gzip 10,33 kB), HTML 0,75 kB (746 B).
+- `pnpm test`: 1504/1504 pass, 0 fail, 0 skipped, 16–23 s tùy tải máy (đo 16,2 s đến 22,8 s; Windows trước đây 10–30 s).
+- `pnpm build`: JS 159,01 kB (159.007 B; gzip 46,38 kB), CSS 52,83 kB (52.825 B; gzip 10,34 kB), HTML 0,75 kB (746 B).
   Ngưỡng của Redesign Phase 3b (số đo thật làm tròn lên 0,5 kB gần nhất; nằm dưới trần đã duyệt riêng cho PR này là JS 160 kB / gzip 47 kB
-  và CSS 54,5 kB / gzip 11,2 kB): JS <= 159,5 kB (gzip <= 46,5), CSS <= 53 kB (gzip <= 10,5). JS dư 493 B, CSS dư 235 B: PR sau phải xem lại ngưỡng có chủ ý (`docs/backlog.md`).
+  và CSS 54,5 kB / gzip 11,2 kB): JS <= 159,5 kB (gzip <= 46,5), CSS <= 53 kB (gzip <= 10,5). JS dư 493 B, CSS dư 175 B: PR sau phải xem lại ngưỡng có chủ ý (`docs/backlog.md`).
   Phase 3b vượt ngưỡng cũ của Phase 2 (JS 150 kB, CSS 51,5 kB) vì thêm giao diện đọc tiến độ (trang Tiến độ và khối Dashboard); trước đó PR `chore/bundle-headroom` gỡ mã chết
   (JS -542 B, CSS -1.282 B) và ghi nhận JS gzip trên `main` đã vượt ngưỡng cũ 43,5 kB (43,54 kB).
 - Font tự host: `public/fonts` có 10 woff2 = 172.912 B (ngưỡng 175 kB) và 2 giấy phép OFL; không nằm trong bundle JS/CSS.

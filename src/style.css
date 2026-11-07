@@ -2832,6 +2832,12 @@ button.dashboard-card:hover {
   font-weight: 700;
 }
 
+/* .eyebrow gốc cỡ 10px; nhãn mới của khối tiến độ cỡ 12px (chữ nhỏ nhất của trang là 12px). */
+.progress-label,
+.dashboard-progress .eyebrow {
+  font-size: 12px;
+}
+
 .progress-label {
   margin: 4px 0 -4px;
 }
