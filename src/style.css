@@ -2681,43 +2681,7 @@ button.dashboard-card:hover {
   font-size: 12px;
 }
 
-.dashboard-progress {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 24px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--panel);
-}
-
 /* Khoảng cách dọc do gap của .dashboard-progress-main đảm nhiệm. */
-.dashboard-progress h3 {
-  margin: 0;
-  font-size: 21px;
-}
-
-.dashboard-progress p:not(.eyebrow) {
-  max-width: 760px;
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 14px;
-  line-height: 1.8;
-}
-
-.dashboard-progress-main,
-.dashboard-progress-body {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 0;
-}
-
-.progress-detail {
-  align-self: flex-start;
-}
 
 /* Trang Tiến độ học tập (Redesign Phase 3b). Tái dùng .dashboard-card, .control-button, .dashboard-primary-button, .eyebrow. */
 .progress-section {
@@ -2782,8 +2746,7 @@ button.dashboard-card:hover {
 }
 
 /* .eyebrow gốc cỡ 10px; nhãn mới của khối tiến độ cỡ 12px (chữ nhỏ nhất của trang là 12px). */
-.progress-label,
-.dashboard-progress .eyebrow {
+.progress-label {
   font-size: 12px;
 }
 
@@ -2840,10 +2803,8 @@ button.dashboard-card:hover {
   font-size: 14px;
   font-weight: 600;
 }
-
 .progress-reopen,
 .progress-clear,
-.progress-detail,
 .progress-confirm .control-button {
   min-height: 44px;
 }
@@ -2941,11 +2902,6 @@ button.dashboard-card:hover {
   }
 
   .dashboard-card {
-    padding: 18px;
-  }
-
-  .dashboard-progress {
-    align-items: flex-start;
     padding: 18px;
   }
 }

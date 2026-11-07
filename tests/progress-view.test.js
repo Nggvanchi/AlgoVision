@@ -660,10 +660,10 @@ test('ô "Mở gần nhất" dùng <time datetime> như các hàng; "Chưa có" 
 
 // --- CSS: chữ nhãn không nhỏ hơn 12px (.eyebrow gốc là 10px) và nút cao >= 44px ---
 
-test('nhãn "THEO NHÓM" và eyebrow của khối tiến độ Dashboard cỡ >= 12px (luật .eyebrow gốc là 10px)', () => {
+test('nhãn "THEO NHÓM" của trang Tiến độ cỡ >= 12px (luật .eyebrow gốc là 10px)', () => {
   const css = readStyle()
 
-  for (const selector of ['.progress-label', '.dashboard-progress .eyebrow']) {
+  for (const selector of ['.progress-label']) {
     const values = declarationValues(css, selector, 'font-size')
 
     assert.ok(values.length > 0, `${selector} phải đặt font-size`)
@@ -671,10 +671,10 @@ test('nhãn "THEO NHÓM" và eyebrow của khối tiến độ Dashboard cỡ >=
   }
 })
 
-test('mọi nút của khối tiến độ cao tối thiểu 44px (khai báo min-height)', () => {
+test('mọi nút của trang Tiến độ cao tối thiểu 44px (khai báo min-height)', () => {
   const css = readStyle()
 
-  for (const selector of ['.progress-reopen', '.progress-clear', '.progress-detail', '.progress-confirm .control-button']) {
+  for (const selector of ['.progress-reopen', '.progress-clear', '.progress-confirm .control-button']) {
     const values = declarationValues(css, selector, 'min-height')
 
     assert.ok(values.some((value) => parseFloat(value) >= 44), `${selector}: min-height ${values.join(', ')} phải >= 44px`)
