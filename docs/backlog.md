@@ -24,6 +24,10 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Thời lượng học: đã loại khỏi giai đoạn 8 vì là suy đoán (phải định nghĩa "đang học"); nếu thêm thì nâng `version` lên 2 kèm migrate.
 - Tiến độ học tập (trang Tiến độ, khối Dashboard, sự kiện `storage`) chưa kiểm trên trình duyệt thật: Firefox/Safari, cửa sổ riêng tư (đọc `localStorage` ném lỗi, hết quota),
   `StorageEvent` thật giữa hai tab và trình đọc màn hình thật; test chỉ chạy bằng happy-dom với storage giả. Kiểm trên link preview Vercel.
+- Phần tiến độ (trang Tiến độ, khối Dashboard) chưa kiểm trên thiết bị di động thật (chạm, `100dvh`, thanh địa chỉ co giãn); mới đo bằng Chrome headless.
+- Nút "Xóa lịch sử học tập" (`#progress-clear`) khi chưa có gì để xóa dùng `aria-disabled="true"` chứ không dùng `disabled`, nên vẫn nằm trong thứ tự Tab.
+  Quyết định thiết kế đang giữ nguyên: để trình đọc màn hình nghe được lý do khóa ("Chưa có gì để xóa"); bấm không làm gì. Đổi sang `disabled` sẽ bỏ nút khỏi thứ tự Tab
+  nhưng mất lời giải thích đó và làm focus rơi về `body` nếu nút đang giữ focus.
 - Click thẻ thuật toán Sorting luôn tạo mảng mới (hành vi có từ trước).
 - Rà soát giao diện ở 360px (chưa khảo sát, đầu vào cho bước rà soát giao diện): chữ Big-O của linear probing,
   viền "ô đã dò" bị che ở PR #6/#9.
