@@ -33,7 +33,7 @@ export function initNavigation(document) {
   const progressSection = document.querySelector('#progress-section')
   const pageHeading = document.querySelector('.page-heading')
 
-  const sortingLibrary = document.querySelector('.algorithm-section')
+  const sortingLibrary = document.querySelector('#sorting-algorithm-library')
   const sortingVisualizer = document.querySelector('#sorting-section')
 
   const searchLibrary = document.querySelector('#search-algorithm-library')

@@ -29,6 +29,13 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
   Quyết định thiết kế đang giữ nguyên: để trình đọc màn hình nghe được lý do khóa ("Chưa có gì để xóa"); bấm không làm gì. Đổi sang `disabled` sẽ bỏ nút khỏi thứ tự Tab
   nhưng mất lời giải thích đó và làm focus rơi về `body` nếu nút đang giữ focus.
 - Click thẻ thuật toán Sorting luôn tạo mảng mới (hành vi có từ trước).
+- Thẻ thư viện (Redesign Phase 4): `.algorithm-card.selected` chỉ là class hình ảnh (viền tím), thiếu ARIA (`aria-pressed` hoặc `aria-current`), nên trình đọc màn hình không nghe được thẻ nào đang chọn.
+- Thẻ thư viện: nhãn đếm "03 THUẬT TOÁN" và "02 THUẬT TOÁN" (`.count-label`) viết cứng trong `app.html`; thêm hoặc bớt thẻ phải sửa tay (thẻ Cấu trúc dùng nhãn "DATA STRUCTURES").
+- CSS của thẻ thư viện (kích thước, màu, bố cục, điểm gãy) chưa có test hành vi: test chỉ khóa DOM, thứ tự selector gom chung và điểm gãy 700px; giá trị hiển thị mới kiểm bằng ảnh Chrome headless (Windows) và số đo tương phản.
+- Lưới 7 thẻ cấu trúc: thẻ Graph (thứ 7) nằm lẻ, rộng một nửa, ở 820px và 1280px (2 cột, hành vi có từ trước). Giữ nguyên 2 cột; nếu muốn, cho thẻ lẻ chiếm cả hàng hoặc đổi sang 4 cột ở >= 1280px.
+- Thư viện Tìm kiếm ở 1280px: lưới `.algorithm-grid` là 3 cột nhưng chỉ có 2 thẻ nên cột thứ ba để trống (hành vi có từ trước, thấy khi rà ảnh Phase 4); cân nhắc 2 cột khi thư viện chỉ có 2 thẻ.
+- Mutant tương đương còn sống ở `src/library-status.js`: bỏ điều kiện "tin được" (`trusted && id in data.topics`) khi tính `opened` không đổi gì nhìn thấy, vì nhãn đã bị `hidden` khi dữ liệu không tin được. Không gỡ: `textContent` và class `is-opened` của phần tử ẩn vẫn đọc được qua DOM, điều kiện giữ trạng thái DOM nhất quán và chỉ tốn khoảng 11 byte.
+- Thẻ thư viện chưa kiểm trên Safari, Firefox, thiết bị di động thật và trình đọc màn hình thật; xem preview Vercel.
 - Rà soát giao diện ở 360px (chưa khảo sát, đầu vào cho bước rà soát giao diện): chữ Big-O của linear probing,
   viền "ô đã dò" bị che ở PR #6/#9.
 - L3, màn hình lỗi tải template (`src/bootstrap.js`): khóa nút "Thử lại" bằng `disabled` làm focus rơi về `body` trong lúc đang tải
@@ -41,8 +48,8 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Thanh cuộn mảnh và tối mới có ở `.sidebar-scroll` (`scrollbar-width`/`scrollbar-color`, PR #25); các vùng cuộn khác của app (mã giả, khung vẽ BST/Hash/Graph, bảng) vẫn dùng thanh cuộn mặc định sáng trên nền tối.
 - Nhãn "Tất cả cấu trúc" (sidebar) khác tiêu đề trang "Cấu trúc dữ liệu" (h2 của thư viện); thống nhất cách gọi.
 - Nút menu ☰ không đổi thành ✕ khi drawer mở; drawer không đổ bóng; tooltip và mũi tên nút thu gọn không có hiệu ứng mờ/xoay. Cắt để CSS vào ngưỡng của Phase 2; thêm lại khi CSS còn chỗ.
-- Ngưỡng dung lượng bundle: sau Phase 3b chỉ dư JS 493 B (159.007 B so với ngưỡng 159,5 kB) và CSS 175 B (52.825 B so với ngưỡng 53 kB). PR sau phải xem lại ngưỡng có chủ ý (nâng ngưỡng có lý do, hoặc cắt mã thừa) thay vì lặng lẽ vượt.
-  Nơi có thể cắt: chuỗi tiếng Việt lặp, ba khối `progress-*` CSS dùng chung, `progress-summary.js`.
+- Ngưỡng dung lượng bundle sau Phase 4: JS 159.523 B (dư 477 B so với 160 kB), CSS 52.216 B (dư 284 B so với 52,5 kB). Phase 5 và Phase 6 mỗi phase cần trần riêng, duyệt riêng ở bước lập kế hoạch, hoặc phải cắt mã trước.
+  Nơi có thể cắt: chuỗi tiếng Việt lặp, ba khối `progress-*` CSS dùng chung, `progress-summary.js`. Đo trước Phase 4: gỡ thêm mã chết chỉ được khoảng 0,1 kB CSS và dưới 0,3 kB JS, nên không làm PR riêng.
 - Nâng viền ô nhập lên `--border-control` (đã có ở mục viền ô nhập 1,33:1 phía trên): làm ở PR Visualizer/Structure workspace, không ở sidebar.
 - Chưa kiểm sidebar trên thiết bị di động thật (`100dvh`, thanh địa chỉ co giãn, chạm), trình đọc màn hình thật (CDP không liệt kê `aria-current` trong cây trợ năng), Firefox/Safari (`inert`, `:focus-visible`) và preview Vercel.
 - Cột Insertion đang so sánh nằm trong đoạn đã sắp xếp (khoảng 94% số cột so sánh của Insertion trong mẫu đo 300 mảng) chỉ hiện "đang so sánh",
@@ -81,7 +88,7 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
   Cân nhắc thêm subset greek hoặc vẽ ký hiệu bằng SVG/CSS.
 
 - Khối "Lộ trình" năm chặng (thiết kế tham chiếu 2g/2h) CHƯA làm ở Phase 3b: không có dữ liệu thật cho "chặng" nên không dựng số liệu giả hay placeholder. Cần định nghĩa chặng (danh sách chủ đề theo thứ tự học) trước.
-- Thư viện (Library), Visualizer/Structure workspace và token toàn cục (xem mục chuyển `--border`, `--text-muted`, bảng nền ở trên) là các giai đoạn Redesign sau; Phase 3b chỉ làm Dashboard và Tiến độ.
+- Thư viện (Library) đã làm phần thẻ ở Redesign Phase 4 (tab, ô tìm, bộ lọc, sheet mobile là mục 3c, chưa làm); Visualizer/Structure workspace và token toàn cục (xem mục chuyển `--border`, `--text-muted`, bảng nền ở trên) là các giai đoạn Redesign sau; Phase 3b chỉ làm Dashboard và Tiến độ.
 - Tìm kiếm nhanh (Ctrl K) và nhớ trạng thái thu gọn của sidebar giữa các lần mở: chưa làm (trạng thái sidebar hiện chỉ trong bộ nhớ của phiên, không `localStorage` ngoài `progress-init.js`).
 - Sidebar chưa tự thu gọn ở màn hình tablet (701–1024px): hiện chỉ có hai chế độ, rộng 256px (>= 701px) hoặc drawer (<= 700px).
 - Thuật toán mới (ngoài 3 sắp xếp, 2 tìm kiếm): mỗi thuật toán thêm thẻ `data-algorithm`/`data-search-algorithm` sẽ tự vào `catalog` tiến độ (tổng "N / 12" tự đổi theo template), nhưng chữ "Sắp xếp a/3..." ở test và tài liệu phải cập nhật.

@@ -256,6 +256,18 @@ còn `null` nên không đếm đôi. Màn chi tiết Sắp xếp không có b�
 
 Chưa xác minh trên trình duyệt thật: test chạy bằng happy-dom (xem `docs/backlog.md`).
 
+### Thẻ thư viện (Redesign Phase 4)
+
+- **Thẻ thuật toán** (`.algorithm-card`, Sắp xếp và Tìm kiếm): pill độ khó (nhãn CƠ BẢN / TRUNG BÌNH giữ nguyên), `<h4>`, mô tả, hai hàng `.card-metric` "Thời gian (xấu nhất)" và "Bộ nhớ" viết tĩnh trong `app.html`,
+  rồi `.card-status` gồm `.card-state` ("Chưa mở" mặc định) và `.card-link` "Trực quan hóa →". Hai hàng độ phức tạp phải khớp bảng Learning Panel của cùng thuật toán (`tests/library-cards.test.js` đối chiếu).
+  Thư viện Sắp xếp có id `#sorting-algorithm-library` (cùng kiểu `#search-algorithm-library`) và vẫn giữ class `.algorithm-section`; `navigation.js` tìm theo id.
+- **Thẻ cấu trúc** (`button.structure-card`): cùng khung, KHÔNG pill độ khó, KHÔNG hàng Thời gian/Bộ nhớ; có `.card-status` với `.card-state` và `.structure-card-link.card-link`. Giữ `.structure-card-icon|title|description|link`
+  (`.structure-card-title` là nguồn nhãn của sidebar, breadcrumb và trang Tiến độ). CSS của thẻ cấu trúc gom selector vào luật thẻ thuật toán; luật riêng chỉ còn lưới 2 cột, căn trái biểu tượng, `:focus-visible` (dùng chung `.back-button`) và 1 cột ở <= 700px.
+- **`src/library-status.js`** (`initLibraryStatus(document, progress)`, gọi ngay sau `initDashboardProgress`): mỗi `.card-state` suy id chủ đề từ thuộc tính data của thẻ chứa nó (`data-algorithm` → sorting, `data-search-algorithm` → searching, `data-structure-target` → structure),
+  đặt chữ "Đã mở" / "Chưa mở" và class `is-opened` theo `progress.readState()`, vẽ lại qua `progress.subscribe`. Chỉ vẽ khi `status` là `ok` hoặc `empty`; dữ liệu hỏng, của phiên bản mới hơn hay storage không dùng được thì `hidden` thay vì khẳng định "Chưa mở". Chỉ nói "đã mở".
+- Test: `tests/library-ids.test.js`, `library-cards.test.js`, `library-status.test.js`, `library-structure-cards.test.js`. Phá thử: 31 mutation (Giai đoạn b, bị bắt 29) và 18 mutation (Giai đoạn c, bị bắt 17); mutant còn sống duy nhất là điều kiện "tin được" khi tính `opened` (tương đương, xem `docs/backlog.md`).
+
+
 ## Sidebar: nhóm, mục con, thu gọn, drawer (Redesign Phase 2)
 
 Test: `tests/sidebar-structure.test.js` (DOM), `sidebar-navigation.test.js` (viewchange, ghi tiến độ, aria-current), `sidebar-collapse-drawer.test.js`
