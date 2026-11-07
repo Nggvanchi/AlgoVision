@@ -19,10 +19,10 @@ Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so v�
 Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
 - Đo 2026-11-07 trên Windows 11 x64 (Node v24.21.0, pnpm 12.5.1). Baseline trước Phase 4 đo trên Ubuntu/Linux x64 (Node v26.13.0, pnpm 12.16.1).
-- `pnpm test`: 1318/1318 pass, 0 fail, 0 skipped, 29,4 s (lần đo mới nhất trên `main` sau PR #30, Windows; các lần đo trước trong PR: 26,3–27,6 s; Ubuntu trước đây 16–23 s).
-- `pnpm build`: JS 145,92 kB (145.918 B; gzip 42,34 kB), CSS 49,09 kB (49.085 B; gzip 9,77 kB), HTML 0,75 kB (746 B).
-  Ngưỡng sau khi gỡ Tiến độ học tập (số đo thật của `vite build` làm tròn lên 0,5 kB gần nhất): JS <= 146,0 kB (gzip <= 42,5), CSS <= 49,5 kB (gzip <= 10,0).
-  JS dư 82 B, CSS dư 415 B. Đã duyệt hạ ngưỡng từ mức Phase 4 (JS 160 kB / gzip 47,0; CSS 52,5 kB / gzip 10,5) vì PR `chore/remove-learning-progress` gỡ mã và CSS của tiến độ
+- `pnpm test`: 1382/1382 pass, 0 fail, 0 skipped, 24–28 s (đo trên nhánh `feat/design-tokens` sau R2, Windows; `main` trước R2: 1318 test, 26–29 s; Ubuntu trước đây 16–23 s).
+- `pnpm build` sau R2: JS 145,92 kB (145.918 B; gzip 42,34 kB), CSS 50,16 kB (50.155 B; gzip 9,94 kB), HTML 0,75 kB (746 B). R2 không đổi JS; CSS tăng 1.070 B so với `main` (49.085 B).
+  Ngưỡng hiện hành (trần riêng của PR R2 `feat/design-tokens`, đã duyệt): JS <= 146,0 kB (gzip <= 42,5), CSS <= 51,0 kB (gzip <= 10,5). JS dư 82 B, CSS dư 845 B.
+  Ngưỡng trước R2 (sau khi gỡ Tiến độ học tập): JS <= 146,0 kB, CSS <= 49,5 kB (gzip <= 10,0). Đã duyệt hạ ngưỡng từ mức Phase 4 (JS 160 kB / gzip 47,0; CSS 52,5 kB / gzip 10,5) vì PR `chore/remove-learning-progress` gỡ mã và CSS của tiến độ
   (JS -13,6 kB, CSS -3,1 kB so với `main` trước PR). Redesign v1.0: mỗi PR cần trần bundle riêng, duyệt ở bước lập kế hoạch; không nâng ngưỡng khi chưa được duyệt.
 - Font tự host: `public/fonts` có 10 woff2 = 172.912 B (ngưỡng 175 kB) và 2 giấy phép OFL; không nằm trong bundle JS/CSS.
 
@@ -51,8 +51,10 @@ Chi tiết từng module (trường bước, công thức số bước, bất bi
   trạng thái chỉ trong bộ nhớ, KHÔNG `localStorage` (`tests/meta/no-web-storage.test.js` canh gác; nếu Redesign duyệt nhớ trạng thái thu gọn thì sửa test đó cùng PR). `.main-content` viết số 256px / `0 40px` trực tiếp vì test R12 đọc bằng regex. Chi tiết: `docs/architecture.md`.
 - Không có theo dõi tiến độ học tập (Spec v1.0 mục 16–17): đã gỡ trang Tiến độ, khối tiến độ ở Dashboard, nhãn Đã mở/Chưa mở trên thẻ và kho `localStorage`. App không lưu gì vào trình duyệt
   (`tests/meta/no-web-storage.test.js`); `tests/progress-removed.test.js` canh gác các định danh cũ, không cho thêm lại.
-- Token thiết kế và font: `:root` của `src/style.css` chia ba nhóm (token cũ giữ nguyên, token mới đang dùng, token mới CHƯA được dùng); font Be Vietnam Pro và
-  JetBrains Mono tự host ở `public/fonts` (không dùng Google Fonts); font mã luôn qua `var(--font-mono)`. Test: `tests/design-tokens.test.js`.
+- Token thiết kế và font (Redesign R2): `:root` của `src/style.css` có khối `--av-*` (nguồn giá trị duy nhất, theo Spec mục 2 và 3: màu, `--av-space-1…8`, `--av-fs-*`) rồi ba nhóm
+  token cũ: CŨ (23 alias tạm trỏ vào `--av-*`, mỗi alias có chú thích "tạm, gỡ ở R?"; `--purple` còn giá trị riêng cho canvas), MỚI ĐANG DÙNG, MỚI CHƯA ĐƯỢC DÙNG (chỉ còn `--border-control`).
+  Viết màu mới bằng `var(--av-*)`, không thêm hex trùng màu Spec ngoài `:root` (test canh). Font Be Vietnam Pro và
+  JetBrains Mono tự host ở `public/fonts` (không dùng Google Fonts); font mã luôn qua `var(--font-mono)`. Test: `tests/av-tokens.test.js`, `tests/design-tokens.test.js`.
 - `navigation.js`: thẻ `data-structure-target="x"` mở `#x-section`; thêm cấu trúc mới không cần sửa navigation (mục con của sidebar tự được sinh theo thẻ).
   Mục con KHÔNG được mang `data-structure-target` (thuộc tính của thẻ; mục con được sinh từ các thẻ đó) hay class `nav-item` (nhiều test lấy `.nav-item` đầu tiên).
 - Quy tắc theo loại file nằm ở `.claude/rules/`: `tests.md` (test), `algorithms.md` (mã thuần), `cross-platform.md` (mọi phiên).
@@ -112,7 +114,7 @@ Chạy `/resume-check`.
 
 ## Thiết kế UI
 
-Đọc `docs/design/spec.md` (Spec Redesign v1.0, chép từ PDF) và `docs/design/decisions.md` (11 quyết định đã chốt) trước khi sửa UI. Hai quy tắc sản phẩm: (a) không theo dõi tiến độ cá nhân, không thêm lại Tiến độ học tập, nhãn Đã mở hay lịch sử truy cập; (b) không số giả, dữ liệu hiển thị phải là dữ liệu thật hoặc gắn nhãn "Minh họa".
+Đọc `docs/design/spec.md` (Spec Redesign v1.0, chép từ PDF) và `docs/design/decisions.md` (13 quyết định đã chốt) trước khi sửa UI. Hai quy tắc sản phẩm: (a) không theo dõi tiến độ cá nhân, không thêm lại Tiến độ học tập, nhãn Đã mở hay lịch sử truy cập; (b) không số giả, dữ liệu hiển thị phải là dữ liệu thật hoặc gắn nhãn "Minh họa".
 
 ## Roadmap
 

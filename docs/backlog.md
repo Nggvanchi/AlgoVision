@@ -39,9 +39,14 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Thanh cuộn mảnh và tối mới có ở `.sidebar-scroll` (`scrollbar-width`/`scrollbar-color`, PR #25); các vùng cuộn khác của app (mã giả, khung vẽ BST/Hash/Graph, bảng) vẫn dùng thanh cuộn mặc định sáng trên nền tối.
 - Nhãn "Tất cả cấu trúc" (sidebar) khác tiêu đề trang "Cấu trúc dữ liệu" (h2 của thư viện); thống nhất cách gọi.
 - Nút menu ☰ không đổi thành ✕ khi drawer mở; drawer không đổ bóng; tooltip và mũi tên nút thu gọn không có hiệu ứng mờ/xoay. Cắt để CSS vào ngưỡng của Phase 2; thêm lại khi CSS còn chỗ.
-- Ngưỡng dung lượng bundle sau khi gỡ Tiến độ học tập: JS 145.918 B (dư 82 B so với 146,0 kB), CSS 49.085 B (dư 415 B so với 49,5 kB). Mỗi PR Redesign v1.0 cần trần riêng, duyệt riêng ở bước lập kế hoạch.
+- Ngưỡng dung lượng bundle sau R2: JS 145.918 B (dư 82 B so với 146,0 kB), CSS 50.155 B (dư 845 B so với 51,0 kB). Mỗi PR Redesign v1.0 cần trần riêng, duyệt riêng ở bước lập kế hoạch.
+- Gỡ 23 alias tạm của token cũ (mỗi alias có chú thích "tạm, gỡ ở R?" trong `:root`; `tests/design-tokens.test.js` đếm đúng 23): R3 gỡ nhóm sidebar (`--bg-sidebar`, `--surface-raised`, `--text-label`, `--purple-active`, `--purple-hover`), R4 gỡ `--purple-strong`/`--purple-pressed`, R6 gỡ phần còn lại. Gỡ alias nào thì đổi chỗ dùng sang `--av-*` và sửa danh sách trong test cùng PR.
+- `--border-control` (`#6B6B87`) chưa luật nào dùng. Cần chuyển các selector viền ô nhập/nút sau (lịch ở quyết định 13: R5b, R6, R7 đo lại): `.size-control select`, `.speed-control select`, `.search-toolbar input`, `.array-operation-card input`, `.bst-toolbar input, .bst-toolbar select`, `.control-button`, `.primary-button`, `.search-range-panel`. Còn phải quét tiếp toolbar của Hash Table và Graph (chưa kiểm hết).
+- 13 chỗ `var(--purple)` (`#9b82ff`) còn lại là canvas BST/Hash/Graph (`.bst-*`, `.hash-*`, `.graph-*`): Spec không quy định màu canvas, R6 quyết rồi gỡ `--purple`. `--state-active` (`#f6c76a`) và `#22c55e` (13 chỗ) cũng giữ đến R6.
+- Còn hex trùng giá trị Spec nhưng Spec không đặt tên token (danh sách ngoại lệ `SPEC_HEX_EXCEPTIONS` trong test): `#fca5a5` (danger-text, 3 chỗ), `#60a5fa` (accent-icon, 2 chỗ). Đặt tên token khi R3–R6 cần rồi xóa mục khỏi danh sách.
+- Cỡ chữ lệch bậc Spec nên R2 chưa áp token: `.algorithm-symbol`/`.structure-card-icon` 20px, `.stat-card strong` 21px, `.complexity-card > span`/`p` 11px (xem `FONT_SIZE_SKIPPED` trong `tests/av-tokens.test.js`); input/select không khai báo `font-size`. Quyết theo từng màn hình ở R3–R6.
   Nơi có thể cắt: chuỗi tiếng Việt lặp.
-- Nâng viền ô nhập lên `--border-control` (đã có ở mục viền ô nhập 1,33:1 phía trên): làm ở PR Visualizer/Structure workspace, không ở sidebar.
+- Nâng viền ô nhập lên `--border-control` (đã có ở mục viền ô nhập 1,33:1 phía trên): lịch ở quyết định 13 (R5b, R6, R7 đo lại), không ở sidebar.
 - Chưa kiểm sidebar trên thiết bị di động thật (`100dvh`, thanh địa chỉ co giãn, chạm), trình đọc màn hình thật (CDP không liệt kê `aria-current` trong cây trợ năng), Firefox/Safari (`inert`, `:focus-visible`) và preview Vercel.
 - Cột Insertion đang so sánh nằm trong đoạn đã sắp xếp (khoảng 94% số cột so sánh của Insertion trong mẫu đo 300 mảng) chỉ hiện "đang so sánh",
   mất cue "đã sắp xếp" (`is-comparing` thắng `is-sorted`, `src/sorting-bar-state.js`). Hiện cả hai phải sửa test "cột đang so sánh trong vùng

@@ -262,7 +262,10 @@ hover 14,30; logo "A" chữ trắng trên `--purple-strong` 5,31 (trước: grad
 
 **Kích thước**: mục chính cao tối thiểu 40px, mục con 36px (desktop); 44px ở <= 700px; nút menu 44×44px; thanh trên 56px.
 
-## Token thiết kế và font tự host (Redesign Phase 1)
+## Token thiết kế và font tự host (Redesign Phase 1, cập nhật ở R2)
+
+**Cập nhật R2 (`feat/design-tokens`):** `:root` có thêm khối `--av-*` đứng TRƯỚC nhóm CŨ (comment `=== TOKEN --av-* ===`): 21 màu Spec mục 2, `--av-nav-active-text` (`#DDD6FE`), `--av-space-1…8` (4/8/12/16/24/32/48/64) và 11 token cỡ chữ `--av-fs-*` (display 40, hero 34, page 28, h2 24, h3 18, card 16, body 15, body-sm 14, caption 13, label 12, code 14; tên do R2 chọn vì Spec không đặt tên). Test `tests/av-tokens.test.js` (55 test) khóa tên và giá trị.
+Các token Phase 1/2 thành ALIAS tạm trỏ vào `--av-*` (23 alias, mỗi cái có chú thích "tạm, gỡ ở R?"; `tests/design-tokens.test.js` đếm), diện mạo toàn trang đổi theo bảng màu Spec. `--purple` chia theo vai trò: chữ -> `--av-primary-text`, viền -> `--av-primary-line`, focus -> `--av-focus` (vòng 2px, offset 2px), canvas BST/Hash/Graph giữ `--purple` (13 chỗ, gỡ ở R6). Đã xóa token chưa dùng; nhóm CHƯA ĐƯỢC DÙNG chỉ còn `--border-control` (quyết định 9 và 12). `--purple-active` là `rgba(139, 92, 246, 0.18)` (nền mềm nav theo Spec). Không còn hex trùng giá trị Spec đã có token ngoài `:root` (test canh; ngoại lệ `#fca5a5`, `#60a5fa` có lý do). Các đoạn dưới đây mô tả Phase 1/2 và giá trị cũ; khi mâu thuẫn, `:root` và test là chuẩn.
 
 Phase 1 chỉ thêm nền móng, **không đổi diện mạo trừ font**: token trong `:root` của `src/style.css`, font tự host, gom 13 hex khớp đúng token.
 Test: `tests/design-tokens.test.js` (107 test: 42 viết riêng, 65 sinh từ bảng; Phase 2 bỏ 1 hàng gom hex và thêm 1 test) và hai helper `tests/helpers/contrast.js` (tỉ lệ WCAG, có test riêng)
