@@ -240,19 +240,20 @@
             <input type="search" class="library-search-input" id="library-search" placeholder="Tìm trong thư viện" aria-label="Tìm trong thư viện" autocomplete="off">
         </div>
         <p class="library-count" role="status">Hiển thị 0 mục</p>
-        <div class="library-chips" role="group" aria-label="Phân loại cấu trúc dữ liệu" data-chips="structures">
+        <div class="library-chips" role="group" aria-label="Phân loại cấu trúc dữ liệu" data-tab="structures">
             <button type="button" class="library-chip" data-category-filter="all" aria-pressed="true">Tất cả</button>
             <button type="button" class="library-chip" data-category-filter="linear" aria-pressed="false">Tuyến tính</button>
             <button type="button" class="library-chip" data-category-filter="tree" aria-pressed="false">Cây</button>
             <button type="button" class="library-chip" data-category-filter="graph" aria-pressed="false">Đồ thị</button>
             <button type="button" class="library-chip" data-category-filter="hash" aria-pressed="false">Bảng băm</button>
         </div>
-        <div class="library-chips" role="group" aria-label="Phân loại giải thuật" data-chips="algorithms">
+        <div class="library-chips" role="group" aria-label="Phân loại giải thuật" data-tab="algorithms">
             <button type="button" class="library-chip" data-category-filter="all" aria-pressed="true">Tất cả</button>
             <button type="button" class="library-chip" data-category-filter="sorting" aria-pressed="false">Sắp xếp</button>
             <button type="button" class="library-chip" data-category-filter="searching" aria-pressed="false">Tìm kiếm</button>
             <button type="button" class="library-chip" data-category-filter="graph" aria-pressed="false">Duyệt đồ thị</button>
         </div>
+        <p class="library-legend" data-tab="algorithms">Thanh 5 đoạn ở mỗi thẻ so sánh tốc độ tăng của thời gian chạy xấu nhất theo thang O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²): càng nhiều đoạn đầy càng chậm khi dữ liệu lớn. Luôn đọc cùng ký hiệu O(...) trên thẻ.</p>
     </div>
 
     <div id="structure-panel" role="tabpanel" aria-labelledby="library-tab-structures">
@@ -377,6 +378,7 @@
         <div class="card-footer">
             <span class="card-metric"><span>Thời gian (xấu nhất)</span><code>O(n²)</code></span>
             <span class="card-metric"><span>Bộ nhớ</span><code>O(1)</code></span>
+            <span class="complexity-bar" aria-hidden="true"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>
         </div>
         <span class="card-status">
             <span class="card-link">Trực quan hóa →</span>
@@ -393,6 +395,7 @@
         <div class="card-footer">
             <span class="card-metric"><span>Thời gian (xấu nhất)</span><code>O(n²)</code></span>
             <span class="card-metric"><span>Bộ nhớ</span><code>O(1)</code></span>
+            <span class="complexity-bar" aria-hidden="true"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>
         </div>
         <span class="card-status">
             <span class="card-link">Trực quan hóa →</span>
@@ -409,6 +412,7 @@
         <div class="card-footer">
             <span class="card-metric"><span>Thời gian (xấu nhất)</span><code>O(n²)</code></span>
             <span class="card-metric"><span>Bộ nhớ</span><code>O(1)</code></span>
+            <span class="complexity-bar" aria-hidden="true"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>
         </div>
         <span class="card-status">
             <span class="card-link">Trực quan hóa →</span>
@@ -441,6 +445,7 @@
         <div class="card-footer">
             <span class="card-metric"><span>Thời gian (xấu nhất)</span><code>O(n)</code></span>
             <span class="card-metric"><span>Bộ nhớ</span><code>O(1)</code></span>
+            <span class="complexity-bar" aria-hidden="true"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></span>
         </div>
         <span class="card-status">
             <span class="card-link">Trực quan hóa →</span>
@@ -461,6 +466,7 @@
         <div class="card-footer">
             <span class="card-metric"><span>Thời gian (xấu nhất)</span><code>O(log n)</code></span>
             <span class="card-metric"><span>Bộ nhớ</span><code>O(1)</code></span>
+            <span class="complexity-bar" aria-hidden="true"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></span>
         </div>
         <span class="card-status">
             <span class="card-link">Trực quan hóa →</span>
