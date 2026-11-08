@@ -32,8 +32,8 @@ số PR ghi sau khi tạo PR. Các dòng "Redesign Phase 5" và "Redesign Phase 
 
 | PR | Nhánh gợi ý | Nội dung | Trạng thái | Số PR |
 |---|---|---|---|---|
-| R2 | `feat/design-tokens` | Token `--av-*`, bảng màu, vòng focus `#C4B5FD`, bảng cỡ chữ cơ bản; đổi giá trị toàn cục trong MỘT PR. Đo và đề xuất trần bundle cuối cho cả Redesign | Đã làm, chờ PR (6 commit: khối `--av-*`, alias và vai trò `--purple`, hex trùng Spec, cỡ chữ, docs, vòng focus chung) | |
-| R3 | `feat/app-shell` | Nhãn nhóm "Học tập", header breadcrumb theo Spec, điểm gãy 768/1024, tablet rail 72 px; sidebar vẫn 256 px. Phải hỏi người dùng mục "Trực quan hóa" ở gốc trỏ tới đâu trước khi làm | Chưa làm | |
+| R2 | `feat/design-tokens` | Token `--av-*`, bảng màu, vòng focus `#C4B5FD`, bảng cỡ chữ cơ bản; đổi giá trị toàn cục trong MỘT PR. Đo và đề xuất trần bundle cuối cho cả Redesign | Đã merge (6 commit: khối `--av-*`, alias và vai trò `--purple`, hex trùng Spec, cỡ chữ, docs, vòng focus chung) | #33 |
+| R3 | `feat/app-shell` | Nhãn "HỌC TẬP", breadcrumb ngữ nghĩa, điểm gãy shell 767/768/1279, rail 72 px tự động, header 72/64, nav 44, drawer 300; sidebar vẫn 256 px; "Trực quan hóa" để R5a (quyết định 14) | Đã làm, chờ PR (6 commit) | |
 | R4 | `feat/dashboard-v1` | Dashboard 3 khối: Hero (bảng minh họa gắn nhãn "Minh họa"), Nội dung nổi bật (3 thẻ), Truy cập nhanh; bỏ thẻ "Sẽ phát triển"; kiểm chứng BFS có visualizer thật trước khi đặt thẻ BFS | Chưa làm | |
 | R5a | `feat/library-tabs` | Gộp thành trang Thư viện với 2 tab (Cấu trúc dữ liệu, Giải thuật) | Chưa làm | |
 | R5b | `feat/library-filters` | Ô tìm trong trang, lọc độ khó và độ phức tạp chỉ ở tab thuật toán, chip phân loại; chỉ lọc dữ liệu thẻ thật | Chưa làm | |
@@ -42,7 +42,7 @@ số PR ghi sau khi tạo PR. Các dòng "Redesign Phase 5" và "Redesign Phase 
 | R7 | `chore/a11y-responsive-audit` | Vùng chạm 44 px, focus, `tabindex` vùng cuộn, đo Tab bằng bàn phím thật | Chưa làm | |
 
 Quy tắc cho cả lộ trình:
-- Mỗi PR xin trần bundle riêng ở bước lập kế hoạch, người dùng duyệt trước khi làm. CSS là ràng buộc chính: trần hiện tại JS <= 146,0 kB, CSS <= 51,0 kB (trần riêng của R2; mục Baseline của CLAUDE.md). R2 đo được CSS 50.170 B, JS 145.918 B.
+- Mỗi PR xin trần bundle riêng ở bước lập kế hoạch, người dùng duyệt trước khi làm. CSS là ràng buộc chính: trần hiện tại JS <= 147,0 kB, CSS <= 51,0 kB (trần riêng của R3; mục Baseline của CLAUDE.md). R3 đo được JS 146.224 B, CSS 50.399 B.
 - R2 phải đo và đề xuất trần cuối cho cả Redesign (đề xuất tạm: JS <= 158 kB, CSS <= 56 kB) để người dùng duyệt một lần; các PR sau làm trong trần đó và vẫn báo byte từng commit.
 - Hai quy tắc sản phẩm trong `docs/design/decisions.md` (không theo dõi tiến độ cá nhân; không số giả) áp dụng cho mọi PR ở bảng này.
 Ghi chú:
@@ -54,6 +54,6 @@ Ghi chú:
   Cấu hình nằm trên Vercel, không có file trong repo.
 - Mỗi Phase redesign cần dư địa bundle riêng (ngưỡng hiện hành ở mục Baseline của CLAUDE.md). Không nâng ngưỡng khi chưa được người dùng duyệt;
   trần của một PR trước đó (Phase 3b: JS 160 kB, CSS 54,5 kB; Phase 4: JS 160 kB, CSS 56 kB) không áp cho PR sau.
-  Sau khi gỡ tiến độ ngưỡng là JS 146,0 kB và CSS 49,5 kB; R2 nâng riêng CSS lên 51,0 kB (đo 50.170 B, dư 830 B; mục Baseline của CLAUDE.md). Mỗi PR Redesign v1.0 cần trần riêng, duyệt riêng ở bước lập kế hoạch.
+  Sau khi gỡ tiến độ ngưỡng là JS 146,0 kB và CSS 49,5 kB; R2 nâng riêng CSS lên 51,0 kB; R3 nâng riêng JS lên 147,0 kB (đo 146.224 B, dư 776 B; mục Baseline của CLAUDE.md). Mỗi PR Redesign v1.0 cần trần riêng, duyệt riêng ở bước lập kế hoạch.
 - Để sau: phân loại 4 loại cạnh DFS (cây/ngược/xuôi/chéo) dựa trên mốc vào/ra đã có.
 - Việc còn tồn tại, chưa xếp vào giai đoạn nào: `docs/backlog.md`.
