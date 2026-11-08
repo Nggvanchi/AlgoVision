@@ -559,9 +559,9 @@ button:disabled {
   visibility: visible;
 }
 
-/* Thu gọn (chỉ màn hình rộng): nhãn ẩn bằng clip kiểu sr-only, KHÔNG display: none, nên tên truy cập, h1 và nhãn nhóm vẫn
+/* Thu gọn (từ 768px: rail tự động ở 768-1279px, bằng tay từ 1280px): nhãn ẩn bằng clip kiểu sr-only, KHÔNG display: none, nên tên truy cập, h1 và nhãn nhóm vẫn
    có trong cây trợ năng. Nhãn nhóm thành đường kẻ. .main-content viết số 72px (cùng giá trị --sidebar-width-collapsed). */
-@media (min-width: 701px) {
+@media (min-width: 768px) {
   .app-layout.is-sidebar-collapsed .sidebar {
     width: var(--sidebar-width-collapsed);
   }
@@ -610,6 +610,13 @@ button:disabled {
 
   .app-layout.is-sidebar-collapsed .sidebar-collapse-icon {
     transform: rotate(180deg);
+  }
+}
+
+/* Dải rail (768-1279px, Spec mục 11): sidebar luôn thu gọn do JS (sidebar.js, RAIL_RANGE); nút thu gọn không còn tác dụng nên ẩn cùng chân sidebar. */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .sidebar-footer {
+    display: none;
   }
 }
 
@@ -942,7 +949,8 @@ button.structure-card:hover {
   }
 }
 
-@media (max-width: 700px) {
+/* Shell: drawer và thanh trên ở <= 767px (DRAWER_BREAKPOINT trong sidebar.js). Luật nội dung của các màn hình giữ điểm gãy 700px bên dưới. */
+@media (max-width: 767px) {
   .mobile-bar {
     position: sticky;
     top: 0;
@@ -1019,6 +1027,9 @@ button.structure-card:hover {
     min-height: 60px;
   }
 
+}
+
+@media (max-width: 700px) {
   .page-heading {
     padding: 34px 0 28px;
   }

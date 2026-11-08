@@ -11,8 +11,8 @@ const sheet = parseStylesheet(css)
 const { tokens } = rootTokens(css)
 
 const DESKTOP = null
-const MOBILE = '@media (max-width: 700px)'
-const WIDE = '@media (min-width: 701px)'
+const MOBILE = '@media (max-width: 767px)'
+const WIDE = '@media (min-width: 768px)'
 
 const clean = (value) => value.replace(/\s+/g, ' ').trim()
 
@@ -112,7 +112,7 @@ test('ngân sách bề rộng ở 1280px: sidebar 256 + padding 40 cho khung b�
   assert.ok(available - 842 >= 19, 'chuỗi chaining 15 khóa rộng 842px phải còn dư ít nhất 19px')
 })
 
-test('thu gọn: chỉ trong @media (min-width: 701px); sidebar rộng --sidebar-width-collapsed, margin-left của main là số 72px bằng token', () => {
+test('thu gọn: chỉ trong @media (min-width: 768px); sidebar rộng --sidebar-width-collapsed, margin-left của main là số 72px bằng token', () => {
   const width = valueOf('.app-layout.is-sidebar-collapsed .sidebar', 'width', WIDE)
   const margin = valueOf('.app-layout.is-sidebar-collapsed .main-content', 'margin-left', WIDE)
 
@@ -121,7 +121,7 @@ test('thu gọn: chỉ trong @media (min-width: 701px); sidebar rộng --sidebar
   assert.equal(pxOf(margin), pxOf('var(--sidebar-width-collapsed)'))
 })
 
-test('không luật nào ngoài @media (min-width: 701px) nhắc is-sidebar-collapsed (thu gọn không ảnh hưởng drawer)', () => {
+test('không luật nào ngoài @media (min-width: 768px) nhắc is-sidebar-collapsed (thu gọn không ảnh hưởng drawer)', () => {
   const outside = sheet.rules.filter((rule) => rule.media !== WIDE && rule.selectors.some((selector) => selector.includes('is-sidebar-collapsed')))
 
   assert.deepEqual(outside.map((rule) => rule.selectors.join(', ')), [])
@@ -267,14 +267,14 @@ test('desktop: mục chính cao tối thiểu 40px, mục con 36px (bội số c
   assert.equal(pxOf(requireValue('.nav-subitem', 'min-height')), 36)
 })
 
-test('di động (<= 700px): mục chính và mục con cao tối thiểu 44px; nút ☰ rộng và cao tối thiểu 44px', () => {
+test('di động (<= 767px): mục chính và mục con cao tối thiểu 44px; nút ☰ rộng và cao tối thiểu 44px', () => {
   assert.equal(pxOf(requireValue('.nav-item', 'min-height', MOBILE)), 44)
   assert.equal(pxOf(requireValue('.nav-subitem', 'min-height', MOBILE)), 44)
   assert.ok(pxOf(requireValue('.menu-button', 'width')) >= 44)
   assert.ok(pxOf(requireValue('.menu-button', 'height')) >= 44)
 })
 
-test('mục điều hướng ở <= 700px xếp ngang trong drawer (không còn lưới 4 cột, không xếp dọc 10px)', () => {
+test('mục điều hướng ở <= 767px xếp ngang trong drawer (không còn lưới 4 cột, không xếp dọc 10px)', () => {
   assert.ok(valueOf('.sidebar-section', 'grid-template-columns', MOBILE) === undefined, 'lưới 4 cột của sidebar tĩnh cũ phải bỏ')
   assert.notEqual(valueOf('.nav-item', 'flex-direction', MOBILE), 'column')
 })
@@ -305,7 +305,7 @@ test('drawer mở: .sidebar.is-open hiện lại (visibility visible, transform 
   assert.equal(requireValue('.sidebar.is-open', 'transform', MOBILE), 'none')
 })
 
-test('chỉ .sidebar.is-open và .brand được đặt visibility: visible trong khối <= 700px (không phần tử focus nào lọt ra khi drawer đóng)', () => {
+test('chỉ .sidebar.is-open và .brand được đặt visibility: visible trong khối <= 767px (không phần tử focus nào lọt ra khi drawer đóng)', () => {
   const visible = sheet.rules
     .filter((rule) => rule.media === MOBILE && rule.declarations.some((declaration) => declaration.property === 'visibility' && declaration.value === 'visible'))
     .flatMap((rule) => rule.selectors)
@@ -314,7 +314,7 @@ test('chỉ .sidebar.is-open và .brand được đặt visibility: visible tron
   assert.deepEqual(visible, ['.brand', '.sidebar.is-open', '.sidebar-overlay.is-open'].sort())
 })
 
-test('h1 AlgoVision ở trong .brand vẫn có trong cây trợ năng khi drawer đóng: .brand đặt visibility: visible riêng ở <= 700px', () => {
+test('h1 AlgoVision ở trong .brand vẫn có trong cây trợ năng khi drawer đóng: .brand đặt visibility: visible riêng ở <= 767px', () => {
   assert.equal(requireValue('.brand', 'visibility', MOBILE), 'visible')
 })
 
@@ -324,7 +324,7 @@ test('chiều cao drawer: khai báo 100vh dự phòng TRƯỚC 100dvh (trình du
   assert.deepEqual(heights, ['calc(100vh - 56px)', 'calc(100dvh - 56px)'])
 })
 
-test('drawer nằm dưới thanh trên 56px: .sidebar top 56px; .mobile-bar cao 56px, sticky ở <= 700px và ẩn ở màn hình rộng', () => {
+test('drawer nằm dưới thanh trên 56px: .sidebar top 56px; .mobile-bar cao 56px, sticky ở <= 767px và ẩn ở màn hình rộng', () => {
   assert.equal(requireValue('.sidebar', 'top', MOBILE), '56px')
   assert.equal(requireValue('.mobile-bar', 'height', MOBILE), '56px')
   assert.equal(requireValue('.mobile-bar', 'display', MOBILE), 'flex')
@@ -332,7 +332,7 @@ test('drawer nằm dưới thanh trên 56px: .sidebar top 56px; .mobile-bar cao 
   assert.equal(requireValue('.mobile-bar', 'display'), 'none')
 })
 
-test('drawer: chiều rộng min(288px, 86vw); main không còn margin-left và padding 0 18px ở <= 700px', () => {
+test('drawer: chiều rộng min(288px, 86vw); main không còn margin-left và padding 0 18px ở <= 767px', () => {
   assert.equal(requireValue('.sidebar', 'width', MOBILE), 'min(288px, 86vw)')
   assert.equal(requireValue('.main-content', 'margin-left', MOBILE), '0')
   assert.equal(requireValue('.main-content', 'padding', MOBILE), '0 18px')
@@ -358,7 +358,7 @@ test('chuyển động của drawer: transition transform và visibility (visibi
   assert.ok(reduced.declarations.some((declaration) => declaration.property === 'transition-duration' && declaration.value.includes('!important')), 'reduced-motion phải ép transition-duration với !important để thắng transition của drawer')
 })
 
-test('nút thu gọn không có ở <= 700px (ẩn bằng display: none vì drawer thay thế thu gọn)', () => {
+test('nút thu gọn không có ở <= 767px (ẩn bằng display: none vì drawer thay thế thu gọn)', () => {
   assert.equal(requireValue('.sidebar-footer', 'display', MOBILE), 'none')
 })
 
@@ -477,12 +477,12 @@ test('nút "Thử lại" (class dashboard-primary-button load-error-retry) khôn
 // Khóa cuộn nền và thanh cuộn tối của sidebar (Redesign Phase 2b)
 // ---------------------------------------------------------------------------------------------------------------------
 
-test('khóa cuộn nền không làm trang giật ngang: html có scrollbar-gutter: stable trong @media (max-width: 700px) (đo Chrome 360px: thanh cuộn 15px biến mất khi overflow hidden)', () => {
+test('khóa cuộn nền không làm trang giật ngang: html có scrollbar-gutter: stable trong @media (max-width: 767px) (đo Chrome 360px: thanh cuộn 15px biến mất khi overflow hidden)', () => {
   assert.equal(requireValue('html', 'scrollbar-gutter', MOBILE), 'stable')
   assert.equal(valueOf('html', 'scrollbar-gutter'), undefined, 'màn hình rộng giữ hành vi mặc định')
 })
 
-test('khóa cuộn nền: body.is-drawer-open { overflow: hidden } chỉ trong @media (max-width: 700px)', () => {
+test('khóa cuộn nền: body.is-drawer-open { overflow: hidden } chỉ trong @media (max-width: 767px)', () => {
   assert.equal(requireValue('body.is-drawer-open', 'overflow', MOBILE), 'hidden')
   assert.equal(valueOf('body.is-drawer-open', 'overflow'), undefined, 'không khóa cuộn ở màn hình rộng')
 })

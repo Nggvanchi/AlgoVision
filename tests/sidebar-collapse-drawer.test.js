@@ -185,10 +185,10 @@ test('phím Escape tắt tooltip đang hiện (WCAG 1.4.13: nội dung hiện kh
 // Drawer (màn hình hẹp)
 // ---------------------------------------------------------------------------------------------------------------------
 
-test('DRAWER_BREAKPOINT = 700 và initSidebar hỏi đúng media query (max-width: 700px)', async () => {
+test('DRAWER_BREAKPOINT = 767 và initSidebar hỏi đúng media query (max-width: 767px)', async () => {
   const sidebarModule = await import('../src/sidebar.js')
 
-  assert.equal(sidebarModule.DRAWER_BREAKPOINT, 700)
+  assert.equal(sidebarModule.DRAWER_BREAKPOINT, 767)
 
   await withSidebar(({ media }) => {
     assert.ok(media.queries.includes(TRIGGER_QUERY(sidebarModule.DRAWER_BREAKPOINT)), `queries: ${media.queries.join(' | ')}`)
@@ -330,7 +330,7 @@ test('bấm ☰ khi đang ở màn hình rộng không mở drawer (tránh trạ
   }, { mobile: false })
 })
 
-test('phóng to cửa sổ qua ngưỡng 700px khi drawer đang mở: drawer đóng, inert được gỡ, focus không bị kéo về ☰', async () => {
+test('phóng to cửa sổ qua ngưỡng 767px khi drawer đang mở: drawer đóng, inert được gỡ, focus không bị kéo về ☰', async () => {
   await withSidebar(({ document, media }) => {
     toggleOf(document).click()
     assert.equal(isInert(document.querySelector('main')), true)
@@ -346,7 +346,7 @@ test('phóng to cửa sổ qua ngưỡng 700px khi drawer đang mở: drawer đ�
   }, { mobile: true })
 })
 
-test('thu nhỏ cửa sổ qua ngưỡng 700px: drawer vẫn đóng cho tới khi người dùng bấm ☰', async () => {
+test('thu nhỏ cửa sổ qua ngưỡng 767px: drawer vẫn đóng cho tới khi người dùng bấm ☰', async () => {
   await withSidebar(({ document, media }) => {
     media.setMatches(true)
     assert.equal(sidebarOf(document).classList.contains('is-open'), false)
@@ -426,7 +426,7 @@ test('khóa cuộn nền được gỡ khi đóng bằng Escape, bằng lớp ph
   }, { mobile: true })
 })
 
-test('khóa cuộn nền được gỡ khi cửa sổ rộng ra qua 700px lúc drawer đang mở (không để trang desktop bị khóa cuộn)', async () => {
+test('khóa cuộn nền được gỡ khi cửa sổ rộng ra qua 767px lúc drawer đang mở (không để trang desktop bị khóa cuộn)', async () => {
   await withSidebar(({ document, media }) => {
     toggleOf(document).click()
     assert.equal(bodyLocked(document), true)
