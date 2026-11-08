@@ -181,16 +181,16 @@ test('mục active là pill nền --av-nav-active-bg, giữ vạch trái 3px --a
   assert.ok(ratio(ACTIVE_BG, SIDEBAR_BG) < 3, 'khối active một mình KHÔNG đủ 3:1 so với nền sidebar, nên bắt buộc còn cue ngoài màu')
 })
 
-test('pill active theo ảnh: bo đều bốn góc --radius-sm (8px) và THỤT VÀO cách mép sidebar (padding ngang của .sidebar = 8px)', () => {
+test('pill active theo ảnh: bo đều bốn góc --av-radius-control (10px, Spec mục 5) và THỤT VÀO cách mép sidebar (padding ngang của .sidebar = 8px)', () => {
   for (const selector of ['.nav-item.active', '.nav-subitem.active']) {
-    assert.equal(requireValue(selector, 'border-radius'), 'var(--radius-sm)', `${selector}: bo đều 8px`)
+    assert.equal(requireValue(selector, 'border-radius'), 'var(--av-radius-control)', `${selector}: bo đều 10px`)
   }
 
   const padding = requireValue('.sidebar', 'padding').split(' ')
 
   assert.equal(padding.length, 3, 'padding của .sidebar viết dạng 3 giá trị: trên, ngang, dưới')
   assert.equal(pxOf(padding[1]), 8, `padding ngang của .sidebar = ${padding[1]}: pill thụt vào đúng 8px`)
-  assert.ok(pxOf(requireValue('.nav-item.active', 'border-radius')) === 8)
+  assert.ok(pxOf(requireValue('.nav-item.active', 'border-radius')) === 10, 'pill active bo 10px (Spec mục 5: nav item)')
 })
 
 test('mục active có dấu hiệu ngoài màu: vạch trái, chữ đậm hơn mục thường (>= 600 so với < 600)', () => {
@@ -262,9 +262,14 @@ test('.sidebar-nav co lại được (flex: 1 và min-height: 0): thiếu min-he
 // Kích thước mục
 // ---------------------------------------------------------------------------------------------------------------------
 
-test('desktop: mục chính cao tối thiểu 40px, mục con 36px (bội số của 4)', () => {
-  assert.equal(pxOf(requireValue('.nav-item', 'min-height')), 40)
-  assert.equal(pxOf(requireValue('.nav-subitem', 'min-height')), 36)
+test('desktop: mục chính và mục con cao tối thiểu 44px, bo 10px (Spec mục 7: nav item cao >= 44, radius 10); icon mục chính 20px', () => {
+  assert.equal(pxOf(requireValue('.nav-item', 'min-height')), 44)
+  assert.equal(pxOf(requireValue('.nav-subitem', 'min-height')), 44)
+  assert.equal(requireValue('.nav-item', 'border-radius'), 'var(--av-radius-control)')
+  assert.equal(requireValue('.nav-subitem', 'border-radius'), 'var(--av-radius-control)')
+  assert.equal(pxOf('var(--av-radius-control)'), 10)
+  assert.equal(valueOf('.nav-icon svg', 'width'), '20px')
+  assert.equal(valueOf('.nav-icon svg', 'height'), '20px')
 })
 
 test('di động (<= 767px): mục chính và mục con cao tối thiểu 44px; nút ☰ rộng và cao tối thiểu 44px', () => {
@@ -321,19 +326,19 @@ test('h1 AlgoVision ở trong .brand vẫn có trong cây trợ năng khi drawer
 test('chiều cao drawer: khai báo 100vh dự phòng TRƯỚC 100dvh (trình duyệt cũ bỏ qua dvh)', () => {
   const heights = allValuesOf('.sidebar', 'height', MOBILE)
 
-  assert.deepEqual(heights, ['calc(100vh - 56px)', 'calc(100dvh - 56px)'])
+  assert.deepEqual(heights, ['calc(100vh - 64px)', 'calc(100dvh - 64px)'])
 })
 
-test('drawer nằm dưới thanh trên 56px: .sidebar top 56px; .mobile-bar cao 56px, sticky ở <= 767px và ẩn ở màn hình rộng', () => {
-  assert.equal(requireValue('.sidebar', 'top', MOBILE), '56px')
-  assert.equal(requireValue('.mobile-bar', 'height', MOBILE), '56px')
+test('drawer nằm dưới thanh trên 64px (Spec mục 5: header mobile 64): .sidebar top 64px; .mobile-bar cao 64px, sticky ở <= 767px và ẩn ở màn hình rộng', () => {
+  assert.equal(requireValue('.sidebar', 'top', MOBILE), '64px')
+  assert.equal(requireValue('.mobile-bar', 'height', MOBILE), '64px')
   assert.equal(requireValue('.mobile-bar', 'display', MOBILE), 'flex')
   assert.equal(requireValue('.mobile-bar', 'position', MOBILE), 'sticky')
   assert.equal(requireValue('.mobile-bar', 'display'), 'none')
 })
 
-test('drawer: chiều rộng min(288px, 86vw); main không còn margin-left và padding 0 18px ở <= 767px', () => {
-  assert.equal(requireValue('.sidebar', 'width', MOBILE), 'min(288px, 86vw)')
+test('drawer: chiều rộng min(300px, 86vw) (Spec mục 7: 300); main không còn margin-left và padding 0 18px ở <= 767px', () => {
+  assert.equal(requireValue('.sidebar', 'width', MOBILE), 'min(300px, 86vw)')
   assert.equal(requireValue('.main-content', 'margin-left', MOBILE), '0')
   assert.equal(requireValue('.main-content', 'padding', MOBILE), '0 18px')
 })
@@ -341,6 +346,8 @@ test('drawer: chiều rộng min(288px, 86vw); main không còn margin-left và 
 test('lớp phủ: ẩn và không bắt chuột khi đóng; hiện khi .is-open; ẩn hẳn ở màn hình rộng', () => {
   assert.equal(requireValue('.sidebar-overlay', 'display'), 'none')
   assert.equal(requireValue('.sidebar-overlay', 'display', MOBILE), 'block')
+  assert.equal(requireValue('.sidebar-overlay', 'background', MOBILE), 'rgba(5, 5, 10, 0.72)', 'lớp phủ theo Spec mục 7: rgba(5,5,10,.72)')
+  assert.equal(requireValue('.sidebar-overlay', 'inset', MOBILE), '64px 0 0', 'lớp phủ bắt đầu dưới thanh trên 64px')
   assert.equal(requireValue('.sidebar-overlay', 'visibility', MOBILE), 'hidden')
   assert.equal(requireValue('.sidebar-overlay.is-open', 'visibility', MOBILE), 'visible')
   assert.ok(Number(requireValue('.sidebar-overlay.is-open', 'opacity', MOBILE)) > 0)
@@ -402,6 +409,21 @@ test('thu gọn: chữ của logo (.brand-text, chứa h1) và nhãn nhóm cũng
 // ---------------------------------------------------------------------------------------------------------------------
 // Tooltip
 // ---------------------------------------------------------------------------------------------------------------------
+
+test('tooltip theo Spec mục 6: nền --av-text, chữ --av-bg, 12px đậm 600, bo 8px', () => {
+  assert.equal(requireValue('.sidebar-tooltip', 'background'), 'var(--av-text)')
+  assert.equal(requireValue('.sidebar-tooltip', 'color'), 'var(--av-bg)')
+  assert.equal(requireValue('.sidebar-tooltip', 'font-size'), 'var(--fs-xs)')
+  assert.equal(pxOf('var(--fs-xs)'), 12)
+  assert.equal(requireValue('.sidebar-tooltip', 'font-weight'), '600')
+  assert.equal(requireValue('.sidebar-tooltip', 'border-radius'), 'var(--radius-sm)')
+})
+
+test('header: .topbar cao tối thiểu 72px ở desktop (Spec mục 5), viền dưới --av-surface-3 (#1E1E2C); thanh trên mobile 64px, không có ô tìm kiếm', () => {
+  assert.equal(pxOf(requireValue('.topbar', 'min-height')), 72)
+  assert.equal(requireValue('.topbar', 'border-bottom'), '1px solid var(--av-surface-3)')
+  assert.equal(requireValue('.mobile-bar', 'height', MOBILE), '64px')
+})
 
 test('tooltip: position fixed (không bị vùng cuộn cắt), không bắt chuột, ẩn mặc định, hiện bằng .is-visible', () => {
   assert.equal(requireValue('.sidebar-tooltip', 'position'), 'fixed')

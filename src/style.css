@@ -127,6 +127,7 @@
   --av-focus: #C4B5FD;
   --av-nav-active-text: #DDD6FE;
   --av-nav-active-bg: rgba(139, 92, 246, 0.18);
+  --av-radius-control: 10px;
   --av-space-1: 4px;
   --av-space-2: 8px;
   --av-space-3: 12px;
@@ -383,7 +384,7 @@ button:disabled {
   gap: var(--space-3);
   width: 100%;
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: var(--av-radius-control);
   background: transparent;
   color: var(--muted);
   text-align: left;
@@ -393,14 +394,14 @@ button:disabled {
 }
 
 .nav-item {
-  min-height: 40px;
+  min-height: 44px;
   padding: var(--space-2) var(--space-3);
   font-size: var(--fs-md);
 }
 
 .nav-subitem {
   gap: var(--space-2);
-  min-height: 36px;
+  min-height: 44px;
   padding: var(--space-1) var(--space-3);
   font-size: var(--fs-sm);
 }
@@ -417,11 +418,11 @@ button:disabled {
   color: var(--text);
 }
 
-/* Mục đang mở: pill bo đều 8px THỤT VÀO 8px so với mép sidebar (padding ngang của .sidebar), nền --av-nav-active-bg, chữ --av-nav-active-text đậm 600.
+/* Mục đang mở: pill bo đều 10px THỤT VÀO 8px so với mép sidebar (padding ngang của .sidebar), nền --av-nav-active-bg, chữ --av-nav-active-text đậm 600.
    Khối chỉ 1,2:1 so với nền sidebar nên giữ vạch 3px --av-primary-text làm cue ngoài màu dự phòng, cùng aria-current. */
 .nav-item.active,
 .nav-subitem.active {
-  border-radius: var(--radius-sm);
+  border-radius: var(--av-radius-control);
   background: var(--av-nav-active-bg);
   box-shadow: inset 3px 0 0 var(--av-primary-text);
   color: var(--av-nav-active-text);
@@ -446,8 +447,8 @@ button:disabled {
 }
 
 .nav-icon svg {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
 .nav-subitem .nav-icon svg {
@@ -542,13 +543,13 @@ button:disabled {
 .sidebar-tooltip {
   position: fixed;
   z-index: 20;
-  padding: var(--space-1) var(--space-3);
-  border: 1px solid var(--border);
+  padding: 6px 10px;
   border-radius: var(--radius-sm);
-  background: var(--av-surface-2);
+  background: var(--av-text);
   box-shadow: var(--shadow-card);
-  color: var(--text);
-  font-size: var(--fs-sm);
+  color: var(--av-bg);
+  font-size: var(--fs-xs);
+  font-weight: 600;
   white-space: nowrap;
   pointer-events: none;
   visibility: hidden;
@@ -659,8 +660,8 @@ button:disabled {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 76px;
-  border-bottom: 1px solid var(--border);
+  min-height: 72px;
+  border-bottom: 1px solid var(--av-surface-3);
 }
 
 /* Breadcrumb động (navigation.js): chỉ là chữ, không liên kết. Dấu "/" do CSS vẽ, văn bản thay thế rỗng nên trình đọc màn hình bỏ qua. */
@@ -956,17 +957,17 @@ button.structure-card:hover {
     top: 0;
     z-index: 30;
     display: flex;
-    height: 56px;
+    height: 64px;
   }
 
   /* Drawer: trượt từ trái, nằm dưới thanh trên (☰ vẫn bấm được để đóng). Đóng thì visibility: hidden (ra khỏi thứ tự Tab
      và cây trợ năng) sau khi trượt xong; chỉ .brand được visible riêng để h1 AlgoVision còn trong cây trợ năng. 100vh là dự phòng
      cho trình duyệt chưa hiểu dvh. */
   .sidebar {
-    top: 56px;
-    width: min(288px, 86vw);
-    height: calc(100vh - 56px);
-    height: calc(100dvh - 56px);
+    top: 64px;
+    width: min(300px, 86vw);
+    height: calc(100vh - 64px);
+    height: calc(100dvh - 64px);
     transform: translateX(-100%);
     visibility: hidden;
     transition: transform 200ms ease, visibility 0s 200ms;
@@ -993,10 +994,10 @@ button.structure-card:hover {
 
   .sidebar-overlay {
     position: fixed;
-    inset: 56px 0 0;
+    inset: 64px 0 0;
     z-index: 9;
     display: block;
-    background: rgba(5, 6, 12, 0.6);
+    background: rgba(5, 5, 10, 0.72);
     opacity: 0;
     visibility: hidden;
     transition: opacity 200ms ease, visibility 0s 200ms;

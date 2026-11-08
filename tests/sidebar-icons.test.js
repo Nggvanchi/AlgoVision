@@ -184,14 +184,14 @@ test('toàn bộ sidebar và thanh trên không còn glyph icon dạng ký tự 
 const rule = (selector, media = null) => sheet.rules.filter((item) => item.media === media && item.selectors.includes(selector))
 const valueOf = (selector, property, media = null) => rule(selector, media).flatMap((item) => item.declarations.filter((declaration) => declaration.property === property).map((declaration) => declaration.value)).at(-1)
 
-test('.nav-icon svg: nét mảnh 1,5, fill none, stroke currentColor, đầu và góc tròn, cỡ 18px (mục con 16px)', () => {
+test('.nav-icon svg: nét mảnh 1,5, fill none, stroke currentColor, đầu và góc tròn, cỡ 20px (mục con 16px; R3: Spec icon 20)', () => {
   assert.equal(valueOf('.nav-icon svg', 'fill'), 'none')
   assert.equal(valueOf('.nav-icon svg', 'stroke'), 'currentColor')
   assert.equal(valueOf('.nav-icon svg', 'stroke-width'), '1.5')
   assert.equal(valueOf('.nav-icon svg', 'stroke-linecap'), 'round')
   assert.equal(valueOf('.nav-icon svg', 'stroke-linejoin'), 'round')
-  assert.equal(valueOf('.nav-icon svg', 'width'), '18px')
-  assert.equal(valueOf('.nav-icon svg', 'height'), '18px')
+  assert.equal(valueOf('.nav-icon svg', 'width'), '20px')
+  assert.equal(valueOf('.nav-icon svg', 'height'), '20px')
   assert.equal(valueOf('.nav-subitem .nav-icon svg', 'width'), '16px')
   assert.equal(valueOf('.nav-subitem .nav-icon svg', 'height'), '16px')
 })
