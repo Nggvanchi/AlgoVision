@@ -77,6 +77,20 @@ test('hai nhóm có nhãn "THUẬT TOÁN" và "CẤU TRÚC DỮ LIỆU", mỗi d
   })
 })
 
+test('nhãn gốc "HỌC TẬP" (p.nav-root-label) là phần tử đầu của vùng cuộn, đứng trước Tổng quan; khác lớp với hai nhãn nhóm và không đổi số nhóm', async () => {
+  await withFullApp(({ document }) => {
+    const scroll = document.querySelector('.sidebar-scroll')
+    const root = scroll.firstElementChild
+
+    assert.ok(root.matches('p.nav-root-label'), 'phần tử đầu của .sidebar-scroll phải là p.nav-root-label')
+    assert.equal(textOf(root), 'HỌC TẬP')
+    assert.ok(!root.classList.contains('section-label'), 'nhãn gốc không dùng lớp section-label của nhãn nhóm')
+    assert.ok(orderOf(document).indexOf(root) < orderOf(document).indexOf(document.querySelector('.nav-item[data-page="dashboard"]')), 'HỌC TẬP đứng trước Tổng quan')
+    assert.equal(document.querySelectorAll('.sidebar .section-label').length, 2, 'vẫn hai nhãn nhóm THUẬT TOÁN và CẤU TRÚC DỮ LIỆU')
+    assert.equal(document.querySelectorAll('.sidebar .nav-root-label').length, 1)
+  })
+})
+
 test('thứ tự trong DOM: Tổng quan đứng riêng trên cùng, rồi nhóm THUẬT TOÁN (Sắp xếp, Tìm kiếm), rồi nhóm CẤU TRÚC DỮ LIỆU (Tất cả cấu trúc)', async () => {
   await withFullApp(({ document }) => {
     const order = orderOf(document)

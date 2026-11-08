@@ -364,6 +364,18 @@ button:disabled {
   margin-top: var(--space-6);
 }
 
+/* Nhãn gốc "HỌC TẬP" đầu danh sách (Spec mục 7): tiêu đề của cả danh sách, nên khác hẳn hai nhãn nhóm phía dưới: màu tím nhấn (--av-primary-text,
+   nhãn nhóm là --av-text-subtle), cỡ 13px và có đường kẻ chân; nhãn nhóm không có. Nhờ vậy không đọc nhầm là nhãn riêng của "Tổng quan". */
+.nav-root-label {
+  margin: 0 0 var(--space-2);
+  padding: 0 var(--space-3) var(--space-2);
+  border-bottom: 1px solid var(--border);
+  color: var(--av-primary-text);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
 .nav-item,
 .nav-subitem {
   display: flex;
@@ -560,6 +572,7 @@ button:disabled {
 
   .app-layout.is-sidebar-collapsed .nav-label,
   .app-layout.is-sidebar-collapsed .brand-text,
+  .app-layout.is-sidebar-collapsed .nav-root-label,
   .app-layout.is-sidebar-collapsed .section-label {
     position: absolute;
     width: 1px;

@@ -202,6 +202,15 @@ test('mục active có dấu hiệu ngoài màu: vạch trái, chữ đậm hơn
   assert.ok(active >= 600 && subActive >= 600, `font-weight mục active ${active}/${subActive}`)
 })
 
+test('nhãn gốc .nav-root-label: kiểu chữ khác nhãn nhóm (tím nhấn --av-primary-text, 13px, có đường kẻ chân; nhãn nhóm là --av-text-subtle không đường kẻ), đạt >= 4,5:1 trên nền sidebar', () => {
+  assert.equal(requireValue('.nav-root-label', 'color'), 'var(--av-primary-text)')
+  assert.notEqual(requireValue('.nav-root-label', 'color'), requireValue('.section-label', 'color'), 'nhãn gốc phải khác màu nhãn nhóm')
+  assert.ok(pxOf(requireValue('.nav-root-label', 'font-size')) > pxOf(requireValue('.section-label', 'font-size')), 'nhãn gốc lớn hơn nhãn nhóm')
+  assert.match(requireValue('.nav-root-label', 'border-bottom'), /^1px solid /, 'nhãn gốc có đường kẻ chân')
+  assert.equal(valueOf('.section-label', 'border-bottom'), undefined, 'nhãn nhóm không có đường kẻ chân')
+  assert.ok(ratio('var(--av-primary-text)', SIDEBAR_BG) >= 4.5)
+})
+
 test('cỡ chữ của nhãn nhóm, mục, mục con, nhãn mục >= 12px ở MỌI bề rộng (không còn 10px)', () => {
   const selectors = ['.section-label', '.nav-item', '.nav-subitem', '.nav-label']
   const problems = []
@@ -386,7 +395,7 @@ test('thu gọn: chữ của logo (.brand-text, chứa h1) và nhãn nhóm cũng
     .flatMap((rule) => rule.selectors)
     .join(' ')
 
-  for (const part of ['.nav-label', '.brand-text', '.section-label']) assert.ok(clipped.includes(part), `thu gọn phải clip ${part}`)
+  for (const part of ['.nav-label', '.brand-text', '.section-label', '.nav-root-label']) assert.ok(clipped.includes(part), `thu gọn phải clip ${part}`)
   assert.ok(!clipped.includes('.brand-icon'), 'ô "A" phải còn hiện')
 })
 
