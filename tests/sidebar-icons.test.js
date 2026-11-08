@@ -184,14 +184,14 @@ test('toàn bộ sidebar và thanh trên không còn glyph icon dạng ký tự 
 const rule = (selector, media = null) => sheet.rules.filter((item) => item.media === media && item.selectors.includes(selector))
 const valueOf = (selector, property, media = null) => rule(selector, media).flatMap((item) => item.declarations.filter((declaration) => declaration.property === property).map((declaration) => declaration.value)).at(-1)
 
-test('.nav-icon svg: nét mảnh 1,5, fill none, stroke currentColor, đầu và góc tròn, cỡ 18px (mục con 16px)', () => {
+test('.nav-icon svg: nét mảnh 1,5, fill none, stroke currentColor, đầu và góc tròn, cỡ 20px (mục con 16px; R3: Spec icon 20)', () => {
   assert.equal(valueOf('.nav-icon svg', 'fill'), 'none')
   assert.equal(valueOf('.nav-icon svg', 'stroke'), 'currentColor')
   assert.equal(valueOf('.nav-icon svg', 'stroke-width'), '1.5')
   assert.equal(valueOf('.nav-icon svg', 'stroke-linecap'), 'round')
   assert.equal(valueOf('.nav-icon svg', 'stroke-linejoin'), 'round')
-  assert.equal(valueOf('.nav-icon svg', 'width'), '18px')
-  assert.equal(valueOf('.nav-icon svg', 'height'), '18px')
+  assert.equal(valueOf('.nav-icon svg', 'width'), '20px')
+  assert.equal(valueOf('.nav-icon svg', 'height'), '20px')
   assert.equal(valueOf('.nav-subitem .nav-icon svg', 'width'), '16px')
   assert.equal(valueOf('.nav-subitem .nav-icon svg', 'height'), '16px')
 })
@@ -211,9 +211,9 @@ test('.icon-sprite ẩn bằng position: absolute + 0x0 + overflow: hidden, KHÔ
   assert.equal(valueOf('.icon-sprite', 'display'), undefined)
 })
 
-test('icon hover: --purple-hover trên nền hover --surface-raised, chỉ khi mục không active (icon active giữ chữ trắng)', () => {
-  assert.equal(valueOf('.nav-item:not(.active):hover .nav-icon', 'color'), 'var(--purple-hover)')
-  assert.equal(valueOf('.nav-subitem:not(.active):hover .nav-icon', 'color'), 'var(--purple-hover)')
+test('icon hover: --av-primary-text trên nền hover --av-surface-2, chỉ khi mục không active (icon active giữ chữ của mục active)', () => {
+  assert.equal(valueOf('.nav-item:not(.active):hover .nav-icon', 'color'), 'var(--av-primary-text)')
+  assert.equal(valueOf('.nav-subitem:not(.active):hover .nav-icon', 'color'), 'var(--av-primary-text)')
 })
 
 test('nút thu gọn và nút menu: svg vẽ nét mảnh cùng kiểu (stroke currentColor), cỡ 20px', () => {

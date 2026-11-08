@@ -30,6 +30,10 @@ const SPEC_TOKENS = {
   '--av-danger': '#F87171',
   '--av-focus': '#C4B5FD',
   '--av-nav-active-text': '#DDD6FE',
+  // Nền mềm của mục nav đang mở (Spec mục 12): rgba của --av-primary-line, alpha 0,18. Thay --purple-active (R3).
+  '--av-nav-active-bg': 'rgba(139, 92, 246, 0.18)',
+  // Bo góc 10px của nút/input/select/nav item (Spec mục 5). Spec không đặt tên token bo góc: tên do R3 chọn.
+  '--av-radius-control': '10px',
   '--av-space-1': '4px',
   '--av-space-2': '8px',
   '--av-space-3': '12px',

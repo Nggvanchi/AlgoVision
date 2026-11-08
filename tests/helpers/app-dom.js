@@ -3,6 +3,7 @@
 import { Window } from 'happy-dom'
 import { readFile } from 'node:fs/promises'
 import { createFakeScheduler } from './fake-scheduler.js'
+import { createFakeMatchMedia, DESKTOP_WIDTH } from './fake-media.js'
 
 export const template = await readFile(new URL('../../public/templates/app.html', import.meta.url), 'utf8')
 
@@ -39,7 +40,10 @@ export async function withFullApp(run, options = {}) {
     ])
 
     navigation.initNavigation(document)
-    const sidebar = sidebarModule.initSidebar(document, { matchMedia: options.matchMedia })
+    // Mặc định giả màn hình desktop 1280px: cửa sổ happy-dom rộng 1024 nằm trong dải rail 768-1279 nên nếu dùng matchMedia thật,
+    // sidebar sẽ tự thu gọn và các test cũ (mặc định "mở rộng") đổi nghĩa. Test cần bề rộng khác truyền options.matchMedia.
+    const matchMedia = options.matchMedia ?? createFakeMatchMedia(DESKTOP_WIDTH).matchMedia
+    const sidebar = sidebarModule.initSidebar(document, { matchMedia })
     sorting.initSorting({ scheduler })
     searching.initSearching({ scheduler })
     array.initArray()

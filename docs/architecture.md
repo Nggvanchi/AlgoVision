@@ -57,7 +57,7 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
   `hidden` (`navigation.js` chỉ bật tắt các `section` bên trong), nhận focus bằng mã và bỏ vòng focus (`.main-content:focus`). Skip link ẩn bằng
   `position: fixed` + `transform` ra ngoài màn hình (không `display: none`, vì như vậy không focus được), hiện ở góc trên trái khi focus (phủ logo và h1).
   Neo thuần, không JS: URL thêm `#main-content`, nút Back xóa hash và app giữ nguyên trang. Màn hình lỗi tải template (`bootstrap.js`) không có skip link.
-- Landmark: một `<nav aria-label="Điều hướng chính">` trong `<aside id="sidebar">` (xem mục Sidebar); `aria-current="page"` đúng một phần tử ở sidebar.
+- Landmark: hai `<nav>`: `aria-label="Điều hướng chính"` trong `<aside id="sidebar">` (xem mục Sidebar) và `aria-label="Đường dẫn trang"` (breadcrumb) trong `header.topbar`; `aria-current="page"` đúng một phần tử ở sidebar và đúng một ở mục cuối breadcrumb.
 - Heading: h1 là "AlgoVision" ở thanh bên; mỗi màn hình đúng một h2 (`.page-heading h2`, hoặc h2 hero ở dashboard); cấp không nhảy quá một bậc
   (`tests/a11y-headings.test.js`). `#visualizer-title` (Sắp xếp) và "Queue Visualizer" là h3. Luật CSS theo thẻ heading phải đổi cùng lúc với thẻ:
   `.visualizer-heading h3`, `.visualizer-header h3`.
@@ -200,7 +200,9 @@ Khóa `algovision:progress` đã ghi trong trình duyệt người dùng trướ
 - Test: `tests/library-ids.test.js`, `library-cards.test.js`, `library-structure-cards.test.js`. Phần trạng thái Đã mở/Chưa mở của Phase 4 (`library-status.js`) đã gỡ theo Spec v1.0.
 
 
-## Sidebar: nhóm, mục con, thu gọn, drawer (Redesign Phase 2)
+## Sidebar: nhóm, mục con, thu gọn, drawer (Redesign Phase 2, cập nhật ở R3)
+
+**Cập nhật R3 (`feat/app-shell`):** điểm gãy của shell theo Spec mục 11: Mobile <= 767px (drawer), Tablet và Laptop 768–1279px (rail 72px TỰ ĐỘNG), Desktop >= 1280px (mở rộng, thu gọn bằng tay). `sidebar.js` export `DRAWER_BREAKPOINT = 767` và `RAIL_RANGE = { min: 768, max: 1279 }`; trạng thái thu gọn HIỆU LỰC = thu gọn bằng tay (nhớ trong bộ nhớ) HOẶC đang ở dải rail; nút thu gọn bị ẩn trong dải rail (CSS ẩn `.sidebar-footer`) và nếu đang giữ focus lúc bước vào rail thì focus chuyển sang mục điều hướng đang mở. Chỉ luật shell dùng 767/768; các khối `max-width: 700px` còn lại là bố cục nội dung và chưa đổi. Thêm nhãn gốc `p.nav-root-label` "HỌC TẬP" (tím nhấn, có đường kẻ chân, khác kiểu nhãn nhóm) ở đầu vùng cuộn. Breadcrumb nằm trong `<nav aria-label="Đường dẫn trang">`, gốc "AlgoVision", mục cuối `aria-current="page"`. Header 72px (mobile 64px, không ô tìm kiếm), mục nav cao 44px bo 10px (`--av-radius-control`), icon 20px, drawer `min(300px, 86vw)` dưới thanh trên 64px, lớp phủ `rgba(5, 5, 10, 0.72)`, tooltip nền `--av-text` chữ `--av-bg`. Test: `sidebar-rail.test.js` (19), `fake-media.test.js` (5; `fake-media.js` giả BỀ RỘNG và `app-dom.js` mặc định 1280px). Các dòng bên dưới ghi giá trị trước R3 ở chỗ nào lệch (700/701px, 56px, 288px, 40/36px); khi mâu thuẫn, CSS, `sidebar.js` và test là chuẩn.
 
 Test: `tests/sidebar-structure.test.js` (DOM), `sidebar-navigation.test.js` (viewchange, aria-current), `sidebar-collapse-drawer.test.js`
 (thu gọn, tooltip, drawer; `matchMedia` giả ở `tests/helpers/fake-media.js`), `sidebar-css.test.js` (CSS thật: tương phản, kích thước, luật drawer, ngân sách bề rộng).
@@ -233,60 +235,57 @@ cho THUẬT TOÁN (Sắp xếp, Tìm kiếm) và CẤU TRÚC DỮ LIỆU ("Tất
 | `.nav-item` (kể cả "Tất cả cấu trúc") | 1 × `{page, null}` (như trước) |
 
 **`src/sidebar.js`** — `initSidebar(document, { matchMedia } = {})`, gọi SAU `initNavigation` (mục con do navigation sinh) (`main.js`, `withFullApp`);
-`export const DRAWER_BREAKPOINT = 700` phải bằng `@media (max-width: 700px)` (test so hai nơi). Trả về `{ toggleCollapse, isCollapsed, openDrawer, closeDrawer, toggleDrawer, isDrawerOpen }`.
+`export const DRAWER_BREAKPOINT = 767` phải bằng `@media (max-width: 767px)` của luật drawer (test so hai nơi; R3: trước là 700). Trả về `{ toggleCollapse, isCollapsed, openDrawer, closeDrawer, toggleDrawer, isDrawerOpen }`.
 Trạng thái (`collapsed`, `drawerOpen`) chỉ nằm trong bộ nhớ của phiên: file này không nhắc `localStorage`, `sessionStorage`, cookie, `indexedDB` (`tests/meta/no-web-storage.test.js` đọc mã nguồn: không file nào trong `src` dùng kho của trình duyệt).
-- Thu gọn (>= 701px): nút `#sidebar-collapse` đổi class `is-sidebar-collapsed` trên `.app-layout`, `aria-expanded` và nhãn "Thu gọn thanh bên" <-> "Mở rộng thanh bên". CSS chỉ trong
-  `@media (min-width: 701px)`: sidebar rộng `--sidebar-width-collapsed` (72px), `.main-content` `margin-left: 72px` (luật riêng, không đụng luật `.main-content` mà test R12 đọc). Nhãn mục, chữ logo
+- Thu gọn (>= 768px; bằng tay từ 1280px, tự động ở 768–1279px): nút `#sidebar-collapse` đổi class `is-sidebar-collapsed` trên `.app-layout`, `aria-expanded` và nhãn "Thu gọn thanh bên" <-> "Mở rộng thanh bên". CSS chỉ trong
+  `@media (min-width: 768px)`: sidebar rộng `--sidebar-width-collapsed` (72px), `.main-content` `margin-left: 72px` (luật riêng, không đụng luật `.main-content` mà test R12 đọc). Nhãn mục, chữ logo
   (`.brand-text`, chứa h1) và nhãn nhóm ẩn bằng clip kiểu sr-only (`position: absolute; 1px; overflow: hidden; clip-path: inset(50%)`), KHÔNG `display: none`: tên truy cập, h1 và nhãn nhóm vẫn có trong cây
   trợ năng. Nhãn nhóm thành đường kẻ; mục active giữ vạch tím và `aria-current`.
 - Tooltip khi thu gọn: MỘT phần tử `.sidebar-tooltip` (`aria-hidden`, `position: fixed`, `pointer-events: none`) do JS đặt `left`/`top` theo mép phải sidebar. Không dùng `::after` trên từng nút vì
   `.sidebar-scroll` (overflow-y: auto kéo theo overflow-x: auto) cắt tooltip nằm trong nút. Hiện khi rê chuột hoặc focus bàn phím (`:focus-visible`), tắt khi rời, khi Escape và khi mở rộng lại.
   Tên truy cập luôn là chữ thật trong `.nav-label`; tooltip chỉ là phần phụ.
-- Drawer (<= 700px): đóng sẵn bằng `visibility: hidden` + `transform: translateX(-100%)` (transition `visibility 0s 200ms` để trượt xong mới ẩn), nên 0 phần tử focus được trong sidebar; chỉ `.brand`
-  được `visibility: visible` riêng để h1 còn trong cây trợ năng. Cao `calc(100vh - 56px)` rồi `calc(100dvh - 56px)` (dự phòng), nằm dưới thanh trên 56px (`top: 56px`) để nút menu vẫn bấm được.
+- Drawer (<= 767px): đóng sẵn bằng `visibility: hidden` + `transform: translateX(-100%)` (transition `visibility 0s 200ms` để trượt xong mới ẩn), nên 0 phần tử focus được trong sidebar; chỉ `.brand`
+  được `visibility: visible` riêng để h1 còn trong cây trợ năng. Cao `calc(100vh - 64px)` rồi `calc(100dvh - 64px)` (dự phòng), nằm dưới thanh trên 64px (`top: 64px`) để nút menu vẫn bấm được.
   Mở (chỉ khi `matchMedia` hẹp): class `is-open` trên sidebar và lớp phủ, `aria-expanded`/nhãn của nút menu, `#main-content` và `.skip-link` thành `inert`, focus vào `.nav-item` đầu tiên. Không `role="dialog"`,
-  không bẫy focus. Đóng bằng nút menu, lớp phủ, Escape, hoặc chọn một mục (kể cả bấm lại mục con đang mở): trả focus về nút menu; riêng khi cửa sổ rộng ra qua 700px thì đóng mà KHÔNG kéo focus.
+  không bẫy focus. Đóng bằng nút menu, lớp phủ, Escape, hoặc chọn một mục (kể cả bấm lại mục con đang mở): trả focus về nút menu; riêng khi cửa sổ rộng ra qua 767px thì đóng mà KHÔNG kéo focus.
   Nút menu dùng symbol SVG `icon-menu` và không đổi hình khi mở; khi drawer mở `<body>` có class `is-drawer-open` (khóa cuộn nền, giữ chỗ thanh cuộn). `prefers-reduced-motion` dùng luật chung sẵn có (`transition-duration: 0.01ms !important`).
 
-**Token Phase 2 đang dùng** (nhóm `TOKEN MỚI, ĐANG DÙNG`, 20 token; chỉ trong luật của sidebar/tooltip/nút chính, `tests/sidebar-css.test.js` canh gác không cho cỡ chữ/spacing/bo góc lan ra ngoài):
-`--font-ui`, `--font-mono` (Phase 1); `--sidebar-width` (256px), `--sidebar-width-collapsed` (72px); `--bg-sidebar`, `--surface-raised`, `--text-label`, `--purple-strong`, `--purple-pressed`, `--purple-tint`;
-`--fs-xs/sm/md`, `--space-1/2/3/4/6`, `--radius-sm`, `--shadow-card` (tooltip). Giá trị toàn cục của token cũ (`--border`, `--text-muted`, `--background`, `--panel`) KHÔNG đổi.
+**Token đang dùng cho sidebar** (nhóm `TOKEN MỚI, ĐANG DÙNG`, 16 token sau R3; chỉ trong luật của sidebar/tooltip/nút chính, `tests/sidebar-css.test.js` canh gác không cho cỡ chữ/spacing/bo góc lan ra ngoài):
+`--font-ui`, `--font-mono`; `--sidebar-width` (256px), `--sidebar-width-collapsed` (72px); `--purple-strong`, `--purple-pressed` (nút chính, hẹn gỡ R4); `--fs-xs/sm/md`, `--space-1/2/3/4/6`, `--radius-sm`, `--shadow-card` (tooltip). Màu của sidebar dùng thẳng `--av-*` (R3 đã gỡ `--bg-sidebar`, `--surface-raised`, `--text-label`, `--purple-hover`, `--purple-active`).
 
 **Ngân sách bề rộng**: sidebar 256px + `padding: 0 40px` của `.main-content` cho khung bảng băm ở 1280px nội dung rộng 861px (`1280 - 15 - 256 - 2×40 - 2×(24+1) - 2×(1+8)`; trước: 250 + 46 cho 855px).
 Chuỗi chaining 15 khóa rộng 842px còn dư 19px; sidebar tối đa 263px nếu giữ padding 46px. `.main-content` PHẢI viết `margin-left` và `padding` bằng số trực tiếp (không `var()`/`calc()`):
 `tests/hash-table-layout.test.js` đọc style.css bằng regex và ném lỗi nếu khai báo khác dạng; `tests/sidebar-css.test.js` khẳng định 256 = `--sidebar-width`, 72 = `--sidebar-width-collapsed`, cả hai là bội số của 4.
 Đo CDP (Chrome 152, Windows, 2026-11-06): khung 871 -> 877px (nội dung 861px), tràn 0.
 
-**Tương phản** (tính từ token thật trong test): nhãn nhóm `--text-label` trên `--bg-sidebar` 6,00 (cỡ 12px; trước 4,29 ở 10px); chữ mục thường 6,68; mục active `--text` trên `--purple-tint` 12,80, icon 5,15, vạch 3px 6,42;
-hover 14,30; logo "A" chữ trắng trên `--purple-strong` 5,31 (trước: gradient bắt đầu ở #ad98ff, 2,41); nút "Bắt đầu học" và "Thử lại" (cùng class `dashboard-primary-button`) 5,31, hover `--purple-pressed` 6,84.
+**Tương phản** (tính từ token thật trong test, sau R2 và R3): nhãn nhóm `--av-text-subtle` trên `--av-sidebar` 4,74+; mục active `--av-nav-active-text` trên nền pill `--av-nav-active-bg` (hiện ra `#251C3E`) 11,51; vạch 3px `--av-primary-text` trên pill 5,87;
+nút "Bắt đầu học" và "Thử lại" (class `dashboard-primary-button`) chữ trắng trên `--av-primary` 5,70, hover `--av-primary-hover` 7,10.
 
-**Kích thước**: mục chính cao tối thiểu 40px, mục con 36px (desktop); 44px ở <= 700px; nút menu 44×44px; thanh trên 56px.
+**Kích thước** (R3): mục chính và mục con cao tối thiểu 44px, bo 10px; nút menu 44×44px; thanh trên mobile 64px; header desktop 72px. (Trước R3: 40/36px, 56px.)
 
 ## Token thiết kế và font tự host (Redesign Phase 1, cập nhật ở R2)
 
 **Cập nhật R2 (`feat/design-tokens`):** `:root` có thêm khối `--av-*` đứng TRƯỚC nhóm CŨ (comment `=== TOKEN --av-* ===`): 21 màu Spec mục 2, `--av-nav-active-text` (`#DDD6FE`), `--av-space-1…8` (4/8/12/16/24/32/48/64) và 11 token cỡ chữ `--av-fs-*` (display 40, hero 34, page 28, h2 24, h3 18, card 16, body 15, body-sm 14, caption 13, label 12, code 14; tên do R2 chọn vì Spec không đặt tên). Test `tests/av-tokens.test.js` (55 test) khóa tên và giá trị. Luật `:focus-visible` chung (2px `--av-focus`, offset 2px) đứng ngay sau `button:focus-visible`, độ ưu tiên thấp nhất: phủ select, input, textarea, `[tabindex]`, `pre` và vùng cuộn Chrome tự cho focus; `.main-content:focus` và `.array-operation-card input` (`outline: none`) vẫn thắng nhờ đứng sau (test canh thứ tự).
 Các token Phase 1/2 thành ALIAS tạm trỏ vào `--av-*` (23 alias, mỗi cái có chú thích "tạm, gỡ ở R?"; `tests/design-tokens.test.js` đếm), diện mạo toàn trang đổi theo bảng màu Spec. `--purple` chia theo vai trò: chữ -> `--av-primary-text`, viền -> `--av-primary-line`, focus -> `--av-focus` (vòng 2px, offset 2px), canvas BST/Hash/Graph giữ `--purple` (13 chỗ, gỡ ở R6). Đã xóa token chưa dùng; nhóm CHƯA ĐƯỢC DÙNG chỉ còn `--border-control` (quyết định 9 và 12). `--purple-active` là `rgba(139, 92, 246, 0.18)` (nền mềm nav theo Spec). Không còn hex trùng giá trị Spec đã có token ngoài `:root` (test canh; ngoại lệ `#fca5a5`, `#60a5fa` có lý do). Các đoạn dưới đây mô tả Phase 1/2 và giá trị cũ; khi mâu thuẫn, `:root` và test là chuẩn.
 
-Phase 1 chỉ thêm nền móng, **không đổi diện mạo trừ font**: token trong `:root` của `src/style.css`, font tự host, gom 13 hex khớp đúng token.
-Test: `tests/design-tokens.test.js` (107 test: 42 viết riêng, 65 sinh từ bảng; Phase 2 bỏ 1 hàng gom hex và thêm 1 test) và hai helper `tests/helpers/contrast.js` (tỉ lệ WCAG, có test riêng)
-và `tests/helpers/css-tokens.js` (parser nhỏ đọc `:root`, `@font-face`, `@import`, khai báo của từng luật). Mọi giá trị đọc từ `style.css`.
+Phase 1 thêm nền móng (token trong `:root`, font tự host, gom hex khớp token); R2 và R3 chuyển nguồn giá trị sang khối `--av-*`. Test: `tests/av-tokens.test.js` (khối `--av-*` khớp Spec, token cỡ chữ,
+luật cỡ chữ đã áp), `tests/design-tokens.test.js` (nhóm token, alias, tương phản, hex trùng Spec, vòng focus) và hai helper `tests/helpers/contrast.js` (tỉ lệ WCAG, có test riêng) và
+`tests/helpers/css-tokens.js` (parser nhỏ đọc `:root`, `@font-face`, `@import`, khai báo của từng luật). Mọi giá trị đọc từ `style.css`.
 
-**Ba nhóm token trong `:root`** (comment `=== TOKEN CŨ ===`, `=== TOKEN MỚI, ĐANG DÙNG ===`, `=== TOKEN MỚI, CHƯA ĐƯỢC DÙNG ===`; test kiểm mỗi token nằm đúng nhóm):
+**Các nhóm token trong `:root` sau R3** (comment `=== TOKEN --av-* ===`, `=== TOKEN CŨ ===`, `=== TOKEN MỚI, ĐANG DÙNG ===`, `=== TOKEN MỚI, CHƯA ĐƯỢC DÙNG ===`; test kiểm mỗi token nằm đúng nhóm):
 
 | Nhóm | Token | Quy tắc |
 |---|---|---|
-| TOKEN CŨ | 18 token: 10 giá trị gốc (`--background`, `--panel`, `--panel-hover`, `--border`, `--text`, `--muted`, `--purple`, `--purple-dark`, `--state-active`, `--bar-cue`) và 8 alias (`--text-muted`, `--border-color`, `--card-background`, `--text-secondary`, `--accent-color`, `--surface-secondary`, `--surface-color`, `--panel-bg`) | giữ NGUYÊN tên và giá trị (Phương án A); test kiểm từng giá trị và từng alias |
-| TOKEN MỚI, ĐANG DÙNG | 20 token. Phase 1: `--font-ui` (`'Be Vietnam Pro', system-ui, sans-serif`, font nền của `:root`), `--font-mono` (`'JetBrains Mono', ui-monospace, monospace`, đúng 7 chỗ font mã). Phase 2: 18 token áp vào sidebar, tooltip và nút chính (danh sách ở mục Sidebar) | mỗi token phải có ít nhất một luật tham chiếu (test) |
-| TOKEN MỚI, CHƯA ĐƯỢC DÙNG | 18 token còn lại sau Phase 2 (Phase 1 định nghĩa 34, Phase 2 áp 16): `--bg`, `--surface`, `--purple-soft`, `--blue`, `--success`, `--border-control`, `--fs-base/lg/xl/display`, `--space-5/8/10/12`, `--radius-md/lg/pill`, `--glow-purple` | chỉ ĐỊNH NGHĨA; không luật nào được tham chiếu (test bắt nếu áp, ngưỡng >= 18) |
+| TOKEN --av-* | 21 màu Spec mục 2, `--av-nav-active-text`, `--av-nav-active-bg`, `--av-radius-control`, `--av-space-1…8`, 11 token `--av-fs-*` | nguồn giá trị duy nhất; test khóa tên và giá trị, không cho token `--av-*` ngoài danh sách |
+| TOKEN CŨ | 18 token: alias tạm trỏ vào `--av-*` (`--background`, `--panel`, `--panel-hover`, `--border`, `--text`, `--muted`, `--text-muted`, `--purple-dark` và 7 alias của alias), `--purple` (giá trị riêng cho canvas), `--state-active`, `--bar-cue` | mỗi alias có chú thích "tạm, gỡ ở R?"; test đếm đúng 18 alias tạm (gồm 2 của nhóm ĐANG DÙNG) |
+| TOKEN MỚI, ĐANG DÙNG | 16 token: `--font-ui`, `--font-mono`, `--sidebar-width(-collapsed)`, `--fs-xs/sm/md`, `--space-1/2/3/4/6`, `--radius-sm`, `--shadow-card`, `--purple-strong`, `--purple-pressed` | mỗi token phải có ít nhất một luật tham chiếu (test) |
+| TOKEN MỚI, CHƯA ĐƯỢC DÙNG | chỉ `--border-control` (`#6B6B87`, quyết định 9, 12, 13) | không luật nào tham chiếu; lịch áp ở R5b, R6, R7 |
 
-Bảng nền mới tồn tại SONG SONG với token cũ (`--bg` ứng với `--background`, `--surface` với `--panel`, `--surface-raised` với `--panel-hover`,
-`--purple-strong` với `--purple-dark`), dễ nhầm; việc chuyển `--border` sang #2A2A3D và `--text-muted` sang #9CA2BA để PR riêng (Phase 2 không đổi giá trị toàn cục). `--shadow-card` (nay dùng cho tooltip) và `--glow-purple`
-là giá trị tạm do Phase 1 tự chọn, test chốt cứng.
+R2 đã xóa `--bg`, `--surface`, `--purple-soft`, `--purple-tint`, `--violet`, `--blue`, `--success`, `--glow-purple` và các token cỡ chữ/spacing/bo góc chưa dùng; R3 gỡ thêm 5 alias sidebar
+(`--bg-sidebar`, `--surface-raised`, `--text-label`, `--purple-hover`, `--purple-active`; test có mục "đã gỡ, không còn tham chiếu" cho từng token).
 
-**Tương phản** (tính từ token thật, 29 cặp trong test): chữ trắng trên `--purple` (#9B82FF) chỉ **2,99:1, bị cấm**; chữ trắng chỉ trên `--purple-strong` (5,31)
-hoặc `--purple-pressed` (6,84), chữ tối `--bg` trên `--purple` (6,56). `--border-control` đạt 3,58:1 trên `--surface` (viền ô nhập hiện tại chỉ 1,33:1, chưa nâng).
-Ngoại lệ từng có (`.dashboard-primary-button`) đã sửa ở Phase 2 (nền `--purple-strong`); danh sách `WHITE_ON_PURPLE_KNOWN` trong test giờ rỗng và phải khớp
-chính xác (thêm vi phạm mới làm test đỏ).
+**Tương phản** (tính từ token thật, bảng `PAIRS` trong test): chữ trắng trên `--purple` (#9B82FF) chỉ **2,99:1, bị cấm**; chữ trắng chỉ trên `--av-primary` (5,70) hoặc `--av-primary-hover` (7,10).
+`--border-control` đạt 3,61:1 trên `--av-surface-1`. Danh sách `WHITE_ON_PURPLE_KNOWN` trong test rỗng và phải khớp chính xác (thêm vi phạm mới làm test đỏ).
 
 **Font tự host** (`public/fonts`, 10 woff2 = 172.912 B, ngưỡng 175 kB; không còn `@import` hay yêu cầu tới `fonts.googleapis.com`/`fonts.gstatic.com`):
 - 10 `@font-face` ở đầu `style.css`, `font-display: swap`, `src: url('/fonts/...') format('woff2')`. Đường dẫn `/fonts/...` tuyệt đối vì `public/` được phục vụ ở gốc

@@ -17,14 +17,17 @@ const NAV_ITEMS = [
 const textOf = (element) => element.textContent.replace(/\s+/g, ' ').trim()
 const orderOf = (document) => [...document.querySelectorAll('*')]
 
-test('đúng một landmark điều hướng: <nav aria-label="Điều hướng chính"> nằm trong aside.sidebar', async () => {
+test('đúng hai landmark điều hướng: <nav aria-label="Điều hướng chính"> trong aside.sidebar và <nav aria-label="Đường dẫn trang"> trong header.topbar (R3)', async () => {
   await withFullApp(({ document }) => {
     const landmarks = document.querySelectorAll('nav, [role="navigation"]')
 
-    assert.equal(landmarks.length, 1, 'đúng một landmark điều hướng trong cả trang')
+    assert.equal(landmarks.length, 2, 'hai landmark điều hướng trong cả trang: chính và đường dẫn trang')
     assert.equal(landmarks[0].tagName, 'NAV')
     assert.equal(landmarks[0].getAttribute('aria-label'), 'Điều hướng chính')
-    assert.ok(landmarks[0].closest('aside.sidebar') !== null, '<nav> phải nằm trong <aside class="sidebar">')
+    assert.ok(landmarks[0].closest('aside.sidebar') !== null, '<nav> chính phải nằm trong <aside class="sidebar">')
+    assert.equal(landmarks[1].tagName, 'NAV')
+    assert.equal(landmarks[1].getAttribute('aria-label'), 'Đường dẫn trang')
+    assert.ok(landmarks[1].closest('main > header.topbar') !== null, '<nav> đường dẫn phải nằm trong header.topbar của <main>')
     assert.equal(document.querySelectorAll('aside').length, 1, 'đúng một landmark complementary')
   })
 })
@@ -71,6 +74,20 @@ test('hai nhóm có nhãn "THUẬT TOÁN" và "CẤU TRÚC DỮ LIỆU", mỗi d
       assert.ok(label.id !== '', `nhãn "${textOf(label)}" cần id để danh sách trỏ aria-labelledby`)
       assert.ok(document.querySelector(`ul[aria-labelledby="${label.id}"]`) !== null, `thiếu <ul aria-labelledby="${label.id}">`)
     }
+  })
+})
+
+test('nhãn gốc "HỌC TẬP" (p.nav-root-label) là phần tử đầu của vùng cuộn, đứng trước Tổng quan; khác lớp với hai nhãn nhóm và không đổi số nhóm', async () => {
+  await withFullApp(({ document }) => {
+    const scroll = document.querySelector('.sidebar-scroll')
+    const root = scroll.firstElementChild
+
+    assert.ok(root.matches('p.nav-root-label'), 'phần tử đầu của .sidebar-scroll phải là p.nav-root-label')
+    assert.equal(textOf(root), 'HỌC TẬP')
+    assert.ok(!root.classList.contains('section-label'), 'nhãn gốc không dùng lớp section-label của nhãn nhóm')
+    assert.ok(orderOf(document).indexOf(root) < orderOf(document).indexOf(document.querySelector('.nav-item[data-page="dashboard"]')), 'HỌC TẬP đứng trước Tổng quan')
+    assert.equal(document.querySelectorAll('.sidebar .section-label').length, 2, 'vẫn hai nhãn nhóm THUẬT TOÁN và CẤU TRÚC DỮ LIỆU')
+    assert.equal(document.querySelectorAll('.sidebar .nav-root-label').length, 1)
   })
 })
 

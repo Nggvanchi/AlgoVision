@@ -95,7 +95,7 @@ test('bấm lại mục con của cấu trúc đang mở: 0 viewchange, màn hì
 
     assert.deepEqual(log, [])
     assert.equal(isShown(document.querySelector('#hash-table-section')), true)
-    assert.equal(document.querySelectorAll('[aria-current]').length, 1)
+    assert.equal(document.querySelectorAll('#sidebar [aria-current]').length, 1)
   })
 })
 
@@ -132,7 +132,7 @@ test('Quay lại (data-back-to-structures) từ chi tiết: đúng một viewcha
 
     assert.deepEqual(log, [{ page: 'structures', topic: null }])
     assert.equal(document.querySelector('.nav-item[data-page="structures"]').getAttribute('aria-current'), 'page')
-    assert.equal(document.querySelectorAll('[aria-current]').length, 1)
+    assert.equal(document.querySelectorAll('#sidebar [aria-current]').length, 1)
     assert.equal(document.querySelectorAll('.nav-subitem.active, .nav-subitem[aria-current]').length, 0)
   })
 })
@@ -195,9 +195,9 @@ for (const screen of SCREENS) {
     await withFullApp(({ document }) => {
       screen.open(document)
 
-      const current = [...document.querySelectorAll('[aria-current]')]
+      const current = [...document.querySelectorAll('#sidebar [aria-current]')]
 
-      assert.equal(current.length, 1, `phần tử aria-current: ${current.map((element) => element.className).join(', ')}`)
+      assert.equal(current.length, 1, `phần tử aria-current trong sidebar: ${current.map((element) => element.className).join(', ')}`)
       assert.equal(current[0].getAttribute('aria-current'), 'page')
       assert.ok(current[0] === document.querySelector(expectedCurrent(screen.name)), 'aria-current đặt sai phần tử')
     })
@@ -233,11 +233,14 @@ test('class active giữ trên .nav-item của trang hiện tại; ở chi tiế
   })
 })
 
-test('aria-current chỉ có ở sidebar, không rò sang thẻ, nút Quay lại hay nội dung', async () => {
+test('aria-current chỉ có ở sidebar và mục cuối breadcrumb (R3), không rò sang thẻ, nút Quay lại hay nội dung', async () => {
   await withFullApp(({ document }) => {
     for (const screen of SCREENS) {
       screen.open(document)
-      assert.equal(document.querySelectorAll('main [aria-current]').length, 0, `${screen.name}: không aria-current trong <main>`)
+      const outside = [...document.querySelectorAll('main [aria-current]')].filter((element) => element.closest('.breadcrumb') === null)
+
+      assert.equal(outside.length, 0, `${screen.name}: không aria-current trong <main> ngoài breadcrumb`)
+      assert.equal(document.querySelectorAll('main .breadcrumb [aria-current]').length, 1, `${screen.name}: breadcrumb có đúng một aria-current`)
     }
   })
 })
