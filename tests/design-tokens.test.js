@@ -101,14 +101,12 @@ test('countVarUses đếm var(--ten) và không đếm tên khác có chung ti�
 
 // Redesign R2: token Phase 1/2 thành alias trỏ vào --av-* (nguồn giá trị là khối --av-*, tests/av-tokens.test.js). Test đọc giá trị
 // từ CSS: alias phải đúng là var(--av-x) và giải ra đúng giá trị của --av-x.
-const NEW_ALIASES = [
-  ['--purple-strong', '--av-primary'], ['--purple-pressed', '--av-primary-hover'],
-]
-
-for (const [name, target] of NEW_ALIASES) {
-  test(`token ${name} là alias var(${target}) và giải ra đúng giá trị ${target} trong :root`, () => {
-    assert.equal(tokens.get(name), `var(${target})`, `${name} phải là alias của ${target}`)
-    assert.equal(normalize(resolve(name)), normalize(tokens.get(target)))
+// R4 gỡ hai alias nút chính (--purple-strong, --purple-pressed): nút chính dùng thẳng --av-primary / --av-primary-hover (test bên dưới).
+for (const [name, target] of [['--purple-strong', '--av-primary'], ['--purple-pressed', '--av-primary-hover']]) {
+  test(`alias ${name} đã gỡ ở R4: không còn trong :root, không luật nào tham chiếu; ${target} vẫn có`, () => {
+    assert.ok(!tokens.has(name), `${name} phải bị gỡ khỏi :root`)
+    assert.equal(countVarUses(css, name), 0)
+    assert.ok(tokens.has(target))
   })
 }
 
@@ -198,7 +196,6 @@ test('3 token cũ không có tương ứng trong Spec giữ nguyên giá trị (
 const ALL_TEMPORARY = [
   '--background', '--panel', '--panel-hover', '--border', '--text', '--muted', '--text-muted', '--purple', '--purple-dark',
   '--border-color', '--card-background', '--text-secondary', '--accent-color', '--surface-secondary', '--surface-color', '--panel-bg',
-  '--purple-strong', '--purple-pressed',
 ]
 
 test('mỗi alias tạm có chú thích "tạm, gỡ ở R3..R6" và danh sách alias khớp đúng (gỡ alias nào thì sửa danh sách cùng PR)', () => {
@@ -207,7 +204,7 @@ test('mỗi alias tạm có chú thích "tạm, gỡ ở R3..R6" và danh sách 
 
   assert.deepEqual(tagged.map(([name]) => name).sort(), [...ALL_TEMPORARY].sort(), 'danh sách token có chú thích "tạm, gỡ ở R?" phải khớp danh sách alias')
   assert.ok(tagged.every(([, release]) => release >= 4 && release <= 7), 'alias còn lại chỉ được hẹn gỡ ở R4..R7 (R3 đã gỡ nhóm sidebar)')
-  assert.equal(tagged.length, 18, '18 alias tạm sau R3 (R3 gỡ 5 alias sidebar: --bg-sidebar, --surface-raised, --text-label, --purple-hover, --purple-active; còn 9 trỏ thẳng --av-*, 7 alias của alias, --purple-strong/pressed hẹn R4 và --purple canvas R6)')
+  assert.equal(tagged.length, 16, '16 alias tạm sau R4 (R4 gỡ --purple-strong, --purple-pressed; còn 9 trỏ thẳng --av-*, 7 alias của alias; --purple canvas hẹn R6)')
   assert.deepEqual(tagged.filter(([name]) => name === '--purple').map(([, release]) => release), [6], '--purple (canvas) hẹn gỡ ở R6')
 })
 
@@ -238,7 +235,7 @@ test('comment trong :root chia token thành CŨ / MỚI ĐANG DÙNG / MỚI CHƯ
   const sections = [namesIn(at[0], at[1]), namesIn(at[1], at[2]), namesIn(at[2], raw.length)]
 
   assert.deepEqual(sections[0], [...Object.keys(OLD_TO_AV), ...Object.keys(OLD_VALUES), ...Object.keys(OLD_ALIASES)].sort(), 'nhóm CŨ phải là 18 token cũ (alias tạm hoặc giữ giá trị riêng)')
-  assert.deepEqual(sections[1], ['--font-mono', '--font-ui', '--fs-md', '--fs-sm', '--fs-xs', '--purple-pressed', '--purple-strong', '--radius-sm', '--shadow-card', '--sidebar-width', '--sidebar-width-collapsed', '--space-1', '--space-2', '--space-3', '--space-4', '--space-6'], 'nhóm MỚI ĐANG DÙNG sau R3: 2 token font, token cỡ chữ/spacing/bo góc/bóng/bề rộng của sidebar và 2 token nút chính (R3 gỡ 5 alias sidebar)')
+  assert.deepEqual(sections[1], ['--font-mono', '--font-ui', '--fs-md', '--fs-sm', '--fs-xs', '--radius-sm', '--shadow-card', '--sidebar-width', '--sidebar-width-collapsed', '--space-1', '--space-2', '--space-3', '--space-4', '--space-6'], 'nhóm MỚI ĐANG DÙNG sau R3: 2 token font, token cỡ chữ/spacing/bo góc/bóng/bề rộng của sidebar và 2 token nút chính (R3 gỡ 5 alias sidebar)')
   assert.deepEqual(sections[2], [...tokens.keys()].filter((name) => !name.startsWith('--av-') && !sections[0].includes(name) && !sections[1].includes(name)).sort(),
     'nhóm MỚI CHƯA DÙNG phải là phần còn lại của :root (trừ khối --av-* đứng riêng trước nhóm CŨ, tests/av-tokens.test.js canh gác)')
   assert.ok(raw.indexOf('TOKEN --av-*') !== -1 && raw.indexOf('TOKEN --av-*') < at[0], 'khối TOKEN --av-* phải đứng trước nhóm CŨ')
@@ -260,7 +257,7 @@ test('token "ĐANG DÙNG" quả thật được ít nhất một luật tham chi
   const names = [...raw.slice(from, raw.indexOf('TOKEN MỚI, CHƯA ĐƯỢC DÙNG')).matchAll(/(--[a-z0-9-]+)\s*:/g)].map((match) => match[1])
   const unused = names.filter((name) => countVarUses(css, name) === 0)
 
-  assert.ok(names.length >= 16, `phải tìm thấy 16 token đang dùng (sau R3 gỡ 5 alias sidebar), thấy ${names.length}`)
+  assert.ok(names.length >= 14, `phải tìm thấy 14 token đang dùng (sau R4 gỡ 2 alias nút chính), thấy ${names.length}`)
   assert.deepEqual(unused, [], 'token nằm nhóm ĐANG DÙNG nhưng không luật nào tham chiếu: chuyển về nhóm CHƯA ĐƯỢC DÙNG')
 })
 
@@ -279,7 +276,7 @@ const PAIRS = [
   ['--av-text-subtle', '--av-sidebar', 4.5], ['--av-text-subtle', '--av-surface-1', 4.5], ['--av-text-subtle', '--av-surface-2', 4.5],
   ['--purple', '--av-bg', 4.5], ['--purple', '--av-surface-1', 4.5], ['--purple', '--av-surface-2', 4.5], ['--av-primary-text', '--av-nav-active-bg', 4.5],
   ['--av-nav-active-text', '--av-nav-active-bg', 4.5], ['--av-primary-text', '--av-surface-1', 4.5],
-  ['#ffffff', '--purple-strong', 4.5], ['#ffffff', '--purple-pressed', 4.5], ['#ffffff', '--purple-dark', 4.5],
+  ['#ffffff', '--av-primary', 4.5], ['#ffffff', '--av-primary-hover', 4.5], ['#ffffff', '--purple-dark', 4.5],
   ['--av-bg', '--purple', 4.5],
   ['--bar-cue', '--purple', 3],
   ['--av-accent-text', '--av-surface-1', 4.5], ['--state-active', '--av-surface-1', 4.5], ['--av-success', '--av-surface-1', 4.5],
@@ -319,7 +316,7 @@ test('cấm chữ trắng trên --purple: tỉ lệ thật dưới 4,5 (vì vậ
 })
 
 // Luật đặt nền tím sáng (#9B82FF) cùng chữ trắng. .dashboard-primary-button từng vi phạm (2,99:1) và đã sửa ở Redesign Phase 2
-// (nền --purple-strong); danh sách ngoại lệ giờ rỗng. Danh sách phải khớp chính xác: thêm vi phạm mới làm test đỏ.
+// (nền --av-primary từ R4); danh sách ngoại lệ giờ rỗng. Danh sách phải khớp chính xác: thêm vi phạm mới làm test đỏ.
 const WHITE_ON_PURPLE_KNOWN = []
 
 function whiteOnPurpleRules() {
@@ -338,7 +335,7 @@ function whiteOnPurpleRules() {
 
 test('không luật mới nào đặt chữ trắng lên nền --purple (ngoại lệ đã biết được liệt kê)', () => {
   const extra = whiteOnPurpleRules().filter((selector) => !WHITE_ON_PURPLE_KNOWN.includes(selector))
-  assert.deepEqual(extra, [], 'chữ trắng trên #9B82FF chỉ đạt 2,99:1; dùng --bg hoặc nền --purple-strong')
+  assert.deepEqual(extra, [], 'chữ trắng trên #9B82FF chỉ đạt 2,99:1; dùng --bg hoặc nền --av-primary')
 })
 
 test('mỗi ngoại lệ chữ trắng trên tím còn đúng là vi phạm (sửa xong thì phải xóa khỏi danh sách)', () => {

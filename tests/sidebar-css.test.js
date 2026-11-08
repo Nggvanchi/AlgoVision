@@ -459,7 +459,7 @@ test('mọi token cỡ chữ/spacing/bo góc được dùng trong sidebar đều
 
   for (const rule of sheet.rules) {
     for (const declaration of rule.declarations) {
-      for (const match of declaration.value.matchAll(/var\((--(?:fs|space|radius|sidebar|purple-strong|purple-pressed)[a-z0-9-]*)\)/g)) used.add(match[1])
+      for (const match of declaration.value.matchAll(/var\((--(?:fs|space|radius|sidebar)[a-z0-9-]*)\)/g)) used.add(match[1])
     }
   }
 
@@ -475,15 +475,15 @@ test('mọi token cỡ chữ/spacing/bo góc được dùng trong sidebar đều
 // Nút "Bắt đầu học" và nút "Thử lại" ở màn hình lỗi tải (dùng chung class .dashboard-primary-button)
 // ---------------------------------------------------------------------------------------------------------------------
 
-test('.dashboard-primary-button: nền và viền --purple-strong, chữ trắng đạt >= 5,31:1 (trước: 2,99:1 trên --purple)', () => {
-  assert.equal(requireValue('.dashboard-primary-button', 'background'), 'var(--purple-strong)')
-  assert.equal(requireValue('.dashboard-primary-button', 'border'), '1px solid var(--purple-strong)')
+test('.dashboard-primary-button: nền và viền --av-primary, chữ trắng đạt >= 5,31:1 (trước: 2,99:1 trên --purple)', () => {
+  assert.equal(requireValue('.dashboard-primary-button', 'background'), 'var(--av-primary)')
+  assert.equal(requireValue('.dashboard-primary-button', 'border'), '1px solid var(--av-primary)')
   assert.ok(ratio(requireValue('.dashboard-primary-button', 'color'), requireValue('.dashboard-primary-button', 'background')) >= 5.3)
 })
 
-test('.dashboard-primary-button:hover: nền --purple-pressed (>= 6,84:1), KHÔNG dùng opacity (opacity làm mờ cả chữ)', () => {
-  assert.equal(requireValue('.dashboard-primary-button:hover', 'background'), 'var(--purple-pressed)')
-  assert.equal(requireValue('.dashboard-primary-button:hover', 'border-color'), 'var(--purple-pressed)')
+test('.dashboard-primary-button:hover: nền --av-primary-hover (>= 6,84:1), KHÔNG dùng opacity (opacity làm mờ cả chữ)', () => {
+  assert.equal(requireValue('.dashboard-primary-button:hover', 'background'), 'var(--av-primary-hover)')
+  assert.equal(requireValue('.dashboard-primary-button:hover', 'border-color'), 'var(--av-primary-hover)')
   assert.equal(valueOf('.dashboard-primary-button:hover', 'opacity'), undefined)
   assert.ok(ratio(requireValue('.dashboard-primary-button', 'color'), requireValue('.dashboard-primary-button:hover', 'background')) >= 6.8)
   assert.doesNotMatch(requireValue('.dashboard-primary-button', 'transition'), /opacity/)

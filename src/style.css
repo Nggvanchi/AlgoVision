@@ -195,8 +195,6 @@
 
   /* Tím của sidebar và nút chính. KHÔNG đặt chữ trắng lên --av-primary-line hay --av-primary-text (không đạt 4,5:1 với chữ nhỏ).
      --av-nav-active-bg (khối --av-*) là nền mềm của mục đang mở, chữ --av-nav-active-text; vạch 3px và icon hover dùng --av-primary-text. */
-  --purple-strong: var(--av-primary); /* tạm, gỡ ở R4 */
-  --purple-pressed: var(--av-primary-hover); /* tạm, gỡ ở R4 */
 
   /* Cỡ chữ */
   --fs-xs: 12px;
@@ -2628,9 +2626,9 @@ button.structure-card:focus-visible,
   justify-content: center;
   gap: 12px;
   padding: 12px 20px;
-  border: 1px solid var(--purple-strong);
+  border: 1px solid var(--av-primary);
   border-radius: 10px;
-  background: var(--purple-strong);
+  background: var(--av-primary);
   color: #fff;
   font: inherit;
   font-weight: 600;
@@ -2640,8 +2638,8 @@ button.structure-card:focus-visible,
 
 .dashboard-primary-button:hover {
   transform: translateY(-2px);
-  border-color: var(--purple-pressed);
-  background: var(--purple-pressed);
+  border-color: var(--av-primary-hover);
+  background: var(--av-primary-hover);
 }
 
 .dashboard-content {
