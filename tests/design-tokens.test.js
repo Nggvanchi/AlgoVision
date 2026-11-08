@@ -265,9 +265,9 @@ test('token "ĐANG DÙNG" quả thật được ít nhất một luật tham chi
   assert.deepEqual(unused, [], 'token nằm nhóm ĐANG DÙNG nhưng không luật nào tham chiếu: chuyển về nhóm CHƯA ĐƯỢC DÙNG')
 })
 
-test('token font "ĐANG DÙNG": --font-ui làm font nền của :root, --font-mono dùng đúng ở 9 chỗ font mã', () => {
+test('token font "ĐANG DÙNG": --font-ui làm font nền của :root, --font-mono dùng đúng ở 10 chỗ font mã', () => {
   assert.ok(countVarUses(css, '--font-ui') >= 1, '--font-ui phải được dùng (font của :root)')
-  assert.equal(countVarUses(css, '--font-mono'), 9, '--font-mono phải được dùng đúng ở 9 chỗ font mã (R4 thêm số trên cột của bảng minh họa .dashboard-demo-text; thêm .card-metric code của thẻ thư viện, trước đây code trong thẻ rơi về monospace mặc định)')
+  assert.equal(countVarUses(css, '--font-mono'), 10, '--font-mono phải được dùng đúng ở 10 chỗ font mã (R5c thêm ký hiệu độ khó .difficulty-symbol theo Spec mục 6 "ký hiệu mono"; R4 thêm số trên cột của bảng minh họa .dashboard-demo-text; thêm .card-metric code của thẻ thư viện, trước đây code trong thẻ rơi về monospace mặc định)')
 })
 
 // ---------------------------------------------------------------------------------------------------------------------
