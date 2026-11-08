@@ -259,7 +259,9 @@ Chuỗi chaining 15 khóa rộng 842px còn dư 19px; sidebar tối đa 263px n�
 Đo CDP (Chrome 152, Windows, 2026-11-06): khung 871 -> 877px (nội dung 861px), tràn 0.
 
 **Tương phản** (tính từ token thật trong test, sau R2 và R3): nhãn nhóm `--av-text-subtle` trên `--av-sidebar` 4,74+; mục active `--av-nav-active-text` trên nền pill `--av-nav-active-bg` (hiện ra `#251C3E`) 11,51; vạch 3px `--av-primary-text` trên pill 5,87;
-nút "Bắt đầu học" và "Thử lại" (class `dashboard-primary-button`) chữ trắng trên `--av-primary` 5,70, hover `--av-primary-hover` 7,10.
+nút "Mở trực quan hóa" và "Thử lại" (class `dashboard-primary-button`) chữ trắng trên `--av-primary` 5,70, hover `--av-primary-hover` 7,10.
+
+**Dashboard** (R4, `public/templates/app.html` `#dashboard-section`, CSS `.dashboard-*`): ba khối. Hero (h2 "Nhìn thấy thuật toán chạy từng bước.", nút chính mở Bubble Sort, nút viền "Xem thư viện" viền `--border-control`, bảng SVG tĩnh Bubble Sort bước 3/31 gắn nhãn "Minh họa"; `tests/dashboard-demo.test.js` khóa mảng, chiều cao cột, cột đổi chỗ và số bước với `generateBubbleSortSteps([5,3,8,1,6,2])`; ẩn ở <= 700 px). Nội dung nổi bật (3 `button.dashboard-card`: Bubble Sort, Binary Search trùng chữ/độ khó/Big-O với thẻ thư viện, BFS không badge độ khó; `tests/dashboard-featured.test.js`). Truy cập nhanh (7 chip cấu trúc khớp 7 thẻ thư viện, 2 chip giải thuật; nhóm giải thuật ẩn ở <= 700 px). `navigation.js` có `openTopic(spec)` cho `data-dashboard-open="<loại>:<tên>[:<thao tác>]"` (`sorting:bubble`, `searching:binary`, `structure:graph:bfs`): đi qua thẻ thư viện / mục con có sẵn nên mỗi lần mở chỉ phát MỘT `viewchange`; thao tác của cấu trúc đặt bằng `#<tên>-operation` + sự kiện `change` (`tests/dashboard-open.test.js`). Luật `.dashboard-grid` 1 cột ở <= 900 px phải đứng SAU luật gốc của nó trong file CSS.
 
 **Kích thước** (R3): mục chính và mục con cao tối thiểu 44px, bo 10px; nút menu 44×44px; thanh trên mobile 64px; header desktop 72px. (Trước R3: 40/36px, 56px.)
 
