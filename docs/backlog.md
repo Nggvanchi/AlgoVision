@@ -109,6 +109,8 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 
 - Trang Giải thuật (R5a) không có mục sidebar nào active (quyết định 22): người học thấy vị trí qua breadcrumb "AlgoVision / Giải thuật" và tab đang chọn. Nếu muốn tô sáng thì cần quyết định thêm mục nav hoặc tô nhóm THUẬT TOÁN (Spec mục 7 có mục cha "Giải thuật").
 - Thư viện (R5b) lệch Spec mục 9 có chủ ý (quyết định 26): chip của tab Giải thuật do R5b tự chọn theo ba section thật (Spec chỉ nêu chip của Cấu trúc dữ liệu); không có nút "Bộ lọc" và bottom sheet ở tablet/mobile (không còn select để mở); chip xuống dòng thay vì cuộn ngang (vùng cuộn mới cần `tabindex`).
+- R7 (trợ năng): `role="status"` của bộ đếm "Hiển thị N mục" ở Thư viện (`.library-count`) bị đọc lại sau MỖI phím gõ trong ô tìm. Kiểm tra với trình đọc màn hình thật và quyết định có giảm tần suất thông báo không (ví dụ chỉ cập nhật vùng đọc sau một khoảng dừng gõ, hoặc tách vùng đọc khỏi bộ đếm hiển thị).
+- Thẻ thuật toán (R5c) lệch Spec mục 9 có chủ ý (quyết định 27): giữ lưới 3 cột thay vì 4 cột desktop / 2 cột tablet (đo: ở 1280 px vùng nội dung 944 px, 4 cột chỉ còn khoảng 218 px mỗi thẻ, hàng "Thời gian (xấu nhất)" + O(...) không vừa); giữ icon + badge ở hàng đầu và không thêm nhãn phân loại bên phải (tiêu đề section đã nói rõ); không làm thẻ gọn của tablet (thời gian trái, bộ nhớ phải); chữ badge giữ CƠ BẢN/TRUNG BÌNH (Spec ghi Dễ/Trung bình/Khó; ○ Khó chưa dùng vì dữ liệu không có mức Khó). Xét lại lưới 4 cột khi bố cục có thêm chỗ (ví dụ sidebar rail ở desktop).
 - Hai select lọc Độ khó và Độ phức tạp của Spec mục 9 bị hoãn (quyết định 19): kích hoạt lại khi tab Giải thuật có >= 10 thẻ (hiện 7).
 - Ở trang Giải thuật có hai thẻ cùng trạng thái `selected` (Bubble Sort và Linear Search): đó là thẻ thuật toán đang chọn của hai màn riêng, theo hành vi cũ; xét lại khi làm lại thẻ ở R5c.
 - Quay lại từ một màn chi tiết đưa focus về `body` (nút "Quay lại" bị ẩn cùng màn chi tiết); nên chuyển focus về thẻ vừa mở. Hành vi có sẵn, chưa đổi ở R5a; xét ở R7.
@@ -134,6 +136,11 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Chuẩn hóa 17 giá trị `border-radius`, 23 cỡ chữ và 31 giá trị spacing theo token đã định nghĩa (`--radius-*`, `--fs-*`, `--space-*`); mới chỉ các luật của sidebar (Phase 2) dùng token cỡ chữ/spacing/bo góc, phần còn lại của trang chưa áp (test canh gác không cho lan ra).
 - Còn 22 chỗ dùng `var(--text-secondary|--border-color|--card-background, <giá trị dự phòng>)` (`style.css`): ba alias luôn được định nghĩa trong `:root` nên giá trị dự phòng không bao giờ dùng tới;
   bỏ được bằng cách như PR `chore/bundle-headroom` (so computed style ở 360px và 1280px). Cùng loại: `.array-panel` và `.array-operation-card` còn `background`/màu viền bị luật `.array-panel, .array-operation-card` ở cuối khối Array ghi đè.
+
+## Tối ưu bộ test (chạy SAU R7, KHÔNG làm trong chuỗi Redesign)
+- (a) Helper dựng DOM happy-dom từ `public/templates/app.html` được gọi cho MỖI test ở nhiều file (ví dụ `withFilter` trong `tests/library-filter.test.js`, `withTabs`, `withLibrary`, `withNavigation`): đo chi phí dựng mỗi lần và cân nhắc dựng một lần mỗi file khi test chỉ đọc (test có thao tác sửa DOM vẫn cần DOM mới).
+- (b) Ít nhất 5 file test cùng phân tích `src/style.css` riêng (`library-css`, `library-filter-css`, `sidebar-css`, `design-tokens`, `av-tokens`; thêm `dashboard-*`): đo chi phí phân tích rồi quyết có chung một helper phân tích (tính một lần mỗi tiến trình) hay không.
+- (c) Mỗi PR Redesign thêm khoảng 38–45 test nên thời gian chạy bộ test tăng dần (25–31 s ở 1527 test; có lần đo 38,7 s khi máy bận): theo dõi bằng skill `test-profile` trước và sau khi làm (a), (b).
 
 ## Công cụ
 - `compareSearchAlgorithms` (`src/searching.js`) trùng lặp logic với phần chạy từng thuật toán; gom lại khi sửa module Searching (D15).

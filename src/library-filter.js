@@ -46,11 +46,11 @@ export function initLibraryFilter(document) {
     root.hidden = false
     count.textContent = `Hiển thị ${shown} mục`
     empty.hidden = shown > 0
-    root.querySelectorAll('[data-chips]').forEach((group) => {
-      group.hidden = group.dataset.chips !== page
+    root.querySelectorAll('[data-tab]').forEach((group) => {
+      group.hidden = group.dataset.tab !== page
     })
     root.querySelectorAll('[data-category-filter]').forEach((chip) => {
-      chip.setAttribute('aria-pressed', String(chip.closest('[data-chips]').dataset.chips === page && chip.dataset.categoryFilter === category))
+      chip.setAttribute('aria-pressed', String(chip.closest('[data-tab]').dataset.tab === page && chip.dataset.categoryFilter === category))
     })
   }
 

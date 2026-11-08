@@ -158,7 +158,7 @@
             <div class="dashboard-grid">
                 <button type="button" class="dashboard-card" data-dashboard-open="sorting:bubble">
                     <span class="card-top">
-                        <span class="difficulty easy">CƠ BẢN</span>
+                        <span class="difficulty easy"><span class="visually-hidden">Độ khó: </span><span class="difficulty-symbol" aria-hidden="true">●</span> CƠ BẢN</span>
                         <span class="dashboard-card-kind">Sắp xếp</span>
                     </span>
                     <span class="dashboard-card-title">Bubble Sort</span>
@@ -171,7 +171,7 @@
 
                 <button type="button" class="dashboard-card" data-dashboard-open="searching:binary">
                     <span class="card-top">
-                        <span class="difficulty medium">TRUNG BÌNH</span>
+                        <span class="difficulty medium"><span class="visually-hidden">Độ khó: </span><span class="difficulty-symbol" aria-hidden="true">◐</span> TRUNG BÌNH</span>
                         <span class="dashboard-card-kind">Tìm kiếm</span>
                     </span>
                     <span class="dashboard-card-title">Binary Search</span>
@@ -240,19 +240,20 @@
             <input type="search" class="library-search-input" id="library-search" placeholder="Tìm trong thư viện" aria-label="Tìm trong thư viện" autocomplete="off">
         </div>
         <p class="library-count" role="status">Hiển thị 0 mục</p>
-        <div class="library-chips" role="group" aria-label="Phân loại cấu trúc dữ liệu" data-chips="structures">
+        <div class="library-chips" role="group" aria-label="Phân loại cấu trúc dữ liệu" data-tab="structures">
             <button type="button" class="library-chip" data-category-filter="all" aria-pressed="true">Tất cả</button>
             <button type="button" class="library-chip" data-category-filter="linear" aria-pressed="false">Tuyến tính</button>
             <button type="button" class="library-chip" data-category-filter="tree" aria-pressed="false">Cây</button>
             <button type="button" class="library-chip" data-category-filter="graph" aria-pressed="false">Đồ thị</button>
             <button type="button" class="library-chip" data-category-filter="hash" aria-pressed="false">Bảng băm</button>
         </div>
-        <div class="library-chips" role="group" aria-label="Phân loại giải thuật" data-chips="algorithms">
+        <div class="library-chips" role="group" aria-label="Phân loại giải thuật" data-tab="algorithms">
             <button type="button" class="library-chip" data-category-filter="all" aria-pressed="true">Tất cả</button>
             <button type="button" class="library-chip" data-category-filter="sorting" aria-pressed="false">Sắp xếp</button>
             <button type="button" class="library-chip" data-category-filter="searching" aria-pressed="false">Tìm kiếm</button>
             <button type="button" class="library-chip" data-category-filter="graph" aria-pressed="false">Duyệt đồ thị</button>
         </div>
+        <p class="library-legend" data-tab="algorithms">Thanh 5 đoạn ở thẻ Sắp xếp và Tìm kiếm so sánh tốc độ tăng của thời gian chạy xấu nhất theo thang O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²): càng nhiều đoạn đầy càng chậm khi dữ liệu lớn. Luôn đọc cùng ký hiệu O(...) trên thẻ.</p>
     </div>
 
     <div id="structure-panel" role="tabpanel" aria-labelledby="library-tab-structures">
@@ -370,13 +371,14 @@
         <button type="button" class="algorithm-card selected" data-algorithm="bubble" data-category="sorting">
         <div class="card-top">
             <span class="algorithm-symbol">↔</span>
-            <span class="difficulty easy">CƠ BẢN</span>
+            <span class="difficulty easy"><span class="visually-hidden">Độ khó: </span><span class="difficulty-symbol" aria-hidden="true">●</span> CƠ BẢN</span>
         </div>
         <h4>Bubble Sort</h4>
         <p>So sánh các phần tử liền kề và đổi chỗ khi cần thiết.</p>
         <div class="card-footer">
             <span class="card-metric"><span>Thời gian (xấu nhất)</span><code>O(n²)</code></span>
             <span class="card-metric"><span>Bộ nhớ</span><code>O(1)</code></span>
+            <span class="complexity-bar" aria-hidden="true"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>
         </div>
         <span class="card-status">
             <span class="card-link">Trực quan hóa →</span>
@@ -386,13 +388,14 @@
         <button type="button" class="algorithm-card" data-algorithm="selection" data-category="sorting">
         <div class="card-top">
             <span class="algorithm-symbol">↓</span>
-            <span class="difficulty easy">CƠ BẢN</span>
+            <span class="difficulty easy"><span class="visually-hidden">Độ khó: </span><span class="difficulty-symbol" aria-hidden="true">●</span> CƠ BẢN</span>
         </div>
         <h4>Selection Sort</h4>
         <p>Tìm phần tử nhỏ nhất rồi đưa về đúng vị trí.</p>
         <div class="card-footer">
             <span class="card-metric"><span>Thời gian (xấu nhất)</span><code>O(n²)</code></span>
             <span class="card-metric"><span>Bộ nhớ</span><code>O(1)</code></span>
+            <span class="complexity-bar" aria-hidden="true"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>
         </div>
         <span class="card-status">
             <span class="card-link">Trực quan hóa →</span>
@@ -402,13 +405,14 @@
         <button type="button" class="algorithm-card" data-algorithm="insertion" data-category="sorting">
         <div class="card-top">
             <span class="algorithm-symbol">↳</span>
-            <span class="difficulty medium">TRUNG BÌNH</span>
+            <span class="difficulty medium"><span class="visually-hidden">Độ khó: </span><span class="difficulty-symbol" aria-hidden="true">◐</span> TRUNG BÌNH</span>
         </div>
         <h4>Insertion Sort</h4>
         <p>Chèn từng phần tử vào vị trí phù hợp trong phần đã sắp xếp.</p>
         <div class="card-footer">
             <span class="card-metric"><span>Thời gian (xấu nhất)</span><code>O(n²)</code></span>
             <span class="card-metric"><span>Bộ nhớ</span><code>O(1)</code></span>
+            <span class="complexity-bar" aria-hidden="true"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>
         </div>
         <span class="card-status">
             <span class="card-link">Trực quan hóa →</span>
@@ -434,13 +438,14 @@
         >
         <div class="card-top">
             <span class="algorithm-symbol">⌕</span>
-            <span class="difficulty easy">CƠ BẢN</span>
+            <span class="difficulty easy"><span class="visually-hidden">Độ khó: </span><span class="difficulty-symbol" aria-hidden="true">●</span> CƠ BẢN</span>
         </div>
         <h4>Linear Search</h4>
         <p>Kiểm tra lần lượt từng phần tử cho đến khi tìm thấy giá trị cần tìm.</p>
         <div class="card-footer">
             <span class="card-metric"><span>Thời gian (xấu nhất)</span><code>O(n)</code></span>
             <span class="card-metric"><span>Bộ nhớ</span><code>O(1)</code></span>
+            <span class="complexity-bar" aria-hidden="true"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></span>
         </div>
         <span class="card-status">
             <span class="card-link">Trực quan hóa →</span>
@@ -454,13 +459,14 @@
         >
         <div class="card-top">
             <span class="algorithm-symbol">⌘</span>
-            <span class="difficulty medium">TRUNG BÌNH</span>
+            <span class="difficulty medium"><span class="visually-hidden">Độ khó: </span><span class="difficulty-symbol" aria-hidden="true">◐</span> TRUNG BÌNH</span>
         </div>
         <h4>Binary Search</h4>
         <p>Chia đôi phạm vi tìm kiếm trên mảng đã được sắp xếp.</p>
         <div class="card-footer">
             <span class="card-metric"><span>Thời gian (xấu nhất)</span><code>O(log n)</code></span>
             <span class="card-metric"><span>Bộ nhớ</span><code>O(1)</code></span>
+            <span class="complexity-bar" aria-hidden="true"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></span>
         </div>
         <span class="card-status">
             <span class="card-link">Trực quan hóa →</span>

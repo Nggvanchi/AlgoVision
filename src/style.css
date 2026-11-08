@@ -3054,6 +3054,50 @@ button.dashboard-card:hover {
   }
 }
 
+/* Thẻ thuật toán (R5c): ký hiệu độ khó, thanh 5 đoạn tốc độ tăng độ phức tạp (trang trí), ghi chú giải thích */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.difficulty-symbol {
+  margin-right: 4px;
+  font-family: var(--font-mono);
+}
+
+.complexity-bar {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.complexity-bar > span {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+}
+
+.complexity-bar > .on {
+  background: var(--av-primary-line);
+}
+
+.library-legend {
+  flex: 1 1 100%;
+  order: 4;
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--av-fs-caption);
+  line-height: 1.6;
+}
+
 /* ===== Binary Search Tree ===== */
 .bst-toolbar,
 .bst-presets {
