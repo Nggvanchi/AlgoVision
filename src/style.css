@@ -1401,6 +1401,47 @@ button.structure-card:hover {
   }
 }
 
+/* Panel accordion (R6b): <details> gốc, không cần JS. Giải thích bước (aria-live) KHÔNG nằm trong accordion để luôn được đọc. */
+.panel-accordion {
+  margin-top: var(--av-space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--av-radius-control);
+  background: var(--panel);
+}
+
+.panel-accordion > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 0 var(--av-space-4);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.panel-accordion > summary::-webkit-details-marker {
+  display: none;
+}
+
+.panel-accordion > summary::after {
+  content: "▾";
+  color: var(--av-text-muted);
+}
+
+.panel-accordion[open] > summary::after {
+  content: "▴";
+}
+
+.panel-accordion > summary:focus-visible {
+  outline: 2px solid var(--av-focus);
+  outline-offset: -2px;
+}
+
+.panel-accordion > :not(summary) {
+  margin: 0 var(--av-space-4) var(--av-space-4);
+}
+
 /* Thanh bước dùng chung (R6a): thanh trượt bước và nhóm tốc độ của mọi visualizer có controller */
 .step-tools {
   display: flex;

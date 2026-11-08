@@ -575,7 +575,8 @@ test('vòng focus theo Spec: mọi outline của :focus-visible/:focus là 2px s
   for (const rule of focusRules) {
     const offset = rule.declarations.find((declaration) => declaration.property === 'outline-offset')
     if (!offset) continue
-    const expected = rule.selectors.every((selector) => /^\.nav-(sub)?item:focus-visible$/.test(selector)) ? '-2px' : '2px'
+    // Offset -2px (vòng nằm trong): mục nav (vùng cuộn) và summary của accordion (R6b: hộp rộng hết khung, offset dương bị cắt bởi viền khung).
+    const expected = rule.selectors.every((selector) => /^(\.nav-(sub)?item|\.panel-accordion > summary):focus-visible$/.test(selector)) ? '-2px' : '2px'
     assert.equal(offset.value, expected, `${rule.selectors.join(', ')}: outline-offset`)
   }
 })
