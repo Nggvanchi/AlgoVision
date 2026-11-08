@@ -95,7 +95,7 @@ for (const selector of DUPLICATED_SELECTORS) {
 
 // Bốn alias chỉ dùng một chỗ, từng kèm giá trị dự phòng lỗi thời. Alias luôn được khai báo trong :root nên giá trị dự phòng
 // không bao giờ được dùng tới (chỉ lệch khi alias bị xóa, và khi đó test tokens đỏ).
-const FALLBACK_ALIASES = ['--accent-color', '--surface-secondary', '--surface-color', '--panel-bg']
+const FALLBACK_ALIASES = ['--surface-secondary', '--surface-color', '--panel-bg']
 
 for (const alias of FALLBACK_ALIASES) {
   test(`${alias}: được khai báo trong :root và nơi dùng không còn giá trị dự phòng`, () => {

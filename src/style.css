@@ -174,7 +174,6 @@
   --border-color: var(--border); /* tạm, gỡ ở R6 */
   --card-background: var(--panel); /* tạm, gỡ ở R6 */
   --text-secondary: var(--muted); /* tạm, gỡ ở R6 */
-  --accent-color: var(--av-primary-text); /* tạm, gỡ ở R6 */
   --surface-secondary: var(--panel); /* tạm, gỡ ở R6 */
   --surface-color: var(--panel-hover); /* tạm, gỡ ở R6 */
   --panel-bg: var(--panel); /* tạm, gỡ ở R6 */
@@ -1402,23 +1401,142 @@ button.structure-card:hover {
   }
 }
 
-/* Điều khiển tốc độ mô phỏng */
-.speed-control {
-  display: inline-flex;
+/* Thanh bước dùng chung (R6a): thanh trượt bước và nhóm tốc độ của mọi visualizer có controller */
+.step-tools {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 9px;
-  color: #a4a9bb;
-  font-size: 12px;
+  gap: var(--av-space-3) var(--av-space-5);
+  margin-top: var(--av-space-4);
 }
 
-.speed-control select {
-  padding: 9px 11px;
-  border: 1px solid #363849;
-  border-radius: 8px;
-  background: #171923;
-  color: var(--text);
-  font: inherit;
+.step-slider {
+  display: flex;
+  flex: 1 1 280px;
+  align-items: center;
+  gap: var(--av-space-3);
+  color: var(--av-text-muted);
+}
+
+.step-label {
+  min-width: 84px;
+  color: var(--av-text);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.step-slider input[type="range"] {
+  flex: 1;
+  height: 44px;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.step-slider input[type="range"]:disabled {
+  opacity: 0.4;
+}
+
+.step-slider input[type="range"]:focus-visible {
+  outline: 2px solid var(--av-focus);
+  outline-offset: 2px;
+}
+
+.step-slider input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border-control);
+}
+
+.step-slider input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border-control);
+}
+
+.step-slider input[type="range"]::-webkit-slider-thumb {
+  width: 22px;
+  height: 22px;
+  margin-top: -8px;
+  border: 2px solid var(--av-bg);
+  border-radius: 50%;
+  background: var(--av-primary-text);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.step-slider input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--av-bg);
+  border-radius: 50%;
+  background: var(--av-primary-text);
+}
+
+.speed-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--av-space-2);
+}
+
+.speed-option {
+  position: relative;
+  display: inline-flex;
+}
+
+.speed-option input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
   cursor: pointer;
+}
+
+.speed-option span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  min-height: 44px;
+  padding: 0 var(--av-space-3);
+  border: 1px solid var(--border-control);
+  border-radius: var(--av-radius-control);
+  color: var(--av-text-muted);
+  font-size: var(--av-fs-body-sm);
+}
+
+.speed-option input:checked + span {
+  border-color: var(--av-primary-line);
+  background: var(--av-nav-active-bg);
+  color: var(--av-text);
+  font-weight: 700;
+}
+
+.speed-option input:checked + span::before {
+  content: "✓\00a0";
+}
+
+.speed-option input:focus-visible + span {
+  outline: 2px solid var(--av-focus);
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  .step-slider,
+  .speed-group {
+    flex-basis: 100%;
+  }
+
+  .speed-option {
+    flex: 1;
+  }
+
+  .speed-option span {
+    width: 100%;
+    min-width: 0;
+  }
 }
 
 /* Bảng phân tích thuật toán */
@@ -1486,11 +1604,6 @@ button.structure-card:hover {
 @media (max-width: 700px) {
   .complexity-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .speed-control {
-    justify-content: space-between;
-    width: 100%;
   }
 }
 
@@ -1615,28 +1728,7 @@ button.structure-card:hover {
   }
 }
 
-.search-speed-control {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
 
-.search-speed-control label {
-  font-size: 14px;
-}
-
-.search-speed-control input[type="range"] {
-  width: 150px;
-  accent-color: var(--accent-color);
-  cursor: pointer;
-}
-
-#search-speed-value {
-  min-width: 65px;
-  font-size: 13px;
-  color: var(--text-secondary, #9ca3af);
-}
 
 .search-cell.is-eliminated {
   opacity: 0.4;
