@@ -40,7 +40,7 @@ số PR ghi sau khi tạo PR. Các dòng "Redesign Phase 5" và "Redesign Phase 
 | R5c | `feat/library-cards-v1` | Thẻ thuật toán theo Spec: ký hiệu độ khó, thanh 5 đoạn `aria-hidden` | Chưa làm | |
 | (trước R6) | `feat/controller-seek` | Thêm `seek(index)` vào `src/simulation-controller.js` kèm test và phép phá (D6, quyết định 21). Chỉ làm nếu mỗi bước là ảnh chụp trạng thái đầy đủ; nếu phải sửa bộ render của module thì DỪNG và báo | Chưa làm | |
 | R6 | `feat/visualizer-frame` | Khung Visualizer, điều khiển, tốc độ `radiogroup`, "Bước x/y", panel accordion: 3 accordion theo Spec + accordion thứ 4 "Kiến thức" giữ nội dung Ý tưởng/Ưu điểm/Hạn chế (D5, quyết định 20: lệch Spec mục 10 có chủ ý); thanh trượt bước chỉ khi controller có `seek` | Chưa làm | |
-| R7 | `chore/a11y-responsive-audit` | Vùng chạm 44 px, focus, `tabindex` vùng cuộn, đo Tab bằng bàn phím thật | Chưa làm | |
+| R7 | `chore/a11y-responsive-audit` | Vùng chạm 44 px, focus, `tabindex` vùng cuộn, đo Tab bằng bàn phím thật; kiểm tra `role="status"` của bộ đếm "Hiển thị N mục" (đọc lại sau mỗi phím gõ) với trình đọc màn hình và quyết định có giảm tần suất thông báo không | Chưa làm | |
 
 Quy tắc cho cả lộ trình:
 - Mỗi PR xin trần bundle riêng ở bước lập kế hoạch, người dùng duyệt trước khi làm. CSS là ràng buộc chính: trần hiện tại JS <= 150,0 kB, CSS <= 55,0 kB (trần riêng của R5b; mục Baseline của CLAUDE.md). R5b đo được JS 149.716 B, CSS 54.576 B.
