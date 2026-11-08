@@ -76,6 +76,8 @@ for (const module of VISUALIZER_MODULES) {
 
       document.querySelector(module.previous).click()
       const before = liveTexts()
+
+      assert.ok(before.length > 0, 'màn hình phải có vùng aria-live (không thì test này vô nghĩa)')
       const last = Number(slider.max)
 
       // Theo dõi mọi lần gán chữ vào vùng live (textContent) bằng cách đếm thay đổi qua MutationObserver.

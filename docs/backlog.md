@@ -78,8 +78,9 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
   bàn phím không cuộn được `pre` mã giả, khung vẽ BST/Hash/Graph, các bảng. Thêm `tabindex="0"` sẽ tạo điểm dừng Tab cả ở khung không tràn;
   cân nhắc gắn bằng JS chỉ khi nội dung tràn. Chưa kiểm trên Safari.
 - (R6a đã giải quyết) chỉ báo "Bước x/y" và tốc độ nay thống nhất ở 5 module bằng `src/step-tools.js`; thẻ thống kê "Tiến trình k / N" của Sắp xếp giữ nguyên (trùng thông tin, cân nhắc bỏ ở R6b).
+- R6a (từ review độc lập): (1) kéo thanh trượt bước KHI ĐANG PHÁT: tick kế tiếp gọi `sync` và đặt lại `slider.value` về bước thật nên núm có thể giật về chỗ cũ trước khi thả; kết quả cuối vẫn đúng (seek theo giá trị lúc thả). Chưa xác nhận trên trình duyệt thật; cách xử lý: bỏ qua việc đặt `value` trong `sync` khi đang kéo (cờ `pointerdown`/`pointerup`). (2) Đổi tốc độ khi đang chạy chỉ có hiệu lực từ lần đặt timer kế tiếp (đọc `getDelay()` ở mỗi tick; từ 0,5× sang 4× giữa chừng vẫn chờ nốt tối đa 1,3 s): hành vi có từ trước R6a. (3) Dấu ✓ của nút tốc độ được chọn làm nút rộng thêm vài px (nhóm dịch nhẹ khi đổi lựa chọn): cân nhắc `min-width` đủ chứa ✓. (4) Trình đọc màn hình đọc "Bước, Bước 3/10" (nhãn + `aria-valuetext`): hơi thừa chữ. (5) Trần R6a là ước tính không qua bản mẫu, CSS dư 17 B: R6b phải đo bản mẫu và đặt trần riêng được duyệt.
 - R6: chưa có phím tắt nào (→, ←, Space, Enter, n, r, p không đổi gì). Cần thiết kế, tránh xung đột khi gõ vào ô nhập.
-- R17: nút/ô nhập cao 38–42px ở 360px (BST, Hash: "Quay lại" 38, ô chọn 42, ô nhập 40, "Thực hiện" 39, nút preset 40; thanh tốc độ 16px);
+- R17: nút/ô nhập cao 38–42px ở 360px (BST, Hash: "Quay lại" 38, ô chọn 42, ô nhập 40, "Thực hiện" 39, nút preset 40; thanh tốc độ cũ 16px đã được thay ở R6a bằng thanh trượt bước và nút tốc độ cao 44px);
   trên mức tối thiểu 24px của WCAG 2.2, dưới mức khuyến nghị 44px.
 - R18: Sắp xếp không cho nhập mảng hay chọn preset (chỉ "Tạo mảng mới" ngẫu nhiên), nên không thử được mảng đã sắp xếp, đảo ngược, trùng toàn bộ.
 - Viền ô nhập hiện 1,33:1 (`--border` #292c3a trên `--panel` #12141c), dưới 3:1 của WCAG 1.4.11. Nâng lên `--border-control` (#6B6B87, 3,58:1 trên `--surface`) ở PR Visualizer/Structure workspace;
