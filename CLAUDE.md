@@ -19,9 +19,9 @@ Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so v�
 Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
 - Đo 2026-11-07 trên Windows 11 x64 (Node v24.21.0, pnpm 12.5.1). Baseline trước Phase 4 đo trên Ubuntu/Linux x64 (Node v26.13.0, pnpm 12.16.1).
-- `pnpm test`: 1526/1526 pass, 0 fail, 0 skipped, khoảng 31 s (đo sau R5b, Windows; `main` trước R5b: 1482 test; Ubuntu trước đây 16–23 s).
-- `pnpm build` sau R5b: JS 149,70 kB (149.696 B; gzip 43,56 kB), CSS 54,58 kB (54.576 B; gzip 10,55 kB), HTML 0,75 kB (746 B). So với `main` trước R5b (147.962 B / 53.226 B): JS +1.734 B, CSS +1.350 B.
-  Ngưỡng hiện hành (trần riêng của PR R5b `feat/library-filters`, đã duyệt theo quy trình: đo bản mẫu rồi làm tròn lên 0,5 kB): JS <= 150,0 kB (gzip <= 44,0), CSS <= 55,0 kB (gzip <= 11,0). JS dư 304 B, CSS dư 424 B.
+- `pnpm test`: 1527/1527 pass, 0 fail, 0 skipped, khoảng 31 s (đo sau R5b, Windows; `main` trước R5b: 1482 test; Ubuntu trước đây 16–23 s).
+- `pnpm build` sau R5b: JS 149,72 kB (149.716 B; gzip 43,56 kB), CSS 54,58 kB (54.576 B; gzip 10,55 kB), HTML 0,75 kB (746 B). So với `main` trước R5b (147.962 B / 53.226 B): JS +1.754 B, CSS +1.350 B.
+  Ngưỡng hiện hành (trần riêng của PR R5b `feat/library-filters`, đã duyệt theo quy trình: đo bản mẫu rồi làm tròn lên 0,5 kB): JS <= 150,0 kB (gzip <= 44,0), CSS <= 55,0 kB (gzip <= 11,0). JS dư 284 B, CSS dư 424 B.
   Trần cuối cho toàn Redesign (ước tính, người dùng đặt): JS <= 158 kB (gzip <= 46), CSS <= 64 kB (gzip <= 12,8). Trần của PR trước không áp cho PR sau: mỗi PR đo và đặt trần riêng.
   Ngưỡng trước R5b (trần riêng của R5a): JS <= 148,0 kB (gzip <= 43,5), CSS <= 53,5 kB (gzip <= 10,5); số đo sau R5a: 1482 test, JS 147.962 B, CSS 53.226 B. Ngưỡng trước R5a (trần riêng của R4): JS <= 147,0 kB (gzip <= 43,0), CSS <= 53,0 kB (gzip <= 10,5); số đo sau R4: 1444 test, JS 146.811 B, CSS 52.667 B. Ngưỡng trước R4 (trần riêng của R3): JS <= 147,0 kB (gzip <= 43,0), CSS <= 51,0 kB (gzip <= 10,5); số đo sau R3: 1415 test, JS 146.358 B, CSS 50.399 B. Ngưỡng trước R3 (trần riêng của R2): JS <= 146,0 kB (gzip <= 42,5), CSS <= 51,0 kB (gzip <= 10,5); trước nữa (sau khi gỡ Tiến độ học tập): CSS <= 49,5 kB (gzip <= 10,0). Đã duyệt hạ ngưỡng từ mức Phase 4 (JS 160 kB / gzip 47,0; CSS 52,5 kB / gzip 10,5) vì PR `chore/remove-learning-progress` gỡ mã và CSS của tiến độ
   (JS -13,6 kB, CSS -3,1 kB so với `main` trước PR). Redesign v1.0: mỗi PR cần trần bundle riêng, duyệt ở bước lập kế hoạch; không nâng ngưỡng khi chưa được duyệt.
