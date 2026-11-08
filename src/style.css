@@ -214,11 +214,13 @@
   /* Bóng (tooltip của sidebar thu gọn) */
   --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35);
 
-  /* === TOKEN MỚI, CHƯA ĐƯỢC DÙNG ===
-     Chỉ ĐỊNH NGHĨA; chưa luật nào tham chiếu (tests/design-tokens.test.js canh gác). */
   /* Viền của điều khiển (ô nhập, nút): đạt 3:1 trên nền (quyết định 9 và 12: giữ nguyên, KHÔNG dùng --av-border-strong #2E2E44
-     chỉ 1,41:1). --border (token cũ) chỉ để trang trí. Chưa luật nào dùng: ô nhập/select hiện viết màu cứng (xem docs/backlog.md). */
+     chỉ 1,41:1). --border (token cũ) chỉ để trang trí. R4: nút viền ở hero Dashboard là chỗ dùng đầu tiên; ô nhập/select
+     còn viết màu cứng (xem docs/backlog.md). */
   --border-control: #6B6B87;
+
+  /* === TOKEN MỚI, CHƯA ĐƯỢC DÙNG ===
+     Chỉ ĐỊNH NGHĨA; chưa luật nào tham chiếu (tests/design-tokens.test.js canh gác). Hiện rỗng sau R4. */
 }
 
 * {
@@ -2601,33 +2603,48 @@ button.structure-card:focus-visible,
 }
 
 .dashboard-hero {
-  padding: 28px 0 8px;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 32px;
+  align-items: center;
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--panel);
 }
 
 .dashboard-hero h2 {
   max-width: 720px;
   margin: 14px 0 18px;
-  font-size: clamp(30px, 4vw, 44px);
+  font-size: var(--av-fs-hero);
   line-height: 1.2;
-  letter-spacing: -1px;
+  letter-spacing: -0.02em;
 }
 
 .dashboard-description {
   max-width: 760px;
   margin: 0 0 24px;
   color: var(--text-muted);
-  font-size: 16px;
-  line-height: 1.8;
+  font-size: var(--av-fs-body);
+  line-height: 1.7;
 }
 
-.dashboard-primary-button {
+.dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.dashboard-primary-button,
+.dashboard-outline-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
+  min-height: 44px;
   padding: 12px 20px;
   border: 1px solid var(--av-primary);
-  border-radius: 10px;
+  border-radius: var(--av-radius-control);
   background: var(--av-primary);
   color: #fff;
   font: inherit;
@@ -2640,6 +2657,99 @@ button.structure-card:focus-visible,
   transform: translateY(-2px);
   border-color: var(--av-primary-hover);
   background: var(--av-primary-hover);
+}
+
+/* Nút viền: viền điều khiển là --border-control (quyết định 12), nền trong suốt, hover nền --av-surface-2 */
+.dashboard-outline-button {
+  border-color: var(--border-control);
+  background: transparent;
+  color: var(--text);
+}
+
+.dashboard-outline-button:hover {
+  background: var(--av-surface-2);
+}
+
+/* Bảng minh họa Bubble Sort: dữ liệu và số bước lấy từ chính generateBubbleSortSteps (tests/dashboard-demo.test.js khóa), gắn nhãn "Minh họa". */
+.dashboard-demo {
+  margin: 0;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--av-bg);
+}
+
+.dashboard-demo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: var(--av-fs-caption);
+}
+
+.dashboard-demo-badge {
+  padding: 2px 10px;
+  border: 1px dashed var(--av-border-dashed);
+  border-radius: 999px;
+  color: var(--av-text-muted);
+  font-size: var(--av-fs-label);
+  font-weight: 600;
+}
+
+.dashboard-demo-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.demo-bar {
+  fill: var(--av-primary-line);
+}
+
+.demo-bar.is-swapped {
+  fill: #ff8c9b;
+}
+
+.dashboard-demo-text {
+  fill: var(--av-text-muted);
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.dashboard-demo-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: var(--av-fs-label);
+}
+
+@media (max-width: 900px) {
+  .dashboard-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .dashboard-hero {
+    padding: 20px 16px;
+  }
+
+  .dashboard-hero h2 {
+    font-size: var(--av-fs-page);
+  }
+
+  .dashboard-demo {
+    display: none;
+  }
+
+  .dashboard-primary-button,
+  .dashboard-outline-button {
+    min-height: 48px;
+  }
 }
 
 .dashboard-content {

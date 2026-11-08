@@ -235,11 +235,11 @@ test('comment trong :root chia token thành CŨ / MỚI ĐANG DÙNG / MỚI CHƯ
   const sections = [namesIn(at[0], at[1]), namesIn(at[1], at[2]), namesIn(at[2], raw.length)]
 
   assert.deepEqual(sections[0], [...Object.keys(OLD_TO_AV), ...Object.keys(OLD_VALUES), ...Object.keys(OLD_ALIASES)].sort(), 'nhóm CŨ phải là 18 token cũ (alias tạm hoặc giữ giá trị riêng)')
-  assert.deepEqual(sections[1], ['--font-mono', '--font-ui', '--fs-md', '--fs-sm', '--fs-xs', '--radius-sm', '--shadow-card', '--sidebar-width', '--sidebar-width-collapsed', '--space-1', '--space-2', '--space-3', '--space-4', '--space-6'], 'nhóm MỚI ĐANG DÙNG sau R3: 2 token font, token cỡ chữ/spacing/bo góc/bóng/bề rộng của sidebar và 2 token nút chính (R3 gỡ 5 alias sidebar)')
+  assert.deepEqual(sections[1], ['--border-control', '--font-mono', '--font-ui', '--fs-md', '--fs-sm', '--fs-xs', '--radius-sm', '--shadow-card', '--sidebar-width', '--sidebar-width-collapsed', '--space-1', '--space-2', '--space-3', '--space-4', '--space-6'], 'nhóm MỚI ĐANG DÙNG sau R3: 2 token font, token cỡ chữ/spacing/bo góc/bóng/bề rộng của sidebar và 2 token nút chính (R3 gỡ 5 alias sidebar)')
   assert.deepEqual(sections[2], [...tokens.keys()].filter((name) => !name.startsWith('--av-') && !sections[0].includes(name) && !sections[1].includes(name)).sort(),
     'nhóm MỚI CHƯA DÙNG phải là phần còn lại của :root (trừ khối --av-* đứng riêng trước nhóm CŨ, tests/av-tokens.test.js canh gác)')
   assert.ok(raw.indexOf('TOKEN --av-*') !== -1 && raw.indexOf('TOKEN --av-*') < at[0], 'khối TOKEN --av-* phải đứng trước nhóm CŨ')
-  assert.deepEqual(sections[2], ['--border-control'], 'R2 gỡ mọi token chưa dùng, TRỪ --border-control (quyết định 9 và 12)')
+  assert.deepEqual(sections[2], [], 'nhóm CHƯA DÙNG rỗng sau R4: --border-control được nút viền của hero dùng (quyết định 9 và 12)')
 })
 
 test('token "CHƯA ĐƯỢC DÙNG" quả thật chưa được luật nào tham chiếu', () => {
@@ -247,8 +247,12 @@ test('token "CHƯA ĐƯỢC DÙNG" quả thật chưa được luật nào tham 
   const unusedNames = [...raw.slice(raw.indexOf('TOKEN MỚI, CHƯA ĐƯỢC DÙNG')).matchAll(/(--[a-z0-9-]+)\s*:/g)].map((match) => match[1])
   const used = unusedNames.filter((name) => countVarUses(css, name) > 0)
 
-  assert.deepEqual(unusedNames, ['--border-control'], 'nhóm CHƯA DÙNG chỉ còn --border-control')
-  assert.deepEqual(used, [], 'các token này đã bị áp vào luật; --border-control chỉ định nghĩa; chưa luật nào dùng (docs/backlog.md ghi các selector cần chuyển sang nó)')
+  assert.deepEqual(unusedNames, [], 'nhóm CHƯA DÙNG rỗng sau R4 (--border-control đã chuyển sang ĐANG DÙNG)')
+  assert.deepEqual(used, [], 'token trong nhóm CHƯA DÙNG đã bị áp vào luật: chuyển sang nhóm ĐANG DÙNG')
+})
+
+test('--border-control được nút viền .dashboard-outline-button dùng (chỗ dùng đầu tiên, R4)', () => {
+  assert.ok(countVarUses(css, '--border-control') >= 1)
 })
 
 test('token "ĐANG DÙNG" quả thật được ít nhất một luật tham chiếu (Phase 2 áp vào sidebar, ☰ và nút chính)', () => {
@@ -261,9 +265,9 @@ test('token "ĐANG DÙNG" quả thật được ít nhất một luật tham chi
   assert.deepEqual(unused, [], 'token nằm nhóm ĐANG DÙNG nhưng không luật nào tham chiếu: chuyển về nhóm CHƯA ĐƯỢC DÙNG')
 })
 
-test('token font "ĐANG DÙNG": --font-ui làm font nền của :root, --font-mono dùng đúng ở 8 chỗ font mã', () => {
+test('token font "ĐANG DÙNG": --font-ui làm font nền của :root, --font-mono dùng đúng ở 9 chỗ font mã', () => {
   assert.ok(countVarUses(css, '--font-ui') >= 1, '--font-ui phải được dùng (font của :root)')
-  assert.equal(countVarUses(css, '--font-mono'), 8, '--font-mono phải được dùng đúng ở 8 chỗ font mã (thêm .card-metric code của thẻ thư viện, trước đây code trong thẻ rơi về monospace mặc định)')
+  assert.equal(countVarUses(css, '--font-mono'), 9, '--font-mono phải được dùng đúng ở 9 chỗ font mã (R4 thêm số trên cột của bảng minh họa .dashboard-demo-text; thêm .card-metric code của thẻ thư viện, trước đây code trong thẻ rơi về monospace mặc định)')
 })
 
 // ---------------------------------------------------------------------------------------------------------------------

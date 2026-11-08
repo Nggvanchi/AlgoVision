@@ -43,9 +43,9 @@ test('đổi trang bằng thanh bên: topic là null và page giữ nguyên', ()
   })
 })
 
-test('nút dashboard (data-dashboard-target): topic là null', () => {
+test('nút dashboard (data-dashboard-target, "Xem thư viện" ở hero): topic là null', () => {
   withNavigation(({ document, log }) => {
-    document.querySelector('.dashboard-primary-button[data-dashboard-target="sorting"]').click()
+    document.querySelector('.dashboard-outline-button[data-dashboard-target="sorting"]').click()
     assert.deepEqual(log, [{ page: 'sorting', topic: null }])
   })
 })
