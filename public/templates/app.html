@@ -249,7 +249,7 @@
         <button
         type="button"
         class="structure-card"
-        data-structure-target="array"
+        data-structure-target="array" data-category="linear"
         >
         <span class="structure-card-icon">[ ]</span>
         <span class="structure-card-title">Array</span>
@@ -262,7 +262,7 @@
         <button
         type="button"
         class="structure-card"
-        data-structure-target="stack"
+        data-structure-target="stack" data-category="linear"
         >
         <span class="structure-card-icon">▤</span>
         <span class="structure-card-title">Stack</span>
@@ -275,7 +275,7 @@
         <button
             type="button"
             class="structure-card"
-            data-structure-target="queue">
+            data-structure-target="queue" data-category="linear">
             <span class="structure-card-icon">↔</span>
             <span class="structure-card-title">Queue</span>
             <span class="structure-card-description">
@@ -287,7 +287,7 @@
         <button
             type="button"
             class="structure-card"
-            data-structure-target="linked-list">
+            data-structure-target="linked-list" data-category="linear">
             <span class="structure-card-icon">⛓</span>
             <span class="structure-card-title">Linked List</span>
             <span class="structure-card-description">
@@ -300,7 +300,7 @@
         <button
             type="button"
             class="structure-card"
-            data-structure-target="bst">
+            data-structure-target="bst" data-category="tree">
             <span class="structure-card-icon">⋔</span>
             <span class="structure-card-title">Binary Search Tree</span>
             <span class="structure-card-description">
@@ -312,7 +312,7 @@
         <button
             type="button"
             class="structure-card"
-            data-structure-target="hash-table">
+            data-structure-target="hash-table" data-category="hash">
             <span class="structure-card-icon">#</span>
             <span class="structure-card-title">Hash Table</span>
             <span class="structure-card-description">
@@ -324,7 +324,7 @@
         <button
             type="button"
             class="structure-card"
-            data-structure-target="graph">
+            data-structure-target="graph" data-category="graph">
             <span class="structure-card-icon">◬</span>
             <span class="structure-card-title">Graph</span>
             <span class="structure-card-description">
@@ -347,7 +347,7 @@
     </div>
 
     <div class="algorithm-grid">
-        <button type="button" class="algorithm-card selected" data-algorithm="bubble">
+        <button type="button" class="algorithm-card selected" data-algorithm="bubble" data-category="sorting">
         <div class="card-top">
             <span class="algorithm-symbol">↔</span>
             <span class="difficulty easy">CƠ BẢN</span>
@@ -363,7 +363,7 @@
         </span>
         </button>
 
-        <button type="button" class="algorithm-card" data-algorithm="selection">
+        <button type="button" class="algorithm-card" data-algorithm="selection" data-category="sorting">
         <div class="card-top">
             <span class="algorithm-symbol">↓</span>
             <span class="difficulty easy">CƠ BẢN</span>
@@ -379,7 +379,7 @@
         </span>
         </button>
 
-        <button type="button" class="algorithm-card" data-algorithm="insertion">
+        <button type="button" class="algorithm-card" data-algorithm="insertion" data-category="sorting">
         <div class="card-top">
             <span class="algorithm-symbol">↳</span>
             <span class="difficulty medium">TRUNG BÌNH</span>
@@ -410,7 +410,7 @@
         <button
         type="button"
         class="algorithm-card"
-        data-search-algorithm="linear"
+        data-search-algorithm="linear" data-category="searching"
         >
         <div class="card-top">
             <span class="algorithm-symbol">⌕</span>
@@ -430,7 +430,7 @@
         <button
         type="button"
         class="algorithm-card"
-        data-search-algorithm="binary"
+        data-search-algorithm="binary" data-category="searching"
         >
         <div class="card-top">
             <span class="algorithm-symbol">⌘</span>
@@ -459,7 +459,7 @@
     </div>
 
     <div class="algorithm-grid">
-        <button type="button" class="algorithm-card" data-dashboard-open="structure:graph:bfs">
+        <button type="button" class="algorithm-card" data-dashboard-open="structure:graph:bfs" data-category="graph">
         <div class="card-top">
             <span class="algorithm-symbol">◎</span>
             <span class="algorithm-card-kind">Đồ thị</span>
@@ -471,7 +471,7 @@
         </span>
         </button>
 
-        <button type="button" class="algorithm-card" data-dashboard-open="structure:graph:dfs">
+        <button type="button" class="algorithm-card" data-dashboard-open="structure:graph:dfs" data-category="graph">
         <div class="card-top">
             <span class="algorithm-symbol">▽</span>
             <span class="algorithm-card-kind">Đồ thị</span>
