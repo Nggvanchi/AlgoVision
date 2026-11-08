@@ -80,8 +80,9 @@ const FONT_SIZE_APPLIED = [
   ['.back-button', '--av-fs-caption', '13px'],
   ['.stack-operations .array-operation-card label', '--av-fs-caption', '13px'],
   ['.dashboard-card-title', '--av-fs-h3', '18px'],
-  ['.dashboard-card-link', '--av-fs-body-sm', '14px'],
-  ['.dashboard-card-status', '--av-fs-label', '12px'],
+  // R4: .dashboard-card-link và .dashboard-card-status bị gỡ cùng khối thẻ cũ; hai luật tương đương của Dashboard mới thay vào chỗ.
+  ['.dashboard-text-link', '--av-fs-body-sm', '14px'],
+  ['.dashboard-card-kind', '--av-fs-caption', '13px'],
 ]
 
 // Bỏ qua vì cỡ hiện tại LỆCH token gần nhất: áp sẽ đổi diện mạo, để R3-R6 quyết theo từng màn hình. [selector, cỡ hiện tại, lý do]
