@@ -433,6 +433,8 @@ export function initNavigation(document) {
     tab.addEventListener('click', () => selectLibraryTab(tab))
 
     tab.addEventListener('keydown', (event) => {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
+
       const target = { ArrowRight: index === last ? 0 : index + 1, ArrowLeft: index === 0 ? last : index - 1, Home: 0, End: last }[event.key]
 
       if (target === undefined) return

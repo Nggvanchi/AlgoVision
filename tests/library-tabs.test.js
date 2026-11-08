@@ -185,6 +185,25 @@ test('phím khác (Tab, chữ, Enter) không bị chặn và không đổi tab',
   })
 })
 
+test('phím có modifier (Alt/Ctrl/Cmd/Shift + ←/→/Home/End) không bị chặn và không đổi tab (Alt+← là lùi lịch sử của trình duyệt)', () => {
+  withTabs(({ document, log, tab }) => {
+    tab('algorithms').click()
+    log.length = 0
+
+    for (const modifier of ['altKey', 'ctrlKey', 'metaKey', 'shiftKey']) {
+      for (const key of ['ArrowLeft', 'ArrowRight', 'Home', 'End']) {
+        const event = new document.defaultView.KeyboardEvent('keydown', { key, [modifier]: true, bubbles: true, cancelable: true })
+
+        tab('algorithms').dispatchEvent(event)
+        assert.equal(event.defaultPrevented, false, `${modifier}+${key} không được bị chặn`)
+      }
+    }
+
+    assert.deepEqual(log, [])
+    assert.deepEqual(tabState(document), [['structures', 'false', -1], ['algorithms', 'true', 0]])
+  })
+})
+
 test('Dashboard: nút "Xem thư viện" ở hero và liên kết "Xem thư viện →" mở trang Giải thuật (tab Giải thuật đang chọn)', () => {
   for (const selector of ['.dashboard-outline-button[data-dashboard-target]', '.dashboard-text-link[data-dashboard-target]']) {
     withTabs(({ document, log }) => {
