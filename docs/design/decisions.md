@@ -8,7 +8,7 @@ Nguồn thiết kế: `docs/design/spec.md` (chép văn bản từ `AlgoVision S
 
 **(b) Không số giả.** Mọi dữ liệu hiển thị phải là dữ liệu thật, hoặc dùng trạng thái rỗng, hoặc gắn nhãn "Minh họa" / "Dữ liệu mẫu" (Spec mục 1, 17). Ví dụ: bảng Bubble Sort "bước 3/10" ở hero Dashboard phải gắn nhãn "Minh họa"; chip tài khoản "[Tên người học]" là placeholder nên không làm.
 
-## 24 quyết định đã chốt (đánh số 1–25; số 18 bỏ qua, dành cho chủ đề mới)
+## 25 quyết định đã chốt (đánh số 1–26; số 18 bỏ qua, dành cho chủ đề mới)
 
 | # | Quyết định | Lý do |
 |---|---|---|
@@ -36,3 +36,4 @@ Nguồn thiết kế: `docs/design/spec.md` (chép văn bản từ `AlgoVision S
 | 23 | BFS và DFS là thẻ trong tab Giải thuật (section "Duyệt đồ thị"), mở bằng `openTopic` có sẵn (`data-dashboard-open="structure:graph:bfs|dfs"`: mở màn Đồ thị và chọn đúng thao tác, người học bấm "Thực hiện" để chạy). Chỉ nhãn thật (tên, mô tả, kiểu "Đồ thị"): không độ khó, không Thời gian/Bộ nhớ. | Quy tắc b: app chưa xếp độ khó cho BFS/DFS và độ phức tạp phụ thuộc cách biểu diễn đồ thị (D12). |
 | 24 | Không làm trạng thái đang tải/lỗi cho Thư viện. | Dữ liệu thư viện nằm sẵn trong template, không có tải bất đồng bộ (lỗi tải template do `bootApp` xử lý riêng) (D14). |
 | 25 | Thiết kế R5a: trang `algorithms` (không có mục sidebar; ở trang này không mục nav nào active, `aria-current` chỉ ở breadcrumb); thanh tab `.library-tabs` chỉ hiện ở thư viện Cấu trúc và trang Giải thuật, đổi tab = đổi trang (một viewchange topic null); từ trang Giải thuật mở chi tiết thì "Quay lại" về trang đó (`libraryOrigin`), mở từ sidebar hoặc Dashboard thì Quay lại giữ hành vi cũ; "Xem thư viện" của Dashboard mở trang Giải thuật; ký hiệu thẻ DFS "▽" (tránh trùng "↳" của Insertion Sort). | Ít đụng nhất: sidebar và các trang Sắp xếp, Tìm kiếm, Tất cả cấu trúc giữ nguyên, khớp quyết định 15 và 22; markup các thư viện chỉ dời vào hai panel `#structure-panel`, `#algorithm-panel`. |
+| 26 | Thiết kế R5b (thực hiện quyết định 19): ô tìm bỏ dấu khớp tiêu đề + mô tả, chip phân loại theo `data-category` (Cấu trúc: Tuyến tính, Cây, Đồ thị, Bảng băm; Giải thuật: Sắp xếp, Tìm kiếm, Duyệt đồ thị), bộ đếm "Hiển thị N mục", trạng thái rỗng có "Xóa bộ lọc"; chỉ lọc ở hai trang có thanh tab, ở nơi khác mọi thẻ hiện lại; trạng thái chỉ trong bộ nhớ; ô tìm, chip và nút "Xóa bộ lọc" dùng `--border-control` (áp quyết định 13); không nút "Bộ lọc"/bottom sheet. | Dữ liệu lọc là dữ liệu thật của thẻ (quy tắc b), không lưu gì vào trình duyệt (quy tắc a); các thẻ thuật toán cũng nằm trong thư viện Sắp xếp/Tìm kiếm nên lọc không được làm mất thẻ ở đó; không còn select để đặt sau nút "Bộ lọc" (D4). |

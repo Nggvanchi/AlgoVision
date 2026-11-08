@@ -4,6 +4,7 @@ import { initSearching } from './searching.js'
 import { initSorting } from './sorting.js'
 import { initNavigation } from './navigation.js'
 import { initSidebar } from './sidebar.js'
+import { initLibraryFilter } from './library-filter.js'
 import { initArray } from './array.js'
 import { initStack } from './stack.js'
 import { initQueue } from './queue.js'
@@ -15,6 +16,7 @@ import { initGraph } from './graph.js'
 function startApp() {
   initNavigation(document)
   initSidebar(document)
+  initLibraryFilter(document)
   initSorting()
   initSearching()
   initArray()
