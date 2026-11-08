@@ -149,6 +149,36 @@ test('nút thu gọn đang giữ focus khi bước vào dải rail: focus chuy�
   })
 })
 
+test('trình duyệt thật đã blur nút (ẩn display: none) TRƯỚC khi báo change, activeElement = body: focus vẫn chuyển sang mục đang mở (đo bằng Chrome ở 1280 -> 1100)', async () => {
+  await withWidth(1280, ({ document, media }) => {
+    document.querySelector('.nav-item[data-page="sorting"]').click()
+    collapseOf(document).focus()
+    collapseOf(document).blur()
+    assert.ok(document.activeElement === document.body, 'điều kiện đầu: trình duyệt đã đưa focus về body')
+
+    media.setWidth(1100)
+
+    assert.ok(document.activeElement === document.querySelector('.nav-item[data-page="sorting"]'), 'focus phải sang mục đang mở, không ở lại body')
+  })
+})
+
+test('nút thu gọn đã mất focus từ trước (focus chuyển sang mục khác hoặc bấm ra ngoài): vào rail không kéo focus về mục nav', async () => {
+  await withWidth(1280, ({ document, media }) => {
+    collapseOf(document).focus()
+    document.querySelector('.nav-item[data-page="searching"]').focus()
+    document.activeElement.blur()
+    media.setWidth(1100)
+    assert.ok(document.activeElement === document.body, 'focus đã rời nút thu gọn bằng cách khác: không động vào')
+
+    media.setWidth(1280)
+    collapseOf(document).focus()
+    document.dispatchEvent(new document.defaultView.MouseEvent('pointerdown', { bubbles: true }))
+    collapseOf(document).blur()
+    media.setWidth(1100)
+    assert.ok(document.activeElement === document.body, 'bấm ra ngoài rồi vào rail: không kéo focus')
+  })
+})
+
 test('nút thu gọn không giữ focus khi vào rail: focus của phần tử khác không bị động tới', async () => {
   await withWidth(1280, ({ document, media }) => {
     const other = document.querySelector('.nav-item[data-page="searching"]')
@@ -174,6 +204,23 @@ test('tooltip hiện ở rail do matchMedia (không cần bấm thu gọn): rê 
 
     mouseover(document, item)
     assert.equal(tooltip.classList.contains('is-visible'), false, 'mở rộng thì không có tooltip')
+  })
+})
+
+test('đã thu gọn bằng tay ở >= 1280 rồi thu cửa sổ xuống drawer (<= 767): không tooltip (nhãn mục hiện đầy đủ trong drawer)', async () => {
+  await withWidth(1280, ({ document, media }) => {
+    const item = document.querySelector('.nav-item[data-page="searching"]')
+    const tooltip = document.querySelector('.sidebar-tooltip')
+
+    collapseOf(document).click()
+    media.setWidth(600)
+    mouseover(document, item)
+
+    assert.equal(tooltip.classList.contains('is-visible'), false, 'drawer không có tooltip dù trạng thái thu gọn bằng tay còn nhớ')
+
+    media.setWidth(1280)
+    mouseover(document, item)
+    assert.equal(tooltip.classList.contains('is-visible'), true, 'quay lại 1280 vẫn thu gọn nên tooltip hiện lại')
   })
 })
 

@@ -45,7 +45,8 @@ export function initSidebar(document, { matchMedia } = {}) {
   }
 
   function showTooltip(item) {
-    if (!collapsed) return
+    // Ở drawer (<= 767px) CSS không thu gọn nên nhãn hiện đầy đủ: không tooltip dù trạng thái thu gọn bằng tay còn nhớ.
+    if (!collapsed || isNarrow()) return
 
     const rect = item.getBoundingClientRect()
 
@@ -97,8 +98,16 @@ export function initSidebar(document, { matchMedia } = {}) {
   collapseButton.addEventListener('click', toggleCollapse)
 
   // Vào dải rail: CSS ẩn nút thu gọn. Nếu nút đang giữ focus thì chuyển sang mục điều hướng đang mở (hoặc mục đầu) để focus không rơi về body.
+  // Chrome ẩn (display: none) và blur nút TRƯỚC khi báo change nên activeElement đã là body: nhớ nút vừa giữ focus. Cờ tắt khi focus sang
+  // phần tử khác hoặc khi bấm chuột ở đâu đó (bấm ra ngoài = người dùng chủ động bỏ focus).
+  let collapseHadFocus = false
+  document.addEventListener('focusin', (event) => { collapseHadFocus = event.target === collapseButton })
+  document.addEventListener('pointerdown', () => { collapseHadFocus = false })
+
   railQuery?.addEventListener?.('change', () => {
-    if (isRail() && document.activeElement === collapseButton) {
+    const active = document.activeElement
+
+    if (isRail() && (active === collapseButton || (collapseHadFocus && active === document.body))) {
       (sidebar.querySelector('.nav-item.active') ?? sidebar.querySelector('.nav-item'))?.focus()
     }
 

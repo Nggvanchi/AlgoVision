@@ -170,7 +170,7 @@ for (const [name, foreground, background, minimum] of TEXT_PAIRS) {
   })
 }
 
-test('mục active là pill nền --av-nav-active-bg, giữ vạch trái 3px --av-primary-text (cue dự phòng: khối chỉ 1,83:1 so với nền sidebar); vạch đạt >= 3:1 với khối và với nền sidebar', () => {
+test('mục active là pill nền --av-nav-active-bg, giữ vạch trái 3px --av-primary-text (cue dự phòng: khối chỉ 1,20:1 so với nền sidebar); vạch đạt >= 3:1 với khối và với nền sidebar', () => {
   for (const selector of ['.nav-item.active', '.nav-subitem.active']) {
     assert.equal(requireValue(selector, 'background'), 'var(--av-nav-active-bg)')
     assert.equal(requireValue(selector, 'box-shadow'), 'inset 3px 0 0 var(--av-primary-text)', `${selector}: vạch trái 3px`)
