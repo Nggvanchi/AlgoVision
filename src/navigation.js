@@ -40,6 +40,8 @@ export function initNavigation(document) {
 
   const structureLibrary = document.querySelector('#structure-library')
   const graphLibrary = document.querySelector('#graph-algorithm-library')
+  const libraryTabs = document.querySelector('.library-tabs')
+  const libraryTabButtons = [...document.querySelectorAll('.library-tab')]
   // Hai panel bọc các section thư viện; panel ẩn khi mọi section con ẩn (không để lại vùng rỗng trong cây trợ năng).
   const libraryPanels = [document.querySelector('#structure-panel'), document.querySelector('#algorithm-panel')]
   const structureCards = [...document.querySelectorAll('[data-structure-target]')]
@@ -107,7 +109,19 @@ export function initNavigation(document) {
   }
 
   // Breadcrumb (chỉ chữ, mục cuối đậm) và document.title theo màn hình hiện tại. Không phát sự kiện nào.
+  // Thanh tab chỉ hiện ở thư viện Cấu trúc và trang Giải thuật; tab đang chọn là tab trùng tên trang (aria-selected + roving tabindex).
+  function syncLibraryTabs() {
+    libraryTabs.hidden = !(currentPage === 'algorithms' || (currentPage === 'structures' && !structureLibrary.hidden))
+    libraryTabButtons.forEach((tab) => {
+      const selected = tab.dataset.libraryTab === currentPage
+
+      tab.setAttribute('aria-selected', String(selected))
+      tab.tabIndex = selected ? 0 : -1
+    })
+  }
+
   function renderTopbar() {
+    syncLibraryTabs()
     libraryPanels.forEach((panel) => {
       panel.hidden = [...panel.children].every((child) => child.hidden)
     })
@@ -405,6 +419,28 @@ export function initNavigation(document) {
   }
 
   renderStructureNav()
+
+  // Mẫu tabs của ARIA: ←/→ (vòng), Home, End chuyển tab và kích hoạt ngay; focus theo tab vừa chọn.
+  function selectLibraryTab(tab) {
+    tab.focus()
+
+    if (tab.dataset.libraryTab !== currentPage) showPage(tab.dataset.libraryTab)
+  }
+
+  libraryTabButtons.forEach((tab, index) => {
+    const last = libraryTabButtons.length - 1
+
+    tab.addEventListener('click', () => selectLibraryTab(tab))
+
+    tab.addEventListener('keydown', (event) => {
+      const target = { ArrowRight: index === last ? 0 : index + 1, ArrowLeft: index === 0 ? last : index - 1, Home: 0, End: last }[event.key]
+
+      if (target === undefined) return
+
+      event.preventDefault()
+      selectLibraryTab(libraryTabButtons[target])
+    })
+  })
 
   document.querySelectorAll('[data-back-to-structures]').forEach((button) => {
     button.addEventListener('click', () => {

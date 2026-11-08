@@ -109,7 +109,7 @@
                         <span>Mở trực quan hóa</span>
                         <span aria-hidden="true">→</span>
                     </button>
-                    <button type="button" class="dashboard-outline-button" data-dashboard-target="sorting">Xem thư viện</button>
+                    <button type="button" class="dashboard-outline-button" data-dashboard-target="algorithms">Xem thư viện</button>
                 </div>
             </div>
 
@@ -152,7 +152,7 @@
                     <h3 id="dashboard-featured-title">Nội dung nổi bật</h3>
                     <p>Ba thuật toán nên thử đầu tiên.</p>
                 </div>
-                <button type="button" class="dashboard-text-link" data-dashboard-target="sorting">Xem thư viện →</button>
+                <button type="button" class="dashboard-text-link" data-dashboard-target="algorithms">Xem thư viện →</button>
             </div>
 
             <div class="dashboard-grid">
@@ -230,7 +230,12 @@
     </p>
     </section>
 
-    <div id="structure-panel">
+    <div class="library-tabs" role="tablist" aria-label="Thư viện" hidden>
+        <button type="button" role="tab" class="library-tab" id="library-tab-structures" data-library-tab="structures" aria-controls="structure-panel" aria-selected="false" tabindex="-1">Cấu trúc dữ liệu</button>
+        <button type="button" role="tab" class="library-tab" id="library-tab-algorithms" data-library-tab="algorithms" aria-controls="algorithm-panel" aria-selected="false" tabindex="-1">Giải thuật</button>
+    </div>
+
+    <div id="structure-panel" role="tabpanel" aria-labelledby="library-tab-structures">
     <section class="visualizer-section" id="structure-library" hidden>
     <div class="section-heading">
         <div>
@@ -331,7 +336,7 @@
     </section>
     </div>
 
-    <div id="algorithm-panel">
+    <div id="algorithm-panel" role="tabpanel" aria-labelledby="library-tab-algorithms">
     <section class="algorithm-section" id="sorting-algorithm-library">
     <div class="section-heading">
         <div>

@@ -45,8 +45,8 @@ test('đổi trang bằng thanh bên: topic là null và page giữ nguyên', ()
 
 test('nút dashboard (data-dashboard-target, "Xem thư viện" ở hero): topic là null', () => {
   withNavigation(({ document, log }) => {
-    document.querySelector('.dashboard-outline-button[data-dashboard-target="sorting"]').click()
-    assert.deepEqual(log, [{ page: 'sorting', topic: null }])
+    document.querySelector('.dashboard-outline-button[data-dashboard-target="algorithms"]').click()
+    assert.deepEqual(log, [{ page: 'algorithms', topic: null }])
   })
 })
 
