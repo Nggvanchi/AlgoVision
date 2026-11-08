@@ -2961,6 +2961,99 @@ button.dashboard-card:hover {
   }
 }
 
+/* Thư viện (R5b): ô tìm, chip phân loại, bộ đếm, trạng thái rỗng */
+.library-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin-bottom: 20px;
+}
+
+.library-search-input {
+  flex: 1 1 280px;
+  min-height: 44px;
+  max-width: 420px;
+  padding: 0 14px;
+  border: 1px solid var(--border-control);
+  border-radius: var(--av-radius-control);
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+}
+
+.library-search-input::placeholder {
+  color: var(--muted);
+}
+
+.library-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1 1 100%;
+  order: 3;
+}
+
+.library-chip {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--border-control);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--av-fs-caption);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.library-chip:hover {
+  background: var(--av-surface-2);
+}
+
+.library-chip[aria-pressed="true"] {
+  border-color: var(--av-primary-line);
+  background: var(--av-nav-active-bg);
+  color: var(--av-nav-active-text);
+}
+
+.library-count {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--av-fs-caption);
+}
+
+.library-empty {
+  padding: 32px 16px;
+  border: 1px dashed var(--av-border-dashed);
+  border-radius: 16px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.library-empty button {
+  min-height: 44px;
+  margin-top: 8px;
+  padding: 0 20px;
+  border: 1px solid var(--border-control);
+  border-radius: var(--av-radius-control);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.is-filtered-out {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .library-search-input {
+    max-width: none;
+  }
+}
+
 /* ===== Binary Search Tree ===== */
 .bst-toolbar,
 .bst-presets {
