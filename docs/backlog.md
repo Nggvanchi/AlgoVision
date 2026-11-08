@@ -79,6 +79,8 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
   cân nhắc gắn bằng JS chỉ khi nội dung tràn. Chưa kiểm trên Safari.
 - (R6a đã giải quyết) chỉ báo "Bước x/y" và tốc độ nay thống nhất ở 5 module bằng `src/step-tools.js`; thẻ thống kê "Tiến trình k / N" của Sắp xếp giữ nguyên (trùng thông tin, cân nhắc bỏ ở R6b).
 - R6a (từ review độc lập): (1) kéo thanh trượt bước KHI ĐANG PHÁT: tick kế tiếp gọi `sync` và đặt lại `slider.value` về bước thật nên núm có thể giật về chỗ cũ trước khi thả; kết quả cuối vẫn đúng (seek theo giá trị lúc thả). Chưa xác nhận trên trình duyệt thật; cách xử lý: bỏ qua việc đặt `value` trong `sync` khi đang kéo (cờ `pointerdown`/`pointerup`). (2) Đổi tốc độ khi đang chạy chỉ có hiệu lực từ lần đặt timer kế tiếp (đọc `getDelay()` ở mỗi tick; từ 0,5× sang 4× giữa chừng vẫn chờ nốt tối đa 1,3 s): hành vi có từ trước R6a. (3) Dấu ✓ của nút tốc độ được chọn làm nút rộng thêm vài px (nhóm dịch nhẹ khi đổi lựa chọn): cân nhắc `min-width` đủ chứa ✓. (4) Trình đọc màn hình đọc "Bước, Bước 3/10" (nhãn + `aria-valuetext`): hơi thừa chữ. (5) Trần R6a là ước tính không qua bản mẫu, CSS dư 17 B: R6b phải đo bản mẫu và đặt trần riêng được duyệt.
+- R6b/R7 (a): thanh trượt bước hiện chỉ cập nhật chữ khi kéo, hình vẽ cập nhật khi thả (quyết định 29). Người dùng sẽ thử trên preview; nếu cần xem trước khi kéo thì gọi `seek` theo sự kiện `input` kèm thông báo aria-live gộp (chỉ đọc khi dừng kéo hoặc khi thả), không phá quyết định 29.
+- R6b/R7 (b): kiểm tra thẻ thống kê `#step-count` ("k / N") của Sắp xếp và nhãn "Bước x/y" của thanh bước có trùng thông tin không; nếu thừa thì gỡ một trong hai (và sửa test `sorting-controller`, `simulation-visibility`).
 - R6: chưa có phím tắt nào (→, ←, Space, Enter, n, r, p không đổi gì). Cần thiết kế, tránh xung đột khi gõ vào ô nhập.
 - R17: nút/ô nhập cao 38–42px ở 360px (BST, Hash: "Quay lại" 38, ô chọn 42, ô nhập 40, "Thực hiện" 39, nút preset 40; thanh tốc độ cũ 16px đã được thay ở R6a bằng thanh trượt bước và nút tốc độ cao 44px);
   trên mức tối thiểu 24px của WCAG 2.2, dưới mức khuyến nghị 44px.
@@ -145,6 +147,9 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - (d) Test tham số hóa theo thẻ (`tests/library-complexity-bar.test.js`, `tests/library-difficulty.test.js`) có thể đang dựng DOM cho MỖI thẻ: đo rồi dựng một lần mỗi file khi test chỉ đọc.
 - (e) Các test đếm TUYỆT ĐỐI số chỗ dùng token trong `tests/design-tokens.test.js` (ví dụ `--font-mono` dùng đúng N chỗ) phải sửa ở mọi PR có CSS mới (R4: 8 -> 9, R5c: 9 -> 10). ĐỀ XUẤT: đổi sang khẳng định theo ý nghĩa (ví dụ "mọi font mã đều qua `var(--font-mono)`, không khai báo font mã cứng"). CẦN NGƯỜI DÙNG DUYỆT trước khi đổi; làm sau R7.
 - (f) `tests/simulation-controller-seek.test.js` kiểm controller thuần, không cần DOM nên nhanh: là khuôn đáng giữ cho test logic. `tests/controller-seek-render-purity.test.js` dựng ứng dụng đầy đủ (DOM cho 5 module) nên cần đo chi phí (`test-profile`) trước khi quyết giữ nguyên hay gộp dựng DOM.
+- (h) Có >= 6 file test phân tích `src/style.css` riêng (thêm `step-tools-css`): đo rồi dùng chung một helper đã phân tích sẵn (một lần mỗi tiến trình, không mỗi file).
+- (i) `step-tools-wiring`, `step-tools`, `controller-seek-jump` dựng nhiều lần ứng dụng/module: mở rộng `tests/helpers/visualizer-modules.js` để dựng DOM một lần mỗi file khi test chỉ đọc.
+- (j) Các test lặp theo "6 màn hình" (`VISUALIZER_MODULES`) nên tham số hóa một chỗ thay vì vòng lặp ở từng file.
 - (g) Gom danh sách phép phá từ các mô tả PR đã có (controller-seek: 16 phép của `seek` + 5 phép bộ vẽ; R5a, R5b, R5c: file cấu hình `mc*.mjs` và bảng "Phá thử" trong `pr-*.md`) thành một kho đầu vào cho bước lưới an toàn của đợt tối ưu test sau R7: mỗi phép phá phải còn bị bắt sau khi gộp hoặc đổi test.
 
 ## Công cụ
