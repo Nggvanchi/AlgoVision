@@ -40,10 +40,12 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
   `{ load, run, pause, next, previous, seek, reset, getSnapshot }`; `getSnapshot()` → `{ state, stepIndex, stepCount, step, controls }`;
   `getControlState(state, stepIndex)` (`simulation-controller.js:10`) là hàm thuần. Một `timerId` duy nhất, chuỗi `setTimeout`,
   đọc `getDelay()` ở mỗi tick, mọi đường dừng qua `stopTimer()`.
-- `seek(index)` (quyết định 28): kẹp chỉ số vào [0, số bước - 1], bỏ qua đầu vào không phải số hoặc khi chưa có bước, cắt phần thập phân;
+- `seek(index)` (quyết định 28): kẹp chỉ số vào [0, số bước - 1], bỏ qua đầu vào mà `parseFloat` cho NaN (không phải số, `null`, chuỗi rỗng, boolean, mảng rỗng, đối tượng) hoặc khi chưa có bước, cắt phần thập phân;
   luôn dừng phát (hủy timer) rồi `paused`, tới bước cuối thì `completed`; đúng một `onChange` nên mỗi vùng `aria-live` cập nhật một lần
   và các bước bị nhảy qua không được vẽ; cùng chỉ số mà không đang phát thì không notify. Dựa vào việc bộ vẽ của Sorting, Searching,
   BST, Hash Table, Graph là hàm thuần của `snapshot.step` (khóa bởi `tests/controller-seek-render-purity.test.js`): module mới phải giữ tính chất này.
+  Giới hạn của test đó: so `innerHTML` của khu vực visualizer giữa đường tiến và đường lùi ở các bước giữa; không thấy thuộc tính JS
+  (`value`, `scrollTop`), phần tử ngoài khu vực, bước cuối, và chưa mô phỏng cú nhảy nhiều bước thật (chỉ làm được khi R6 nối `seek`; R6 nên thêm test nhảy thật).
   Chưa có giao diện nào gọi `seek` (thanh trượt bước là việc của R6).
 - Sorting/Searching nghe `algovision:viewchange` và tự `pause()` khi visualizer của mình bị ẩn.
 - Searching sinh bước lần đầu bấm Next/Run; Reset, đổi mục tiêu (`change` và `input` của `#search-target`), đổi thuật toán,
