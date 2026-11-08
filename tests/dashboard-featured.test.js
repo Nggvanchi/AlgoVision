@@ -60,7 +60,7 @@ test('card BFS: không có badge độ khó (app không xếp độ khó cho BFS
     const [time, memory] = cardParts(card).metrics
 
     assert.equal(cardParts(card).difficulty, null)
-    assert.equal(time, 'Thời gian O(V + E)')
+    assert.equal(time, 'Thời gian (danh sách kề) O(V + E)', 'ma trận kề là O(V²) (src/graph.js), nên nhãn phải nói rõ biểu diễn')
     assert.equal(memory, 'Bộ nhớ O(V)')
     assert.ok(advantages.includes('O(V + E)'), 'mô tả BFS trong app phải nêu O(V + E)')
     assert.ok(disadvantages.includes('O(V)'), 'mô tả BFS trong app phải nêu O(V) bộ nhớ')
