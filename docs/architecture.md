@@ -37,9 +37,14 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
 ## Bộ điều khiển mô phỏng (Sorting, Searching)
 
 - `createSimulationController({ getDelay, onChange?, scheduler? })` (`simulation-controller.js:24`) →
-  `{ load, run, pause, next, previous, reset, getSnapshot }`; `getSnapshot()` → `{ state, stepIndex, stepCount, step, controls }`;
+  `{ load, run, pause, next, previous, seek, reset, getSnapshot }`; `getSnapshot()` → `{ state, stepIndex, stepCount, step, controls }`;
   `getControlState(state, stepIndex)` (`simulation-controller.js:10`) là hàm thuần. Một `timerId` duy nhất, chuỗi `setTimeout`,
   đọc `getDelay()` ở mỗi tick, mọi đường dừng qua `stopTimer()`.
+- `seek(index)` (quyết định 28): kẹp chỉ số vào [0, số bước - 1], bỏ qua đầu vào không phải số hoặc khi chưa có bước, cắt phần thập phân;
+  luôn dừng phát (hủy timer) rồi `paused`, tới bước cuối thì `completed`; đúng một `onChange` nên mỗi vùng `aria-live` cập nhật một lần
+  và các bước bị nhảy qua không được vẽ; cùng chỉ số mà không đang phát thì không notify. Dựa vào việc bộ vẽ của Sorting, Searching,
+  BST, Hash Table, Graph là hàm thuần của `snapshot.step` (khóa bởi `tests/controller-seek-render-purity.test.js`): module mới phải giữ tính chất này.
+  Chưa có giao diện nào gọi `seek` (thanh trượt bước là việc của R6).
 - Sorting/Searching nghe `algovision:viewchange` và tự `pause()` khi visualizer của mình bị ẩn.
 - Searching sinh bước lần đầu bấm Next/Run; Reset, đổi mục tiêu (`change` và `input` của `#search-target`), đổi thuật toán,
   mảng mới đều bỏ các bước cũ (`load([])`). Target được chốt trong mảng bước.
