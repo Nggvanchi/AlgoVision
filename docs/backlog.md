@@ -107,6 +107,18 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Redesign v1.0, thẻ cấu trúc dữ liệu: Spec mục 9 và 17 muốn độ khó, phân loại, Thời gian/Bộ nhớ trên card; 7 cấu trúc chưa có nguồn dữ liệu thật cho các trường này nên Phase 4 bỏ chúng (số giả bị cấm). Cần nguồn dữ liệu thật (và đối chiếu với code, như thẻ thuật toán đối chiếu Learning Panel) trước khi thêm.
 - Artboard của Spec (ảnh PNG, trang "AlgoVision Design") không có trong repo; khi có thư mục design-source thì đặt ảnh vào `docs/design-refs/` và trỏ tới từ `docs/design/spec.md`.
 
+- Trang Giải thuật (R5a) không có mục sidebar nào active (quyết định 22): người học thấy vị trí qua breadcrumb "AlgoVision / Giải thuật" và tab đang chọn. Nếu muốn tô sáng thì cần quyết định thêm mục nav hoặc tô nhóm THUẬT TOÁN (Spec mục 7 có mục cha "Giải thuật").
+- Hai select lọc Độ khó và Độ phức tạp của Spec mục 9 bị hoãn (quyết định 19): kích hoạt lại khi tab Giải thuật có >= 10 thẻ (hiện 7).
+- Ở trang Giải thuật có hai thẻ cùng trạng thái `selected` (Bubble Sort và Linear Search): đó là thẻ thuật toán đang chọn của hai màn riêng, theo hành vi cũ; xét lại khi làm lại thẻ ở R5c.
+- Quay lại từ một màn chi tiết đưa focus về `body` (nút "Quay lại" bị ẩn cùng màn chi tiết); nên chuyển focus về thẻ vừa mở. Hành vi có sẵn, chưa đổi ở R5a; xét ở R7.
+
+## Nội dung học thuật (hoãn, KHÔNG làm trong chuỗi Redesign hiện tại)
+- D3 chưa quyết: chờ đề cương môn học.
+- D7: nguyên tắc trần bundle cho chunk nội dung (nội dung dài tách chunk, tải khi cần, trần riêng ngoài trần JS/CSS của shell).
+- D8: nội dung học thuật dài đặt trong panel của Visualizer (không tạo trang đọc riêng).
+- D9: câu hỏi ôn tập hoãn sau R6; không chấm điểm, không lưu (quy tắc a).
+- D10: nâng Array, Stack, Queue, Linked List lên mức có hàm sinh bước, sau R7 và sau cơ chế tách chunk.
+
 ## Dọn dẹp
 - `viewchange.detail.topic` và `topicId` (hàm một dòng trong `src/navigation.js`): sau khi gỡ Tiến độ học tập không mã nào trong `src` đọc `topic` (năm listener của visualizer chỉ gọi `pause()`); chỉ test
   (`navigation-topic`, `sidebar-navigation`, `sidebar-topbar`) kiểm nó. Gỡ cả hai nếu Redesign không cần; giữ nguyên trong PR gỡ tiến độ để không đổi hợp đồng sự kiện.
@@ -123,6 +135,7 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
   bỏ được bằng cách như PR `chore/bundle-headroom` (so computed style ở 360px và 1280px). Cùng loại: `.array-panel` và `.array-operation-card` còn `background`/màu viền bị luật `.array-panel, .array-operation-card` ở cuối khối Array ghi đè.
 
 ## Công cụ
+- `compareSearchAlgorithms` (`src/searching.js`) trùng lặp logic với phần chạy từng thuật toán; gom lại khi sửa module Searching (D15).
 - Cải tiến skill `mutation-test`: `run-isolated.mjs` in tên test đỏ và assert đầu tiên thay vì phụ thuộc chuỗi `--expect` (đã báo
   "không thấy thông điệp" sai 7 lần trong hai PR dù đúng test đỏ; phải đọc log bằng tay để xác nhận).
 - Nâng pnpm Windows lên 12.16.1, thêm `packageManager`, bỏ dòng `version` trong CI (`.github/workflows/ci.yml`).
