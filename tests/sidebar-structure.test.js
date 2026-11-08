@@ -17,14 +17,17 @@ const NAV_ITEMS = [
 const textOf = (element) => element.textContent.replace(/\s+/g, ' ').trim()
 const orderOf = (document) => [...document.querySelectorAll('*')]
 
-test('đúng một landmark điều hướng: <nav aria-label="Điều hướng chính"> nằm trong aside.sidebar', async () => {
+test('đúng hai landmark điều hướng: <nav aria-label="Điều hướng chính"> trong aside.sidebar và <nav aria-label="Đường dẫn trang"> trong header.topbar (R3)', async () => {
   await withFullApp(({ document }) => {
     const landmarks = document.querySelectorAll('nav, [role="navigation"]')
 
-    assert.equal(landmarks.length, 1, 'đúng một landmark điều hướng trong cả trang')
+    assert.equal(landmarks.length, 2, 'hai landmark điều hướng trong cả trang: chính và đường dẫn trang')
     assert.equal(landmarks[0].tagName, 'NAV')
     assert.equal(landmarks[0].getAttribute('aria-label'), 'Điều hướng chính')
-    assert.ok(landmarks[0].closest('aside.sidebar') !== null, '<nav> phải nằm trong <aside class="sidebar">')
+    assert.ok(landmarks[0].closest('aside.sidebar') !== null, '<nav> chính phải nằm trong <aside class="sidebar">')
+    assert.equal(landmarks[1].tagName, 'NAV')
+    assert.equal(landmarks[1].getAttribute('aria-label'), 'Đường dẫn trang')
+    assert.ok(landmarks[1].closest('main > header.topbar') !== null, '<nav> đường dẫn phải nằm trong header.topbar của <main>')
     assert.equal(document.querySelectorAll('aside').length, 1, 'đúng một landmark complementary')
   })
 })

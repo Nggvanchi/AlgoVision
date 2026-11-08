@@ -67,7 +67,7 @@ test('thu gọn giữ aria-current của mục đang mở và không động và
     document.querySelector('.nav-subitem[data-structure-nav="queue"]').click()
     collapseOf(document).click()
 
-    assert.equal(document.querySelectorAll('[aria-current]').length, 1)
+    assert.equal(document.querySelectorAll('#sidebar [aria-current]').length, 1)
     assert.equal(document.querySelector('.nav-subitem[data-structure-nav="queue"]').getAttribute('aria-current'), 'page')
     assert.equal(toggleOf(document).getAttribute('aria-expanded'), 'false')
     assert.equal(isInert(document.querySelector('main')), false)

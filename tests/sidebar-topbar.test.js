@@ -4,10 +4,10 @@ import assert from 'node:assert/strict'
 import { SCREENS, withFullApp } from './helpers/app-dom.js'
 import { readStyle, parseStylesheet } from './helpers/css-tokens.js'
 
-// Redesign Phase 2b: .topbar có breadcrumb ĐỘNG (chữ thường, không liên kết, không landmark, không aria-current) và
+// Redesign Phase 2b + R3: .topbar có breadcrumb ĐỘNG (chữ thường, không liên kết; R3: nằm trong <nav aria-label="Đường dẫn trang">, mục cuối aria-current="page", gốc "AlgoVision") và
 // document.title theo màn hình. Nhãn trang là pages[x].title của navigation.js; nhãn chi tiết lấy từ chính DOM (h4 của thẻ thuật
 // toán, nhãn mục con của cấu trúc), nên không có danh sách thứ hai. Bảng kỳ vọng dưới đây là bảng đặc tả của test, viết tay.
-const ROOT = 'Không gian học tập'
+const ROOT = 'AlgoVision'
 const BASE_TITLE = 'AlgoVision - Trực quan hóa thuật toán'
 const SORTING = 'Thuật toán sắp xếp'
 const SEARCHING = 'Thuật toán tìm kiếm'
@@ -171,18 +171,23 @@ test('.topbar vẫn là <header> trong <main>; không còn huy hiệu "Đang ph�
   })
 })
 
-test('breadcrumb: <ol> chữ thường, KHÔNG liên kết/nút, KHÔNG aria-current, KHÔNG landmark (vẫn đúng một landmark nav của sidebar)', async () => {
+test('breadcrumb: <nav aria-label="Đường dẫn trang"> chứa <ol> chữ thường (không liên kết/nút), aria-current="page" đúng ở mục cuối', async () => {
   await run(({ document }) => {
     for (const screen of SCREENS) {
       screen.open(document)
 
       const list = document.querySelector('.topbar .breadcrumb')
 
+      const nav = list.parentElement
+
       assert.equal(list.tagName, 'OL')
+      assert.ok(nav.tagName === 'NAV' && nav.closest('.topbar') !== null, `${screen.name}: <ol> phải nằm trực tiếp trong <nav> của .topbar`)
+      assert.equal(nav.getAttribute('aria-label'), 'Đường dẫn trang')
       assert.equal(list.querySelectorAll('a, button, [tabindex], [role]').length, 0, `${screen.name}: breadcrumb chỉ có chữ`)
-      assert.equal(document.querySelectorAll('.topbar [aria-current]').length, 0)
-      assert.equal(document.querySelectorAll('nav, [role="navigation"]').length, 1)
-      assert.equal(document.querySelectorAll('[aria-current]').length, 1, 'aria-current vẫn đúng một phần tử (ở sidebar)')
+      assert.equal(document.querySelectorAll('.topbar [aria-current]').length, 1, `${screen.name}: đúng một aria-current trong breadcrumb`)
+      assert.ok(list.querySelector('li:last-child').getAttribute('aria-current') === 'page', `${screen.name}: aria-current="page" phải ở mục cuối`)
+      assert.equal(document.querySelectorAll('nav, [role="navigation"]').length, 2, 'hai landmark nav: Điều hướng chính và Đường dẫn trang')
+      assert.equal(document.querySelectorAll('#sidebar [aria-current]').length, 1, 'sidebar vẫn đúng một aria-current')
     }
   })
 })

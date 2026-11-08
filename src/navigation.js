@@ -7,7 +7,7 @@ const pages = {
   structures: { title: 'Cấu trúc dữ liệu' },
 }
 
-const BREADCRUMB_ROOT = 'Không gian học tập'
+const BREADCRUMB_ROOT = 'AlgoVision'
 const TITLE_SUFFIX = 'AlgoVision'
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
@@ -113,6 +113,7 @@ export function initNavigation(document) {
             const last = document.createElement('strong')
 
             last.textContent = label
+            item.setAttribute('aria-current', 'page')
             item.append(last)
           } else {
             item.textContent = label
