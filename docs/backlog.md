@@ -144,6 +144,8 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - (c) Mỗi PR Redesign thêm khoảng 38–45 test nên thời gian chạy bộ test tăng dần (25–31 s ở 1527 test; có lần đo 38,7 s khi máy bận): theo dõi bằng skill `test-profile` trước và sau khi làm (a), (b).
 - (d) Test tham số hóa theo thẻ (`tests/library-complexity-bar.test.js`, `tests/library-difficulty.test.js`) có thể đang dựng DOM cho MỖI thẻ: đo rồi dựng một lần mỗi file khi test chỉ đọc.
 - (e) Các test đếm TUYỆT ĐỐI số chỗ dùng token trong `tests/design-tokens.test.js` (ví dụ `--font-mono` dùng đúng N chỗ) phải sửa ở mọi PR có CSS mới (R4: 8 -> 9, R5c: 9 -> 10). ĐỀ XUẤT: đổi sang khẳng định theo ý nghĩa (ví dụ "mọi font mã đều qua `var(--font-mono)`, không khai báo font mã cứng"). CẦN NGƯỜI DÙNG DUYỆT trước khi đổi; làm sau R7.
+- (f) `tests/simulation-controller-seek.test.js` kiểm controller thuần, không cần DOM nên nhanh: là khuôn đáng giữ cho test logic. `tests/controller-seek-render-purity.test.js` dựng ứng dụng đầy đủ (DOM cho 5 module) nên cần đo chi phí (`test-profile`) trước khi quyết giữ nguyên hay gộp dựng DOM.
+- (g) Gom danh sách phép phá từ các mô tả PR đã có (controller-seek: 16 phép của `seek` + 5 phép bộ vẽ; R5a, R5b, R5c: file cấu hình `mc*.mjs` và bảng "Phá thử" trong `pr-*.md`) thành một kho đầu vào cho bước lưới an toàn của đợt tối ưu test sau R7: mỗi phép phá phải còn bị bắt sau khi gộp hoặc đổi test.
 
 ## Công cụ
 - `compareSearchAlgorithms` (`src/searching.js`) trùng lặp logic với phần chạy từng thuật toán; gom lại khi sửa module Searching (D15).
