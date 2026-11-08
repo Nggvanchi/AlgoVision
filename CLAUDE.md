@@ -19,7 +19,7 @@ Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so v�
 Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
 - Đo 2026-11-07 trên Windows 11 x64 (Node v24.21.0, pnpm 12.5.1). Baseline trước Phase 4 đo trên Ubuntu/Linux x64 (Node v26.13.0, pnpm 12.16.1).
-- `pnpm test`: 1626/1626 pass, 0 fail, 0 skipped, khoảng 31–39 s tùy tải máy (đo sau R6a, Windows; `main` trước R6a: 1580 test; Ubuntu trước đây 16–23 s).
+- `pnpm test`: 1636/1636 pass, 0 fail, 0 skipped, khoảng 31–39 s tùy tải máy (đo sau R6a, Windows; `main` trước R6a: 1580 test; Ubuntu trước đây 16–23 s).
 - `pnpm build` sau R6a: JS 150,22 kB (150.223 B; gzip 43,79 kB), CSS 56,48 kB (56.483 B; gzip 10,93 kB), HTML 0,75 kB (746 B). So với `main` trước R6a (149.903 B / 55.079 B): JS +320 B, CSS +1.404 B.
   Ngưỡng hiện hành (trần riêng của PR R6a `feat/visualizer-controls`, ƯỚC TÍNH không qua bản mẫu rồi làm tròn lên 0,5 kB): JS <= 151,5 kB (gzip <= 44,5), CSS <= 56,5 kB (gzip <= 11,5). JS dư 1.277 B, CSS dư 17 B (đã phải rút gọn CSS nhiều lần để vào trần).
   Ngưỡng trước R6a (trần riêng của `feat/controller-seek`): JS <= 150,0 kB (gzip <= 44,0), CSS <= 55,5 kB (gzip <= 11,0); số đo sau PR đó: 1580 test, JS 149.903 B, CSS 55.079 B.
