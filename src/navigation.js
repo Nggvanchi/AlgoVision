@@ -38,6 +38,8 @@ export function initNavigation(document) {
   const searchVisualizer = document.querySelector('#search-section')
 
   const structureLibrary = document.querySelector('#structure-library')
+  // Hai panel bọc các section thư viện; panel ẩn khi mọi section con ẩn (không để lại vùng rỗng trong cây trợ năng).
+  const libraryPanels = [document.querySelector('#structure-panel'), document.querySelector('#algorithm-panel')]
   const structureCards = [...document.querySelectorAll('[data-structure-target]')]
   // Mỗi thẻ data-structure-target="x" mở section #x-section; thêm cấu trúc mới không cần sửa file này.
   // Thẻ không có section tương ứng bị bỏ qua khi click (thư viện giữ nguyên).
@@ -100,6 +102,10 @@ export function initNavigation(document) {
 
   // Breadcrumb (chỉ chữ, mục cuối đậm) và document.title theo màn hình hiện tại. Không phát sự kiện nào.
   function renderTopbar() {
+    libraryPanels.forEach((panel) => {
+      panel.hidden = [...panel.children].every((child) => child.hidden)
+    })
+
     const labels = [BREADCRUMB_ROOT, pages[currentPage].title]
 
     if (currentDetail !== null) labels.push(currentDetail)

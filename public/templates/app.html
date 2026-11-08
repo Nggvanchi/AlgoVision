@@ -230,6 +230,108 @@
     </p>
     </section>
 
+    <div id="structure-panel">
+    <section class="visualizer-section" id="structure-library" hidden>
+    <div class="section-heading">
+        <div>
+        <h3>Cấu trúc dữ liệu</h3>
+        <p>Chọn một cấu trúc để khám phá cách hoạt động.</p>
+        </div>
+        <span class="visualizer-tag">DATA STRUCTURES</span>
+    </div>
+
+    <div class="structure-grid">
+        <button
+        type="button"
+        class="structure-card"
+        data-structure-target="array"
+        >
+        <span class="structure-card-icon">[ ]</span>
+        <span class="structure-card-title">Array</span>
+        <span class="structure-card-description">
+            Tìm hiểu cách lưu trữ, truy cập, chèn và xóa phần tử theo index.
+        </span>
+        <span class="card-status"><span class="structure-card-link card-link">Mở trình mô phỏng →</span></span>
+        </button>
+
+        <button
+        type="button"
+        class="structure-card"
+        data-structure-target="stack"
+        >
+        <span class="structure-card-icon">▤</span>
+        <span class="structure-card-title">Stack</span>
+        <span class="structure-card-description">
+            Khám phá nguyên tắc LIFO thông qua Push, Pop và Peek.
+        </span>
+        <span class="card-status"><span class="structure-card-link card-link">Mở trình mô phỏng →</span></span>
+        </button>
+
+        <button
+            type="button"
+            class="structure-card"
+            data-structure-target="queue">
+            <span class="structure-card-icon">↔</span>
+            <span class="structure-card-title">Queue</span>
+            <span class="structure-card-description">
+                Khám phá nguyên tắc FIFO thông qua Enqueue, Dequeue và Front.
+            </span>
+            <span class="card-status"><span class="structure-card-link card-link">Mở trình mô phỏng →</span></span>
+        </button>
+
+        <button
+            type="button"
+            class="structure-card"
+            data-structure-target="linked-list">
+            <span class="structure-card-icon">⛓</span>
+            <span class="structure-card-title">Linked List</span>
+            <span class="structure-card-description">
+                Khám phá cách các nút dữ liệu liên kết với nhau,
+                cùng thao tác thêm, chèn, xóa và tìm kiếm.
+            </span>
+            <span class="card-status"><span class="structure-card-link card-link">Mở trình mô phỏng →</span></span>
+        </button>
+
+        <button
+            type="button"
+            class="structure-card"
+            data-structure-target="bst">
+            <span class="structure-card-icon">⋔</span>
+            <span class="structure-card-title">Binary Search Tree</span>
+            <span class="structure-card-description">
+                Quan sát chèn, tìm, xóa, duyệt cây và vì sao chi phí là O(h).
+            </span>
+            <span class="card-status"><span class="structure-card-link card-link">Mở trình mô phỏng →</span></span>
+        </button>
+
+        <button
+            type="button"
+            class="structure-card"
+            data-structure-target="hash-table">
+            <span class="structure-card-icon">#</span>
+            <span class="structure-card-title">Hash Table</span>
+            <span class="structure-card-description">
+                Băm khóa vào ô, xử lý va chạm bằng chaining hoặc linear probing, thấy vì sao trung bình O(1).
+            </span>
+            <span class="card-status"><span class="structure-card-link card-link">Mở trình mô phỏng →</span></span>
+        </button>
+
+        <button
+            type="button"
+            class="structure-card"
+            data-structure-target="graph">
+            <span class="structure-card-icon">◬</span>
+            <span class="structure-card-title">Graph</span>
+            <span class="structure-card-description">
+                Dựng đồ thị có hướng hoặc vô hướng, so sánh danh sách kề với ma trận kề qua từng lần đọc.
+            </span>
+            <span class="card-status"><span class="structure-card-link card-link">Mở trình mô phỏng →</span></span>
+        </button>
+    </div>
+    </section>
+    </div>
+
+    <div id="algorithm-panel">
     <section class="algorithm-section" id="sorting-algorithm-library">
     <div class="section-heading">
         <div>
@@ -289,6 +391,59 @@
         </button>
     </div>
     </section>
+
+    <section class="algorithm-section" id="search-algorithm-library" hidden>
+    <div class="section-heading">
+        <div>
+        <h3>Thuật toán tìm kiếm</h3>
+        <p>Chọn một thuật toán để khám phá cách hoạt động.</p>
+        </div>
+        <span class="count-label">02 THUẬT TOÁN</span>
+    </div>
+
+    <div class="algorithm-grid">
+        <button
+        type="button"
+        class="algorithm-card"
+        data-search-algorithm="linear"
+        >
+        <div class="card-top">
+            <span class="algorithm-symbol">⌕</span>
+            <span class="difficulty easy">CƠ BẢN</span>
+        </div>
+        <h4>Linear Search</h4>
+        <p>Kiểm tra lần lượt từng phần tử cho đến khi tìm thấy giá trị cần tìm.</p>
+        <div class="card-footer">
+            <span class="card-metric"><span>Thời gian (xấu nhất)</span><code>O(n)</code></span>
+            <span class="card-metric"><span>Bộ nhớ</span><code>O(1)</code></span>
+        </div>
+        <span class="card-status">
+            <span class="card-link">Trực quan hóa →</span>
+        </span>
+        </button>
+
+        <button
+        type="button"
+        class="algorithm-card"
+        data-search-algorithm="binary"
+        >
+        <div class="card-top">
+            <span class="algorithm-symbol">⌘</span>
+            <span class="difficulty medium">TRUNG BÌNH</span>
+        </div>
+        <h4>Binary Search</h4>
+        <p>Chia đôi phạm vi tìm kiếm trên mảng đã được sắp xếp.</p>
+        <div class="card-footer">
+            <span class="card-metric"><span>Thời gian (xấu nhất)</span><code>O(log n)</code></span>
+            <span class="card-metric"><span>Bộ nhớ</span><code>O(1)</code></span>
+        </div>
+        <span class="card-status">
+            <span class="card-link">Trực quan hóa →</span>
+        </span>
+        </button>
+    </div>
+    </section>
+    </div>
 
     <section class="visualizer-section" id="sorting-section">
     <button
@@ -486,58 +641,6 @@
         </div>
     </div>
 
-    </section>
-
-    <section class="algorithm-section" id="search-algorithm-library" hidden>
-    <div class="section-heading">
-        <div>
-        <h3>Thuật toán tìm kiếm</h3>
-        <p>Chọn một thuật toán để khám phá cách hoạt động.</p>
-        </div>
-        <span class="count-label">02 THUẬT TOÁN</span>
-    </div>
-
-    <div class="algorithm-grid">
-        <button
-        type="button"
-        class="algorithm-card"
-        data-search-algorithm="linear"
-        >
-        <div class="card-top">
-            <span class="algorithm-symbol">⌕</span>
-            <span class="difficulty easy">CƠ BẢN</span>
-        </div>
-        <h4>Linear Search</h4>
-        <p>Kiểm tra lần lượt từng phần tử cho đến khi tìm thấy giá trị cần tìm.</p>
-        <div class="card-footer">
-            <span class="card-metric"><span>Thời gian (xấu nhất)</span><code>O(n)</code></span>
-            <span class="card-metric"><span>Bộ nhớ</span><code>O(1)</code></span>
-        </div>
-        <span class="card-status">
-            <span class="card-link">Trực quan hóa →</span>
-        </span>
-        </button>
-
-        <button
-        type="button"
-        class="algorithm-card"
-        data-search-algorithm="binary"
-        >
-        <div class="card-top">
-            <span class="algorithm-symbol">⌘</span>
-            <span class="difficulty medium">TRUNG BÌNH</span>
-        </div>
-        <h4>Binary Search</h4>
-        <p>Chia đôi phạm vi tìm kiếm trên mảng đã được sắp xếp.</p>
-        <div class="card-footer">
-            <span class="card-metric"><span>Thời gian (xấu nhất)</span><code>O(log n)</code></span>
-            <span class="card-metric"><span>Bộ nhớ</span><code>O(1)</code></span>
-        </div>
-        <span class="card-status">
-            <span class="card-link">Trực quan hóa →</span>
-        </span>
-        </button>
-    </div>
     </section>
 
     <section class="visualizer-section" id="search-section" hidden>
@@ -772,105 +875,6 @@
                 </article>
             </div>
         </div>
-    </div>
-    </section>
-
-    <section class="visualizer-section" id="structure-library" hidden>
-    <div class="section-heading">
-        <div>
-        <h3>Cấu trúc dữ liệu</h3>
-        <p>Chọn một cấu trúc để khám phá cách hoạt động.</p>
-        </div>
-        <span class="visualizer-tag">DATA STRUCTURES</span>
-    </div>
-
-    <div class="structure-grid">
-        <button
-        type="button"
-        class="structure-card"
-        data-structure-target="array"
-        >
-        <span class="structure-card-icon">[ ]</span>
-        <span class="structure-card-title">Array</span>
-        <span class="structure-card-description">
-            Tìm hiểu cách lưu trữ, truy cập, chèn và xóa phần tử theo index.
-        </span>
-        <span class="card-status"><span class="structure-card-link card-link">Mở trình mô phỏng →</span></span>
-        </button>
-
-        <button
-        type="button"
-        class="structure-card"
-        data-structure-target="stack"
-        >
-        <span class="structure-card-icon">▤</span>
-        <span class="structure-card-title">Stack</span>
-        <span class="structure-card-description">
-            Khám phá nguyên tắc LIFO thông qua Push, Pop và Peek.
-        </span>
-        <span class="card-status"><span class="structure-card-link card-link">Mở trình mô phỏng →</span></span>
-        </button>
-
-        <button
-            type="button"
-            class="structure-card"
-            data-structure-target="queue">
-            <span class="structure-card-icon">↔</span>
-            <span class="structure-card-title">Queue</span>
-            <span class="structure-card-description">
-                Khám phá nguyên tắc FIFO thông qua Enqueue, Dequeue và Front.
-            </span>
-            <span class="card-status"><span class="structure-card-link card-link">Mở trình mô phỏng →</span></span>
-        </button>
-
-        <button
-            type="button"
-            class="structure-card"
-            data-structure-target="linked-list">
-            <span class="structure-card-icon">⛓</span>
-            <span class="structure-card-title">Linked List</span>
-            <span class="structure-card-description">
-                Khám phá cách các nút dữ liệu liên kết với nhau,
-                cùng thao tác thêm, chèn, xóa và tìm kiếm.
-            </span>
-            <span class="card-status"><span class="structure-card-link card-link">Mở trình mô phỏng →</span></span>
-        </button>
-
-        <button
-            type="button"
-            class="structure-card"
-            data-structure-target="bst">
-            <span class="structure-card-icon">⋔</span>
-            <span class="structure-card-title">Binary Search Tree</span>
-            <span class="structure-card-description">
-                Quan sát chèn, tìm, xóa, duyệt cây và vì sao chi phí là O(h).
-            </span>
-            <span class="card-status"><span class="structure-card-link card-link">Mở trình mô phỏng →</span></span>
-        </button>
-
-        <button
-            type="button"
-            class="structure-card"
-            data-structure-target="hash-table">
-            <span class="structure-card-icon">#</span>
-            <span class="structure-card-title">Hash Table</span>
-            <span class="structure-card-description">
-                Băm khóa vào ô, xử lý va chạm bằng chaining hoặc linear probing, thấy vì sao trung bình O(1).
-            </span>
-            <span class="card-status"><span class="structure-card-link card-link">Mở trình mô phỏng →</span></span>
-        </button>
-
-        <button
-            type="button"
-            class="structure-card"
-            data-structure-target="graph">
-            <span class="structure-card-icon">◬</span>
-            <span class="structure-card-title">Graph</span>
-            <span class="structure-card-description">
-                Dựng đồ thị có hướng hoặc vô hướng, so sánh danh sách kề với ma trận kề qua từng lần đọc.
-            </span>
-            <span class="card-status"><span class="structure-card-link card-link">Mở trình mô phỏng →</span></span>
-        </button>
     </div>
     </section>
 
