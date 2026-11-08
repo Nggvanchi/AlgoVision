@@ -5,6 +5,7 @@ import { generateInsertionSortSteps, insertionSortPseudocode } from './algorithm
 import { createSimulationController } from './simulation-controller.js'
 import { renderPseudocode, highlightPseudocodeLine } from './pseudocode-view.js'
 import { getBarStateClasses } from './sorting-bar-state.js'
+import { createStepTools } from './step-tools.js'
 
 export function initSorting(options = {}) {
   const arrayBars = document.querySelector('#array-bars')
@@ -18,7 +19,7 @@ export function initSorting(options = {}) {
   const stepButton = document.querySelector('#step-sort')
   const resetButton = document.querySelector('#reset-sort')
   const previousButton = document.querySelector('#previous-step')
-  const speedControl = document.querySelector('#sort-speed')
+  const stepToolsRoot = document.querySelector('#sorting-section [data-step-tools]')
   const startButton = document.querySelector('#start-button')
 
   const comparisonCount = document.querySelector('#comparison-count')
@@ -56,7 +57,7 @@ export function initSorting(options = {}) {
     stepButton,
     resetButton,
     previousButton,
-    speedControl,
+    stepToolsRoot,
     comparisonCount,
     swapCount,
     shiftCount,
@@ -128,23 +129,16 @@ export function initSorting(options = {}) {
     },
   }
 
-  const DEFAULT_SPEED = 650
+  const stepTools = createStepTools(stepToolsRoot, { seek: (index) => simulation.seek(index) })
 
   let numbers = []
   let selectedAlgorithm = 'bubble'
 
   const simulation = createSimulationController({
-    getDelay: getAnimationDelay,
+    getDelay: stepTools.getDelay, // đọc tốc độ ở mỗi tick nên đổi tốc độ không cần tạo lại timer
     onChange: renderSimulation,
     scheduler: options.scheduler,
   })
-
-  // Đọc tốc độ ở mỗi tick nên đổi tốc độ không cần tạo lại timer.
-  function getAnimationDelay() {
-    const speed = Number(speedControl.value)
-
-    return Number.isFinite(speed) && speed > 0 ? speed : DEFAULT_SPEED
-  }
 
   function getRunLabel(runMode) {
     if (runMode === 'resume') return 'Tiếp tục'
@@ -201,6 +195,8 @@ export function initSorting(options = {}) {
   }
 
   function renderSimulation({ step, stepIndex, stepCount: totalSteps, controls }) {
+    stepTools.sync({ stepIndex, stepCount: totalSteps })
+
     if (!step) {
       return
     }

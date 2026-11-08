@@ -1,5 +1,6 @@
 import { createSimulationController } from './simulation-controller.js'
 import { renderPseudocode, highlightPseudocodeLine } from './pseudocode-view.js'
+import { createStepTools } from './step-tools.js'
 import { layoutGraph, GRAPH_LAYOUT } from './graph-layout.js'
 import {
   addEdge,
@@ -56,7 +57,6 @@ const SVG_NS = 'http://www.w3.org/2000/svg'
 
 // Giới hạn của giao diện (tầng structures không giới hạn số đỉnh). 8 đỉnh = 8 vị trí của layout xếp tròn.
 const MAX_VERTICES = GRAPH_LAYOUT.slotCount
-const DEFAULT_SPEED = 700
 const IDLE_MESSAGE = 'Chọn đỉnh u, v để sửa đồ thị, hoặc chọn truy vấn rồi bấm Thực hiện.'
 const RESET_NOTE = 'Đã tua minh họa về bước đầu. Đồ thị đã chốt không đổi.'
 
@@ -602,8 +602,7 @@ export function initGraph(document, options = {}) {
     tree: $('#graph-preset-tree'),
   }
   const clearButton = $('#graph-clear')
-  const speedInput = $('#graph-speed')
-  const speedValue = $('#graph-speed-value')
+  const stepToolsRoot = $('#graph-section [data-step-tools]')
   const svg = $('#graph-svg')
   const resetButton = $('#graph-reset')
   const previousButton = $('#graph-previous')
@@ -658,7 +657,7 @@ export function initGraph(document, options = {}) {
   }
 
   const requiredElements = [
-    section, kindSelect, representationSelect, sourceSelect, targetSelect, operationSelect, applyButton,
+    stepToolsRoot, section, kindSelect, representationSelect, sourceSelect, targetSelect, operationSelect, applyButton,
     addVertexButton, removeVertexButton, addEdgeButton, removeEdgeButton, svg,
     resetButton, previousButton, nextButton, runButton, pauseButton, message,
   ]
@@ -673,8 +672,10 @@ export function initGraph(document, options = {}) {
   let idleMessage = IDLE_MESSAGE
   let renderedInfo = null
 
+  const stepTools = createStepTools(stepToolsRoot, { seek: (index) => simulation.seek(index) })
+
   const simulation = createSimulationController({
-    getDelay: () => Number(speedInput?.value) || DEFAULT_SPEED,
+    getDelay: stepTools.getDelay,
     onChange: render,
     scheduler: options.scheduler,
   })
@@ -862,6 +863,7 @@ export function initGraph(document, options = {}) {
   }
 
   function render(snapshot) {
+    stepTools.sync(snapshot)
     const step = snapshot.step ?? createIdleStep()
 
     renderGraph(svg, step)
@@ -1073,10 +1075,6 @@ export function initGraph(document, options = {}) {
   clearButton?.addEventListener('click', () => {
     if (isRunning()) return
     loadGraph(createGraph(kindSelect.value === 'directed'), 'Đã xóa toàn bộ đồ thị. Hãy thêm đỉnh đầu tiên.')
-  })
-
-  speedInput?.addEventListener('input', () => {
-    if (speedValue) speedValue.textContent = `${speedInput.value} ms`
   })
 
   // Rời màn hình mô phỏng thì tạm dừng (giữ nguyên bước hiện tại).

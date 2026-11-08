@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { Window } from 'happy-dom'
 import { readFile } from 'node:fs/promises'
 import { createFakeScheduler } from './helpers/fake-scheduler.js'
+import { BASE_DELAY } from '../src/step-tools.js'
 
 const templatePath = new URL(
   '../public/templates/app.html',
@@ -752,19 +753,20 @@ test('Tạo mảng mới đặt lại bộ đếm và kết quả tìm kiếm', 
   }
 })
 
-test('Searching cập nhật nhãn khi thay đổi tốc độ', async () => {
-  const { document, cleanup } = await setupSearching()
+test('Searching đổi tốc độ bằng nhóm radio: 2× làm tick nhanh gấp đôi mức 1×', async () => {
+  const scheduler = createFakeScheduler()
+  const { document, cleanup } = await setupSearching({ initialNumbers: [10, 20, 30, 40], scheduler })
 
   try {
-    const speedInput = document.querySelector('#search-speed')
-    const speedValue = document.querySelector('#search-speed-value')
+    const group = document.querySelector('#search-section [role="radiogroup"]')
 
-    speedInput.value = '200'
-    speedInput.dispatchEvent(
-      new document.defaultView.Event('input', { bubbles: true }),
-    )
+    assert.equal(group.getAttribute('aria-label'), 'Tốc độ')
 
-    assert.equal(speedValue.textContent, '200 ms')
+    document.querySelector('#search-target').value = '40'
+    group.querySelector('input[value="2"]').checked = true
+    document.querySelector('#search-run').click()
+
+    assert.deepEqual(scheduler.scheduledDelays, [BASE_DELAY / 2])
   } finally {
     cleanup()
   }
@@ -777,7 +779,7 @@ test('Searching vẫn chạy và giữ trạng thái nút khi thay đổi tốc 
 
   try {
     const targetInput = document.querySelector('#search-target')
-    const speedInput = document.querySelector('#search-speed')
+    const fastest = document.querySelector('#search-section input[name="search-speed"][value="4"]')
     const runButton = document.querySelector('#search-run')
     const pauseButton = document.querySelector('#search-pause')
     const nextButton = document.querySelector('#search-next')
@@ -792,10 +794,8 @@ test('Searching vẫn chạy và giữ trạng thái nút khi thay đổi tốc 
     assert.equal(runButton.disabled, true)
     assert.equal(pauseButton.disabled, false)
 
-    speedInput.value = '200'
-    speedInput.dispatchEvent(
-      new document.defaultView.Event('input', { bubbles: true }),
-    )
+    fastest.checked = true
+    fastest.dispatchEvent(new document.defaultView.Event('change', { bubbles: true }))
 
     assert.equal(runButton.disabled, true)
     assert.equal(nextButton.disabled, true)
@@ -1019,7 +1019,7 @@ for (const algorithm of ['binary', 'linear']) {
       setSearchTarget(document, '80')
 
       document.querySelector('#search-run').click()
-      scheduler.advance(600)
+      scheduler.advance(BASE_DELAY)
       assert.equal(document.querySelector('#search-comparisons').textContent, '1')
 
       setSearchTarget(document, '20', 'input')
@@ -1057,7 +1057,7 @@ for (const algorithm of ['binary', 'linear']) {
   })
 }
 
-test('kéo thanh tốc độ liên tục không làm mô phỏng Searching đứng yên', async (t) => {
+test('đổi tốc độ liên tục không làm mô phỏng Searching đứng yên', async (t) => {
   t.mock.timers.enable({ apis: ['setInterval', 'setTimeout'] })
 
   const { document, cleanup } = await setupSearching({
@@ -1065,17 +1065,17 @@ test('kéo thanh tốc độ liên tục không làm mô phỏng Searching đứ
   })
 
   try {
-    const speedInput = document.querySelector('#search-speed')
+    const normal = document.querySelector('#search-section input[name="search-speed"][value="1"]')
 
-    speedInput.value = '600'
+    normal.checked = true
     setSearchTarget(document, '90')
     document.querySelector('#search-run').click()
 
-    // 10 sự kiện input, mỗi sự kiện cách nhau 200ms: tổng 2000ms với tốc độ 600ms.
-    for (let i = 0; i < 10; i++) {
-      t.mock.timers.tick(200)
-      speedInput.dispatchEvent(
-        new document.defaultView.Event('input', { bubbles: true }),
+    // 16 sự kiện change, mỗi sự kiện cách nhau 130ms (ước của 650ms nên tick khớp mốc): tổng 2080ms, ba tick (650, 1300, 1950).
+    for (let i = 0; i < 16; i++) {
+      t.mock.timers.tick(130)
+      normal.dispatchEvent(
+        new document.defaultView.Event('change', { bubbles: true }),
       )
     }
 
@@ -1155,7 +1155,7 @@ test('Searching chạy hết thì nút Run thành Chạy lại và chạy lại 
     setSearchTarget(document, '30')
 
     runButton.click()
-    scheduler.advance(600 * 3)
+    scheduler.advance(BASE_DELAY * 3)
 
     assert.equal(comparisons.textContent, '3')
     assert.equal(runButton.textContent.trim(), 'Chạy lại')
@@ -1165,7 +1165,7 @@ test('Searching chạy hết thì nút Run thành Chạy lại và chạy lại 
     runButton.click()
     assert.equal(comparisons.textContent, '0')
 
-    scheduler.advance(600)
+    scheduler.advance(BASE_DELAY)
     assert.equal(comparisons.textContent, '1')
   } finally {
     cleanup()
@@ -1348,7 +1348,7 @@ test('Searching chạy tự động thì dòng được tô đi theo từng tick
     lockTarget(document, '20')
     document.querySelector('#search-run').click()
 
-    const speed = Number(document.querySelector('#search-speed').value)
+    const speed = BASE_DELAY
 
     scheduler.advance(speed)
     assert.deepEqual(getSearchActiveLines(document), [{ line: 9, ariaCurrent: 'step' }])

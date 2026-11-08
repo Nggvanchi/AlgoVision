@@ -1,5 +1,6 @@
 import { createSimulationController } from './simulation-controller.js'
 import { renderPseudocode, highlightPseudocodeLine } from './pseudocode-view.js'
+import { createStepTools } from './step-tools.js'
 import { computeHashTableLayout, HASH_TABLE_LAYOUT, scrollTargetFor } from './hash-table-layout.js'
 import {
   buildHashTable,
@@ -35,7 +36,6 @@ const MAX_KEY = 99
 const MAX_CHAINING_ENTRIES = 15
 const CAPACITIES = [5, 7, 11]
 const DEFAULT_CAPACITY = 7
-const DEFAULT_SPEED = 700
 
 const SAMPLE_PRESET = { capacity: 7, keys: [15, 8, 22, 3, 11, 30] }
 const COLLISION_BUCKET = 3
@@ -398,8 +398,7 @@ export function initHashTable(document, options = {}) {
   const sampleButton = $('#hash-table-preset-sample')
   const collisionButton = $('#hash-table-preset-collision')
   const clearButton = $('#hash-table-clear')
-  const speedInput = $('#hash-table-speed')
-  const speedValue = $('#hash-table-speed-value')
+  const stepToolsRoot = $('#hash-table-section [data-step-tools]')
   const frame = $('#hash-table-frame')
   const svg = $('#hash-table-svg')
   const resetButton = $('#hash-table-reset')
@@ -442,7 +441,7 @@ export function initHashTable(document, options = {}) {
   }
 
   const requiredElements = [
-    section, strategySelect, capacitySelect, operationSelect, keyInput, applyButton, svg,
+    stepToolsRoot, section, strategySelect, capacitySelect, operationSelect, keyInput, applyButton, svg,
     resetButton, previousButton, nextButton, runButton, pauseButton, message,
   ]
 
@@ -459,8 +458,10 @@ export function initHashTable(document, options = {}) {
   strategySelect.value = committedTable.strategy
   capacitySelect.value = String(committedTable.capacity)
 
+  const stepTools = createStepTools(stepToolsRoot, { seek: (index) => simulation.seek(index) })
+
   const simulation = createSimulationController({
-    getDelay: () => Number(speedInput?.value) || DEFAULT_SPEED,
+    getDelay: stepTools.getDelay,
     onChange: render,
     scheduler: options.scheduler,
   })
@@ -586,6 +587,7 @@ export function initHashTable(document, options = {}) {
   }
 
   function render(snapshot) {
+    stepTools.sync(snapshot)
     const step = snapshot.step ?? createIdleStep()
     const layout = renderHashTable(svg, step)
 
@@ -719,10 +721,6 @@ export function initHashTable(document, options = {}) {
       createHashTable(getSelectedCapacity(), getSelectedStrategy()),
       'Đã xóa toàn bộ bảng. Hãy chèn khóa đầu tiên.',
     )
-  })
-
-  speedInput?.addEventListener('input', () => {
-    if (speedValue) speedValue.textContent = `${speedInput.value} ms`
   })
 
   // Rời màn hình mô phỏng thì tạm dừng (giữ nguyên bước hiện tại).

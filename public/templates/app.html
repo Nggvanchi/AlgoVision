@@ -603,14 +603,20 @@
             Tạm dừng
         </button>
 
-        <label class="speed-control" for="sort-speed">
-            Tốc độ
-            <select id="sort-speed">
-            <option value="1200">Chậm</option>
-            <option value="650" selected>Vừa</option>
-            <option value="250">Nhanh</option>
-            </select>
-        </label>
+        </div>
+
+        <div class="step-tools" data-step-tools>
+        <div class="step-slider">
+            <label for="sort-step-slider">Bước</label>
+            <input type="range" id="sort-step-slider" min="0" max="0" value="0" step="1" disabled data-step-slider />
+            <span class="step-label" data-step-label aria-hidden="true">Bước 0/0</span>
+        </div>
+        <div class="speed-group" role="radiogroup" aria-label="Tốc độ">
+            <label class="speed-option"><input type="radio" name="sort-speed" value="0.5" /><span>0,5×</span></label>
+            <label class="speed-option"><input type="radio" name="sort-speed" value="1" checked /><span>1×</span></label>
+            <label class="speed-option"><input type="radio" name="sort-speed" value="2" /><span>2×</span></label>
+            <label class="speed-option"><input type="radio" name="sort-speed" value="4" /><span>4×</span></label>
+        </div>
         </div>
 
         <div class="simulation-stats">
@@ -753,17 +759,18 @@
         </button>
         </div>
 
-        <div class="search-speed-control">
-        <label for="search-speed">Tốc độ chạy</label>
-        <input
-            type="range"
-            id="search-speed"
-            min="100"
-            max="1000"
-            step="100"
-            value="600"
-        />
-        <span id="search-speed-value">600 ms</span>
+        <div class="step-tools" data-step-tools>
+        <div class="step-slider">
+            <label for="search-step-slider">Bước</label>
+            <input type="range" id="search-step-slider" min="0" max="0" value="0" step="1" disabled data-step-slider />
+            <span class="step-label" data-step-label aria-hidden="true">Bước 0/0</span>
+        </div>
+        <div class="speed-group" role="radiogroup" aria-label="Tốc độ">
+            <label class="speed-option"><input type="radio" name="search-speed" value="0.5" /><span>0,5×</span></label>
+            <label class="speed-option"><input type="radio" name="search-speed" value="1" checked /><span>1×</span></label>
+            <label class="speed-option"><input type="radio" name="search-speed" value="2" /><span>2×</span></label>
+            <label class="speed-option"><input type="radio" name="search-speed" value="4" /><span>4×</span></label>
+        </div>
         </div>
 
         <div id="search-comparison" class="search-comparison" hidden>
@@ -1434,17 +1441,18 @@
         </button>
         </div>
 
-        <div class="search-speed-control">
-        <label for="bst-speed">Tốc độ chạy</label>
-        <input
-            type="range"
-            id="bst-speed"
-            min="100"
-            max="1500"
-            step="100"
-            value="700"
-        />
-        <span id="bst-speed-value">700 ms</span>
+        <div class="step-tools" data-step-tools>
+        <div class="step-slider">
+            <label for="bst-step-slider">Bước</label>
+            <input type="range" id="bst-step-slider" min="0" max="0" value="0" step="1" disabled data-step-slider />
+            <span class="step-label" data-step-label aria-hidden="true">Bước 0/0</span>
+        </div>
+        <div class="speed-group" role="radiogroup" aria-label="Tốc độ">
+            <label class="speed-option"><input type="radio" name="bst-speed" value="0.5" /><span>0,5×</span></label>
+            <label class="speed-option"><input type="radio" name="bst-speed" value="1" checked /><span>1×</span></label>
+            <label class="speed-option"><input type="radio" name="bst-speed" value="2" /><span>2×</span></label>
+            <label class="speed-option"><input type="radio" name="bst-speed" value="4" /><span>4×</span></label>
+        </div>
         </div>
 
         <div class="bst-tree-frame" id="bst-tree-frame" role="group" aria-label="Hình vẽ cây BST">
@@ -1668,17 +1676,18 @@
         </button>
         </div>
 
-        <div class="search-speed-control">
-        <label for="hash-table-speed">Tốc độ chạy</label>
-        <input
-            type="range"
-            id="hash-table-speed"
-            min="100"
-            max="1500"
-            step="100"
-            value="700"
-        />
-        <span id="hash-table-speed-value">700 ms</span>
+        <div class="step-tools" data-step-tools>
+        <div class="step-slider">
+            <label for="hash-table-step-slider">Bước</label>
+            <input type="range" id="hash-table-step-slider" min="0" max="0" value="0" step="1" disabled data-step-slider />
+            <span class="step-label" data-step-label aria-hidden="true">Bước 0/0</span>
+        </div>
+        <div class="speed-group" role="radiogroup" aria-label="Tốc độ">
+            <label class="speed-option"><input type="radio" name="hash-table-speed" value="0.5" /><span>0,5×</span></label>
+            <label class="speed-option"><input type="radio" name="hash-table-speed" value="1" checked /><span>1×</span></label>
+            <label class="speed-option"><input type="radio" name="hash-table-speed" value="2" /><span>2×</span></label>
+            <label class="speed-option"><input type="radio" name="hash-table-speed" value="4" /><span>4×</span></label>
+        </div>
         </div>
 
         <div class="hash-table-frame" id="hash-table-frame" role="group" aria-label="Hình vẽ bảng băm">
@@ -1919,17 +1928,18 @@
         </button>
         </div>
 
-        <div class="search-speed-control">
-        <label for="graph-speed">Tốc độ chạy</label>
-        <input
-            type="range"
-            id="graph-speed"
-            min="100"
-            max="1500"
-            step="100"
-            value="700"
-        />
-        <span id="graph-speed-value">700 ms</span>
+        <div class="step-tools" data-step-tools>
+        <div class="step-slider">
+            <label for="graph-step-slider">Bước</label>
+            <input type="range" id="graph-step-slider" min="0" max="0" value="0" step="1" disabled data-step-slider />
+            <span class="step-label" data-step-label aria-hidden="true">Bước 0/0</span>
+        </div>
+        <div class="speed-group" role="radiogroup" aria-label="Tốc độ">
+            <label class="speed-option"><input type="radio" name="graph-speed" value="0.5" /><span>0,5×</span></label>
+            <label class="speed-option"><input type="radio" name="graph-speed" value="1" checked /><span>1×</span></label>
+            <label class="speed-option"><input type="radio" name="graph-speed" value="2" /><span>2×</span></label>
+            <label class="speed-option"><input type="radio" name="graph-speed" value="4" /><span>4×</span></label>
+        </div>
         </div>
 
         <div class="graph-frame" id="graph-frame" role="group" aria-label="Hình vẽ đồ thị">
