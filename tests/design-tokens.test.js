@@ -24,7 +24,7 @@ function resolve(name, seen = new Set()) {
   const alias = /^var\((--[a-z0-9-]+)\)$/i.exec(value)
   return alias ? resolve(alias[1], seen) : value
 }
-// '--purple-active' là rgba (nền mềm Spec): tính màu hiện ra khi trộn lên nền sidebar. Còn lại: #hex hoặc token giải ra #hex.
+// '--av-nav-active-bg' là rgba (nền mềm Spec): tính màu hiện ra khi trộn lên nền sidebar. Còn lại: #hex hoặc token giải ra #hex.
 function colorOf(reference) {
   if (reference.startsWith('#')) return reference
 
@@ -102,8 +102,7 @@ test('countVarUses đếm var(--ten) và không đếm tên khác có chung ti�
 // Redesign R2: token Phase 1/2 thành alias trỏ vào --av-* (nguồn giá trị là khối --av-*, tests/av-tokens.test.js). Test đọc giá trị
 // từ CSS: alias phải đúng là var(--av-x) và giải ra đúng giá trị của --av-x.
 const NEW_ALIASES = [
-  ['--bg-sidebar', '--av-sidebar'], ['--surface-raised', '--av-surface-2'], ['--text-label', '--av-text-subtle'],
-  ['--purple-strong', '--av-primary'], ['--purple-pressed', '--av-primary-hover'], ['--purple-hover', '--av-primary-text'],
+  ['--purple-strong', '--av-primary'], ['--purple-pressed', '--av-primary-hover'],
 ]
 
 for (const [name, target] of NEW_ALIASES) {
@@ -118,14 +117,14 @@ test('token mới --border-control = #6B6B87 (quyết định 9 và 12: viền �
   assert.equal(normalize(tokens.get('--border-control')), '#6b6b87')
 })
 
-test('token --purple-active là nền mềm Spec: rgba của --av-primary-line với alpha 0,18', () => {
+test('token --av-nav-active-bg là nền mềm Spec: rgba của --av-primary-line với alpha 0,18 (thay --purple-active ở R3)', () => {
   const [red, green, blue] = [1, 3, 5].map((at) => Number.parseInt(tokens.get('--av-primary-line').slice(at, at + 2), 16))
-  assert.equal(tokens.get('--purple-active'), `rgba(${red}, ${green}, ${blue}, 0.18)`)
+  assert.equal(tokens.get('--av-nav-active-bg'), `rgba(${red}, ${green}, ${blue}, 0.18)`)
 })
 
 // Token đã gỡ ở R2 (từng là NEW_COLORS/token chưa dùng): không còn trong :root và không luật nào nhắc.
-for (const removed of ['--bg', '--surface', '--purple-soft', '--purple-tint', '--blue', '--success', '--violet']) {
-  test(`token ${removed} đã gỡ ở R2: không còn trong :root, không luật nào tham chiếu`, () => {
+for (const removed of ['--bg', '--surface', '--purple-soft', '--purple-tint', '--blue', '--success', '--violet', '--bg-sidebar', '--surface-raised', '--text-label', '--purple-hover', '--purple-active']) {
+  test(`token ${removed} đã gỡ (R2 hoặc R3): không còn trong :root, không luật nào tham chiếu`, () => {
     assert.ok(!tokens.has(removed), `${removed} phải bị gỡ khỏi :root`)
     assert.equal(countVarUses(css, removed), 0)
   })
@@ -199,7 +198,7 @@ test('3 token cũ không có tương ứng trong Spec giữ nguyên giá trị (
 const ALL_TEMPORARY = [
   '--background', '--panel', '--panel-hover', '--border', '--text', '--muted', '--text-muted', '--purple', '--purple-dark',
   '--border-color', '--card-background', '--text-secondary', '--accent-color', '--surface-secondary', '--surface-color', '--panel-bg',
-  '--bg-sidebar', '--surface-raised', '--text-label', '--purple-strong', '--purple-pressed', '--purple-active', '--purple-hover',
+  '--purple-strong', '--purple-pressed',
 ]
 
 test('mỗi alias tạm có chú thích "tạm, gỡ ở R3..R6" và danh sách alias khớp đúng (gỡ alias nào thì sửa danh sách cùng PR)', () => {
@@ -207,8 +206,8 @@ test('mỗi alias tạm có chú thích "tạm, gỡ ở R3..R6" và danh sách 
   const tagged = [...raw.matchAll(/(--[a-z0-9-]+)\s*:[^;]*;\s*\/\*\s*tạm, gỡ ở R([0-9])/g)].map((match) => [match[1], Number(match[2])])
 
   assert.deepEqual(tagged.map(([name]) => name).sort(), [...ALL_TEMPORARY].sort(), 'danh sách token có chú thích "tạm, gỡ ở R?" phải khớp danh sách alias')
-  assert.ok(tagged.every(([, release]) => release >= 3 && release <= 6), 'alias chỉ được hẹn gỡ ở R3..R6')
-  assert.equal(tagged.length, 23, '23 alias tạm sau R2 (14 trỏ thẳng --av-*, 7 alias của alias, --purple-active và --purple)')
+  assert.ok(tagged.every(([, release]) => release >= 4 && release <= 7), 'alias còn lại chỉ được hẹn gỡ ở R4..R7 (R3 đã gỡ nhóm sidebar)')
+  assert.equal(tagged.length, 18, '18 alias tạm sau R3 (R3 gỡ 5 alias sidebar: --bg-sidebar, --surface-raised, --text-label, --purple-hover, --purple-active; còn 9 trỏ thẳng --av-*, 7 alias của alias, --purple-strong/pressed hẹn R4 và --purple canvas R6)')
   assert.deepEqual(tagged.filter(([name]) => name === '--purple').map(([, release]) => release), [6], '--purple (canvas) hẹn gỡ ở R6')
 })
 
@@ -239,7 +238,7 @@ test('comment trong :root chia token thành CŨ / MỚI ĐANG DÙNG / MỚI CHƯ
   const sections = [namesIn(at[0], at[1]), namesIn(at[1], at[2]), namesIn(at[2], raw.length)]
 
   assert.deepEqual(sections[0], [...Object.keys(OLD_TO_AV), ...Object.keys(OLD_VALUES), ...Object.keys(OLD_ALIASES)].sort(), 'nhóm CŨ phải là 18 token cũ (alias tạm hoặc giữ giá trị riêng)')
-  assert.deepEqual(sections[1], ['--bg-sidebar', '--font-mono', '--font-ui', '--fs-md', '--fs-sm', '--fs-xs', '--purple-active', '--purple-hover', '--purple-pressed', '--purple-strong', '--radius-sm', '--shadow-card', '--sidebar-width', '--sidebar-width-collapsed', '--space-1', '--space-2', '--space-3', '--space-4', '--space-6', '--surface-raised', '--text-label'], 'nhóm MỚI ĐANG DÙNG: 2 token font (Phase 1) và 19 token Phase 2/2b áp vào sidebar và nút chính (--purple-tint đã chuyển sang CHƯA DÙNG)')
+  assert.deepEqual(sections[1], ['--font-mono', '--font-ui', '--fs-md', '--fs-sm', '--fs-xs', '--purple-pressed', '--purple-strong', '--radius-sm', '--shadow-card', '--sidebar-width', '--sidebar-width-collapsed', '--space-1', '--space-2', '--space-3', '--space-4', '--space-6'], 'nhóm MỚI ĐANG DÙNG sau R3: 2 token font, token cỡ chữ/spacing/bo góc/bóng/bề rộng của sidebar và 2 token nút chính (R3 gỡ 5 alias sidebar)')
   assert.deepEqual(sections[2], [...tokens.keys()].filter((name) => !name.startsWith('--av-') && !sections[0].includes(name) && !sections[1].includes(name)).sort(),
     'nhóm MỚI CHƯA DÙNG phải là phần còn lại của :root (trừ khối --av-* đứng riêng trước nhóm CŨ, tests/av-tokens.test.js canh gác)')
   assert.ok(raw.indexOf('TOKEN --av-*') !== -1 && raw.indexOf('TOKEN --av-*') < at[0], 'khối TOKEN --av-* phải đứng trước nhóm CŨ')
@@ -261,7 +260,7 @@ test('token "ĐANG DÙNG" quả thật được ít nhất một luật tham chi
   const names = [...raw.slice(from, raw.indexOf('TOKEN MỚI, CHƯA ĐƯỢC DÙNG')).matchAll(/(--[a-z0-9-]+)\s*:/g)].map((match) => match[1])
   const unused = names.filter((name) => countVarUses(css, name) === 0)
 
-  assert.ok(names.length >= 21, `phải tìm thấy 21 token đang dùng, thấy ${names.length}`)
+  assert.ok(names.length >= 16, `phải tìm thấy 16 token đang dùng (sau R3 gỡ 5 alias sidebar), thấy ${names.length}`)
   assert.deepEqual(unused, [], 'token nằm nhóm ĐANG DÙNG nhưng không luật nào tham chiếu: chuyển về nhóm CHƯA ĐƯỢC DÙNG')
 })
 
@@ -275,18 +274,18 @@ test('token font "ĐANG DÙNG": --font-ui làm font nền của :root, --font-mo
 // ---------------------------------------------------------------------------------------------------------------------
 
 const PAIRS = [
-  ['--text', '--av-bg', 4.5], ['--text', '--av-surface-1', 4.5], ['--text', '--surface-raised', 4.5], ['--text', '--panel', 4.5],
-  ['--muted', '--av-bg', 4.5], ['--muted', '--av-surface-1', 4.5], ['--muted', '--surface-raised', 4.5], ['--muted', '--panel', 4.5], ['--muted', '--background', 4.5],
-  ['--text-label', '--bg-sidebar', 4.5], ['--text-label', '--av-surface-1', 4.5], ['--text-label', '--surface-raised', 4.5],
-  ['--purple', '--av-bg', 4.5], ['--purple', '--av-surface-1', 4.5], ['--purple', '--surface-raised', 4.5], ['--av-primary-text', '--purple-active', 4.5],
-  ['--av-nav-active-text', '--purple-active', 4.5], ['--av-primary-text', '--av-surface-1', 4.5],
+  ['--text', '--av-bg', 4.5], ['--text', '--av-surface-1', 4.5], ['--text', '--av-surface-2', 4.5], ['--text', '--panel', 4.5],
+  ['--muted', '--av-bg', 4.5], ['--muted', '--av-surface-1', 4.5], ['--muted', '--av-surface-2', 4.5], ['--muted', '--panel', 4.5], ['--muted', '--background', 4.5],
+  ['--av-text-subtle', '--av-sidebar', 4.5], ['--av-text-subtle', '--av-surface-1', 4.5], ['--av-text-subtle', '--av-surface-2', 4.5],
+  ['--purple', '--av-bg', 4.5], ['--purple', '--av-surface-1', 4.5], ['--purple', '--av-surface-2', 4.5], ['--av-primary-text', '--av-nav-active-bg', 4.5],
+  ['--av-nav-active-text', '--av-nav-active-bg', 4.5], ['--av-primary-text', '--av-surface-1', 4.5],
   ['#ffffff', '--purple-strong', 4.5], ['#ffffff', '--purple-pressed', 4.5], ['#ffffff', '--purple-dark', 4.5],
   ['--av-bg', '--purple', 4.5],
   ['--bar-cue', '--purple', 3],
   ['--av-accent-text', '--av-surface-1', 4.5], ['--state-active', '--av-surface-1', 4.5], ['--av-success', '--av-surface-1', 4.5],
-  ['--border-control', '--av-surface-1', 3], ['--border-control', '--av-bg', 3], ['--border-control', '--surface-raised', 3],
-  ['--av-nav-active-text', '--purple-active', 9.9], ['--purple-hover', '--purple-active', 3], ['--purple-hover', '--bg-sidebar', 4.5],
-  ['--purple-hover', '--av-surface-1', 4.5], ['--av-primary-line', '--bg-sidebar', 3], ['--av-primary-line', '--av-bg', 3],
+  ['--border-control', '--av-surface-1', 3], ['--border-control', '--av-bg', 3], ['--border-control', '--av-surface-2', 3],
+  ['--av-nav-active-text', '--av-nav-active-bg', 9.9], ['--av-primary-text', '--av-nav-active-bg', 3], ['--av-primary-text', '--av-sidebar', 4.5],
+  ['--av-primary-text', '--av-surface-1', 4.5], ['--av-primary-line', '--av-sidebar', 3], ['--av-primary-line', '--av-bg', 3],
   ['--av-focus', '--av-bg', 3], ['--av-focus', '--av-surface-1', 3],
 ]
 
@@ -298,7 +297,7 @@ for (const [foreground, background, minimum] of PAIRS) {
 }
 
 test('pill active hiện ra đúng bằng --av-primary-line 18% trên --av-sidebar (tính, không gõ tay)', () => {
-  assert.equal(colorOf('--purple-active'), blend(resolve('--av-primary-line'), 0.18, resolve('--av-sidebar')))
+  assert.equal(colorOf('--av-nav-active-bg'), blend(resolve('--av-primary-line'), 0.18, resolve('--av-sidebar')))
 })
 
 test('--av-primary-line chỉ cho icon, viền, chữ lớn: chữ nhỏ trên --av-surface-1 chỉ 4,39:1 và chữ trắng trên nó chỉ 4,23:1 (cả hai dưới 4,5, vì vậy bị cấm)', () => {

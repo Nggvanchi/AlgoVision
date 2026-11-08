@@ -126,6 +126,7 @@
   --av-danger: #F87171;
   --av-focus: #C4B5FD;
   --av-nav-active-text: #DDD6FE;
+  --av-nav-active-bg: rgba(139, 92, 246, 0.18);
   --av-space-1: 4px;
   --av-space-2: 8px;
   --av-space-3: 12px;
@@ -189,18 +190,12 @@
   --sidebar-width: 256px;
   --sidebar-width-collapsed: 72px;
 
-  --bg-sidebar: var(--av-sidebar); /* tạm, gỡ ở R3 */
-  --surface-raised: var(--av-surface-2); /* tạm, gỡ ở R3 */
 
-  --text-label: var(--av-text-subtle); /* tạm, gỡ ở R3 */
 
   /* Tím của sidebar và nút chính. KHÔNG đặt chữ trắng lên --av-primary-line hay --av-primary-text (không đạt 4,5:1 với chữ nhỏ).
-     --purple-active là nền mềm của mục đang mở: rgba(139, 92, 246, 0.18) theo Spec mục 2 (nền mềm nav), chữ --av-nav-active-text.
-     --purple-hover là vạch 3px và icon hover của mục active. */
+     --av-nav-active-bg (khối --av-*) là nền mềm của mục đang mở, chữ --av-nav-active-text; vạch 3px và icon hover dùng --av-primary-text. */
   --purple-strong: var(--av-primary); /* tạm, gỡ ở R4 */
   --purple-pressed: var(--av-primary-hover); /* tạm, gỡ ở R4 */
-  --purple-active: rgba(139, 92, 246, 0.18); /* tạm, gỡ ở R3 */
-  --purple-hover: var(--av-primary-text); /* tạm, gỡ ở R3 */
 
   /* Cỡ chữ */
   --fs-xs: 12px;
@@ -275,7 +270,7 @@ button:disabled {
   flex-direction: column;
   width: var(--sidebar-width);
   padding: var(--space-6) var(--space-2) var(--space-4);
-  background: var(--bg-sidebar);
+  background: var(--av-sidebar);
   border-right: 1px solid var(--border);
 }
 
@@ -359,7 +354,7 @@ button:disabled {
 .section-label {
   margin: 0 0 var(--space-2);
   padding-left: var(--space-3);
-  color: var(--text-label);
+  color: var(--av-text-subtle);
   font-size: var(--fs-xs);
   font-weight: 700;
   letter-spacing: 1px;
@@ -406,17 +401,17 @@ button:disabled {
 
 .nav-item:hover,
 .nav-subitem:hover {
-  background: var(--surface-raised);
+  background: var(--av-surface-2);
   color: var(--text);
 }
 
-/* Mục đang mở: pill bo đều 8px THỤT VÀO 8px so với mép sidebar (padding ngang của .sidebar), nền --purple-active, chữ trắng đậm 600.
-   Khối chỉ 1,83:1 so với nền sidebar nên giữ vạch 3px --purple-hover làm cue ngoài màu dự phòng, cùng aria-current. */
+/* Mục đang mở: pill bo đều 8px THỤT VÀO 8px so với mép sidebar (padding ngang của .sidebar), nền --av-nav-active-bg, chữ --av-nav-active-text đậm 600.
+   Khối chỉ 1,2:1 so với nền sidebar nên giữ vạch 3px --av-primary-text làm cue ngoài màu dự phòng, cùng aria-current. */
 .nav-item.active,
 .nav-subitem.active {
   border-radius: var(--radius-sm);
-  background: var(--purple-active);
-  box-shadow: inset 3px 0 0 var(--purple-hover);
+  background: var(--av-nav-active-bg);
+  box-shadow: inset 3px 0 0 var(--av-primary-text);
   color: var(--av-nav-active-text);
   font-weight: 600;
 }
@@ -464,7 +459,7 @@ button:disabled {
 
 .nav-item:not(.active):hover .nav-icon,
 .nav-subitem:not(.active):hover .nav-icon {
-  color: var(--purple-hover);
+  color: var(--av-primary-text);
 }
 
 /* Thanh trên chỉ có ở <= 700px (ẩn ở màn hình rộng). Nút menu là icon SVG của sprite (ba vạch), không phụ thuộc glyph của font. */
@@ -473,7 +468,7 @@ button:disabled {
   align-items: center;
   gap: var(--space-2);
   padding: 0 var(--space-2);
-  background: var(--bg-sidebar);
+  background: var(--av-sidebar);
   border-bottom: 1px solid var(--border);
 }
 
@@ -526,7 +521,7 @@ button:disabled {
 }
 
 .sidebar-collapse:hover {
-  background: var(--surface-raised);
+  background: var(--av-surface-2);
   color: var(--text);
 }
 
@@ -538,7 +533,7 @@ button:disabled {
   padding: var(--space-1) var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: var(--surface-raised);
+  background: var(--av-surface-2);
   box-shadow: var(--shadow-card);
   color: var(--text);
   font-size: var(--fs-sm);

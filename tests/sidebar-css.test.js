@@ -53,11 +53,11 @@ function colorOf(expression) {
     const value = resolveToken(reference[1])
     const translucent = /^rgba\(\s*(\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/i.exec(value)
 
-    // Nền mềm của mục active (--purple-active, Spec mục 2: rgba) hiện ra trên nền sidebar: tính màu sau khi trộn.
+    // Nền mềm của mục active (--av-nav-active-bg, Spec mục 12: rgba) hiện ra trên nền sidebar: tính màu sau khi trộn.
     if (translucent) {
       const [red, green, blue] = translucent.slice(1, 4).map(Number)
       const hex = `#${[red, green, blue].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`
-      return blend(hex, Number(translucent[4]), resolveToken('--bg-sidebar'))
+      return blend(hex, Number(translucent[4]), resolveToken('--av-sidebar'))
     }
 
     return value
@@ -131,20 +131,20 @@ test('không luật nào ngoài @media (min-width: 701px) nhắc is-sidebar-coll
 // Màu, tương phản, cỡ chữ
 // ---------------------------------------------------------------------------------------------------------------------
 
-test('nền sidebar là --bg-sidebar; nhãn nhóm --text-label (6,00:1), chữ mục --muted, mục hover --text trên --surface-raised', () => {
+test('nền sidebar là --av-sidebar; nhãn nhóm --av-text-subtle, chữ mục --muted, mục hover --text trên --av-surface-2', () => {
   const background = requireValue('.sidebar', 'background')
 
-  assert.equal(background, 'var(--bg-sidebar)')
-  assert.equal(requireValue('.section-label', 'color'), 'var(--text-label)')
+  assert.equal(background, 'var(--av-sidebar)')
+  assert.equal(requireValue('.section-label', 'color'), 'var(--av-text-subtle)')
   assert.equal(requireValue('.nav-item', 'color'), 'var(--muted)')
   assert.equal(requireValue('.nav-subitem', 'color'), 'var(--muted)')
-  assert.equal(requireValue('.nav-item:hover', 'background'), 'var(--surface-raised)')
-  assert.equal(requireValue('.nav-subitem:hover', 'background'), 'var(--surface-raised)')
+  assert.equal(requireValue('.nav-item:hover', 'background'), 'var(--av-surface-2)')
+  assert.equal(requireValue('.nav-subitem:hover', 'background'), 'var(--av-surface-2)')
   assert.equal(requireValue('.nav-item:hover', 'color'), 'var(--text)')
 })
 
-const SIDEBAR_BG = 'var(--bg-sidebar)'
-const ACTIVE_BG = 'var(--purple-active)'
+const SIDEBAR_BG = 'var(--av-sidebar)'
+const ACTIVE_BG = 'var(--av-nav-active-bg)'
 const TEXT_PAIRS = [
   ['nhãn nhóm', () => requireValue('.section-label', 'color'), () => SIDEBAR_BG, 4.5],
   ['chữ mục thường', () => requireValue('.nav-item', 'color'), () => SIDEBAR_BG, 4.5],
@@ -154,7 +154,7 @@ const TEXT_PAIRS = [
   ['chữ mục con active', () => requireValue('.nav-subitem.active', 'color'), () => requireValue('.nav-subitem.active', 'background'), 4.5],
   ['icon mục active (kế thừa chữ trắng)', () => requireValue('.nav-item.active', 'color'), () => ACTIVE_BG, 4.5],
   ['icon mục con active (kế thừa chữ trắng)', () => requireValue('.nav-subitem.active', 'color'), () => ACTIVE_BG, 4.5],
-  ['icon hover --purple-hover', () => requireValue('.nav-item:not(.active):hover .nav-icon', 'color'), () => requireValue('.nav-item:hover', 'background'), 4.5],
+  ['icon hover --av-primary-text', () => requireValue('.nav-item:not(.active):hover .nav-icon', 'color'), () => requireValue('.nav-item:hover', 'background'), 4.5],
   ['chữ trên nút thu gọn', () => requireValue('.sidebar-collapse', 'color'), () => SIDEBAR_BG, 4.5],
   ['chữ tooltip', () => requireValue('.sidebar-tooltip', 'color'), () => requireValue('.sidebar-tooltip', 'background'), 4.5],
   ['chữ nút ☰', () => requireValue('.menu-button', 'color'), () => requireValue('.mobile-bar', 'background'), 4.5],
@@ -170,14 +170,14 @@ for (const [name, foreground, background, minimum] of TEXT_PAIRS) {
   })
 }
 
-test('mục active là pill nền --purple-active, giữ vạch trái 3px --purple-hover (cue dự phòng: khối chỉ 1,83:1 so với nền sidebar); vạch đạt >= 3:1 với khối và với nền sidebar', () => {
+test('mục active là pill nền --av-nav-active-bg, giữ vạch trái 3px --av-primary-text (cue dự phòng: khối chỉ 1,83:1 so với nền sidebar); vạch đạt >= 3:1 với khối và với nền sidebar', () => {
   for (const selector of ['.nav-item.active', '.nav-subitem.active']) {
-    assert.equal(requireValue(selector, 'background'), 'var(--purple-active)')
-    assert.equal(requireValue(selector, 'box-shadow'), 'inset 3px 0 0 var(--purple-hover)', `${selector}: vạch trái 3px`)
+    assert.equal(requireValue(selector, 'background'), 'var(--av-nav-active-bg)')
+    assert.equal(requireValue(selector, 'box-shadow'), 'inset 3px 0 0 var(--av-primary-text)', `${selector}: vạch trái 3px`)
   }
 
-  assert.ok(ratio('var(--purple-hover)', SIDEBAR_BG) >= 3)
-  assert.ok(ratio('var(--purple-hover)', ACTIVE_BG) >= 3)
+  assert.ok(ratio('var(--av-primary-text)', SIDEBAR_BG) >= 3)
+  assert.ok(ratio('var(--av-primary-text)', ACTIVE_BG) >= 3)
   assert.ok(ratio(ACTIVE_BG, SIDEBAR_BG) < 3, 'khối active một mình KHÔNG đủ 3:1 so với nền sidebar, nên bắt buộc còn cue ngoài màu')
 })
 
@@ -229,10 +229,10 @@ test('logo .brand-icon: icon lưới nét mảnh màu --av-primary-text, KHÔNG 
   assert.ok(ratio('var(--av-primary-text)', SIDEBAR_BG) >= 4.5)
 })
 
-test('mục active dùng chữ --av-nav-active-text (Spec; 11,51:1 trên nền pill --purple-active), không chỉ "vừa đủ 4,5"', () => {
+test('mục active dùng chữ --av-nav-active-text (Spec; 11,51:1 trên nền pill --av-nav-active-bg), không chỉ "vừa đủ 4,5"', () => {
   assert.equal(requireValue('.nav-item.active', 'color'), 'var(--av-nav-active-text)')
   assert.equal(requireValue('.nav-subitem.active', 'color'), 'var(--av-nav-active-text)')
-  assert.ok(ratio('var(--av-nav-active-text)', 'var(--purple-active)') >= 9.9)
+  assert.ok(ratio('var(--av-nav-active-text)', 'var(--av-nav-active-bg)') >= 9.9)
 })
 
 test('.sidebar rộng đúng var(--sidebar-width) (không gõ chết số), nên đổi token là đổi cả sidebar lẫn bài kiểm bề rộng', () => {
@@ -428,7 +428,7 @@ test('mọi token cỡ chữ/spacing/bo góc được dùng trong sidebar đều
 
   for (const rule of sheet.rules) {
     for (const declaration of rule.declarations) {
-      for (const match of declaration.value.matchAll(/var\((--(?:fs|space|radius|sidebar|bg-sidebar|surface-raised|text-label|purple-active|purple-hover|purple-strong|purple-pressed)[a-z0-9-]*)\)/g)) used.add(match[1])
+      for (const match of declaration.value.matchAll(/var\((--(?:fs|space|radius|sidebar|purple-strong|purple-pressed)[a-z0-9-]*)\)/g)) used.add(match[1])
     }
   }
 
