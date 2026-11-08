@@ -47,7 +47,11 @@ for (const item of CARDS) {
       assert.equal(card.getAttribute('type'), 'button')
       assert.equal(textOf(card.querySelector('h4')), item.title, 'h4 là nguồn nhãn cho breadcrumb và tiêu đề')
       assert.ok(card.querySelector('.card-top .algorithm-symbol') !== null, 'biểu tượng thuật toán nằm trong .card-top')
-      assert.equal(textOf(card.querySelector('.card-top .difficulty')), item.difficulty, 'nhãn độ khó giữ nguyên')
+      // R5c: badge có thêm chữ ẩn "Độ khó:" và ký hiệu aria-hidden (Spec mục 6), nên so phần CHỮ HIỂN THỊ; ký hiệu và chữ ẩn có test riêng (library-difficulty.test.js).
+      const badge = card.querySelector('.card-top .difficulty').cloneNode(true)
+
+      badge.querySelectorAll('.visually-hidden, .difficulty-symbol').forEach((node) => node.remove())
+      assert.equal(textOf(badge), item.difficulty, 'nhãn độ khó giữ nguyên')
       assert.ok(textOf(card.querySelector(':scope > p')).length > 20, 'có đoạn mô tả')
     })
   })
