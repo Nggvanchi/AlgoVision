@@ -195,8 +195,6 @@
 
   /* Tím của sidebar và nút chính. KHÔNG đặt chữ trắng lên --av-primary-line hay --av-primary-text (không đạt 4,5:1 với chữ nhỏ).
      --av-nav-active-bg (khối --av-*) là nền mềm của mục đang mở, chữ --av-nav-active-text; vạch 3px và icon hover dùng --av-primary-text. */
-  --purple-strong: var(--av-primary); /* tạm, gỡ ở R4 */
-  --purple-pressed: var(--av-primary-hover); /* tạm, gỡ ở R4 */
 
   /* Cỡ chữ */
   --fs-xs: 12px;
@@ -216,11 +214,13 @@
   /* Bóng (tooltip của sidebar thu gọn) */
   --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35);
 
-  /* === TOKEN MỚI, CHƯA ĐƯỢC DÙNG ===
-     Chỉ ĐỊNH NGHĨA; chưa luật nào tham chiếu (tests/design-tokens.test.js canh gác). */
   /* Viền của điều khiển (ô nhập, nút): đạt 3:1 trên nền (quyết định 9 và 12: giữ nguyên, KHÔNG dùng --av-border-strong #2E2E44
-     chỉ 1,41:1). --border (token cũ) chỉ để trang trí. Chưa luật nào dùng: ô nhập/select hiện viết màu cứng (xem docs/backlog.md). */
+     chỉ 1,41:1). --border (token cũ) chỉ để trang trí. R4: nút viền ở hero Dashboard là chỗ dùng đầu tiên; ô nhập/select
+     còn viết màu cứng (xem docs/backlog.md). */
   --border-control: #6B6B87;
+
+  /* === TOKEN MỚI, CHƯA ĐƯỢC DÙNG ===
+     Chỉ ĐỊNH NGHĨA; chưa luật nào tham chiếu (tests/design-tokens.test.js canh gác). Hiện rỗng sau R4. */
 }
 
 * {
@@ -2598,39 +2598,54 @@ button.structure-card:focus-visible,
 .dashboard-section {
   display: flex;
   flex-direction: column;
-  gap: 36px;
+  gap: 28px;
   padding-top: 28px;
 }
 
 .dashboard-hero {
-  padding: 28px 0 8px;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 32px;
+  align-items: center;
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--panel);
 }
 
 .dashboard-hero h2 {
   max-width: 720px;
   margin: 14px 0 18px;
-  font-size: clamp(30px, 4vw, 44px);
+  font-size: var(--av-fs-hero);
   line-height: 1.2;
-  letter-spacing: -1px;
+  letter-spacing: -0.02em;
 }
 
 .dashboard-description {
   max-width: 760px;
   margin: 0 0 24px;
   color: var(--text-muted);
-  font-size: 16px;
-  line-height: 1.8;
+  font-size: var(--av-fs-body);
+  line-height: 1.7;
 }
 
-.dashboard-primary-button {
+.dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.dashboard-primary-button,
+.dashboard-outline-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
+  min-height: 44px;
   padding: 12px 20px;
-  border: 1px solid var(--purple-strong);
-  border-radius: 10px;
-  background: var(--purple-strong);
+  border: 1px solid var(--av-primary);
+  border-radius: var(--av-radius-control);
+  background: var(--av-primary);
   color: #fff;
   font: inherit;
   font-weight: 600;
@@ -2640,20 +2655,125 @@ button.structure-card:focus-visible,
 
 .dashboard-primary-button:hover {
   transform: translateY(-2px);
-  border-color: var(--purple-pressed);
-  background: var(--purple-pressed);
+  border-color: var(--av-primary-hover);
+  background: var(--av-primary-hover);
+}
+
+/* Nút viền: viền điều khiển là --border-control (quyết định 12), nền trong suốt, hover nền --av-surface-2 */
+.dashboard-outline-button {
+  border-color: var(--border-control);
+  background: transparent;
+  color: var(--text);
+}
+
+.dashboard-outline-button:hover {
+  background: var(--av-surface-2);
+}
+
+/* Bảng minh họa Bubble Sort: dữ liệu và số bước lấy từ chính generateBubbleSortSteps (tests/dashboard-demo.test.js khóa), gắn nhãn "Minh họa". */
+.dashboard-demo {
+  margin: 0;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--av-bg);
+}
+
+.dashboard-demo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: var(--av-fs-caption);
+}
+
+.dashboard-demo-badge {
+  padding: 2px 10px;
+  border: 1px dashed var(--av-border-dashed);
+  border-radius: 999px;
+  color: var(--av-text-muted);
+  font-size: var(--av-fs-label);
+  font-weight: 600;
+}
+
+.dashboard-demo-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.demo-bar {
+  fill: var(--av-primary-line);
+}
+
+.demo-bar.is-swapped {
+  fill: #ff8c9b;
+}
+
+.dashboard-demo-text {
+  fill: var(--av-text-muted);
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.dashboard-demo-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: var(--av-fs-label);
+}
+
+@media (max-width: 900px) {
+  .dashboard-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .dashboard-hero {
+    padding: 20px 16px;
+  }
+
+  .dashboard-hero h2 {
+    font-size: var(--av-fs-page);
+  }
+
+  .dashboard-demo {
+    display: none;
+  }
+
+  .dashboard-primary-button,
+  .dashboard-outline-button {
+    min-height: 48px;
+  }
 }
 
 .dashboard-content {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 4px;
+}
+
+.dashboard-text-link {
+  min-height: 44px;
+  padding: 10px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--av-primary-text);
+  font: inherit;
+  font-size: var(--av-fs-body-sm);
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
 }
 
 .dashboard-card {
@@ -2664,7 +2784,7 @@ button.structure-card:focus-visible,
   min-width: 0;
   padding: 22px;
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 16px;
   background: var(--panel);
   color: var(--text);
   font: inherit;
@@ -2683,16 +2803,20 @@ button.dashboard-card:hover {
   transform: translateY(-3px);
 }
 
-.dashboard-card-icon {
-  display: grid;
-  width: 42px;
-  height: 42px;
-  place-items: center;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: rgba(139, 92, 246, 0.12);
-  color: var(--av-primary-text);
-  font-size: 22px;
+.dashboard-card .card-top {
+  width: 100%;
+  min-height: 26px;
+  margin-bottom: 0;
+}
+
+.dashboard-card .card-footer {
+  width: 100%;
+  margin-top: auto;
+}
+
+.dashboard-card-kind {
+  color: var(--muted);
+  font-size: var(--av-fs-caption);
 }
 
 .dashboard-card-title {
@@ -2706,45 +2830,88 @@ button.dashboard-card:hover {
   line-height: 1.7;
 }
 
-.dashboard-card-link {
-  margin-top: 4px;
-  color: var(--av-primary-text);
-  font-size: var(--av-fs-body-sm);
+.dashboard-quick {
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--panel);
+}
+
+.dashboard-quick h3 {
+  margin: 0 0 16px;
+  font-size: var(--av-fs-card);
+}
+
+.dashboard-quick-groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+}
+
+.dashboard-quick h4 {
+  margin: 0 0 10px;
+  color: var(--av-text-muted);
+  font-size: var(--av-fs-caption);
   font-weight: 600;
 }
 
-.dashboard-card-upcoming {
-  opacity: 0.8;
+.dashboard-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.dashboard-card-status {
-  padding: 5px 10px;
-  border: 1px solid var(--border);
+.dashboard-chip {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--border-control);
   border-radius: 999px;
-  color: var(--text-muted);
-  font-size: var(--av-fs-label);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--av-fs-caption);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.dashboard-chip:hover {
+  border-color: var(--av-primary-line);
+  background: var(--av-surface-2);
+}
+
+.dashboard-chip-blue:hover {
+  border-color: var(--av-accent);
+}
+
+/* Đặt SAU luật gốc của .dashboard-grid (cùng độ ưu tiên, luật sau thắng). */
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 700px) {
   .dashboard-section {
-    gap: 28px;
+    gap: 24px;
     padding-top: 18px;
   }
 
-  .dashboard-hero {
-    padding-top: 16px;
-  }
-
-  .dashboard-hero h2 {
-    font-size: 30px;
-  }
-
-  .dashboard-grid {
+  .dashboard-grid,
+  .dashboard-quick-groups {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .dashboard-card {
-    padding: 18px;
+  .dashboard-quick-algorithms {
+    display: none;
+  }
+
+  .dashboard-card,
+  .dashboard-quick {
+    padding: 16px;
   }
 }
 

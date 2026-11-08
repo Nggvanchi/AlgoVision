@@ -96,83 +96,130 @@
     
     <section id="dashboard-section" class="dashboard-section" hidden>
         <div class="dashboard-hero">
-            <p class="eyebrow">KHÔNG GIAN HỌC TẬP DSA</p>
-            <h2>Hiểu thuật toán.<br> Làm chủ cấu trúc dữ liệu.</h2>
-            <p class="dashboard-description">
-                Khám phá cách thuật toán hoạt động qua từng bước,
-                thực hành với dữ liệu trực quan và xây dựng nền tảng
-                tư duy giải quyết vấn đề.
-            </p>
-            <button
-                class="dashboard-primary-button"
-                data-dashboard-target="sorting"
-            >
-                <span id="dashboard-hero-label">Bắt đầu học</span>
-                <span aria-hidden="true">→</span>
-            </button>
-        </div>
-
-        <section class="dashboard-content">
-            <div class="section-heading">
-                <div>
-                    <h3>Khám phá kiến thức</h3>
-                    <p>Chọn một chủ đề để bắt đầu thực hành.</p>
+            <div class="dashboard-hero-text">
+                <p class="eyebrow">KHÔNG GIAN HỌC TẬP DSA</p>
+                <h2>Nhìn thấy thuật toán chạy từng bước.</h2>
+                <p class="dashboard-description">
+                    Khám phá cách thuật toán hoạt động qua từng bước,
+                    thực hành với dữ liệu trực quan và xây dựng nền tảng
+                    tư duy giải quyết vấn đề.
+                </p>
+                <div class="dashboard-actions">
+                    <button type="button" class="dashboard-primary-button" data-dashboard-open="sorting:bubble">
+                        <span>Mở trực quan hóa</span>
+                        <span aria-hidden="true">→</span>
+                    </button>
+                    <button type="button" class="dashboard-outline-button" data-dashboard-target="sorting">Xem thư viện</button>
                 </div>
             </div>
 
+            <figure class="dashboard-demo">
+                <figcaption class="dashboard-demo-head">
+                    <span>Bubble Sort · Bước 3/31</span>
+                    <span class="dashboard-demo-badge">Minh họa</span>
+                </figcaption>
+                <svg class="dashboard-demo-chart" viewBox="0 0 240 130" role="img" aria-label="Minh họa Bubble Sort, bước 3 trên 31: mảng 3, 5, 8, 1, 6, 2; hai cột đầu vừa đổi chỗ.">
+                    <g class="dashboard-demo-bars">
+                        <rect class="demo-bar is-swapped" x="10" y="67" width="28" height="33" rx="4"/>
+                        <rect class="demo-bar is-swapped" x="50" y="45" width="28" height="55" rx="4"/>
+                        <rect class="demo-bar" x="90" y="12" width="28" height="88" rx="4"/>
+                        <rect class="demo-bar" x="130" y="89" width="28" height="11" rx="4"/>
+                        <rect class="demo-bar" x="170" y="34" width="28" height="66" rx="4"/>
+                        <rect class="demo-bar" x="210" y="78" width="28" height="22" rx="4"/>
+                    </g>
+                    <g class="dashboard-demo-text" text-anchor="middle">
+                        <text x="24" y="62">3</text>
+                        <text x="64" y="40">5</text>
+                        <text x="104" y="7">8</text>
+                        <text x="144" y="84">1</text>
+                        <text x="184" y="29">6</text>
+                        <text x="224" y="73">2</text>
+                        <text x="24" y="117">▣</text>
+                        <text x="64" y="117">▣</text>
+                    </g>
+                </svg>
+                <p class="dashboard-demo-legend">
+                    <span>■ Đang so sánh</span>
+                    <span>▣ Đã đổi chỗ</span>
+                    <span>◆ Đã sắp xếp</span>
+                </p>
+            </figure>
+        </div>
+
+        <section class="dashboard-content" aria-labelledby="dashboard-featured-title">
+            <div class="section-heading">
+                <div>
+                    <h3 id="dashboard-featured-title">Nội dung nổi bật</h3>
+                    <p>Ba thuật toán nên thử đầu tiên.</p>
+                </div>
+                <button type="button" class="dashboard-text-link" data-dashboard-target="sorting">Xem thư viện →</button>
+            </div>
+
             <div class="dashboard-grid">
-                <button
-                    class="dashboard-card"
-                    data-dashboard-target="sorting"
-                >
-                    <span class="dashboard-card-icon">↕</span>
-                    <span class="dashboard-card-title">Sắp xếp</span>
-                    <span class="dashboard-card-description">
-                        Tìm hiểu cách sắp xếp dữ liệu và so sánh
-                        hiệu quả giữa các thuật toán.
+                <button type="button" class="dashboard-card" data-dashboard-open="sorting:bubble">
+                    <span class="card-top">
+                        <span class="difficulty easy">CƠ BẢN</span>
+                        <span class="dashboard-card-kind">Sắp xếp</span>
                     </span>
-                    <span class="dashboard-card-link">Khám phá →</span>
+                    <span class="dashboard-card-title">Bubble Sort</span>
+                    <span class="dashboard-card-description">So sánh các phần tử liền kề và đổi chỗ khi cần thiết.</span>
+                    <span class="card-footer">
+                        <span class="card-metric"><span>Thời gian (xấu nhất)</span><code>O(n²)</code></span>
+                        <span class="card-metric"><span>Bộ nhớ</span><code>O(1)</code></span>
+                    </span>
                 </button>
 
-                <button
-                    class="dashboard-card"
-                    data-dashboard-target="searching"
-                >
-                    <span class="dashboard-card-icon">⌕</span>
-                    <span class="dashboard-card-title">Tìm kiếm</span>
-                    <span class="dashboard-card-description">
-                        Quan sát cách thuật toán tìm kiếm xác định
-                        vị trí của một phần tử.
+                <button type="button" class="dashboard-card" data-dashboard-open="searching:binary">
+                    <span class="card-top">
+                        <span class="difficulty medium">TRUNG BÌNH</span>
+                        <span class="dashboard-card-kind">Tìm kiếm</span>
                     </span>
-                    <span class="dashboard-card-link">Khám phá →</span>
+                    <span class="dashboard-card-title">Binary Search</span>
+                    <span class="dashboard-card-description">Chia đôi phạm vi tìm kiếm trên mảng đã được sắp xếp.</span>
+                    <span class="card-footer">
+                        <span class="card-metric"><span>Thời gian (xấu nhất)</span><code>O(log n)</code></span>
+                        <span class="card-metric"><span>Bộ nhớ</span><code>O(1)</code></span>
+                    </span>
                 </button>
 
-                <button
-                    class="dashboard-card"
-                    data-dashboard-target="structures"
-                >
-                    <span class="dashboard-card-icon">▤</span>
-                    <span class="dashboard-card-title">Cấu trúc dữ liệu</span>
-                    <span class="dashboard-card-description">
-                        Thực hành với Array, Stack, Queue, Linked List,
-                        Binary Search Tree, Hash Table và Graph
-                        qua các thao tác thực tế.
+                <button type="button" class="dashboard-card" data-dashboard-open="structure:graph:bfs">
+                    <span class="card-top">
+                        <span class="dashboard-card-kind">Đồ thị</span>
                     </span>
-                    <span class="dashboard-card-link">Khám phá →</span>
+                    <span class="dashboard-card-title">Duyệt đồ thị BFS</span>
+                    <span class="dashboard-card-description">Duyệt theo từng lớp từ đỉnh nguồn bằng hàng đợi, tìm khoảng cách ngắn nhất theo số cạnh.</span>
+                    <span class="card-footer">
+                        <span class="card-metric"><span>Thời gian (danh sách kề)</span><code>O(V + E)</code></span>
+                        <span class="card-metric"><span>Bộ nhớ</span><code>O(V)</code></span>
+                    </span>
                 </button>
-
-                <article class="dashboard-card dashboard-card-upcoming">
-                    <span class="dashboard-card-icon">{ }</span>
-                    <span class="dashboard-card-title">Thuật toán nâng cao</span>
-                    <span class="dashboard-card-description">
-                        Định hướng học Đệ quy, Chia để trị,
-                        Quay lui và Quy hoạch động.
-                    </span>
-                    <span class="dashboard-card-status">Sẽ phát triển</span>
-                </article>
             </div>
         </section>
 
+        <section class="dashboard-quick" aria-labelledby="dashboard-quick-title">
+            <h3 id="dashboard-quick-title">Truy cập nhanh</h3>
+            <div class="dashboard-quick-groups">
+                <div class="dashboard-quick-group dashboard-quick-structures">
+                    <h4>Cấu trúc dữ liệu</h4>
+                    <ul class="dashboard-chips">
+                        <li><button type="button" class="dashboard-chip" data-dashboard-open="structure:array">Array</button></li>
+                        <li><button type="button" class="dashboard-chip" data-dashboard-open="structure:stack">Stack</button></li>
+                        <li><button type="button" class="dashboard-chip" data-dashboard-open="structure:queue">Queue</button></li>
+                        <li><button type="button" class="dashboard-chip" data-dashboard-open="structure:linked-list">Linked List</button></li>
+                        <li><button type="button" class="dashboard-chip" data-dashboard-open="structure:bst">Binary Search Tree</button></li>
+                        <li><button type="button" class="dashboard-chip" data-dashboard-open="structure:hash-table">Hash Table</button></li>
+                        <li><button type="button" class="dashboard-chip" data-dashboard-open="structure:graph">Graph</button></li>
+                    </ul>
+                </div>
+                <div class="dashboard-quick-group dashboard-quick-algorithms">
+                    <h4>Giải thuật</h4>
+                    <ul class="dashboard-chips">
+                        <li><button type="button" class="dashboard-chip dashboard-chip-blue" data-dashboard-target="sorting">Sắp xếp</button></li>
+                        <li><button type="button" class="dashboard-chip dashboard-chip-blue" data-dashboard-target="searching">Tìm kiếm</button></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
     </section>
 
     <section class="page-heading">

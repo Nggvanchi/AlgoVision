@@ -230,6 +230,33 @@ export function initNavigation(document) {
     })
   })
 
+  // Thẻ và chip của Dashboard mở thẳng một màn chi tiết: data-dashboard-open="<loại>:<tên>[:<thao tác>]" (sorting:bubble, searching:binary,
+  // structure:graph:bfs). Đi qua chính thẻ thư viện / mục con có sẵn nên mỗi lần mở chỉ phát MỘT viewchange (topic của màn chi tiết).
+  function openTopic(spec) {
+    const [kind, name, operation] = spec.split(':')
+
+    if (kind === 'structure') {
+      renderPage('structures')
+      openStructure(name)
+
+      const select = operation ? document.querySelector(`#${name}-operation`) : null
+
+      if (select) {
+        select.value = operation
+        select.dispatchEvent(new (document.defaultView?.Event ?? Event)('change', { bubbles: true }))
+      }
+
+      return
+    }
+
+    renderPage(kind)
+    document.querySelector(kind === 'sorting' ? `.algorithm-card[data-algorithm="${name}"]` : `[data-search-algorithm="${name}"]`)?.click()
+  }
+
+  document.querySelectorAll('[data-dashboard-open]').forEach((element) => {
+    element.addEventListener('click', () => openTopic(element.dataset.dashboardOpen))
+  })
+
   document.querySelectorAll('.algorithm-card[data-algorithm]').forEach((card) => {
     card.addEventListener('click', () => showSortingDetail(card.dataset.algorithm))
   })

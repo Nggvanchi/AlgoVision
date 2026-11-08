@@ -18,7 +18,8 @@ function withTemplate(run) {
 
 const normalize = (text) => text.replace(/\s+/g, ' ').trim()
 
-test('thẻ "Cấu trúc dữ liệu" trên Tổng quan nhắc đủ mọi cấu trúc có trong thư viện', () => {
+// R4: thẻ "Cấu trúc dữ liệu" (mô tả liệt kê tên) được thay bằng nhóm chip "Truy cập nhanh": mỗi cấu trúc một chip.
+test('nhóm chip "Cấu trúc dữ liệu" trên Tổng quan có đủ mọi cấu trúc của thư viện', () => {
   withTemplate((document) => {
     const library = [...document.querySelectorAll('#structure-library .structure-card-title')]
       .map((title) => normalize(title.textContent))
@@ -26,11 +27,10 @@ test('thẻ "Cấu trúc dữ liệu" trên Tổng quan nhắc đủ mọi cấu
       'Array', 'Stack', 'Queue', 'Linked List', 'Binary Search Tree', 'Hash Table', 'Graph',
     ], 'thư viện cấu trúc phải có đúng 7 thẻ theo thứ tự này')
 
-    const card = document.querySelector('.dashboard-card[data-dashboard-target="structures"]')
-    assert.ok(card !== null, 'phải có thẻ dashboard trỏ tới "structures"')
-    const description = normalize(card.querySelector('.dashboard-card-description').textContent)
+    const chips = [...document.querySelectorAll('#dashboard-section .dashboard-quick-structures .dashboard-chip')].map((chip) => normalize(chip.textContent))
     for (const name of library) {
-      assert.ok(description.includes(name), `mô tả thẻ "Cấu trúc dữ liệu" thiếu "${name}": "${description}"`)
+      assert.ok(chips.includes(name), `nhóm chip cấu trúc thiếu "${name}": ${chips.join(', ')}`)
     }
+    assert.equal(chips.length, library.length, 'số chip phải bằng số thẻ thư viện')
   })
 })
