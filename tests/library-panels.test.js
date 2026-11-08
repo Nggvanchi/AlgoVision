@@ -32,7 +32,7 @@ test('hai panel chứa đúng các section thư viện, đứng sau .page-headin
 
     assert.ok(structure !== null && algorithm !== null, 'thiếu #structure-panel hoặc #algorithm-panel')
     assert.deepEqual([...structure.children].map((child) => child.id), ['structure-library'])
-    assert.deepEqual([...algorithm.children].map((child) => child.id), ['sorting-algorithm-library', 'search-algorithm-library'])
+    assert.deepEqual([...algorithm.children].map((child) => child.id), ['sorting-algorithm-library', 'search-algorithm-library', 'graph-algorithm-library'])
 
     const order = [...document.querySelectorAll('.page-heading, #structure-panel, #algorithm-panel, #sorting-section, #search-section, #array-section')].map((element) => element.id || element.className)
 
