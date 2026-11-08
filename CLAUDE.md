@@ -19,11 +19,11 @@ Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so v�
 Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
 - Đo 2026-11-07 trên Windows 11 x64 (Node v24.21.0, pnpm 12.5.1). Baseline trước Phase 4 đo trên Ubuntu/Linux x64 (Node v26.13.0, pnpm 12.16.1).
-- `pnpm test`: 1444/1444 pass, 0 fail, 0 skipped, khoảng 26 s (đo sau R4, Windows; `main` trước R4: 1415 test; Ubuntu trước đây 16–23 s).
-- `pnpm build` sau R4: JS 146,81 kB (146.811 B; gzip 42,64 kB), CSS 52,67 kB (52.667 B; gzip 10,30 kB), HTML 0,75 kB (746 B). So với `main` trước R4 (146.358 B / 50.399 B): JS +453 B, CSS +2.268 B.
-  Ngưỡng hiện hành (trần riêng của PR R4 `feat/dashboard-v1`, theo dự toán của người dùng): JS <= 147,0 kB (gzip <= 43,0), CSS <= 53,0 kB (gzip <= 10,5). JS dư 189 B, CSS dư 333 B.
+- `pnpm test`: 1482/1482 pass, 0 fail, 0 skipped, khoảng 31 s (đo sau R5a, Windows; `main` trước R5a: 1444 test; Ubuntu trước đây 16–23 s).
+- `pnpm build` sau R5a: JS 147,96 kB (147.962 B; gzip 43,03 kB), CSS 53,23 kB (53.226 B; gzip 10,38 kB), HTML 0,75 kB (746 B). So với `main` trước R5a (146.811 B / 52.667 B): JS +1.151 B, CSS +559 B.
+  Ngưỡng hiện hành (trần riêng của PR R5a `feat/library-tabs`, đã duyệt): JS <= 148,0 kB (gzip <= 43,5), CSS <= 53,5 kB (gzip <= 10,5). JS dư 38 B, CSS dư 274 B.
   Trần cuối cho toàn Redesign (ước tính, người dùng đặt): JS <= 158 kB (gzip <= 46), CSS <= 64 kB (gzip <= 12,8). Trần của PR trước không áp cho PR sau: mỗi PR đo và đặt trần riêng.
-  Ngưỡng trước R4 (trần riêng của R3): JS <= 147,0 kB (gzip <= 43,0), CSS <= 51,0 kB (gzip <= 10,5); số đo sau R3: 1415 test, JS 146.358 B, CSS 50.399 B. Ngưỡng trước R3 (trần riêng của R2): JS <= 146,0 kB (gzip <= 42,5), CSS <= 51,0 kB (gzip <= 10,5); trước nữa (sau khi gỡ Tiến độ học tập): CSS <= 49,5 kB (gzip <= 10,0). Đã duyệt hạ ngưỡng từ mức Phase 4 (JS 160 kB / gzip 47,0; CSS 52,5 kB / gzip 10,5) vì PR `chore/remove-learning-progress` gỡ mã và CSS của tiến độ
+  Ngưỡng trước R5a (trần riêng của R4): JS <= 147,0 kB (gzip <= 43,0), CSS <= 53,0 kB (gzip <= 10,5); số đo sau R4: 1444 test, JS 146.811 B, CSS 52.667 B. Ngưỡng trước R4 (trần riêng của R3): JS <= 147,0 kB (gzip <= 43,0), CSS <= 51,0 kB (gzip <= 10,5); số đo sau R3: 1415 test, JS 146.358 B, CSS 50.399 B. Ngưỡng trước R3 (trần riêng của R2): JS <= 146,0 kB (gzip <= 42,5), CSS <= 51,0 kB (gzip <= 10,5); trước nữa (sau khi gỡ Tiến độ học tập): CSS <= 49,5 kB (gzip <= 10,0). Đã duyệt hạ ngưỡng từ mức Phase 4 (JS 160 kB / gzip 47,0; CSS 52,5 kB / gzip 10,5) vì PR `chore/remove-learning-progress` gỡ mã và CSS của tiến độ
   (JS -13,6 kB, CSS -3,1 kB so với `main` trước PR). Redesign v1.0: mỗi PR cần trần bundle riêng, duyệt ở bước lập kế hoạch; không nâng ngưỡng khi chưa được duyệt.
 - Font tự host: `public/fonts` có 10 woff2 = 172.912 B (ngưỡng 175 kB) và 2 giấy phép OFL; không nằm trong bundle JS/CSS.
 
@@ -40,14 +40,15 @@ Chi tiết từng module (trường bước, công thức số bước, bất bi
 - Các lớp của một module mới (BST, Hash Table, Graph): cấu trúc thuần `src/structures/*` → sinh bước `src/algorithms/*`
   → bố cục `src/*-layout.js` → view → controller `init*(document, { scheduler })` → template.
 - Mã thuần sinh mảng bước; mỗi bước ứng với một thao tác mã giả, lưu dữ liệu, tầng hiển thị lo định dạng chữ.
-- `src/simulation-controller.js`: bộ điều khiển mô phỏng dùng chung cho Sorting và Searching
+- `src/simulation-controller.js`: bộ điều khiển mô phỏng dùng chung cho Sorting, Searching, BST, Hash Table và Graph (cả năm module có bước)
   (state `idle | running | paused | completed`, một timer duy nhất, scheduler inject được).
 - `src/pseudocode-view.js`: `renderPseudocode` và `highlightPseudocodeLine`, dùng chung cho Sorting, Searching, BST, Hash Table, Graph.
 - Sự kiện `algovision:viewchange` (`CustomEvent` trên `document`, `detail: { page, topic }`): `navigation.js` phát khi đổi trang hoặc
   mở/đóng màn hình chi tiết; visualizer tự `pause()` khi bị ẩn. `topic` là id chủ đề (`sorting:bubble`, `searching:linear`,
   `structure:bst`) khi mở màn chi tiết, `null` ở dashboard, thư viện và khi bấm Quay lại. Hiện không mã nào trong `src` đọc `topic` (chỉ test đọc; xem `docs/backlog.md`).
+- Thư viện (Redesign R5a): hai tab "Cấu trúc dữ liệu" (trang `structures`) và "Giải thuật" (trang `algorithms`: Sắp xếp, Tìm kiếm, Duyệt đồ thị BFS/DFS); thanh tab `.library-tabs` (ARIA tabs, ←/→/Home/End) chỉ hiện ở hai trang này; KHÔNG có mục sidebar "Thư viện" (quyết định 22). Mở chi tiết từ trang Giải thuật thì "Quay lại" về trang đó (`libraryOrigin` trong `navigation.js`). Chi tiết: `docs/architecture.md`.
 - Sidebar (Redesign Phase 2, R3): nhãn gốc "HỌC TẬP" rồi `<nav aria-label="Điều hướng chính">` trong `aside#sidebar` với hai nhóm (THUẬT TOÁN; CẤU TRÚC DỮ LIỆU có "Tất cả cấu trúc" và 7 mục con
-  `button.nav-subitem[data-structure-nav]` do `navigation.js` sinh từ `[data-structure-target]`). `aria-current="page"` đúng MỘT phần tử. `src/sidebar.js`
+  `button.nav-subitem[data-structure-nav]` do `navigation.js` sinh từ `[data-structure-target]`). `aria-current="page"` đúng MỘT phần tử của sidebar (trừ trang Giải thuật: sidebar không có mục active, chỉ breadcrumb có `aria-current`; quyết định 25). `src/sidebar.js`
   (`initSidebar`, gọi sau `initNavigation`): thu gọn 72px (nút `#sidebar-collapse` ở >= 1280px; rail 72px TỰ ĐỘNG ở 768–1279px, nút bị ẩn; tooltip) và drawer <= 767px (nút `#sidebar-toggle`, `inert`, trả focus);
   trạng thái chỉ trong bộ nhớ, KHÔNG `localStorage` (`tests/meta/no-web-storage.test.js` canh gác; nếu Redesign duyệt nhớ trạng thái thu gọn thì sửa test đó cùng PR). `.main-content` viết số 256px / `0 40px` trực tiếp vì test R12 đọc bằng regex. Chi tiết: `docs/architecture.md`.
 - Không có theo dõi tiến độ học tập (Spec v1.0 mục 16–17): đã gỡ trang Tiến độ, khối tiến độ ở Dashboard, nhãn Đã mở/Chưa mở trên thẻ và kho `localStorage`. App không lưu gì vào trình duyệt
@@ -115,7 +116,7 @@ Chạy `/resume-check`.
 
 ## Thiết kế UI
 
-Đọc `docs/design/spec.md` (Spec Redesign v1.0, chép từ PDF) và `docs/design/decisions.md` (17 quyết định đã chốt) trước khi sửa UI. Hai quy tắc sản phẩm: (a) không theo dõi tiến độ cá nhân, không thêm lại Tiến độ học tập, nhãn Đã mở hay lịch sử truy cập; (b) không số giả, dữ liệu hiển thị phải là dữ liệu thật hoặc gắn nhãn "Minh họa".
+Đọc `docs/design/spec.md` (Spec Redesign v1.0, chép từ PDF) và `docs/design/decisions.md` (24 quyết định đã chốt, đánh số 1–25, bỏ số 18 dành cho chủ đề mới) trước khi sửa UI. Hai quy tắc sản phẩm: (a) không theo dõi tiến độ cá nhân, không thêm lại Tiến độ học tập, nhãn Đã mở hay lịch sử truy cập; (b) không số giả, dữ liệu hiển thị phải là dữ liệu thật hoặc gắn nhãn "Minh họa".
 
 ## Roadmap
 
@@ -123,4 +124,4 @@ Chạy `/resume-check`.
 
 ## Còn tồn tại
 
-`docs/backlog.md` (nhóm: lỗi, hiệu năng, giao diện, dọn dẹp, công cụ).
+`docs/backlog.md` (nhóm: lỗi, hiệu năng, giao diện, nội dung học thuật, dọn dẹp, công cụ).

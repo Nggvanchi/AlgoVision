@@ -5,6 +5,7 @@ const pages = {
   sorting: { title: 'Thuật toán sắp xếp' },
   searching: { title: 'Thuật toán tìm kiếm' },
   structures: { title: 'Cấu trúc dữ liệu' },
+  algorithms: { title: 'Giải thuật' },
 }
 
 const BREADCRUMB_ROOT = 'AlgoVision'
@@ -38,6 +39,11 @@ export function initNavigation(document) {
   const searchVisualizer = document.querySelector('#search-section')
 
   const structureLibrary = document.querySelector('#structure-library')
+  const graphLibrary = document.querySelector('#graph-algorithm-library')
+  const libraryTabs = document.querySelector('.library-tabs')
+  const libraryTabButtons = [...document.querySelectorAll('.library-tab')]
+  // Hai panel bọc các section thư viện; panel ẩn khi mọi section con ẩn (không để lại vùng rỗng trong cây trợ năng).
+  const libraryPanels = [document.querySelector('#structure-panel'), document.querySelector('#algorithm-panel')]
   const structureCards = [...document.querySelectorAll('[data-structure-target]')]
   // Mỗi thẻ data-structure-target="x" mở section #x-section; thêm cấu trúc mới không cần sửa file này.
   // Thẻ không có section tương ứng bị bỏ qua khi click (thư viện giữ nguyên).
@@ -52,6 +58,9 @@ export function initNavigation(document) {
   let structureNavItems = []
 
   let currentPage = 'dashboard'
+  // Mở một màn chi tiết từ trang Giải thuật (thư viện gộp) thì nhớ để nút Quay lại về đúng trang đó; null khi mở từ nơi khác.
+  // renderPage xóa giá trị này, nên đi đường khác (sidebar, Dashboard) không để lại nơi xuất phát cũ.
+  let libraryOrigin = null
   // Cấu trúc đang mở ở màn chi tiết (null ở thư viện và mọi trang khác). Quyết định mục con nào active/aria-current.
   let currentStructure = null
   // Nhãn của thuật toán/cấu trúc đang mở ở màn chi tiết (null ở thư viện và trang khác); lấy từ chính DOM, không có danh sách thứ hai.
@@ -69,6 +78,7 @@ export function initNavigation(document) {
     searchLibrary.hidden = true
     searchVisualizer.hidden = true
     structureLibrary.hidden = true
+    graphLibrary.hidden = true
     structureSections.forEach((section) => {
       section.hidden = true
     })
@@ -99,7 +109,23 @@ export function initNavigation(document) {
   }
 
   // Breadcrumb (chỉ chữ, mục cuối đậm) và document.title theo màn hình hiện tại. Không phát sự kiện nào.
+  // Thanh tab chỉ hiện ở thư viện Cấu trúc và trang Giải thuật; tab đang chọn là tab trùng tên trang (aria-selected + roving tabindex).
+  function syncLibraryTabs() {
+    libraryTabs.hidden = !(currentPage === 'algorithms' || (currentPage === 'structures' && !structureLibrary.hidden))
+    libraryTabButtons.forEach((tab) => {
+      const selected = tab.dataset.libraryTab === currentPage
+
+      tab.setAttribute('aria-selected', String(selected))
+      tab.tabIndex = selected ? 0 : -1
+    })
+  }
+
   function renderTopbar() {
+    syncLibraryTabs()
+    libraryPanels.forEach((panel) => {
+      panel.hidden = [...panel.children].every((child) => child.hidden)
+    })
+
     const labels = [BREADCRUMB_ROOT, pages[currentPage].title]
 
     if (currentDetail !== null) labels.push(currentDetail)
@@ -152,6 +178,7 @@ export function initNavigation(document) {
     currentPage = pageName
     currentStructure = null
     currentDetail = null
+    libraryOrigin = null
 
     hideAllSections()
     updateNavigation()
@@ -178,10 +205,27 @@ export function initNavigation(document) {
     if (pageName === 'structures') {
       structureLibrary.hidden = false
     }
+
+    if (pageName === 'algorithms') {
+      sortingLibrary.hidden = false
+      searchLibrary.hidden = false
+      graphLibrary.hidden = false
+    }
+  }
+
+  // Mở chi tiết từ trang Giải thuật: chuyển sang trang của thuật toán (không phát sự kiện) rồi nhớ nơi xuất phát.
+  // Trả về false nếu đang ở một trang khác (thẻ ẩn, không có gì để mở).
+  function enterFrom(page) {
+    if (currentPage === 'algorithms') {
+      renderPage(page)
+      libraryOrigin = 'algorithms'
+    }
+
+    return currentPage === page
   }
 
   function showSortingDetail(algorithm) {
-    if (currentPage !== 'sorting') return
+    if (!enterFrom('sorting')) return
 
     sortingLibrary.hidden = true
     sortingVisualizer.hidden = false
@@ -191,6 +235,7 @@ export function initNavigation(document) {
 
   function showSortingLibrary() {
     if (currentPage !== 'sorting') return
+    if (libraryOrigin === 'algorithms') return showPage('algorithms')
 
     sortingVisualizer.hidden = true
     sortingLibrary.hidden = false
@@ -201,7 +246,7 @@ export function initNavigation(document) {
   const searchLabel = (algorithm) => textOf(document.querySelector(`[data-search-algorithm="${algorithm}"] h4`), algorithm)
 
   function showSearchingDetail(algorithm) {
-    if (currentPage !== 'searching') return
+    if (!enterFrom('searching')) return
 
     searchLibrary.hidden = true
     searchVisualizer.hidden = false
@@ -211,6 +256,7 @@ export function initNavigation(document) {
 
   function showSearchingLibrary() {
     if (currentPage !== 'searching') return
+    if (libraryOrigin === 'algorithms') return showPage('algorithms')
 
     searchVisualizer.hidden = true
     searchLibrary.hidden = false
@@ -254,7 +300,12 @@ export function initNavigation(document) {
   }
 
   document.querySelectorAll('[data-dashboard-open]').forEach((element) => {
-    element.addEventListener('click', () => openTopic(element.dataset.dashboardOpen))
+    element.addEventListener('click', () => {
+      const fromAlgorithms = currentPage === 'algorithms'
+
+      openTopic(element.dataset.dashboardOpen)
+      if (fromAlgorithms) libraryOrigin = 'algorithms'
+    })
   })
 
   document.querySelectorAll('.algorithm-card[data-algorithm]').forEach((card) => {
@@ -310,6 +361,7 @@ export function initNavigation(document) {
       section.hidden = sectionTarget !== target
     })
     currentStructure = target
+    libraryOrigin = null
     currentDetail = textOf(structureNavItems.find((item) => item.dataset.structureNav === target)?.querySelector('.nav-label'), target)
     updateNavigation()
     notifyViewChange(topicId('structure', target))
@@ -368,9 +420,33 @@ export function initNavigation(document) {
 
   renderStructureNav()
 
+  // Mẫu tabs của ARIA: ←/→ (vòng), Home, End chuyển tab và kích hoạt ngay; focus theo tab vừa chọn.
+  function selectLibraryTab(tab) {
+    tab.focus()
+
+    if (tab.dataset.libraryTab !== currentPage) showPage(tab.dataset.libraryTab)
+  }
+
+  libraryTabButtons.forEach((tab, index) => {
+    const last = libraryTabButtons.length - 1
+
+    tab.addEventListener('click', () => selectLibraryTab(tab))
+
+    tab.addEventListener('keydown', (event) => {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
+
+      const target = { ArrowRight: index === last ? 0 : index + 1, ArrowLeft: index === 0 ? last : index - 1, Home: 0, End: last }[event.key]
+
+      if (target === undefined) return
+
+      event.preventDefault()
+      selectLibraryTab(libraryTabButtons[target])
+    })
+  })
+
   document.querySelectorAll('[data-back-to-structures]').forEach((button) => {
     button.addEventListener('click', () => {
-      showPage('structures')
+      showPage(libraryOrigin === 'algorithms' ? 'algorithms' : 'structures')
     })
   })
 

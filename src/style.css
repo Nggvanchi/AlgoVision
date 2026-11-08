@@ -2915,6 +2915,52 @@ button.dashboard-card:hover {
   }
 }
 
+/* Thư viện (R5a): thanh tab, panel Giải thuật, nhãn kiểu của thẻ duyệt đồ thị */
+.library-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.library-tab {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.library-tab:hover {
+  color: var(--text);
+}
+
+.library-tab[aria-selected="true"] {
+  border-bottom-color: var(--av-primary-line);
+  color: var(--text);
+}
+
+#algorithm-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.algorithm-card-kind {
+  color: var(--muted);
+  font-size: var(--av-fs-caption);
+}
+
+@media (max-width: 700px) {
+  .library-tab {
+    flex: 1;
+  }
+}
+
 /* ===== Binary Search Tree ===== */
 .bst-toolbar,
 .bst-presets {
