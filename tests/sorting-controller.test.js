@@ -4,6 +4,7 @@ import assert from 'node:assert/strict'
 import { Window } from 'happy-dom'
 import { readFile } from 'node:fs/promises'
 import { createFakeScheduler } from './helpers/fake-scheduler.js'
+import { BASE_DELAY } from '../src/step-tools.js'
 import { generateBubbleSortSteps } from '../src/algorithms/bubbleSort.js'
 import { generateSelectionSortSteps } from '../src/algorithms/selectionSort.js'
 import { generateInsertionSortSteps } from '../src/algorithms/insertionSort.js'
@@ -128,7 +129,7 @@ function getSortingControls(document) {
     next: document.querySelector('#step-sort'),
     previous: document.querySelector('#previous-step'),
     reset: document.querySelector('#reset-sort'),
-    speed: document.querySelector('#sort-speed'),
+    speed: document.querySelector('input[name="sort-speed"][value="4"]'),
     stepCount: document.querySelector('#step-count'),
   }
 }
@@ -218,16 +219,16 @@ test('đổi tốc độ khi đang chạy không tạo lại timer, áp dụng t
 
     controls.run.click()
 
-    controls.speed.value = '250'
+    controls.speed.checked = true
     controls.speed.dispatchEvent(
       new document.defaultView.Event('change', { bubbles: true }),
     )
 
     scheduler.advance(650)
-    scheduler.advance(250)
+    scheduler.advance(650 / 4)
 
     assert.equal(controls.stepCount.textContent.startsWith('3 / '), true)
-    assert.deepEqual(scheduler.scheduledDelays.slice(0, 3), [650, 250, 250])
+    assert.deepEqual(scheduler.scheduledDelays.slice(0, 3), [650, 650 / 4, 650 / 4])
     assert.equal(scheduler.cancelCount, 0)
   }, { scheduler })
 })
@@ -326,9 +327,7 @@ test('Sorting chạy tự động thì dòng được tô đi theo từng tick',
     clickSortingCard(document, 'insertion')
     document.querySelector('#run-sort').click()
 
-    const speed = Number(document.querySelector('#sort-speed').value)
-
-    scheduler.advance(speed)
+    scheduler.advance(BASE_DELAY)
 
     // Bước 1 của Insertion Sort luôn là phép so sánh đầu tiên (dòng 4), bất kể dữ liệu.
     assert.deepEqual(getActivePseudocodeLines(document), [{ line: 4, ariaCurrent: 'step' }])

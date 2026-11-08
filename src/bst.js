@@ -1,5 +1,6 @@
 import { createSimulationController } from './simulation-controller.js'
 import { renderPseudocode, highlightPseudocodeLine } from './pseudocode-view.js'
+import { createStepTools } from './step-tools.js'
 import { computeTreeLayout, TREE_LAYOUT } from './tree-layout.js'
 import {
   buildTree,
@@ -23,7 +24,6 @@ const SVG_NS = 'http://www.w3.org/2000/svg'
 const MAX_NODES = 15
 const MIN_VALUE = 1
 const MAX_VALUE = 99
-const DEFAULT_SPEED = 700
 
 const BALANCED_PRESET = [50, 30, 70, 20, 40, 60, 80]
 const DEGENERATE_PRESET = Array.from({ length: MAX_NODES }, (_, index) => index + 1)
@@ -287,8 +287,7 @@ export function initBst(document, options = {}) {
   const balancedButton = $('#bst-preset-balanced')
   const degenerateButton = $('#bst-preset-degenerate')
   const clearButton = $('#bst-clear')
-  const speedInput = $('#bst-speed')
-  const speedValue = $('#bst-speed-value')
+  const stepToolsRoot = $('#bst-section [data-step-tools]')
   const treeFrame = $('#bst-tree-frame')
   const treeSvg = $('#bst-tree')
   const emptyMessage = $('#bst-empty')
@@ -325,7 +324,7 @@ export function initBst(document, options = {}) {
   }
 
   const requiredElements = [
-    section, operationSelect, valueInput, applyButton, treeSvg,
+    stepToolsRoot, section, operationSelect, valueInput, applyButton, treeSvg,
     resetButton, previousButton, nextButton, runButton, pauseButton, message,
   ]
 
@@ -339,8 +338,10 @@ export function initBst(document, options = {}) {
   let idleMessage = IDLE_MESSAGE
   let renderedOperation = null
 
+  const stepTools = createStepTools(stepToolsRoot, { seek: (index) => simulation.seek(index) })
+
   const simulation = createSimulationController({
-    getDelay: () => Number(speedInput?.value) || DEFAULT_SPEED,
+    getDelay: stepTools.getDelay,
     onChange: render,
     scheduler: options.scheduler,
   })
@@ -439,6 +440,7 @@ export function initBst(document, options = {}) {
   }
 
   function render(snapshot) {
+    stepTools.sync(snapshot)
     const step = snapshot.step ?? createIdleStep()
 
     renderTree(step)
@@ -545,10 +547,6 @@ export function initBst(document, options = {}) {
 
   clearButton?.addEventListener('click', () => {
     loadTree(createTree(), 'Đã xóa toàn bộ cây. Hãy chèn giá trị đầu tiên.')
-  })
-
-  speedInput?.addEventListener('input', () => {
-    if (speedValue) speedValue.textContent = `${speedInput.value} ms`
   })
 
   // Rời màn hình mô phỏng thì tạm dừng (giữ nguyên bước hiện tại).

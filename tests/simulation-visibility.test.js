@@ -7,14 +7,16 @@ import { initNavigation } from '../src/navigation.js'
 import { initSorting } from '../src/sorting.js'
 import { initSearching } from '../src/searching.js'
 import { createFakeScheduler } from './helpers/fake-scheduler.js'
+import { BASE_DELAY } from '../src/step-tools.js'
 
 const template = await readFile(
   new URL('../public/templates/app.html', import.meta.url),
   'utf8',
 )
 
-const SORT_DELAY = 650
-const SEARCH_DELAY = 600
+// Từ R6a mọi visualizer dùng chung một mức 1× (BASE_DELAY), không còn 600 ms riêng của Tìm kiếm.
+const SORT_DELAY = BASE_DELAY
+const SEARCH_DELAY = BASE_DELAY
 
 async function withApp(run) {
   const window = new Window()

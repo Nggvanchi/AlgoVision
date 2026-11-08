@@ -2,6 +2,7 @@ import { createSimulationController } from './simulation-controller.js'
 import { generateLinearSearchSteps, linearSearchPseudocode } from './algorithms/linearSearch.js'
 import { generateBinarySearchSteps, binarySearchPseudocode } from './algorithms/binarySearch.js'
 import { renderPseudocode, highlightPseudocodeLine } from './pseudocode-view.js'
+import { createStepTools } from './step-tools.js'
 
 // Big-O và mô tả phải khớp generator: so sánh được đếm ở mỗi lần xét A[i] hoặc A[mid].
 const searchAlgorithmInfo = {
@@ -55,8 +56,7 @@ export function initSearching(options = {}) {
   const searchAlgorithmSelect = document.querySelector('#search-algorithm')
   const searchMessage = document.querySelector('#search-message')
   const searchComparisons = document.querySelector('#search-comparisons')
-  const searchSpeedInput = document.querySelector('#search-speed')
-  const searchSpeedValue = document.querySelector('#search-speed-value')
+  const stepToolsRoot = document.querySelector('#search-section [data-step-tools]')
   const searchResult = document.querySelector('#search-result')
   const searchTargetValue = document.querySelector('#search-target-value')
   const searchCurrentValue = document.querySelector('#search-current-value')
@@ -92,7 +92,7 @@ export function initSearching(options = {}) {
     searchAlgorithmSelect,
     searchMessage,
     searchComparisons,
-    searchSpeedInput,
+    stepToolsRoot,
     searchNextButton,
     searchPreviousButton,
     searchRunButton,
@@ -107,7 +107,7 @@ export function initSearching(options = {}) {
   }
 
 
-  const DEFAULT_SPEED = 600
+  const stepTools = createStepTools(stepToolsRoot, { seek: (index) => simulation.seek(index) })
   const IDLE_MESSAGE = 'Nhập giá trị cần tìm, sau đó bắt đầu mô phỏng.'
   const stepGenerators = {
     linear: generateLinearSearchSteps,
@@ -121,7 +121,7 @@ export function initSearching(options = {}) {
     : []
 
   const simulation = createSimulationController({
-    getDelay: getSearchDelay,
+    getDelay: stepTools.getDelay, // đọc tốc độ ở mỗi tick nên đổi tốc độ không tạo lại timer
     onChange: renderSearch,
     scheduler: options.scheduler,
   })
@@ -140,13 +140,6 @@ export function initSearching(options = {}) {
     const target = Number(value)
 
     return Number.isFinite(target) ? target : null
-  }
-
-  // Đọc tốc độ ở mỗi tick nên kéo thanh tốc độ không tạo lại timer.
-  function getSearchDelay() {
-    const speed = Number(searchSpeedInput.value)
-
-    return Number.isFinite(speed) && speed > 0 ? speed : DEFAULT_SPEED
   }
 
   function getRunLabel(runMode) {
@@ -333,7 +326,8 @@ export function initSearching(options = {}) {
     }
   }
 
-  function renderSearch({ step = createIdleStep(), controls }) {
+  function renderSearch({ step = createIdleStep(), stepIndex, stepCount, controls }) {
+    stepTools.sync({ stepIndex, stepCount })
     renderSearchArray(step)
     renderSearchRange(step)
     renderSearchResult(step)
@@ -532,12 +526,6 @@ export function initSearching(options = {}) {
     createSearchArray()
   })
 
-  searchSpeedInput.addEventListener('input', () => {
-    if (searchSpeedValue) {
-      searchSpeedValue.textContent = `${searchSpeedInput.value} ms`
-    }
-  })
-
   if (searchCompareButton && searchComparison) {
     searchComparison.hidden = true
     searchCompareButton.setAttribute('aria-expanded', 'false')
@@ -560,10 +548,6 @@ export function initSearching(options = {}) {
       searchComparison.hidden = false
       searchCompareButton.setAttribute('aria-expanded', 'true')
     })
-  }
-
-  if (searchSpeedValue) {
-    searchSpeedValue.textContent = `${searchSpeedInput.value} ms`
   }
 
   renderAlgorithmInfo()

@@ -176,7 +176,7 @@ const OLD_TO_AV = {
 const OLD_VALUES = { '--purple': '#9b82ff', '--state-active': '#f6c76a', '--bar-cue': '#0d0f15' }
 const OLD_ALIASES = {
   '--text-muted': 'var(--muted)', '--border-color': 'var(--border)', '--card-background': 'var(--panel)',
-  '--text-secondary': 'var(--muted)', '--accent-color': 'var(--av-primary-text)', '--surface-secondary': 'var(--panel)',
+  '--text-secondary': 'var(--muted)', '--surface-secondary': 'var(--panel)',
   '--surface-color': 'var(--panel-hover)', '--panel-bg': 'var(--panel)',
 }
 
@@ -195,7 +195,7 @@ test('3 token cũ không có tương ứng trong Spec giữ nguyên giá trị (
 // Alias tạm: mỗi alias có chú thích "tạm, gỡ ở R<n>" ngay trên dòng khai báo; số alias chỉ được GIẢM khi một PR gỡ chúng.
 const ALL_TEMPORARY = [
   '--background', '--panel', '--panel-hover', '--border', '--text', '--muted', '--text-muted', '--purple', '--purple-dark',
-  '--border-color', '--card-background', '--text-secondary', '--accent-color', '--surface-secondary', '--surface-color', '--panel-bg',
+  '--border-color', '--card-background', '--text-secondary', '--surface-secondary', '--surface-color', '--panel-bg',
 ]
 
 test('mỗi alias tạm có chú thích "tạm, gỡ ở R3..R6" và danh sách alias khớp đúng (gỡ alias nào thì sửa danh sách cùng PR)', () => {
@@ -204,11 +204,11 @@ test('mỗi alias tạm có chú thích "tạm, gỡ ở R3..R6" và danh sách 
 
   assert.deepEqual(tagged.map(([name]) => name).sort(), [...ALL_TEMPORARY].sort(), 'danh sách token có chú thích "tạm, gỡ ở R?" phải khớp danh sách alias')
   assert.ok(tagged.every(([, release]) => release >= 4 && release <= 7), 'alias còn lại chỉ được hẹn gỡ ở R4..R7 (R3 đã gỡ nhóm sidebar)')
-  assert.equal(tagged.length, 16, '16 alias tạm sau R4 (R4 gỡ --purple-strong, --purple-pressed; còn 9 trỏ thẳng --av-*, 7 alias của alias; --purple canvas hẹn R6)')
+  assert.equal(tagged.length, 15, '15 alias tạm sau R6a (R4 gỡ --purple-strong, --purple-pressed; R6a gỡ --accent-color vì thanh trượt cũ đã bỏ; --purple canvas hẹn R6)')
   assert.deepEqual(tagged.filter(([name]) => name === '--purple').map(([, release]) => release), [6], '--purple (canvas) hẹn gỡ ở R6')
 })
 
-test('8 alias cũ còn đủ và trỏ đúng token gốc cũ; mọi alias trỏ tới token có thật', () => {
+test('7 alias cũ còn đủ và trỏ đúng token gốc cũ; mọi alias trỏ tới token có thật', () => {
   const actual = Object.fromEntries(Object.keys(OLD_ALIASES).map((name) => [name, tokens.get(name) ?? '(thiếu)']))
   assert.deepEqual(actual, OLD_ALIASES)
 
@@ -324,7 +324,7 @@ test('cấm chữ trắng trên --purple: tỉ lệ thật dưới 4,5 (vì vậ
 const WHITE_ON_PURPLE_KNOWN = []
 
 function whiteOnPurpleRules() {
-  const purple = new Set(['var(--purple)', 'var(--accent-color)', 'var(--av-primary-line)', 'var(--av-primary-text)', resolve('--purple').toLowerCase()])
+  const purple = new Set(['var(--purple)', 'var(--av-primary-line)', 'var(--av-primary-text)', resolve('--purple').toLowerCase()])
   const white = new Set(['#fff', '#ffffff', 'white'])
 
   return sheet.rules
@@ -516,7 +516,6 @@ test(':root dùng var(--font-ui) làm font nền', () => {
 
 const HEX_TO_TOKEN = [
   ['.size-control select', 'color', '#e8eaf2', '--text'],
-  ['.speed-control select', 'color', '#e8eaf2', '--text'],
   ['.complexity-heading h4', 'color', '#e8eaf2', '--text'],
   ['.visualizer-heading p', 'color', '#9298ad', '--muted'],
   ['.stat-card span', 'color', '#9298ad', '--muted'],

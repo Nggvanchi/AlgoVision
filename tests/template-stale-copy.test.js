@@ -44,9 +44,10 @@ test('trang Sắp xếp không còn khung "Khu vực mô phỏng" và bộ mô p
     const headings = [...section.querySelectorAll('h3')].map((h) => h.textContent.trim())
     assert.ok(!headings.includes('Khu vực mô phỏng'), `#sorting-section không còn h3 "Khu vực mô phỏng": ${JSON.stringify(headings)}`)
     assert.ok(section.querySelector('.visualizer-tag') === null, '#sorting-section không còn nhãn trạng thái (PREVIEW)')
-    for (const id of ['array-bars', 'run-sort', 'step-sort', 'reset-sort', 'sort-speed']) {
+    for (const id of ['array-bars', 'run-sort', 'step-sort', 'reset-sort', 'sort-step-slider']) {
       assert.ok(section.querySelector('#' + id) !== null, `bộ mô phỏng thật phải còn #${id} trong #sorting-section`)
     }
+    assert.ok(section.querySelector('[role="radiogroup"][aria-label="Tốc độ"]') !== null, 'nhóm tốc độ phải còn trong #sorting-section')
   } finally {
     window.happyDOM.close()
   }
