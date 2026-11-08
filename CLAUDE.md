@@ -19,9 +19,10 @@ Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so v�
 Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
 
 - Đo 2026-11-07 trên Windows 11 x64 (Node v24.21.0, pnpm 12.5.1). Baseline trước Phase 4 đo trên Ubuntu/Linux x64 (Node v26.13.0, pnpm 12.16.1).
-- `pnpm test`: 1580/1580 pass, 0 fail, 0 skipped, khoảng 31–39 s tùy tải máy (đo sau `feat/controller-seek`, Windows; `main` trước PR: 1547 test; Ubuntu trước đây 16–23 s).
-- `pnpm build` sau `feat/controller-seek`: JS 149,90 kB (149.903 B; gzip 43,63 kB), CSS 55,08 kB (55.079 B; gzip 10,67 kB), HTML 0,75 kB (746 B). So với `main` trước PR (149.708 B / 55.079 B): JS +195 B, CSS 0 B.
-  Ngưỡng hiện hành (trần riêng của PR `feat/controller-seek`, đo bản mẫu rồi làm tròn lên 0,5 kB): JS <= 150,0 kB (gzip <= 44,0), CSS <= 55,5 kB (gzip <= 11,0). JS dư 97 B, CSS dư 421 B.
+- `pnpm test`: 1626/1626 pass, 0 fail, 0 skipped, khoảng 31–39 s tùy tải máy (đo sau R6a, Windows; `main` trước R6a: 1580 test; Ubuntu trước đây 16–23 s).
+- `pnpm build` sau R6a: JS 150,22 kB (150.223 B; gzip 43,79 kB), CSS 56,48 kB (56.483 B; gzip 10,93 kB), HTML 0,75 kB (746 B). So với `main` trước R6a (149.903 B / 55.079 B): JS +320 B, CSS +1.404 B.
+  Ngưỡng hiện hành (trần riêng của PR R6a `feat/visualizer-controls`, ƯỚC TÍNH không qua bản mẫu rồi làm tròn lên 0,5 kB): JS <= 151,5 kB (gzip <= 44,5), CSS <= 56,5 kB (gzip <= 11,5). JS dư 1.277 B, CSS dư 17 B (đã phải rút gọn CSS nhiều lần để vào trần).
+  Ngưỡng trước R6a (trần riêng của `feat/controller-seek`): JS <= 150,0 kB (gzip <= 44,0), CSS <= 55,5 kB (gzip <= 11,0); số đo sau PR đó: 1580 test, JS 149.903 B, CSS 55.079 B.
   Trần cuối cho toàn Redesign (ước tính, người dùng đặt): JS <= 158 kB (gzip <= 46), CSS <= 64 kB (gzip <= 12,8). Trần của PR trước không áp cho PR sau: mỗi PR đo và đặt trần riêng.
   Ngưỡng trước `feat/controller-seek` (trần riêng của R5c): JS <= 150,0 kB (gzip <= 44,0), CSS <= 55,5 kB (gzip <= 11,0); số đo sau R5c: 1547 test, JS 149.708 B, CSS 55.079 B. Ngưỡng trước R5c (trần riêng của R5b): JS <= 150,0 kB (gzip <= 44,0), CSS <= 55,0 kB (gzip <= 11,0); số đo sau R5b: 1527 test, JS 149.716 B, CSS 54.576 B. Ngưỡng trước R5b (trần riêng của R5a): JS <= 148,0 kB (gzip <= 43,5), CSS <= 53,5 kB (gzip <= 10,5); số đo sau R5a: 1482 test, JS 147.962 B, CSS 53.226 B. Ngưỡng trước R5a (trần riêng của R4): JS <= 147,0 kB (gzip <= 43,0), CSS <= 53,0 kB (gzip <= 10,5); số đo sau R4: 1444 test, JS 146.811 B, CSS 52.667 B. Ngưỡng trước R4 (trần riêng của R3): JS <= 147,0 kB (gzip <= 43,0), CSS <= 51,0 kB (gzip <= 10,5); số đo sau R3: 1415 test, JS 146.358 B, CSS 50.399 B. Ngưỡng trước R3 (trần riêng của R2): JS <= 146,0 kB (gzip <= 42,5), CSS <= 51,0 kB (gzip <= 10,5); trước nữa (sau khi gỡ Tiến độ học tập): CSS <= 49,5 kB (gzip <= 10,0). Đã duyệt hạ ngưỡng từ mức Phase 4 (JS 160 kB / gzip 47,0; CSS 52,5 kB / gzip 10,5) vì PR `chore/remove-learning-progress` gỡ mã và CSS của tiến độ
   (JS -13,6 kB, CSS -3,1 kB so với `main` trước PR). Redesign v1.0: mỗi PR cần trần bundle riêng, duyệt ở bước lập kế hoạch; không nâng ngưỡng khi chưa được duyệt.
@@ -56,9 +57,10 @@ Chi tiết từng module (trường bước, công thức số bước, bất bi
 - Không có theo dõi tiến độ học tập (Spec v1.0 mục 16–17): đã gỡ trang Tiến độ, khối tiến độ ở Dashboard, nhãn Đã mở/Chưa mở trên thẻ và kho `localStorage`. App không lưu gì vào trình duyệt
   (`tests/meta/no-web-storage.test.js`); `tests/progress-removed.test.js` canh gác các định danh cũ, không cho thêm lại.
 - Token thiết kế và font (Redesign R2, R3): `:root` của `src/style.css` có khối `--av-*` (nguồn giá trị duy nhất, theo Spec mục 2 và 3: màu, `--av-space-1…8`, `--av-fs-*`, `--av-nav-active-bg`, `--av-radius-control`) rồi ba nhóm
-  token cũ: CŨ (alias tạm trỏ vào `--av-*`, mỗi alias có chú thích "tạm, gỡ ở R?"; còn 16 alias tạm sau R4 (R4 gỡ `--purple-strong`, `--purple-pressed`); `--purple` còn giá trị riêng cho canvas), MỚI ĐANG DÙNG (gồm `--border-control`, dùng ở nút viền và chip của Dashboard), MỚI CHƯA ĐƯỢC DÙNG (rỗng sau R4).
+  token cũ: CŨ (alias tạm trỏ vào `--av-*`, mỗi alias có chú thích "tạm, gỡ ở R?"; còn 15 alias tạm sau R6a (R4 gỡ `--purple-strong`, `--purple-pressed`; R6a gỡ `--accent-color`); `--purple` còn giá trị riêng cho canvas), MỚI ĐANG DÙNG (gồm `--border-control`, dùng ở nút viền và chip của Dashboard), MỚI CHƯA ĐƯỢC DÙNG (rỗng sau R4).
   Viết màu mới bằng `var(--av-*)`, không thêm hex trùng màu Spec ngoài `:root` (test canh). Font Be Vietnam Pro và
   JetBrains Mono tự host ở `public/fonts` (không dùng Google Fonts); font mã luôn qua `var(--font-mono)`. Test: `tests/av-tokens.test.js`, `tests/design-tokens.test.js`.
+- `src/step-tools.js` (Redesign R6a): thanh bước dùng chung của 5 module có controller; markup `[data-step-tools]` nằm trong template (thanh trượt bước, nhãn "Bước x/y", `radiogroup` tốc độ 0,5×/1×/2×/4×, 1× = `BASE_DELAY` 650 ms); mỗi module gọi `stepTools.sync(snapshot)` ở đầu hàm vẽ và dùng `stepTools.getDelay`. Kéo thanh trượt (`input`) chỉ đổi chữ "Bước x/y"; `seek` chỉ gọi khi thả (`change`) để vùng `aria-live` đọc đúng một lần (quyết định 29). Chi tiết: `docs/architecture.md`.
 - `navigation.js`: thẻ `data-structure-target="x"` mở `#x-section`; thêm cấu trúc mới không cần sửa navigation (mục con của sidebar tự được sinh theo thẻ).
   Mục con KHÔNG được mang `data-structure-target` (thuộc tính của thẻ; mục con được sinh từ các thẻ đó) hay class `nav-item` (nhiều test lấy `.nav-item` đầu tiên).
 - Quy tắc theo loại file nằm ở `.claude/rules/`: `tests.md` (test), `algorithms.md` (mã thuần), `cross-platform.md` (mọi phiên).
@@ -118,7 +120,7 @@ Chạy `/resume-check`.
 
 ## Thiết kế UI
 
-Đọc `docs/design/spec.md` (Spec Redesign v1.0, chép từ PDF) và `docs/design/decisions.md` (27 quyết định đã chốt, đánh số 1–28, bỏ số 18 dành cho chủ đề mới) trước khi sửa UI. Hai quy tắc sản phẩm: (a) không theo dõi tiến độ cá nhân, không thêm lại Tiến độ học tập, nhãn Đã mở hay lịch sử truy cập; (b) không số giả, dữ liệu hiển thị phải là dữ liệu thật hoặc gắn nhãn "Minh họa".
+Đọc `docs/design/spec.md` (Spec Redesign v1.0, chép từ PDF) và `docs/design/decisions.md` (28 quyết định đã chốt, đánh số 1–29, bỏ số 18 dành cho chủ đề mới) trước khi sửa UI. Hai quy tắc sản phẩm: (a) không theo dõi tiến độ cá nhân, không thêm lại Tiến độ học tập, nhãn Đã mở hay lịch sử truy cập; (b) không số giả, dữ liệu hiển thị phải là dữ liệu thật hoặc gắn nhãn "Minh họa".
 
 ## Roadmap
 

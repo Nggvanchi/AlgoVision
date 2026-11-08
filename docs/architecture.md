@@ -45,8 +45,9 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
   và các bước bị nhảy qua không được vẽ; cùng chỉ số mà không đang phát thì không notify. Dựa vào việc bộ vẽ của Sorting, Searching,
   BST, Hash Table, Graph là hàm thuần của `snapshot.step` (khóa bởi `tests/controller-seek-render-purity.test.js`): module mới phải giữ tính chất này.
   Giới hạn của test đó: so `innerHTML` của khu vực visualizer giữa đường tiến và đường lùi ở các bước giữa; không thấy thuộc tính JS
-  (`value`, `scrollTop`), phần tử ngoài khu vực, bước cuối, và chưa mô phỏng cú nhảy nhiều bước thật (chỉ làm được khi R6 nối `seek`; R6 nên thêm test nhảy thật).
-  Chưa có giao diện nào gọi `seek` (thanh trượt bước là việc của R6).
+  (`value`, `scrollTop`), phần tử ngoài khu vực, bước cuối, và không mô phỏng cú nhảy nhiều bước (phần đó do `tests/controller-seek-jump.test.js` của R6a làm).
+  Từ R6a thanh trượt bước (`src/step-tools.js`) gọi `seek`; `tests/controller-seek-jump.test.js` chứng minh nhảy nhiều bước thật cho DOM giống hệt đi từng bước ở cả 5 module.
+- Thanh bước dùng chung (`src/step-tools.js`, R6a): `createStepTools(root, { seek })` → `{ sync({ stepIndex, stepCount }), getDelay() }`. `root` là khối `[data-step-tools]` trong template của từng màn hình: `input[type=range][data-step-slider]` (min 0, max = số bước - 1, khóa khi chưa có bước, `aria-valuetext` "Bước x/y" với x = chỉ số + 1), `[data-step-label]` (aria-hidden, chỉ để nhìn), `[role=radiogroup]` tốc độ gồm 4 radio thật. `getDelay()` = `BASE_DELAY / hệ số` (đọc ở mỗi tick); BASE_DELAY = 650 ms (chuẩn hóa từ 650/600/700 cũ). Sắp xếp luôn có mảng sau khi mở nên thanh trượt mở sẵn; Tìm kiếm chỉ có bước sau lần Next/Run đầu. Hàm vẽ của mỗi module gọi `sync` TRƯỚC khi thoát sớm vì không có bước.
 - Sorting/Searching nghe `algovision:viewchange` và tự `pause()` khi visualizer của mình bị ẩn.
 - Searching sinh bước lần đầu bấm Next/Run; Reset, đổi mục tiêu (`change` và `input` của `#search-target`), đổi thuật toán,
   mảng mới đều bỏ các bước cũ (`load([])`). Target được chốt trong mảng bước.
