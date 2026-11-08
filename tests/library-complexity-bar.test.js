@@ -72,6 +72,8 @@ test('ghi chú giải thích thanh 5 đoạn: nằm trong thanh lọc, nhắc th
 
     for (const notation of Object.keys(LEVEL_OF)) assert.ok(text.includes(notation), `ghi chú phải nêu ${notation}`)
     assert.ok(/đọc cùng ký hiệu O/.test(text))
+    assert.ok(/thẻ Sắp xếp và Tìm kiếm/.test(text), 'ghi chú nói đúng thẻ nào có thanh')
+    assert.ok(!/ở mỗi thẻ/.test(text), 'BFS/DFS không có thanh nên không được viết "ở mỗi thẻ"')
   })
 })
 
