@@ -235,6 +235,26 @@
         <button type="button" role="tab" class="library-tab" id="library-tab-algorithms" data-library-tab="algorithms" aria-controls="algorithm-panel" aria-selected="false" tabindex="-1">Giải thuật</button>
     </div>
 
+    <div class="library-filters" hidden>
+        <div class="library-search" role="search">
+            <input type="search" class="library-search-input" id="library-search" placeholder="Tìm trong thư viện" aria-label="Tìm trong thư viện" autocomplete="off">
+        </div>
+        <p class="library-count" role="status">Hiển thị 0 mục</p>
+        <div class="library-chips" role="group" aria-label="Phân loại cấu trúc dữ liệu" data-chips="structures">
+            <button type="button" class="library-chip" data-category-filter="all" aria-pressed="true">Tất cả</button>
+            <button type="button" class="library-chip" data-category-filter="linear" aria-pressed="false">Tuyến tính</button>
+            <button type="button" class="library-chip" data-category-filter="tree" aria-pressed="false">Cây</button>
+            <button type="button" class="library-chip" data-category-filter="graph" aria-pressed="false">Đồ thị</button>
+            <button type="button" class="library-chip" data-category-filter="hash" aria-pressed="false">Bảng băm</button>
+        </div>
+        <div class="library-chips" role="group" aria-label="Phân loại giải thuật" data-chips="algorithms">
+            <button type="button" class="library-chip" data-category-filter="all" aria-pressed="true">Tất cả</button>
+            <button type="button" class="library-chip" data-category-filter="sorting" aria-pressed="false">Sắp xếp</button>
+            <button type="button" class="library-chip" data-category-filter="searching" aria-pressed="false">Tìm kiếm</button>
+            <button type="button" class="library-chip" data-category-filter="graph" aria-pressed="false">Duyệt đồ thị</button>
+        </div>
+    </div>
+
     <div id="structure-panel" role="tabpanel" aria-labelledby="library-tab-structures">
     <section class="visualizer-section" id="structure-library" hidden>
     <div class="section-heading">
@@ -484,6 +504,11 @@
         </button>
     </div>
     </section>
+    </div>
+
+    <div class="library-empty" hidden>
+        <p>Không có mục nào phù hợp với bộ lọc.</p>
+        <button type="button">Xóa bộ lọc</button>
     </div>
 
     <section class="visualizer-section" id="sorting-section">
