@@ -149,7 +149,10 @@ function lastValue(selector, property, media = null) {
 
 test('chip cao tối thiểu 44px (Spec mục 13); lưới nổi bật 3 cột, 1 cột <= 700px; nhóm giải thuật ẩn trên mobile', () => {
   assert.equal(lastValue('.dashboard-chip', 'min-height'), '44px')
+  assert.equal(lastValue('.dashboard-chip', 'border'), '1px solid var(--border-control)', 'viền điều khiển dùng --border-control (3:1), không dùng --av-border-strong (1,41:1), quyết định 12')
+  assert.equal(lastValue('.dashboard-text-link', 'min-height'), '44px', 'liên kết "Xem thư viện →" cũng là vùng chạm >= 44px')
   assert.equal(lastValue('.dashboard-grid', 'grid-template-columns'), 'repeat(3, minmax(0, 1fr))')
-  assert.equal(lastValue('.dashboard-grid', 'grid-template-columns', '@media (max-width: 700px)'), 'minmax(0, 1fr)')
+  // <= 900px: rail 72px + main hẹp làm thẻ chỉ còn ~190px, badge "TRUNG BÌNH" và nhãn kiểu bị bẻ dòng, tiêu đề lệch nhau (xem ảnh 768px) -> 1 cột
+  assert.equal(lastValue('.dashboard-grid', 'grid-template-columns', '@media (max-width: 900px)'), 'minmax(0, 1fr)')
   assert.equal(lastValue('.dashboard-quick-algorithms', 'display', '@media (max-width: 700px)'), 'none')
 })

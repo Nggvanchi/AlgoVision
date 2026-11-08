@@ -2759,6 +2759,7 @@ button.structure-card:focus-visible,
 }
 
 .dashboard-text-link {
+  min-height: 44px;
   padding: 10px 4px;
   border: 0;
   background: transparent;
@@ -2866,7 +2867,7 @@ button.dashboard-card:hover {
 .dashboard-chip {
   min-height: 44px;
   padding: 0 16px;
-  border: 1px solid var(--av-border-strong);
+  border: 1px solid var(--border-control);
   border-radius: 999px;
   background: transparent;
   color: var(--text);
@@ -2884,6 +2885,13 @@ button.dashboard-card:hover {
 
 .dashboard-chip-blue:hover {
   border-color: var(--av-accent);
+}
+
+/* Đặt SAU luật gốc của .dashboard-grid (cùng độ ưu tiên, luật sau thắng). */
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 700px) {
