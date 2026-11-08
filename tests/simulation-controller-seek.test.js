@@ -95,6 +95,34 @@ test('seek bỏ qua giá trị không phải số: không đổi trạng thái, 
   assert.equal(controller.getSnapshot().stepIndex, 2)
 })
 
+test('seek bỏ qua null, chuỗi rỗng/khoảng trắng, boolean, mảng rỗng và đối tượng (không coi là bước 0 hay 1)', () => {
+  const { controller, snapshots } = setup()
+
+  controller.seek(3)
+  snapshots.length = 0
+
+  for (const value of [null, '', ' ', true, false, [], {}]) {
+    controller.seek(value)
+  }
+
+  assert.equal(snapshots.length, 0, 'không lần nào gọi onChange')
+  assert.equal(controller.getSnapshot().stepIndex, 3, 'vẫn ở bước 3')
+})
+
+test('seek trên danh sách 1 bước: từ idle là no-op, đang phát thì hoàn thành', () => {
+  const { controller, snapshots } = setup(1)
+
+  controller.seek(0)
+  assert.equal(controller.getSnapshot().state, 'idle')
+  assert.equal(snapshots.length, 0)
+
+  controller.run()
+  snapshots.length = 0
+  controller.seek(0)
+  assert.equal(controller.getSnapshot().state, 'completed')
+  assert.equal(snapshots.length, 1)
+})
+
 test('seek khi chưa có bước nào: không làm gì, không ném lỗi, không gọi onChange', () => {
   const scheduler = createFakeScheduler()
   const snapshots = []

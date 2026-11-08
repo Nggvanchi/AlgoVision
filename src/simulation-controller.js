@@ -125,7 +125,8 @@ export function createSimulationController({
   // Nhảy tới bước index (kẹp trong [0, số bước - 1]); luôn dừng phát (như Bước tiếp theo/Bước trước), tới bước cuối thì hoàn thành.
   // Một lần notify duy nhất, các bước bị nhảy qua không được vẽ; không đổi gì thì không notify (không đọc lại vùng aria-live).
   function seek(index) {
-    const requested = Number(index)
+    // parseFloat: null, '', boolean, mảng rỗng, đối tượng đều ra NaN (Number() coi chúng là 0 hoặc 1).
+    const requested = parseFloat(index)
 
     if (steps.length === 0 || Number.isNaN(requested)) return
 
