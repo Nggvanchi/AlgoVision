@@ -43,7 +43,7 @@ số PR ghi sau khi tạo PR. Các dòng "Redesign Phase 5" và "Redesign Phase 
 | R7 | `chore/a11y-responsive-audit` | Vùng chạm 44 px, focus, `tabindex` vùng cuộn, đo Tab bằng bàn phím thật | Chưa làm | |
 
 Quy tắc cho cả lộ trình:
-- Mỗi PR xin trần bundle riêng ở bước lập kế hoạch, người dùng duyệt trước khi làm. CSS là ràng buộc chính: trần hiện tại JS <= 148,0 kB, CSS <= 53,5 kB (trần riêng của R5a; mục Baseline của CLAUDE.md). R5a đo được JS 147.909 B, CSS 53.226 B.
+- Mỗi PR xin trần bundle riêng ở bước lập kế hoạch, người dùng duyệt trước khi làm. CSS là ràng buộc chính: trần hiện tại JS <= 148,0 kB, CSS <= 53,5 kB (trần riêng của R5a; mục Baseline của CLAUDE.md). R5a đo được JS 147.962 B, CSS 53.226 B.
 - R2 phải đo và đề xuất trần cuối cho cả Redesign (đề xuất tạm: JS <= 158 kB, CSS <= 56 kB) để người dùng duyệt một lần; các PR sau làm trong trần đó và vẫn báo byte từng commit.
 - Hai quy tắc sản phẩm trong `docs/design/decisions.md` (không theo dõi tiến độ cá nhân; không số giả) áp dụng cho mọi PR ở bảng này.
 Ghi chú:
