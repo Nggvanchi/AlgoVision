@@ -6,7 +6,7 @@
 const PANELS = { structures: '#structure-panel', algorithms: '#algorithm-panel' }
 
 // Bỏ dấu tiếng Việt để "do thi" khớp "Đồ thị", "tim kiem" khớp "Tìm kiếm".
-const normalize = (text) => text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd')
+const normalize = (text) => text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/\s+/g, ' ')
 
 export function initLibraryFilter(document) {
   const root = document.querySelector('.library-filters')

@@ -100,6 +100,26 @@ test('tìm theo tên và theo mô tả, bỏ dấu tiếng Việt và không ph�
   })
 })
 
+test('cụm nhiều từ khớp xuyên chỗ xuống dòng của mô tả trong template và không phụ thuộc khoảng trắng kép trong chuỗi tìm', () => {
+  withFilter(({ document, goTo, type, titles }) => {
+    goTo('structures')
+
+    // Mô tả của Array trong template bị xuống dòng giữa câu ("...chèn và" / "xóa phần tử theo index."): khoảng trắng phải được gộp.
+    const description = document.querySelector('[data-structure-target="array"] .structure-card-description').textContent
+
+    assert.ok(/\n/.test(description), 'tiền đề: mô tả của Array có xuống dòng trong template')
+
+    type('chen va xoa phan tu')
+    assert.deepEqual(titles('#structure-panel'), ['Array'])
+
+    type('chen   va    xoa')
+    assert.deepEqual(titles('#structure-panel'), ['Array'], 'khoảng trắng kép trong chuỗi tìm được gộp')
+
+    type('nvaxoa')
+    assert.deepEqual(titles('#structure-panel'), [], 'khoảng trắng được gộp thành MỘT dấu cách, không bị xóa: chuỗi dính liền xuyên ranh giới từ không khớp')
+  })
+})
+
 test('chỉ khớp tiêu đề và mô tả hiển thị: không khớp nhãn "Trực quan hóa" hay Big-O của thẻ', () => {
   withFilter(({ tab, goTo, type, titles, count }) => {
     goTo('structures')
