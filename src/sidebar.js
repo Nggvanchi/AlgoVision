@@ -27,11 +27,20 @@ export function initSidebar(document, { matchMedia } = {}) {
 
   // --- Thu gọn -------------------------------------------------------------------------------------------------------
 
-  // collapsed là trạng thái HIỆU LỰC: thu gọn bằng tay (manualCollapsed, nhớ trong bộ nhớ, đổi được ở >= 1280px) HOẶC đang ở dải rail.
-  let manualCollapsed = false
-  let collapsed = false
+  const query = mediaQuery(`(max-width: ${DRAWER_BREAKPOINT}px)`)
+  const isNarrow = () => query?.matches === true
+
   const railQuery = mediaQuery(`(min-width: ${RAIL_RANGE.min}px) and (max-width: ${RAIL_RANGE.max}px)`)
   const isRail = () => railQuery?.matches === true
+  const isDesktop = () => !isRail() && !isNarrow()
+
+  // collapsed là trạng thái HIỆU LỰC: thu gọn bằng tay (manualCollapsed, nhớ trong bộ nhớ, đổi được ở >= 1280px),
+  // tự động thu gọn khi ở màn hình Visualizer desktop (autoCollapsed), HOẶC đang ở dải rail tablet/laptop.
+  let manualCollapsed = false
+  let inVisualizer = false
+  let stateBeforeVisualizer = null
+  let autoCollapsed = false
+  let collapsed = false
 
   // Tooltip là MỘT phần tử dùng chung, vị trí fixed: nếu là ::after của từng nút thì vùng cuộn .sidebar-scroll cắt mất.
   // Tên truy cập của mục luôn là chữ thật trong .nav-label (clip, không display: none); tooltip chỉ là phần phụ cho người nhìn.
@@ -82,7 +91,9 @@ export function initSidebar(document, { matchMedia } = {}) {
   sidebar.addEventListener('focusout', hideTooltip)
 
   function syncCollapsed() {
-    collapsed = manualCollapsed || isRail()
+    if (inVisualizer && isDesktop() && stateBeforeVisualizer === false) autoCollapsed = true
+
+    collapsed = manualCollapsed || autoCollapsed || isRail()
 
     layout.classList.toggle('is-sidebar-collapsed', collapsed)
     collapseButton.setAttribute('aria-expanded', String(!collapsed))
@@ -91,9 +102,34 @@ export function initSidebar(document, { matchMedia } = {}) {
   }
 
   function toggleCollapse() {
-    manualCollapsed = !manualCollapsed
+    manualCollapsed = isRail() ? !manualCollapsed : !collapsed
+
+    if (inVisualizer) {
+      autoCollapsed = false
+      stateBeforeVisualizer = null
+    }
+
     syncCollapsed()
   }
+
+  function handleViewChange(topic) {
+    const nextInVisualizer = topic !== null
+
+    if (nextInVisualizer && !inVisualizer) {
+      inVisualizer = true
+      stateBeforeVisualizer = manualCollapsed
+      syncCollapsed()
+    } else if (!nextInVisualizer && inVisualizer) {
+      inVisualizer = false
+      autoCollapsed = false
+      stateBeforeVisualizer = null
+      syncCollapsed()
+    }
+  }
+
+  document.addEventListener('algovision:viewchange', (event) => {
+    handleViewChange(event.detail?.topic ?? null)
+  })
 
   collapseButton.addEventListener('click', toggleCollapse)
 
@@ -117,9 +153,6 @@ export function initSidebar(document, { matchMedia } = {}) {
   syncCollapsed()
 
   // --- Drawer --------------------------------------------------------------------------------------------------------
-
-  const query = mediaQuery(`(max-width: ${DRAWER_BREAKPOINT}px)`)
-  const isNarrow = () => query?.matches === true
 
   // Khi drawer mở, nội dung chính và skip link bị inert (không focus, không bấm, ẩn khỏi trình đọc màn hình) nhưng KHÔNG
   // dùng role="dialog" và không bẫy focus: thanh trên chứa ☰ vẫn dùng được để đóng.
@@ -179,6 +212,7 @@ export function initSidebar(document, { matchMedia } = {}) {
 
   query?.addEventListener?.('change', (event) => {
     if (!event.matches) closeDrawer({ restoreFocus: false })
+    syncCollapsed()
   })
 
   // Escape: đóng drawer đang mở; đồng thời tắt tooltip (WCAG 1.4.13: nội dung hiện khi rê/focus phải đóng được mà không
@@ -191,6 +225,12 @@ export function initSidebar(document, { matchMedia } = {}) {
   })
 
   return {
-    toggleCollapse, isCollapsed: () => collapsed, openDrawer, closeDrawer, toggleDrawer, isDrawerOpen: () => drawerOpen,
+    toggleCollapse,
+    isCollapsed: () => collapsed,
+    isAutoCollapsed: () => autoCollapsed,
+    openDrawer,
+    closeDrawer,
+    toggleDrawer,
+    isDrawerOpen: () => drawerOpen,
   }
 }

@@ -919,7 +919,7 @@ button.structure-card:hover {
 
 .primary-button:hover {
   transform: translateY(-1px);
-  background: #8769f3;
+  background: var(--av-primary-hover);
 }
 
 .page-footer {
@@ -1668,7 +1668,7 @@ button.structure-card:hover {
 
 .learning-heading p {
   margin: 0;
-  color: var(--text-secondary, #9ca3af);
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
@@ -1697,7 +1697,7 @@ button.structure-card:hover {
   padding: 8px 12px;
   border: 1px solid var(--border-control);
   border-radius: 8px;
-  background: var(--card-background, #1e1e1e);
+  background: var(--card-background);
   color: inherit;
   font: inherit;
 }
@@ -1717,7 +1717,7 @@ button.structure-card:hover {
   min-height: 56px;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border-color, #444);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-weight: 600;
   transition: background-color 0.2s, border-color 0.2s;
@@ -1726,9 +1726,9 @@ button.structure-card:hover {
 .search-comparison {
   margin: 20px 0;
   padding: 20px;
-  border: 1px solid var(--border-color, #444);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  background: var(--card-background, #15151d);
+  background: var(--card-background);
 }
 
 .search-comparison h3 {
@@ -1745,7 +1745,7 @@ button.structure-card:hover {
 
 .comparison-card {
   padding: 16px;
-  border: 1px solid var(--border-color, #444);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
 }
 
@@ -1771,21 +1771,20 @@ button.structure-card:hover {
 
 
 .search-cell.is-eliminated {
-  opacity: 0.4;
-  filter: grayscale(1);
-  border-style: dashed;
+  border: 1px dashed #a1a1aa;
+  background: #3b3b43;
+  color: var(--av-text);
 }
 
 /* Trạng thái ô Tìm kiếm không chỉ dựa vào màu: đang kiểm tra viền dày + ▶, tìm thấy khung kép + ✓,
-   đã kiểm tra viền nét đứt (đã loại bỏ cũng nét đứt, thêm mờ). Cue nằm trong ô (inset) nên kích thước ô không đổi.
+   đã kiểm tra viền nét đứt; đã loại bỏ dùng nền xám riêng và chữ sáng. Cue nằm trong ô (inset) nên kích thước ô không đổi.
    Màu cue dùng lại màu chữ của chính ô để đạt >= 3:1 với nền ô: #92400e trên #fef3c7 = 6,37; #166534 trên #dcfce7 = 6,49;
-   viền nét đứt #a1a1aa trên #27272a = 5,81 (4,24 sau khi mờ 0,8) (bản đầu dùng #d97706 = 2,86, #16a34a = 3,00, #71717a = 2,45 sau khi mờ). */
+   viền nét đứt #a1a1aa trên #27272a = 5,81; #a1a1aa trên #3b3b43 cũng vượt 3:1 (bản đầu dùng #d97706 = 2,86, #16a34a = 3,00, #71717a = 2,45 sau khi mờ). */
 .search-cell.is-checked {
   background: #27272a;
   border-color: #a1a1aa;
   border-style: dashed;
   color: #a1a1aa;
-  opacity: 0.8;
 }
 
 .search-cell.is-current {
@@ -1831,7 +1830,7 @@ button.structure-card:hover {
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: var(--text-secondary, #9ca3af);
+  color: var(--text-secondary);
 }
 
 .search-legend-dot {
@@ -1849,9 +1848,8 @@ button.structure-card:hover {
 }
 
 .search-legend-dot.is-eliminated {
-  border: 1px dashed #94a3b8;
-  background: #64748b;
-  opacity: 0.4;
+  border: 1px dashed #a1a1aa;
+  background: #3b3b43;
 }
 
 .search-legend-dot.is-checked {
@@ -1868,7 +1866,7 @@ button.structure-card:hover {
 .search-range-panel {
   margin-top: 20px;
   padding: 16px;
-  border: 1px solid var(--border-color, #374151);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   background: var(--surface-secondary);
 }
@@ -1894,7 +1892,7 @@ button.structure-card:hover {
 }
 
 .search-range-item span {
-  color: var(--text-secondary, #9ca3af);
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
@@ -1904,7 +1902,7 @@ button.structure-card:hover {
 
 #search-range-message {
   margin: 14px 0 0;
-  color: var(--text-secondary, #9ca3af);
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -2081,7 +2079,7 @@ button.structure-card:hover {
 }
 
 .array-operation-card input::placeholder {
-  color: #6b7280;
+  color: #9ca3af;
 }
 
 .control-button {
@@ -2335,7 +2333,7 @@ button.structure-card:focus-visible,
 .linked-list-panel {
   margin-top: 24px;
   padding: 24px;
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   background: var(--panel-bg);
 }
@@ -2466,9 +2464,9 @@ button.structure-card:focus-visible,
 .queue-panel {
   margin-top: 24px;
   padding: 24px;
-  border: 1px solid var(--border-color, #303030);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
-  background: var(--card-background, #171717);
+  background: var(--card-background);
 }
 
 .queue-panel-heading {
@@ -2481,7 +2479,7 @@ button.structure-card:focus-visible,
 
 .queue-panel-heading p {
     margin: 0;
-    color: var(--text-secondary, #a3a3a3);
+    color: var(--text-secondary);
     line-height: 1.6;
 }
 
@@ -2501,9 +2499,9 @@ button.structure-card:focus-visible,
     align-items: center;
     justify-content: center;
     min-height: 76px;
-    border: 1px solid var(--border-color, #404040);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    background: var(--card-background, #202020);
+    background: var(--card-background);
 }
 
 .queue-cell-value {
@@ -2540,16 +2538,16 @@ button.structure-card:focus-visible,
     width: 100%;
     margin: 0;
     padding: 24px;
-    border: 1px dashed var(--border-color, #404040);
+    border: 1px dashed var(--border-color);
     border-radius: 12px;
-    color: var(--text-secondary, #a3a3a3);
+    color: var(--text-secondary);
     text-align: center;
 }
 
 .queue-status {
     min-height: 24px;
     margin: 12px 0 0;
-    color: var(--text-secondary, #a3a3a3);
+    color: var(--text-secondary);
     line-height: 1.6;
 }
 
@@ -3617,7 +3615,7 @@ button.dashboard-card:hover {
 }
 
 .graph-vertex-check {
-  fill: #22c55e;
+  fill: var(--av-text);
   font-size: 12px;
   font-weight: 700;
 }
