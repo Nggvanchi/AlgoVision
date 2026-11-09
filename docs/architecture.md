@@ -1,8 +1,7 @@
 # Kiến trúc AlgoVision
 
 Tài liệu tra cứu chi tiết cho người (và Claude Code) sửa một module. Tổng quan ngắn nằm trong `CLAUDE.md`.
-Dẫn chứng `file:dòng` đối chiếu với code ngày 2026-11-04 (`main` sau PR #10), dòng của `graphBfs.js`, `graphDfs.js` và
-`tests/graph-{bfs,dfs}.test.js` đối chiếu lại ngày 2026-11-05 (branch `chore/test-hardening`); khi sửa code làm lệch dòng, cập nhật theo.
+Dẫn chứng `file:dòng` ở phần module lịch sử được ghi nhận theo các lần đối chiếu nêu tại từng mục; các mô tả Sidebar/Visualizer cập nhật theo `main` tại merge R6c `e23b560` (PR #42). Khi sửa code làm lệch dòng hoặc hành vi, cập nhật dẫn chứng tương ứng.
 Phần mô tả hành vi chi tiết của từng module chuyển từ CLAUDE.md và có test tương ứng; dẫn chứng `file:dòng` chỉ gắn cho định nghĩa chính.
 
 ## Các lớp của một module (BST, Hash Table, Graph)
@@ -15,7 +14,7 @@ Phần mô tả hành vi chi tiết của từng module chuyển từ CLAUDE.md 
 | View riêng | `src/pseudocode-view.js:4,19`, `src/graph-bfs-view.js`, `src/graph-dfs-view.js`, `src/graph-traversal-view.js` | View không import controller: `graph-*-view.js` chỉ import `structures/graph.js` và `algorithms/graphStep.js` (`graph-bfs-view.js:1-2`, `graph-dfs-view.js:1-2`, `graph-traversal-view.js:1`) |
 | Controller | `src/bst.js:279`, `src/hash-table.js:388`, `src/graph.js:584` (và `sorting.js:8`, `searching.js:42`) | `init*(document, { scheduler })`: nối template, thao tác, Learning Panel |
 | Template | `public/templates/app.html` | `bootApp` (`src/bootstrap.js:46`) fetch và dựng template; `startApp` (`src/main.js:14`) gọi các `init*` sau khi dựng xong. Chỉ fetch và `response.text()` được bắt lỗi (`bootstrap.js:49-62`): lỗi thì hiện màn hình `role="alert"` + nút "Thử lại", `start` ném lỗi thì ném ra bình thường |
-| Điều hướng | `src/navigation.js:36-44,70-80` | Thẻ `data-structure-target="x"` mở `#x-section` (suy ra lúc init, thêm cấu trúc mới không cần sửa navigation; thẻ không có section thì click bị bỏ qua); phát `algovision:viewchange` (`detail: { page, topic }`; hiện không mã nào trong `src` đọc `topic`, xem `docs/backlog.md`) khi đổi trang hoặc mở/đóng màn hình chi tiết |
+| Điều hướng | `src/navigation.js:36-44,70-80,158-167` | Thẻ `data-structure-target="x"` mở `#x-section` (suy ra lúc init, thêm cấu trúc mới không cần sửa navigation; thẻ không có section thì click bị bỏ qua); phát `algovision:viewchange` (`detail: { page, topic }`) khi đổi trang hoặc mở/đóng màn hình chi tiết. `topic` là id chi tiết hoặc `null`; Sidebar đọc `topic` từ R6c, module mô phỏng dùng sự kiện để tạm dừng khi bị ẩn. |
 
 Array, Stack, Queue, Linked List là module cũ (trước giai đoạn 5): không có hàm sinh bước, không có mã giả; các lớp trên không áp dụng.
 Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test tìm theo id.
@@ -244,9 +243,9 @@ cho THUẬT TOÁN (Sắp xếp, Tìm kiếm) và CẤU TRÚC DỮ LIỆU ("Tất
 | `.nav-item` (kể cả "Tất cả cấu trúc") | 1 × `{page, null}` (như trước) |
 
 **`src/sidebar.js`** — `initSidebar(document, { matchMedia } = {})`, gọi SAU `initNavigation` (mục con do navigation sinh) (`main.js`, `withFullApp`);
-`export const DRAWER_BREAKPOINT = 767` phải bằng `@media (max-width: 767px)` của luật drawer (test so hai nơi; R3: trước là 700). Trả về `{ toggleCollapse, isCollapsed, openDrawer, closeDrawer, toggleDrawer, isDrawerOpen }`.
+`export const DRAWER_BREAKPOINT = 767` phải bằng `@media (max-width: 767px)` của luật drawer (test so hai nơi; R3: trước là 700). Trả về `{ toggleCollapse, isCollapsed, isAutoCollapsed, openDrawer, closeDrawer, toggleDrawer, isDrawerOpen }`.
 Trạng thái (`collapsed`, `drawerOpen`) chỉ nằm trong bộ nhớ của phiên: file này không nhắc `localStorage`, `sessionStorage`, cookie, `indexedDB` (`tests/meta/no-web-storage.test.js` đọc mã nguồn: không file nào trong `src` dùng kho của trình duyệt).
-- Thu gọn (>= 768px; bằng tay từ 1280px, tự động ở 768–1279px): nút `#sidebar-collapse` đổi class `is-sidebar-collapsed` trên `.app-layout`, `aria-expanded` và nhãn "Thu gọn thanh bên" <-> "Mở rộng thanh bên". CSS chỉ trong
+- Thu gọn (>= 768px; bằng tay từ 1280px, tự động ở 768–1279px): nút `#sidebar-collapse` đổi class `is-sidebar-collapsed` trên `.app-layout`, `aria-expanded` và nhãn "Thu gọn thanh bên" <-> "Mở rộng thanh bên". R6c bổ sung thu gọn tự động khi vào màn chi tiết Visualizer ở >=1280px nếu Sidebar trước đó đang mở. Khi rời màn chi tiết, trạng thái ban đầu được khôi phục; nếu người dùng bấm nút trong Visualizer, lựa chọn thủ công mới được giữ và không bị trạng thái tự động ghi đè. Chuyển topic Visualizer sang topic Visualizer khác không được xem là rời màn. Trạng thái thủ công/tự động chỉ ở bộ nhớ của lần chạy app, không dùng storage. CSS chỉ trong
   `@media (min-width: 768px)`: sidebar rộng `--sidebar-width-collapsed` (72px), `.main-content` `margin-left: 72px` (luật riêng, không đụng luật `.main-content` mà test R12 đọc). Nhãn mục, chữ logo
   (`.brand-text`, chứa h1) và nhãn nhóm ẩn bằng clip kiểu sr-only (`position: absolute; 1px; overflow: hidden; clip-path: inset(50%)`), KHÔNG `display: none`: tên truy cập, h1 và nhãn nhóm vẫn có trong cây
   trợ năng. Nhãn nhóm thành đường kẻ; mục active giữ vạch tím và `aria-current`.
@@ -267,8 +266,10 @@ Chuỗi chaining 15 khóa rộng 842px còn dư 19px; sidebar tối đa 263px n�
 `tests/hash-table-layout.test.js` đọc style.css bằng regex và ném lỗi nếu khai báo khác dạng; `tests/sidebar-css.test.js` khẳng định 256 = `--sidebar-width`, 72 = `--sidebar-width-collapsed`, cả hai là bội số của 4.
 Đo CDP (Chrome 152, Windows, 2026-11-06): khung 871 -> 877px (nội dung 861px), tràn 0.
 
-**Tương phản** (tính từ token thật trong test, sau R2 và R3): nhãn nhóm `--av-text-subtle` trên `--av-sidebar` 4,74+; mục active `--av-nav-active-text` trên nền pill `--av-nav-active-bg` (hiện ra `#251C3E`) 11,51; vạch 3px `--av-primary-text` trên pill 5,87;
+**Tương phản** (các cặp Sidebar dưới đây được khóa bởi test token): nhãn nhóm `--av-text-subtle` trên `--av-sidebar` 4,74+; mục active `--av-nav-active-text` trên nền pill `--av-nav-active-bg` (hiện ra `#251C3E`) 11,51; vạch 3px `--av-primary-text` trên pill 5,87;
 nút "Mở trực quan hóa" và "Thử lại" (class `dashboard-primary-button`) chữ trắng trên `--av-primary` 5,70, hover `--av-primary-hover` 7,10.
+
+**Tương phản Visualizer (R6c)**: chữ thường cần đạt >= 4,5:1; đường viền/trạng thái đồ họa cần >= 3:1 khi tiêu chí phi văn bản áp dụng. `tests/visualizer-contrast.test.js` tính các cặp đã chọn từ khai báo CSS và token thật: trạng thái Searching (đang xét/tìm thấy/đã kiểm tra/đã loại bỏ), placeholder Array, nút chính bình thường/hover, dấu ✓ Graph, nhãn Queue và một số chỉ báo của Sorting/BST/Graph. Test này chỉ bảo vệ các cặp/selector liệt kê, không chứng minh toàn bộ ứng dụng đạt WCAG 2.1 AA; màu cần đánh giá trên nền thực tế, không suy ra đạt chuẩn chỉ từ opacity.
 
 **Thư viện** (R5a, `public/templates/app.html`, `src/navigation.js`): `#structure-panel` (`#structure-library`) và `#algorithm-panel` (`#sorting-algorithm-library`, `#search-algorithm-library`, `#graph-algorithm-library`) là hai `role="tabpanel"` do thanh tab `.library-tabs` điều khiển. Trang `algorithms` (trang thứ năm của `pages`, không có mục sidebar) hiện cả ba section thuật toán; panel ẩn khi mọi section con ẩn (`renderTopbar` đồng bộ cả thanh tab: `aria-selected`, roving `tabindex`). Thẻ BFS/DFS là `button.algorithm-card[data-dashboard-open]` không có `data-algorithm` (selector đó thuộc nút Sắp xếp) và không có độ khó/chỉ số (D12). `libraryOrigin` (xóa ở `renderPage` và `openStructure`) nhớ nơi mở chi tiết để "Quay lại" về trang Giải thuật. Test: `tests/library-panels.test.js`, `library-algorithms.test.js`, `library-tabs.test.js`, `library-css.test.js`.
 
@@ -283,7 +284,7 @@ nút "Mở trực quan hóa" và "Thử lại" (class `dashboard-primary-button`
 ## Token thiết kế và font tự host (Redesign Phase 1, cập nhật ở R2)
 
 **Cập nhật R2 (`feat/design-tokens`):** `:root` có thêm khối `--av-*` đứng TRƯỚC nhóm CŨ (comment `=== TOKEN --av-* ===`): 21 màu Spec mục 2, `--av-nav-active-text` (`#DDD6FE`), `--av-space-1…8` (4/8/12/16/24/32/48/64) và 11 token cỡ chữ `--av-fs-*` (display 40, hero 34, page 28, h2 24, h3 18, card 16, body 15, body-sm 14, caption 13, label 12, code 14; tên do R2 chọn vì Spec không đặt tên). Test `tests/av-tokens.test.js` (55 test) khóa tên và giá trị. Luật `:focus-visible` chung (2px `--av-focus`, offset 2px) đứng ngay sau `button:focus-visible`, độ ưu tiên thấp nhất: phủ select, input, textarea, `[tabindex]`, `pre` và vùng cuộn Chrome tự cho focus; `.main-content:focus` và `.array-operation-card input` (`outline: none`) vẫn thắng nhờ đứng sau (test canh thứ tự).
-Các token Phase 1/2 thành ALIAS tạm trỏ vào `--av-*` (23 alias, mỗi cái có chú thích "tạm, gỡ ở R?"; `tests/design-tokens.test.js` đếm), diện mạo toàn trang đổi theo bảng màu Spec. `--purple` chia theo vai trò: chữ -> `--av-primary-text`, viền -> `--av-primary-line`, focus -> `--av-focus` (vòng 2px, offset 2px), canvas BST/Hash/Graph giữ `--purple` (13 chỗ, gỡ ở R6). Đã xóa token chưa dùng; nhóm CHƯA ĐƯỢC DÙNG chỉ còn `--border-control` (quyết định 9 và 12). `--purple-active` là `rgba(139, 92, 246, 0.18)` (nền mềm nav theo Spec). Không còn hex trùng giá trị Spec đã có token ngoài `:root` (test canh; ngoại lệ `#fca5a5`, `#60a5fa` có lý do). Các đoạn dưới đây mô tả Phase 1/2 và giá trị cũ; khi mâu thuẫn, `:root` và test là chuẩn.
+Các token Phase 1/2 còn 14 alias tạm trỏ vào `--av-*` sau R6c (mỗi alias có chú thích "tạm, gỡ ở R?"; `tests/design-tokens.test.js` đếm). `--purple` đã gỡ ở R6b: chữ/canvas dùng token theo vai trò (`--av-primary-text`, `--av-primary-line`, `--av-focus`). `--border-control` thuộc nhóm MỚI, ĐANG DÙNG; nhóm CHƯA ĐƯỢC DÙNG rỗng. Nền mềm nav là `--av-nav-active-bg` (`rgba(139, 92, 246, 0.18)`); alias `--purple-active` đã gỡ ở R3. Không còn hex trùng giá trị Spec đã có token ngoài `:root` (test canh; ngoại lệ `#fca5a5`, `#60a5fa` có lý do). Các đoạn dưới đây mô tả Phase 1/2 và giá trị cũ; khi mâu thuẫn, `:root` và test là chuẩn.
 
 Phase 1 thêm nền móng (token trong `:root`, font tự host, gom hex khớp token); R2 và R3 chuyển nguồn giá trị sang khối `--av-*`. Test: `tests/av-tokens.test.js` (khối `--av-*` khớp Spec, token cỡ chữ,
 luật cỡ chữ đã áp), `tests/design-tokens.test.js` (nhóm token, alias, tương phản, hex trùng Spec, vòng focus) và hai helper `tests/helpers/contrast.js` (tỉ lệ WCAG, có test riêng) và
@@ -295,8 +296,8 @@ luật cỡ chữ đã áp), `tests/design-tokens.test.js` (nhóm token, alias, 
 |---|---|---|
 | TOKEN --av-* | 21 màu Spec mục 2, `--av-nav-active-text`, `--av-nav-active-bg`, `--av-radius-control`, `--av-space-1…8`, 11 token `--av-fs-*` | nguồn giá trị duy nhất; test khóa tên và giá trị, không cho token `--av-*` ngoài danh sách |
 | TOKEN CŨ | 18 token: alias tạm trỏ vào `--av-*` (`--background`, `--panel`, `--panel-hover`, `--border`, `--text`, `--muted`, `--text-muted`, `--purple-dark` và 7 alias của alias), `--purple` (giá trị riêng cho canvas), `--state-active`, `--bar-cue` | mỗi alias có chú thích "tạm, gỡ ở R?"; test đếm đúng 18 alias tạm (gồm 2 của nhóm ĐANG DÙNG) |
-| TOKEN MỚI, ĐANG DÙNG | 16 token: `--font-ui`, `--font-mono`, `--sidebar-width(-collapsed)`, `--fs-xs/sm/md`, `--space-1/2/3/4/6`, `--radius-sm`, `--shadow-card`, `--purple-strong`, `--purple-pressed` | mỗi token phải có ít nhất một luật tham chiếu (test) |
-| TOKEN MỚI, CHƯA ĐƯỢC DÙNG | chỉ `--border-control` (`#6B6B87`, quyết định 9, 12, 13) | không luật nào tham chiếu; lịch áp ở R5b, R6, R7 |
+| TOKEN MỚI, ĐANG DÙNG | 15 token: `--border-control`, `--font-ui`, `--font-mono`, `--sidebar-width(-collapsed)`, `--fs-xs/sm/md`, `--space-1/2/3/4/6`, `--radius-sm`, `--shadow-card` | mỗi token phải có ít nhất một luật tham chiếu (test) |
+| TOKEN MỚI, CHƯA ĐƯỢC DÙNG | Rỗng | test xác nhận nhóm này không có khai báo token |
 
 R2 đã xóa `--bg`, `--surface`, `--purple-soft`, `--purple-tint`, `--violet`, `--blue`, `--success`, `--glow-purple` và các token cỡ chữ/spacing/bo góc chưa dùng; R3 gỡ thêm 5 alias sidebar
 (`--bg-sidebar`, `--surface-raised`, `--text-label`, `--purple-hover`, `--purple-active`; test có mục "đã gỡ, không còn tham chiếu" cho từng token).
