@@ -549,9 +549,9 @@ test('màu trạng thái giữ nguyên: --state-active #f6c76a, --bar-cue #0d0f1
   assert.equal(normalize(tokens.get('--bar-cue')), '#0d0f15')
 })
 
-test('#22c55e (trạng thái tìm thấy/đầu hàng đợi) vẫn viết thẳng ở đúng 13 chỗ (Spec không quy định màu trạng thái visualizer, giữ đến R6)', () => {
+test('#22c55e (trạng thái tìm thấy/đầu hàng đợi) vẫn viết thẳng ở đúng 12 chỗ (dấu ✓ Graph dùng --av-text ở R6c)', () => {
   const outsideRoot = stripComments(css).replace(rootRawBlock(stripComments(css)), '')
-  assert.equal((outsideRoot.match(/#22c55e/gi) ?? []).length, 13)
+  assert.equal((outsideRoot.match(/#22c55e/gi) ?? []).length, 12)
 })
 
 // Từ 4 xuống 2 ở PR chore/bundle-headroom: hai chỗ bị gỡ là khai báo chết (border-color của .array-cell:hover và .array-operation-card input:focus)

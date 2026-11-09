@@ -99,6 +99,95 @@ test('không thu gọn thủ công: rail không "dính" lại sau khi rộng ra 
   })
 })
 
+test('R6c: mở Visualizer từ sidebar ở desktop tự thu gọn; đổi topic không mất trạng thái; rời Visualizer phục hồi sidebar mở', async () => {
+  await withWidth(1280, ({ document, media, sidebar }) => {
+    document.querySelector('.nav-item[data-page="sorting"]').click()
+    document.querySelector('.algorithm-card[data-algorithm="bubble"]').click()
+
+    assert.equal(sidebar.isCollapsed(), true)
+    assert.equal(sidebar.isAutoCollapsed(), true)
+
+    document.querySelector('.algorithm-card[data-algorithm="insertion"]').click()
+    assert.equal(sidebar.isCollapsed(), true, 'đổi topic Visualizer không được coi là rời màn hình')
+    assert.equal(sidebar.isAutoCollapsed(), true)
+
+    document.querySelector('.nav-item[data-page="dashboard"]').click()
+    assert.equal(sidebar.isCollapsed(), false)
+    assert.equal(sidebar.isAutoCollapsed(), false)
+    assert.equal(collapseOf(document).getAttribute('aria-expanded'), 'true')
+  })
+})
+
+test('R6c: trạng thái thu gọn thủ công trước Visualizer được giữ nguyên sau khi rời', async () => {
+  await withWidth(1280, ({ document, sidebar }) => {
+    collapseOf(document).click()
+    document.querySelector('.nav-item[data-page="sorting"]').click()
+    document.querySelector('.algorithm-card[data-algorithm="bubble"]').click()
+
+    assert.equal(sidebar.isCollapsed(), true)
+    assert.equal(sidebar.isAutoCollapsed(), false)
+
+    document.querySelector('.nav-item[data-page="dashboard"]').click()
+    assert.equal(sidebar.isCollapsed(), true)
+    assert.equal(collapseOf(document).getAttribute('aria-expanded'), 'false')
+  })
+})
+
+test('R6c: lựa chọn mở rộng hoặc thu gọn thủ công trong Visualizer được giữ khi rời', async () => {
+  await withWidth(1280, ({ document, sidebar }) => {
+    document.querySelector('.nav-item[data-page="sorting"]').click()
+    document.querySelector('.algorithm-card[data-algorithm="bubble"]').click()
+    assert.equal(sidebar.isAutoCollapsed(), true)
+
+    collapseOf(document).click()
+    assert.equal(sidebar.isCollapsed(), false, 'người dùng chủ động mở rộng')
+    document.querySelector('.nav-item[data-page="dashboard"]').click()
+    assert.equal(sidebar.isCollapsed(), false)
+
+    document.querySelector('.nav-item[data-page="sorting"]').click()
+    document.querySelector('.algorithm-card[data-algorithm="bubble"]').click()
+    collapseOf(document).click()
+    collapseOf(document).click()
+    assert.equal(sidebar.isCollapsed(), true, 'người dùng chủ động thu gọn')
+    document.querySelector('.nav-item[data-page="dashboard"]').click()
+    assert.equal(sidebar.isCollapsed(), true)
+    assert.equal(sidebar.isAutoCollapsed(), false)
+  })
+})
+
+test('R6c: khi đang ở Visualizer, rail 768–1279 luôn gọn và quay lại desktop vẫn tự gọn tới khi rời', async () => {
+  await withWidth(1280, ({ document, media, sidebar }) => {
+    document.querySelector('.nav-item[data-page="sorting"]').click()
+    document.querySelector('.algorithm-card[data-algorithm="bubble"]').click()
+
+    media.setWidth(1279)
+    assert.equal(sidebar.isCollapsed(), true)
+    media.setWidth(768)
+    assert.equal(sidebar.isCollapsed(), true)
+    media.setWidth(1280)
+    assert.equal(sidebar.isCollapsed(), true)
+    assert.equal(sidebar.isAutoCollapsed(), true)
+
+    document.querySelector('.nav-item[data-page="dashboard"]').click()
+    assert.equal(sidebar.isCollapsed(), false)
+  })
+})
+
+test('R6c: vào Visualizer trong rail rồi resize tới 1280 tự thu gọn và phục hồi khi rời', async () => {
+  await withWidth(768, ({ document, media, sidebar }) => {
+    document.querySelector('.nav-item[data-page="sorting"]').click()
+    document.querySelector('.algorithm-card[data-algorithm="bubble"]').click()
+    assert.equal(sidebar.isCollapsed(), true)
+    assert.equal(sidebar.isAutoCollapsed(), false, 'rail không phải chế độ tự thu gọn của Visualizer')
+
+    media.setWidth(1280)
+    assert.equal(sidebar.isCollapsed(), true)
+    assert.equal(sidebar.isAutoCollapsed(), true)
+    document.querySelector('.nav-item[data-page="dashboard"]').click()
+    assert.equal(sidebar.isCollapsed(), false)
+  })
+})
+
 test('toggleCollapse bằng mã khi đang ở rail: vẫn thu gọn (rail), nhưng nhớ ý định thủ công để dùng khi quay lại >= 1280', async () => {
   await withWidth(1024, ({ document, media, sidebar }) => {
     sidebar.toggleCollapse()
