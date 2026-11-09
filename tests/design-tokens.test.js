@@ -167,13 +167,13 @@ test('token bóng: --shadow-card còn; --glow-purple chưa dùng đã gỡ', () 
 // 18 token cũ giữ nguyên (Phương án A) và phân loại trong :root
 // ---------------------------------------------------------------------------------------------------------------------
 
-// Redesign R2: 7 token cũ thành alias trỏ vào --av-* (đổi diện mạo theo Spec); 3 token giữ giá trị riêng vì Spec không quy định
-// (--purple chỉ còn canvas, --state-active, --bar-cue).
+// Redesign R2: 7 token cũ thành alias trỏ vào --av-* (đổi diện mạo theo Spec); 2 token giữ giá trị riêng vì Spec không quy định
+// (--state-active, --bar-cue). R6b gỡ --purple (canvas chuyển sang --av-primary-text).
 const OLD_TO_AV = {
   '--background': '--av-bg', '--panel': '--av-surface-1', '--panel-hover': '--av-surface-2', '--border': '--av-border',
   '--text': '--av-text', '--muted': '--av-text-muted', '--purple-dark': '--av-primary',
 }
-const OLD_VALUES = { '--purple': '#9b82ff', '--state-active': '#f6c76a', '--bar-cue': '#0d0f15' }
+const OLD_VALUES = { '--state-active': '#f6c76a', '--bar-cue': '#0d0f15' }
 const OLD_ALIASES = {
   '--text-muted': 'var(--muted)', '--border-color': 'var(--border)', '--card-background': 'var(--panel)',
   '--text-secondary': 'var(--muted)', '--surface-secondary': 'var(--panel)',
@@ -187,14 +187,14 @@ test('7 token cũ là alias var(--av-*) và giải ra đúng giá trị Spec đ�
   }
 })
 
-test('3 token cũ không có tương ứng trong Spec giữ nguyên giá trị (canvas, màu "đang xét", cue ngoài màu)', () => {
+test('2 token cũ không có tương ứng trong Spec giữ nguyên giá trị (màu "đang xét", cue ngoài màu)', () => {
   const actual = Object.fromEntries(Object.keys(OLD_VALUES).map((name) => [name, normalize(tokens.get(name) ?? '(thiếu)')]))
   assert.deepEqual(actual, OLD_VALUES)
 })
 
 // Alias tạm: mỗi alias có chú thích "tạm, gỡ ở R<n>" ngay trên dòng khai báo; số alias chỉ được GIẢM khi một PR gỡ chúng.
 const ALL_TEMPORARY = [
-  '--background', '--panel', '--panel-hover', '--border', '--text', '--muted', '--text-muted', '--purple', '--purple-dark',
+  '--background', '--panel', '--panel-hover', '--border', '--text', '--muted', '--text-muted', '--purple-dark',
   '--border-color', '--card-background', '--text-secondary', '--surface-secondary', '--surface-color', '--panel-bg',
 ]
 
@@ -204,8 +204,8 @@ test('mỗi alias tạm có chú thích "tạm, gỡ ở R3..R6" và danh sách 
 
   assert.deepEqual(tagged.map(([name]) => name).sort(), [...ALL_TEMPORARY].sort(), 'danh sách token có chú thích "tạm, gỡ ở R?" phải khớp danh sách alias')
   assert.ok(tagged.every(([, release]) => release >= 4 && release <= 7), 'alias còn lại chỉ được hẹn gỡ ở R4..R7 (R3 đã gỡ nhóm sidebar)')
-  assert.equal(tagged.length, 15, '15 alias tạm sau R6a (R4 gỡ --purple-strong, --purple-pressed; R6a gỡ --accent-color vì thanh trượt cũ đã bỏ; --purple canvas hẹn R6)')
-  assert.deepEqual(tagged.filter(([name]) => name === '--purple').map(([, release]) => release), [6], '--purple (canvas) hẹn gỡ ở R6')
+  assert.equal(tagged.length, 14, '14 alias tạm sau R6b (R4 gỡ --purple-strong, --purple-pressed; R6a gỡ --accent-color vì thanh trượt cũ đã bỏ; R6b gỡ --purple vì canvas chuyển sang --av-primary-text)')
+  assert.ok(!tagged.some(([name]) => name === '--purple'), '--purple đã gỡ ở R6b')
 })
 
 test('7 alias cũ còn đủ và trỏ đúng token gốc cũ; mọi alias trỏ tới token có thật', () => {
@@ -278,11 +278,11 @@ const PAIRS = [
   ['--text', '--av-bg', 4.5], ['--text', '--av-surface-1', 4.5], ['--text', '--av-surface-2', 4.5], ['--text', '--panel', 4.5],
   ['--muted', '--av-bg', 4.5], ['--muted', '--av-surface-1', 4.5], ['--muted', '--av-surface-2', 4.5], ['--muted', '--panel', 4.5], ['--muted', '--background', 4.5],
   ['--av-text-subtle', '--av-sidebar', 4.5], ['--av-text-subtle', '--av-surface-1', 4.5], ['--av-text-subtle', '--av-surface-2', 4.5],
-  ['--purple', '--av-bg', 4.5], ['--purple', '--av-surface-1', 4.5], ['--purple', '--av-surface-2', 4.5], ['--av-primary-text', '--av-nav-active-bg', 4.5],
+  ['--av-primary-text', '--av-bg', 4.5], ['--av-primary-text', '--av-surface-2', 4.5], ['--av-primary-text', '--av-nav-active-bg', 4.5],
   ['--av-nav-active-text', '--av-nav-active-bg', 4.5], ['--av-primary-text', '--av-surface-1', 4.5],
   ['#ffffff', '--av-primary', 4.5], ['#ffffff', '--av-primary-hover', 4.5], ['#ffffff', '--purple-dark', 4.5],
-  ['--av-bg', '--purple', 4.5],
-  ['--bar-cue', '--purple', 3],
+  ['--av-bg', '--av-primary-text', 4.5],
+  ['--bar-cue', '--av-primary-text', 3],
   ['--av-accent-text', '--av-surface-1', 4.5], ['--state-active', '--av-surface-1', 4.5], ['--av-success', '--av-surface-1', 4.5],
   ['--border-control', '--av-surface-1', 3], ['--border-control', '--av-bg', 3], ['--border-control', '--av-surface-2', 3],
   ['--av-nav-active-text', '--av-nav-active-bg', 9.9], ['--av-primary-text', '--av-nav-active-bg', 3], ['--av-primary-text', '--av-sidebar', 4.5],
@@ -315,8 +315,8 @@ test('không luật nào dùng --av-primary-line làm màu chữ (color)', () =>
   assert.deepEqual(bad, [])
 })
 
-test('cấm chữ trắng trên --purple: tỉ lệ thật dưới 4,5 (vì vậy bị cấm)', () => {
-  assert.ok(contrastRatio('#ffffff', resolve('--purple')) < 4.5)
+test('cấm chữ trắng trên --av-primary-text (màu canvas và cột): tỉ lệ thật dưới 4,5 (vì vậy bị cấm)', () => {
+  assert.ok(contrastRatio('#ffffff', resolve('--av-primary-text')) < 4.5)
 })
 
 // Luật đặt nền tím sáng (#9B82FF) cùng chữ trắng. .dashboard-primary-button từng vi phạm (2,99:1) và đã sửa ở Redesign Phase 2
@@ -324,7 +324,7 @@ test('cấm chữ trắng trên --purple: tỉ lệ thật dưới 4,5 (vì vậ
 const WHITE_ON_PURPLE_KNOWN = []
 
 function whiteOnPurpleRules() {
-  const purple = new Set(['var(--purple)', 'var(--av-primary-line)', 'var(--av-primary-text)', resolve('--purple').toLowerCase()])
+  const purple = new Set(['var(--av-primary-line)', 'var(--av-primary-text)', resolve('--av-primary-text').toLowerCase(), '#9b82ff'])
   const white = new Set(['#fff', '#ffffff', 'white'])
 
   return sheet.rules
@@ -337,7 +337,7 @@ function whiteOnPurpleRules() {
     .sort()
 }
 
-test('không luật mới nào đặt chữ trắng lên nền --purple (ngoại lệ đã biết được liệt kê)', () => {
+test('không luật mới nào đặt chữ trắng lên nền tím sáng (--av-primary-text; ngoại lệ đã biết được liệt kê)', () => {
   const extra = whiteOnPurpleRules().filter((selector) => !WHITE_ON_PURPLE_KNOWN.includes(selector))
   assert.deepEqual(extra, [], 'chữ trắng trên #9B82FF chỉ đạt 2,99:1; dùng --bg hoặc nền --av-primary')
 })
@@ -600,11 +600,11 @@ test('luật focus-visible chung đứng TRƯỚC `.main-content:focus` và `.ar
   assert.deepEqual(declarationValues(css, '.array-operation-card input', 'outline'), ['none'], 'ô nhập Mảng giữ outline: none + glow cho tới R7')
 })
 
-test('var(--purple) chỉ còn dùng cho canvas BST/Hash/Graph (13 khai báo); chữ, viền và focus đã chuyển sang --av-*', () => {
-  const users = sheet.rules.flatMap((rule) => rule.declarations.filter((declaration) => declaration.value.includes('var(--purple)')).map(() => rule.selectors.join(', ')))
+test('13 chỗ canvas BST/Hash/Graph từng dùng --purple nay dùng var(--av-primary-text) (R6b); --purple không còn', () => {
+  const canvas = sheet.rules.flatMap((rule) => rule.declarations.filter((declaration) => declaration.value.includes('var(--av-primary-text)') && rule.selectors.some((selector) => /^\.(bst|hash|graph)-/.test(selector))).map(() => rule.selectors.join(', ')))
 
-  assert.equal(users.length, 13)
-  assert.deepEqual(users.filter((selector) => !/^\.(bst|hash|graph)-/.test(selector)), [], 'chỗ dùng --purple ngoài canvas')
+  assert.equal(canvas.length, 13, 'đúng 13 khai báo canvas dùng var(--av-primary-text)')
+  assert.equal(sheet.rules.filter((rule) => rule.declarations.some((declaration) => declaration.value.includes('var(--purple)'))).length, 0)
 })
 
 // ---------------------------------------------------------------------------------------------------------------------
