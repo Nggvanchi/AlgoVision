@@ -45,6 +45,19 @@ for (const screen of SCREENS) {
     })
   })
 
+  test(`${screen.name}: <pre> mã giả có aria-labelledby trỏ tới tiêu đề nằm cùng accordion Mã giả; mô tả Kiến thức không còn nhắc "mã giả"`, async () => {
+    await withFullApp(({ document }) => {
+      const section = document.querySelector(screen.section)
+      const [pseudocode, , knowledge] = [...section.querySelectorAll('details.panel-accordion')]
+      const pre = pseudocode.querySelector('pre')
+      const titleId = pre.getAttribute('aria-labelledby')
+
+      assert.ok(titleId, '<pre> phải có aria-labelledby')
+      assert.ok(pseudocode.querySelector(`#${titleId}`) !== null, `tiêu đề #${titleId} phải nằm trong accordion Mã giả`)
+      assert.ok(!/mã giả/i.test(knowledge.querySelector('.learning-heading')?.textContent ?? ''), 'mô tả Kiến thức không được nhắc mã giả (đã có accordion riêng)')
+    })
+  })
+
   test(`${screen.name}: vùng aria-live giải thích bước nằm ngoài mọi accordion`, async () => {
     await withFullApp(({ document }) => {
       const live = document.querySelector(screen.live)
