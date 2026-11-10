@@ -310,13 +310,43 @@ test('drawer mở: .sidebar.is-open hiện lại (visibility visible, transform 
   assert.equal(requireValue('.sidebar.is-open', 'transform', MOBILE), 'none')
 })
 
-test('chỉ .sidebar.is-open và .brand được đặt visibility: visible trong khối <= 767px (không phần tử focus nào lọt ra khi drawer đóng)', () => {
+test('drawer shell kéo dài bằng app-layout để mobile bar sticky không bị chặn ở 64px, không đổi containing block của aside fixed', () => {
+  assert.equal(requireValue('.app-layout', 'position', MOBILE), 'relative')
+  assert.equal(requireValue('.drawer-shell', 'position', MOBILE), 'absolute')
+  assert.equal(requireValue('.drawer-shell', 'inset', MOBILE), '0')
+  assert.equal(requireValue('.drawer-shell', 'pointer-events', MOBILE), 'none')
+  assert.equal(requireValue('.mobile-bar', 'position', MOBILE), 'sticky')
+  assert.equal(requireValue('.sidebar', 'position'), 'fixed')
+
+  for (const property of ['transform', 'contain', 'filter', 'z-index']) {
+    assert.equal(valueOf('.drawer-shell', property, MOBILE), undefined, `.drawer-shell không được đặt ${property}`)
+  }
+})
+
+test('nút X chỉ hiện và nhận focus khi drawer mở ở mobile', () => {
+  assert.equal(requireValue('.sidebar-close', 'display'), 'none', 'nút X không hiện ở desktop/tablet')
+  assert.equal(requireValue('.sidebar-close', 'display', MOBILE), 'grid')
+  assert.equal(requireValue('.sidebar-close', 'visibility', MOBILE), 'hidden', 'drawer đóng không được lộ nút X dù brand còn visible')
+  assert.equal(requireValue('.sidebar.is-open .sidebar-close', 'visibility', MOBILE), 'visible')
+  assert.equal(requireValue('.sidebar-close', 'width', MOBILE), '44px')
+  assert.equal(requireValue('.sidebar-close', 'height', MOBILE), '44px')
+})
+
+test('.sidebar-close được ẩn khỏi cây trợ năng khi Drawer đóng và hiện khi mở', () => {
+  const hidden = sheet.rules.find((rule) => rule.media === MOBILE && rule.selectors.includes('.sidebar-close'))
+  const visible = sheet.rules.find((rule) => rule.media === MOBILE && rule.selectors.includes('.sidebar.is-open .sidebar-close'))
+
+  assert.ok(hidden?.declarations.some((declaration) => declaration.property === 'visibility' && declaration.value === 'hidden'))
+  assert.ok(visible?.declarations.some((declaration) => declaration.property === 'visibility' && declaration.value === 'visible'))
+})
+
+test('chỉ .sidebar.is-open, .brand và nút X đang mở được đặt visibility: visible trong khối <= 767px', () => {
   const visible = sheet.rules
     .filter((rule) => rule.media === MOBILE && rule.declarations.some((declaration) => declaration.property === 'visibility' && declaration.value === 'visible'))
     .flatMap((rule) => rule.selectors)
     .sort()
 
-  assert.deepEqual(visible, ['.brand', '.sidebar.is-open', '.sidebar-overlay.is-open'].sort())
+  assert.deepEqual(visible, ['.brand', '.sidebar.is-open', '.sidebar-overlay.is-open', '.sidebar.is-open .sidebar-close'].sort())
 })
 
 test('h1 AlgoVision ở trong .brand vẫn có trong cây trợ năng khi drawer đóng: .brand đặt visibility: visible riêng ở <= 767px', () => {

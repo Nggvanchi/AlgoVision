@@ -207,6 +207,34 @@ test('nút ☰ #sidebar-toggle: <button type="button"> đóng sẵn, aria-expand
   })
 })
 
+test('wrapper .drawer-shell chứa menu mobile và aside, nhưng overlay và main ở ngoài dialog subtree', async () => {
+  await withFullApp(({ document }) => {
+    const shell = document.querySelector('.drawer-shell')
+    const bar = document.querySelector('.mobile-bar')
+    const sidebar = document.querySelector('#sidebar')
+
+    assert.ok(shell !== null)
+    assert.ok(bar.parentElement === shell)
+    assert.ok(sidebar.parentElement === shell)
+    assert.ok(document.querySelector('#sidebar-toggle').closest('.drawer-shell') === shell)
+    assert.ok(document.querySelector('.sidebar-overlay').closest('.drawer-shell') === null)
+    assert.ok(document.querySelector('#main-content').closest('.drawer-shell') === null)
+    assert.equal(shell.getAttribute('tabindex'), '-1', 'wrapper phải nhận focus programmatic khi không có control nào')
+  })
+})
+
+test('nút X là button có tên truy cập và nằm bên trong aside Sidebar', async () => {
+  await withFullApp(({ document }) => {
+    const close = document.querySelector('#sidebar-close')
+
+    assert.ok(close !== null)
+    assert.equal(close.tagName, 'BUTTON')
+    assert.equal(close.getAttribute('type'), 'button')
+    assert.equal(close.getAttribute('aria-label'), 'Đóng điều hướng')
+    assert.ok(close.closest('aside#sidebar') !== null)
+  })
+})
+
 test('skip link vẫn là phần tử focus được đầu tiên và nút ☰ là phần tử focus được thứ hai', async () => {
   await withFullApp(({ document }) => {
     const focusable = [...document.querySelectorAll(FOCUSABLE)]

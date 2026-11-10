@@ -313,6 +313,10 @@ button:disabled {
   font-size: var(--fs-xs);
 }
 
+.sidebar-close {
+  display: none;
+}
+
 .sidebar-nav {
   display: flex;
   flex: 1;
@@ -950,6 +954,23 @@ button.structure-card:hover {
 
 /* Shell: drawer và thanh trên ở <= 767px (DRAWER_BREAKPOINT trong sidebar.js). Luật nội dung của các màn hình giữ điểm gãy 700px bên dưới. */
 @media (max-width: 767px) {
+  /* Trải wrapper theo toàn chiều cao app để mobile bar sticky không bị giới hạn ở 64px của wrapper.
+     Position relative/absolute không tạo stacking context hay fixed-position containing block; aside vẫn fixed theo viewport. */
+  .app-layout {
+    position: relative;
+  }
+
+  .drawer-shell {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .mobile-bar,
+  .sidebar {
+    pointer-events: auto;
+  }
+
   .mobile-bar {
     position: sticky;
     top: 0;
@@ -978,6 +999,28 @@ button.structure-card:hover {
   }
 
   .brand {
+    visibility: visible;
+  }
+
+  .sidebar-close {
+    display: grid;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    margin-left: auto;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    visibility: hidden;
+    font-size: 24px;
+    line-height: 1;
+  }
+
+  .sidebar.is-open .sidebar-close {
     visibility: visible;
   }
 

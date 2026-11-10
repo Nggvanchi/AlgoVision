@@ -12,27 +12,32 @@ export const RAIL_RANGE = { min: 768, max: 1279 }
 // options.matchMedia: inject cho test (happy-dom không tính CSS); mặc định dùng matchMedia của cửa sổ.
 export function initSidebar(document, { matchMedia } = {}) {
   const layout = document.querySelector('.app-layout')
+  const drawerShell = document.querySelector('.drawer-shell')
   const sidebar = document.querySelector('#sidebar')
+  const navItemSelector = '.nav-item'
+  const firstNavItem = sidebar?.querySelector(navItemSelector)
+  const body = document.body
+  const closeButton = document.querySelector('#sidebar-close')
   const collapseButton = document.querySelector('#sidebar-collapse')
   const toggleButton = document.querySelector('#sidebar-toggle')
   const overlay = document.querySelector('.sidebar-overlay')
 
-  const mediaQuery = (text) => (matchMedia ? matchMedia(text) : document.defaultView?.matchMedia?.(text) ?? null)
+  const mediaQuery = (text) => matchMedia ? matchMedia(text) : document.defaultView?.matchMedia?.(text)
 
-  if (!layout || !sidebar || !collapseButton || !toggleButton) {
+  if (!layout || !drawerShell || !sidebar || !closeButton || !collapseButton || !toggleButton) {
     return {
-      toggleCollapse() {}, isCollapsed: () => false, openDrawer() {}, closeDrawer() {}, toggleDrawer() {}, isDrawerOpen: () => false,
+      toggleCollapse() {}, isCollapsed: () => false, isAutoCollapsed: () => false,
+      openDrawer() {}, closeDrawer() {}, toggleDrawer() {}, isDrawerOpen: () => false,
     }
   }
 
   // --- Thu gọn -------------------------------------------------------------------------------------------------------
 
   const query = mediaQuery(`(max-width: ${DRAWER_BREAKPOINT}px)`)
-  const isNarrow = () => query?.matches === true
+  const isNarrow = () => query?.matches
 
   const railQuery = mediaQuery(`(min-width: ${RAIL_RANGE.min}px) and (max-width: ${RAIL_RANGE.max}px)`)
-  const isRail = () => railQuery?.matches === true
-  const isDesktop = () => !isRail() && !isNarrow()
+  const isRail = () => railQuery?.matches
 
   // collapsed là trạng thái HIỆU LỰC: thu gọn bằng tay (manualCollapsed, nhớ trong bộ nhớ, đổi được ở >= 1280px),
   // tự động thu gọn khi ở màn hình Visualizer desktop (autoCollapsed), HOẶC đang ở dải rail tablet/laptop.
@@ -66,7 +71,7 @@ export function initSidebar(document, { matchMedia } = {}) {
     tooltip.classList.add('is-visible')
   }
 
-  const itemOf = (event) => event.target.closest?.('.nav-item, .nav-subitem') ?? null
+  const itemOf = (event) => event.target.closest(`${navItemSelector}, .nav-subitem`)
 
   // Chỉ focus bằng bàn phím mới hiện tooltip (:focus-visible); bấm chuột vào nút không làm tooltip nhấp nháy.
   function isKeyboardFocus(item) {
@@ -91,7 +96,7 @@ export function initSidebar(document, { matchMedia } = {}) {
   sidebar.addEventListener('focusout', hideTooltip)
 
   function syncCollapsed() {
-    if (inVisualizer && isDesktop() && stateBeforeVisualizer === false) autoCollapsed = true
+    if (inVisualizer && !isRail() && !isNarrow() && stateBeforeVisualizer === false) autoCollapsed = true
 
     collapsed = manualCollapsed || autoCollapsed || isRail()
 
@@ -154,56 +159,174 @@ export function initSidebar(document, { matchMedia } = {}) {
 
   // --- Drawer --------------------------------------------------------------------------------------------------------
 
-  // Khi drawer mở, nội dung chính và skip link bị inert (không focus, không bấm, ẩn khỏi trình đọc màn hình) nhưng KHÔNG
-  // dùng role="dialog" và không bẫy focus: thanh trên chứa ☰ vẫn dùng được để đóng.
-  const inertTargets = [document.querySelector('#main-content'), document.querySelector('.skip-link')].filter(Boolean)
+  // Wrapper chứa cả thanh trên (nút ☰) và sidebar để trigger đóng vẫn nằm trong dialog modal.
+  const mainContent = document.querySelector('#main-content')
+  const inertTargets = [mainContent, document.querySelector('.skip-link')].filter(Boolean)
+  const inertAddedByDrawer = new Set()
+  const FOCUSABLE_SELECTOR = 'a[href], area[href], button, input, select, textarea, iframe, [contenteditable="true"], [tabindex]'
+  const getComputedStyle = document.defaultView?.getComputedStyle?.bind(document.defaultView)
   let drawerOpen = false
+  let drawerOpener = null
+  let lastFocusInside = null
+  let redirectingFocus = false
+
+  function isFocusableAndVisible(element) {
+    if (!element?.isConnected || element.disabled || element.hidden
+      || element.tabIndex < 0 && element !== drawerShell && element !== mainContent) return false
+    if (element.closest('[hidden], [inert], [aria-hidden=true]')) return false
+    if (isNarrow() ? element.closest('.sidebar-footer') : element === toggleButton || element === closeButton) return false
+
+    if (getComputedStyle) {
+      for (let ancestor = element; ancestor; ancestor = ancestor.parentElement) {
+        const style = getComputedStyle(ancestor)
+        if (style.display === 'none' || style.visibility === 'hidden') return false
+        if (ancestor === drawerShell) break
+      }
+    }
+
+    return true
+  }
+
+  function focusableElements() {
+    return [...drawerShell.querySelectorAll(FOCUSABLE_SELECTOR)].filter(isFocusableAndVisible)
+  }
+
+  function focusInsideDialog(target = null) {
+    const candidates = focusableElements()
+    for (const destination of new Set([target, firstNavItem, ...candidates])) {
+      if (candidates.includes(destination) && focusIfAvailable(destination)) {
+        lastFocusInside = destination
+        return
+      }
+    }
+
+    if (focusIfAvailable(drawerShell)) lastFocusInside = drawerShell
+  }
+
+  function focusIfAvailable(element) {
+    if (!isFocusableAndVisible(element)) return false
+
+    try {
+      element.focus()
+      return element.getRootNode?.()?.activeElement === element
+    } catch {
+      return false
+    }
+  }
+
+  function fallbackAfterResponsiveClose() {
+    if (isNarrow()) return focusIfAvailable(mainContent)
+
+    const activeNav = sidebar.querySelector('.nav-subitem.active')
+      ?? sidebar.querySelector(`${navItemSelector}.active`)
+      ?? sidebar.querySelector(navItemSelector)
+
+    return focusIfAvailable(activeNav) || focusIfAvailable(mainContent)
+  }
+
+  function updateDialogSemantics(open) {
+    const update = open ? 'setAttribute' : 'removeAttribute'
+    drawerShell[update]('role', 'dialog')
+    drawerShell[update]('aria-label', 'Điều hướng chính')
+    drawerShell[update]('aria-modal', 'true')
+  }
 
   function setDrawer(open) {
     drawerOpen = open
 
     sidebar.classList.toggle('is-open', open)
-    document.body.classList.toggle('is-drawer-open', open)
+    body.classList.toggle('is-drawer-open', open)
     overlay?.classList.toggle('is-open', open)
     toggleButton.setAttribute('aria-expanded', String(open))
     toggleButton.setAttribute('aria-label', open ? 'Đóng menu điều hướng' : 'Mở menu điều hướng')
+    updateDialogSemantics(open)
 
     for (const element of inertTargets) {
       if (open) {
-        element.setAttribute('inert', '')
-      } else {
+        if (!element.hasAttribute('inert')) {
+          element.setAttribute('inert', '')
+          inertAddedByDrawer.add(element)
+        }
+      } else if (inertAddedByDrawer.has(element)) {
         element.removeAttribute('inert')
+        inertAddedByDrawer.delete(element)
       }
     }
   }
 
-  function openDrawer() {
+  function openDrawer(opener = toggleButton) {
     // Ở màn hình rộng nút ☰ bị ẩn bằng CSS; không mở để khỏi sót trạng thái mở khi thu nhỏ cửa sổ sau đó.
     if (drawerOpen || !isNarrow()) return
 
+    drawerOpener = opener
     setDrawer(true)
-    sidebar.querySelector('.nav-item')?.focus()
+    focusInsideDialog(firstNavItem)
   }
 
-  // restoreFocus: trả focus về ☰ (đóng do người dùng); false khi đóng vì cửa sổ rộng ra (không cướp focus).
+  function restoreOpenerFocus() {
+    const opener = drawerOpener
+    drawerOpener = null
+    lastFocusInside = null
+
+    if (!focusIfAvailable(opener)) fallbackAfterResponsiveClose()
+  }
+
+  // restoreFocus=false chỉ dùng khi đổi breakpoint; focus ở nav còn hiện trên desktop thì được giữ nguyên.
   function closeDrawer({ restoreFocus = true } = {}) {
     if (!drawerOpen) return
 
     setDrawer(false)
 
-    if (restoreFocus) toggleButton.focus()
-  }
-
-  function toggleDrawer() {
-    if (drawerOpen) {
-      closeDrawer()
-    } else {
-      openDrawer()
+    if (restoreFocus) restoreOpenerFocus()
+    else {
+      drawerOpener = null
+      lastFocusInside = null
     }
   }
 
-  toggleButton.addEventListener('click', toggleDrawer)
+  function toggleDrawer(opener = toggleButton) {
+    drawerOpen ? closeDrawer() : openDrawer(opener)
+  }
+
+  toggleButton.addEventListener('click', () => toggleDrawer(toggleButton))
+  closeButton.addEventListener('click', () => closeDrawer())
   overlay?.addEventListener('click', () => closeDrawer())
+
+  drawerShell.addEventListener('keydown', (event) => {
+    if (!drawerOpen || event.key !== 'Tab' || event.altKey || event.ctrlKey || event.metaKey) return
+
+    const focusable = focusableElements()
+    if (focusable.length === 0) {
+      event.preventDefault()
+      focusInsideDialog()
+      return
+    }
+
+    const activeIndex = focusable.indexOf(document.activeElement)
+    if (event.shiftKey && activeIndex <= 0) {
+      event.preventDefault()
+      focusable.at(-1).focus()
+    } else if (!event.shiftKey && (activeIndex === focusable.length - 1 || activeIndex === -1)) {
+      event.preventDefault()
+      focusable[0].focus()
+    }
+  })
+
+  document.addEventListener('focusin', (event) => {
+    if (!drawerOpen || redirectingFocus) return
+
+    if (drawerShell.contains(event.target)) {
+      if (isFocusableAndVisible(event.target) || event.target === drawerShell) lastFocusInside = event.target
+      return
+    }
+
+    redirectingFocus = true
+    try {
+      focusInsideDialog(lastFocusInside)
+    } finally {
+      redirectingFocus = false
+    }
+  })
 
   // Chọn một mục: navigation.js (listener của chính nút) đã chuyển trang xong rồi sự kiện mới nổi lên tới đây.
   sidebar.addEventListener('click', (event) => {
@@ -211,17 +334,26 @@ export function initSidebar(document, { matchMedia } = {}) {
   })
 
   query?.addEventListener?.('change', (event) => {
-    if (!event.matches) closeDrawer({ restoreFocus: false })
+    if (!event.matches && drawerOpen) {
+      const active = document.activeElement
+      const rememberedFocus = lastFocusInside
+      closeDrawer({ restoreFocus: false })
+
+      if (!focusIfAvailable(active) && !focusIfAvailable(rememberedFocus)) fallbackAfterResponsiveClose()
+    }
     syncCollapsed()
   })
 
   // Escape: đóng drawer đang mở; đồng thời tắt tooltip (WCAG 1.4.13: nội dung hiện khi rê/focus phải đóng được mà không
   // phải dời con trỏ).
   document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape') return
-
-    hideTooltip()
-    closeDrawer()
+    if (event.key === 'Escape') {
+      hideTooltip()
+      if (drawerOpen) {
+        event.preventDefault()
+        closeDrawer()
+      }
+    }
   })
 
   return {

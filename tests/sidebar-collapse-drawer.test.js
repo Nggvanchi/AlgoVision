@@ -12,6 +12,8 @@ const TRIGGER_QUERY = (breakpoint) => `(max-width: ${breakpoint}px)`
 const toggleOf = (document) => document.querySelector('#sidebar-toggle')
 const collapseOf = (document) => document.querySelector('#sidebar-collapse')
 const sidebarOf = (document) => document.querySelector('#sidebar')
+const shellOf = (document) => document.querySelector('.drawer-shell')
+const closeOf = (document) => document.querySelector('#sidebar-close')
 const press = (document, key) => document.dispatchEvent(new document.defaultView.KeyboardEvent('keydown', { key, bubbles: true }))
 const goTo = (document, page) => document.querySelector(`.nav-item[data-page="${page}"]`).click()
 const isInert = (element) => element.hasAttribute('inert')
@@ -206,7 +208,7 @@ test('drawer đóng sẵn: không is-open, ☰ aria-expanded="false" nhãn "Mở
   }, { mobile: true })
 })
 
-test('bấm ☰: drawer mở, aria-expanded="true", nhãn "Đóng menu điều hướng", focus vào .nav-item đầu tiên', async () => {
+test('bấm ☰: drawer mở thành dialog có tên trong wrapper chứa menu và sidebar; focus vào .nav-item đầu tiên', async () => {
   await withSidebar(({ document, sidebar }) => {
     toggleOf(document).click()
 
@@ -214,6 +216,11 @@ test('bấm ☰: drawer mở, aria-expanded="true", nhãn "Đóng menu điều h
     assert.equal(document.querySelector('.sidebar-overlay').classList.contains('is-open'), true)
     assert.equal(toggleOf(document).getAttribute('aria-expanded'), 'true')
     assert.equal(toggleOf(document).getAttribute('aria-label'), 'Đóng menu điều hướng')
+    assert.equal(shellOf(document).getAttribute('role'), 'dialog', 'wrapper phải được công bố role=dialog khi mở')
+    assert.equal(shellOf(document).getAttribute('aria-label'), 'Điều hướng chính')
+    assert.equal(shellOf(document).getAttribute('aria-modal'), 'true')
+    assert.ok(toggleOf(document).closest('.drawer-shell') === shellOf(document))
+    assert.ok(sidebarOf(document).closest('.drawer-shell') === shellOf(document))
     assert.ok(document.activeElement === document.querySelector('.sidebar .nav-item'), 'focus phải vào mục điều hướng đầu tiên')
     assert.equal(sidebar.isDrawerOpen(), true)
   }, { mobile: true })
@@ -227,8 +234,29 @@ test('drawer mở: main và skip link inert, còn thanh trên, sidebar và ☰ t
     assert.equal(isInert(document.querySelector('.skip-link')), true)
     assert.equal(isInert(document.querySelector('.mobile-bar')), false)
     assert.equal(isInert(sidebarOf(document)), false)
-    assert.equal(sidebarOf(document).hasAttribute('role'), false, 'không role="dialog": không bẫy focus')
-    assert.equal(sidebarOf(document).hasAttribute('aria-modal'), false)
+    assert.equal(isInert(shellOf(document)), false, 'wrapper chứa cả menu trigger và dialog không được inert')
+    assert.equal(closeOf(document).getAttribute('aria-label'), 'Đóng điều hướng')
+  }, { mobile: true })
+})
+
+test('đóng Drawer không gỡ inert đã tồn tại trước đó do cơ chế khác đặt', async () => {
+  await withSidebar(({ document }) => {
+    const main = document.querySelector('main')
+    main.setAttribute('inert', '')
+
+    toggleOf(document).click()
+    closeOf(document).click()
+
+    assert.equal(isInert(main), true, 'Drawer không được gỡ inert có trước')
+    assert.equal(isInert(document.querySelector('.skip-link')), false)
+  }, { mobile: true })
+})
+
+test('drawer đóng: wrapper không còn dialog semantics hoặc aria-modal', async () => {
+  await withSidebar(({ document }) => {
+    assert.equal(shellOf(document).hasAttribute('role'), false)
+    assert.equal(shellOf(document).hasAttribute('aria-modal'), false)
+    assert.equal(shellOf(document).hasAttribute('aria-label'), false)
   }, { mobile: true })
 })
 
@@ -238,11 +266,32 @@ test('đóng drawer bằng ☰: gỡ is-open và inert, aria-expanded="false", f
     toggleOf(document).click()
 
     assert.equal(sidebarOf(document).classList.contains('is-open'), false)
+    assert.equal(shellOf(document).hasAttribute('role'), false)
+    assert.equal(shellOf(document).hasAttribute('aria-modal'), false)
     assert.equal(toggleOf(document).getAttribute('aria-expanded'), 'false')
     assert.equal(toggleOf(document).getAttribute('aria-label'), 'Mở menu điều hướng')
     assert.equal(isInert(document.querySelector('main')), false)
     assert.equal(isInert(document.querySelector('.skip-link')), false)
     assert.ok(document.activeElement === toggleOf(document), 'focus phải về ☰')
+  }, { mobile: true })
+})
+
+test('nút X đóng Drawer, đồng bộ inert, dialog semantics, scroll lock và trả focus về opener', async () => {
+  await withSidebar(({ document, sidebar }) => {
+    toggleOf(document).click()
+    assert.equal(sidebar.isDrawerOpen(), true)
+
+    closeOf(document).click()
+
+    assert.equal(sidebar.isDrawerOpen(), false, 'nút X phải đóng Drawer qua closeDrawer')
+    assert.equal(sidebarOf(document).classList.contains('is-open'), false)
+    assert.equal(shellOf(document).hasAttribute('role'), false)
+    assert.equal(shellOf(document).hasAttribute('aria-modal'), false)
+    assert.equal(toggleOf(document).getAttribute('aria-expanded'), 'false')
+    assert.equal(isInert(document.querySelector('main')), false)
+    assert.equal(isInert(document.querySelector('.skip-link')), false)
+    assert.equal(bodyLocked(document), false)
+    assert.ok(document.activeElement === toggleOf(document))
   }, { mobile: true })
 })
 
@@ -252,7 +301,11 @@ test('phím Escape đóng drawer đang mở và trả focus về ☰', async () 
     press(document, 'Escape')
 
     assert.equal(sidebarOf(document).classList.contains('is-open'), false)
+    assert.equal(shellOf(document).hasAttribute('role'), false)
+    assert.equal(shellOf(document).hasAttribute('aria-modal'), false)
+    assert.equal(toggleOf(document).getAttribute('aria-expanded'), 'false')
     assert.equal(isInert(document.querySelector('main')), false)
+    assert.equal(bodyLocked(document), false)
     assert.ok(document.activeElement === toggleOf(document))
   }, { mobile: true })
 })
@@ -266,6 +319,266 @@ test('phím khác Escape không đóng drawer; Escape khi drawer đóng không l
     press(document, 'Enter')
     press(document, 'Tab')
     assert.equal(sidebarOf(document).classList.contains('is-open'), true)
+  }, { mobile: true })
+})
+
+test('Tab và Shift+Tab wrap trong wrapper dialog; Tab không bị trap khi Drawer đóng', async () => {
+  await withSidebar(({ document }) => {
+    const shell = shellOf(document)
+    const focusable = [...shell.querySelectorAll('a[href], area[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+      .filter((element) => !element.closest('.sidebar-footer'))
+    const first = focusable[0]
+    const last = focusable.at(-1)
+    const dispatchTab = (target, shiftKey = false) => {
+      const event = new document.defaultView.KeyboardEvent('keydown', { key: 'Tab', shiftKey, bubbles: true, cancelable: true })
+      target.dispatchEvent(event)
+      return event
+    }
+
+    toggleOf(document).click()
+    assert.ok(focusable.includes(toggleOf(document)), 'menu trigger phải nằm trong dialog')
+    assert.ok(focusable.includes(closeOf(document)), 'nút X phải nằm trong dialog')
+
+    first.focus()
+    assert.equal(dispatchTab(first, true).defaultPrevented, true, 'Shift+Tab tại đầu phải bị chặn để wrap')
+    assert.ok(document.activeElement === last, 'Shift+Tab ở phần tử đầu phải wrap về cuối')
+
+    last.focus()
+    assert.equal(dispatchTab(last).defaultPrevented, true, 'Tab tại cuối phải bị chặn để wrap')
+    assert.ok(document.activeElement === first, 'Tab ở phần tử cuối phải wrap về đầu')
+
+    closeOf(document).click()
+    const closedEvent = dispatchTab(toggleOf(document))
+    assert.equal(closedEvent.defaultPrevented, false, 'không trap khi Drawer đóng')
+  }, { mobile: true })
+})
+
+test('focus trap bỏ qua control hidden/disabled và không chặn tổ hợp Ctrl+Tab', async () => {
+  await withSidebar(({ document }) => {
+    toggleOf(document).click()
+    const first = toggleOf(document)
+    const hiddenLast = document.querySelector('.nav-subitem[data-structure-nav="graph"]')
+    const disabledPrevious = document.querySelector('.nav-subitem[data-structure-nav="hash-table"]')
+
+    hiddenLast.hidden = true
+    closeOf(document).disabled = true
+    first.focus()
+    const shiftTab = new document.defaultView.KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true, cancelable: true })
+    first.dispatchEvent(shiftTab)
+
+    assert.equal(shiftTab.defaultPrevented, true)
+    assert.ok(document.activeElement === disabledPrevious, 'wrap phải bỏ qua mục cuối đang hidden')
+
+    disabledPrevious.disabled = true
+    const tabFromDisabled = new document.defaultView.KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true })
+    disabledPrevious.dispatchEvent(tabFromDisabled)
+    assert.ok(document.activeElement === first, 'focus trong control disabled phải quay về control dialog hợp lệ')
+
+    const ctrlTab = new document.defaultView.KeyboardEvent('keydown', { key: 'Tab', ctrlKey: true, bubbles: true, cancelable: true })
+    first.dispatchEvent(ctrlTab)
+    assert.equal(ctrlTab.defaultPrevented, false, 'không can thiệp Ctrl+Tab')
+    closeOf(document).disabled = false
+    closeOf(document).click()
+  }, { mobile: true })
+})
+
+test('Tab trap bỏ qua control hidden/disabled và dùng wrapper làm fallback khi không còn focusable control', async () => {
+  await withSidebar(({ document, sidebar }) => {
+    const shell = shellOf(document)
+    const buttons = [...shell.querySelectorAll('button')]
+
+    for (const button of buttons) button.disabled = true
+
+    sidebar.openDrawer()
+
+    assert.ok(document.activeElement === shell)
+    assert.equal(shell.getAttribute('tabindex'), '-1')
+
+    const event = new document.defaultView.KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true })
+    shell.dispatchEvent(event)
+    assert.equal(event.defaultPrevented, true, 'không có focusable item thì giữ focus trên wrapper')
+    assert.ok(document.activeElement === shell)
+    sidebar.closeDrawer({ restoreFocus: false })
+  }, { mobile: true })
+})
+
+test('focusin từ script ra ngoài dialog bị trả về focus khả dụng gần nhất bên trong', async () => {
+  await withSidebar(({ document }) => {
+    toggleOf(document).click()
+    const inside = document.querySelector('.nav-item')
+    const outside = document.createElement('button')
+    outside.type = 'button'
+    document.body.append(outside)
+
+    inside.focus()
+    outside.focus()
+
+    assert.ok(document.activeElement === inside, 'script không được để focus rời dialog')
+  }, { mobile: true })
+})
+
+test('focus ưu tiên thất bại thì Drawer thử candidate focusable tiếp theo', async () => {
+  await withSidebar(({ document }) => {
+    const preferred = document.querySelector('.nav-item[data-page="dashboard"]')
+    const originalFocus = preferred.focus
+    preferred.focus = () => {}
+
+    try {
+      toggleOf(document).click()
+      assert.ok(document.activeElement !== preferred, 'candidate ưu tiên không được ghi nhận khi focus thất bại')
+      assert.ok(document.activeElement?.closest('.drawer-shell') !== null, 'Drawer phải thử candidate tiếp theo trong wrapper')
+    } finally {
+      preferred.focus = originalFocus
+    }
+  }, { mobile: true })
+})
+
+test('mọi candidate focusable thất bại thì Drawer thử và focus được drawer-shell', async () => {
+  await withSidebar(({ document }) => {
+    const shell = shellOf(document)
+    const focusable = [...shell.querySelectorAll('button')]
+    const originalFocus = new Map(focusable.map((element) => [element, element.focus]))
+
+    for (const element of focusable) element.focus = () => {}
+
+    try {
+      toggleOf(document).click()
+      assert.ok(document.activeElement === shell, 'khi mọi control thất bại, focus phải về drawer-shell')
+    } finally {
+      for (const [element, focus] of originalFocus) element.focus = focus
+    }
+  }, { mobile: true })
+})
+
+test('focus candidate ném exception thì Drawer tiếp tục thử candidate kế tiếp', async () => {
+  await withSidebar(({ document }) => {
+    const preferred = document.querySelector('.nav-item[data-page="dashboard"]')
+    const originalFocus = preferred.focus
+    preferred.focus = () => {
+      throw new Error('focus failure')
+    }
+
+    try {
+      assert.doesNotThrow(() => toggleOf(document).click(), 'exception focus không được làm crash mở Drawer')
+      assert.ok(document.activeElement?.closest('.drawer-shell') !== null, 'Drawer phải giữ focus trong wrapper')
+    } finally {
+      preferred.focus = originalFocus
+    }
+  }, { mobile: true })
+})
+
+test('fallback về main thất bại không gây exception hoặc vòng lặp focus', async () => {
+  await withSidebar(({ document }) => {
+    const main = document.querySelector('#main-content')
+    const originalFocus = main.focus
+    toggleOf(document).click()
+    toggleOf(document).hidden = true
+    main.focus = () => {
+      throw new Error('main focus failure')
+    }
+
+    try {
+      assert.doesNotThrow(() => closeOf(document).click(), 'fallback focus thất bại không được làm crash lifecycle')
+      assert.equal(sidebarOf(document).classList.contains('is-open'), false)
+      assert.equal(document.activeElement === main, false, 'focus thất bại không được giả là focus thành công')
+    } finally {
+      main.focus = originalFocus
+    }
+  }, { mobile: true })
+})
+
+for (const unavailable of ['hidden', 'removed', 'disabled']) {
+  test(`nếu opener bị ${unavailable}, focus fallback về main thay vì nav mobile đang ẩn`, async () => {
+    await withSidebar(({ document }) => {
+      toggleOf(document).click()
+      closeOf(document).focus()
+
+      if (unavailable === 'hidden') toggleOf(document).hidden = true
+      if (unavailable === 'removed') toggleOf(document).remove()
+      if (unavailable === 'disabled') toggleOf(document).disabled = true
+
+      closeOf(document).click()
+
+      assert.ok(document.activeElement !== toggleOf(document))
+      assert.ok(document.activeElement === document.querySelector('#main-content'))
+      assert.equal(isInert(document.querySelector('main')), false)
+    }, { mobile: true })
+  })
+}
+
+test('focus opener không đổi activeElement thì close path chạy fallback', async () => {
+  await withSidebar(({ document }) => {
+    toggleOf(document).click()
+    const originalFocus = toggleOf(document).focus
+    toggleOf(document).focus = () => {}
+
+    try {
+      closeOf(document).click()
+      assert.ok(document.activeElement === document.querySelector('#main-content'), 'focus thất bại phải fallback về main')
+    } finally {
+      toggleOf(document).focus = originalFocus
+    }
+  }, { mobile: true })
+})
+
+test('focus opener ném exception không làm crash close path và vẫn fallback', async () => {
+  await withSidebar(({ document }) => {
+    toggleOf(document).click()
+    const originalFocus = toggleOf(document).focus
+    toggleOf(document).focus = () => {
+      throw new Error('focus failure')
+    }
+
+    try {
+      assert.doesNotThrow(() => closeOf(document).click(), 'exception của focus không được làm crash Drawer lifecycle')
+      assert.ok(document.activeElement === document.querySelector('#main-content'), 'focus ném lỗi phải fallback về main')
+    } finally {
+      toggleOf(document).focus = originalFocus
+    }
+  }, { mobile: true })
+})
+
+test('resize: focus active thất bại thì thử rememberedFocus', async () => {
+  await withSidebar(({ document, media }) => {
+    toggleOf(document).click()
+    const active = document.querySelector('.nav-item[data-page="sorting"]')
+    const remembered = document.querySelector('.nav-item[data-page="dashboard"]')
+    const originalFocus = active.focus
+
+    active.focus()
+    remembered.dispatchEvent(new document.defaultView.FocusEvent('focusin', { bubbles: true }))
+    active.focus = () => remembered.focus()
+
+    try {
+      media.setWidth(768)
+      assert.ok(document.activeElement === remembered, 'focus remembered phải được thử sau khi focus active thất bại')
+    } finally {
+      active.focus = originalFocus
+    }
+  }, { mobile: true })
+})
+
+test('resize: rememberedFocus thất bại thì chạy fallback cuối cùng về main', async () => {
+  await withSidebar(({ document, media }) => {
+    toggleOf(document).click()
+    const active = document.querySelector('.nav-item[data-page="sorting"]')
+    const remembered = document.querySelector('.nav-item[data-page="dashboard"]')
+    const navItems = [...document.querySelectorAll('.nav-item, .nav-subitem')]
+    const originalFocus = new Map(navItems.map((element) => [element, element.focus]))
+
+    active.focus()
+    remembered.dispatchEvent(new document.defaultView.FocusEvent('focusin', { bubbles: true }))
+    active.focus = () => document.body.focus()
+    for (const element of navItems) {
+      if (element !== active) element.focus = () => {}
+    }
+
+    try {
+      media.setWidth(768)
+      assert.ok(document.activeElement === document.querySelector('#main-content'), 'focus thất bại hết phải fallback về main')
+    } finally {
+      for (const [element, focus] of originalFocus) element.focus = focus
+    }
   }, { mobile: true })
 })
 
@@ -286,8 +599,13 @@ test('chọn một .nav-item đóng drawer VÀ vẫn chuyển trang đúng', asy
     goTo(document, 'sorting')
 
     assert.equal(sidebarOf(document).classList.contains('is-open'), false)
+    assert.equal(shellOf(document).hasAttribute('role'), false)
+    assert.equal(shellOf(document).hasAttribute('aria-modal'), false)
+    assert.equal(toggleOf(document).getAttribute('aria-expanded'), 'false')
     assert.equal(isInert(document.querySelector('main')), false)
+    assert.equal(isInert(document.querySelector('.skip-link')), false)
     assert.equal(document.querySelector('.algorithm-section').hidden, false, 'thư viện Sắp xếp phải hiện')
+    assert.equal(bodyLocked(document), false)
     assert.ok(document.activeElement === toggleOf(document))
   }, { mobile: true })
 })
@@ -298,8 +616,13 @@ test('chọn một mục con đóng drawer VÀ mở đúng cấu trúc', async (
     document.querySelector('.nav-subitem[data-structure-nav="graph"]').click()
 
     assert.equal(sidebarOf(document).classList.contains('is-open'), false)
+    assert.equal(shellOf(document).hasAttribute('role'), false)
+    assert.equal(shellOf(document).hasAttribute('aria-modal'), false)
+    assert.equal(toggleOf(document).getAttribute('aria-expanded'), 'false')
     assert.equal(document.querySelector('#graph-section').hidden, false)
     assert.equal(isInert(document.querySelector('main')), false)
+    assert.equal(isInert(document.querySelector('.skip-link')), false)
+    assert.equal(bodyLocked(document), false)
   }, { mobile: true })
 })
 
@@ -316,6 +639,8 @@ test('bấm lại mục con của cấu trúc đang mở: vẫn đóng drawer nh
     document.querySelector('.nav-subitem[data-structure-nav="bst"]').click()
 
     assert.equal(sidebarOf(document).classList.contains('is-open'), false, 'drawer phải đóng')
+    assert.equal(shellOf(document).hasAttribute('role'), false)
+    assert.equal(shellOf(document).hasAttribute('aria-modal'), false)
     assert.deepEqual(log, [])
   }, { mobile: true })
 })
@@ -325,6 +650,8 @@ test('bấm ☰ khi đang ở màn hình rộng không mở drawer (tránh trạ
     toggleOf(document).click()
 
     assert.equal(sidebarOf(document).classList.contains('is-open'), false)
+    assert.equal(shellOf(document).hasAttribute('role'), false)
+    assert.equal(shellOf(document).hasAttribute('aria-modal'), false)
     assert.equal(isInert(document.querySelector('main')), false)
     assert.equal(toggleOf(document).getAttribute('aria-expanded'), 'false')
   }, { mobile: false })
@@ -343,6 +670,21 @@ test('phóng to cửa sổ qua ngưỡng 767px khi drawer đang mở: drawer đ�
     assert.equal(isInert(document.querySelector('.skip-link')), false)
     assert.equal(toggleOf(document).getAttribute('aria-expanded'), 'false')
     assert.ok(document.activeElement !== toggleOf(document), 'đóng do đổi bố cục thì không cướp focus')
+  }, { mobile: true })
+})
+
+test('resize 767→768 khi focus ở menu trigger: dialog đóng và focus chuyển khỏi control mobile bị ẩn', async () => {
+  await withSidebar(({ document, media, sidebar }) => {
+    toggleOf(document).click()
+    toggleOf(document).focus()
+
+    media.setWidth(768)
+
+    assert.equal(sidebar.isDrawerOpen(), false, 'Drawer phải đóng khi resize qua breakpoint')
+    assert.equal(shellOf(document).hasAttribute('role'), false)
+    assert.equal(isInert(document.querySelector('main')), false)
+    assert.ok(document.activeElement !== toggleOf(document))
+    assert.ok(document.activeElement === document.querySelector('.nav-item.active'))
   }, { mobile: true })
 })
 
