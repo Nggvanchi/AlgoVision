@@ -121,6 +121,12 @@ test('thu gọn: chỉ trong @media (min-width: 768px); sidebar rộng --sidebar
   assert.equal(pxOf(margin), pxOf('var(--sidebar-width-collapsed)'))
 })
 
+test('nút thu gọn có vùng tương tác 44 x 44px và không đổi kích thước rail', () => {
+  assert.equal(requireValue('.sidebar-collapse', 'width'), '44px')
+  assert.equal(requireValue('.sidebar-collapse', 'height'), '44px')
+  assert.equal(pxOf(requireValue('.app-layout.is-sidebar-collapsed .sidebar', 'width', WIDE)), 72)
+})
+
 test('không luật nào ngoài @media (min-width: 768px) nhắc is-sidebar-collapsed (thu gọn không ảnh hưởng drawer)', () => {
   const outside = sheet.rules.filter((rule) => rule.media !== WIDE && rule.selectors.some((selector) => selector.includes('is-sidebar-collapsed')))
 
