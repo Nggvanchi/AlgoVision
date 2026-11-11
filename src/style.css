@@ -524,8 +524,8 @@ button:disabled {
 
 .sidebar-collapse {
   display: grid;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   place-items: center;
   border: 0;
   border-radius: var(--radius-sm);
@@ -910,6 +910,7 @@ button.structure-card:hover {
   align-items: center;
   justify-content: center;
   gap: 12px;
+  min-height: 44px;
   padding: 11px 16px;
   border: 1px solid #a18aff;
   border-radius: 8px;
@@ -1173,6 +1174,7 @@ button.structure-card:hover {
 }
 
 .size-control select {
+  min-height: 44px;
   padding: 8px 12px;
   border: 1px solid var(--border-control);
   border-radius: 7px;
@@ -1730,6 +1732,7 @@ button.structure-card:hover {
 
 .search-toolbar input {
   width: 100px;
+  min-height: 44px;
   padding: 10px 12px;
   border: 1px solid var(--border-control);
   border-radius: 8px;
@@ -1737,6 +1740,7 @@ button.structure-card:hover {
 }
 
 #search-algorithm {
+  min-height: 44px;
   padding: 8px 12px;
   border: 1px solid var(--border-control);
   border-radius: 8px;
@@ -2109,7 +2113,7 @@ button.structure-card:hover {
 
 .array-operation-card input {
   width: 100%;
-  min-height: 42px;
+  min-height: 44px;
   box-sizing: border-box;
   margin-bottom: 14px;
   padding: 10px 12px;
@@ -2126,7 +2130,7 @@ button.structure-card:hover {
 }
 
 .control-button {
-  min-height: 40px;
+  min-height: 44px;
   padding: 10px 14px;
   color: #f9fafb;
   background: #2563eb;
@@ -2746,6 +2750,7 @@ button.structure-card:focus-visible,
   align-items: center;
   gap: 8px;
   margin-bottom: 20px;
+  min-height: 44px;
   padding: 10px 14px;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -3291,6 +3296,7 @@ button.dashboard-card:hover {
 
 .bst-toolbar input,
 .bst-toolbar select {
+  min-height: 44px;
   padding: 9px 12px;
   border: 1px solid var(--border-control);
   border-radius: 8px;
