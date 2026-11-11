@@ -254,8 +254,8 @@ Trạng thái (`collapsed`, `drawerOpen`) chỉ nằm trong bộ nhớ của phi
   Tên truy cập luôn là chữ thật trong `.nav-label`; tooltip chỉ là phần phụ.
 - Drawer (<= 767px): đóng sẵn bằng `visibility: hidden` + `transform: translateX(-100%)` (transition `visibility 0s 200ms` để trượt xong mới ẩn), nên 0 phần tử focus được trong sidebar; chỉ `.brand`
   được `visibility: visible` riêng để h1 còn trong cây trợ năng. Cao `calc(100vh - 64px)` rồi `calc(100dvh - 64px)` (dự phòng), nằm dưới thanh trên 64px (`top: 64px`) để nút menu vẫn bấm được.
-  Mở (chỉ khi `matchMedia` hẹp): class `is-open` trên sidebar và lớp phủ, `aria-expanded`/nhãn của nút menu, `#main-content` và `.skip-link` thành `inert`, focus vào `.nav-item` đầu tiên. Không `role="dialog"`,
-  không bẫy focus. Đóng bằng nút menu, lớp phủ, Escape, hoặc chọn một mục (kể cả bấm lại mục con đang mở): trả focus về nút menu; riêng khi cửa sổ rộng ra qua 767px thì đóng mà KHÔNG kéo focus.
+  Mở (chỉ khi `matchMedia` hẹp): `.drawer-shell` trở thành modal dialog có tên truy cập ("Điều hướng chính") với `role="dialog"` và `aria-modal="true"`; wrapper chứa cả `.mobile-bar` (bao gồm nút `#sidebar-toggle`) và `aside#sidebar`. Nút menu đổi tên thành "Đóng menu điều hướng". Ranh giới giữ focus là `.drawer-shell`, không chỉ riêng `aside`: focus ban đầu vào `.nav-item` đầu tiên, Tab/Shift+Tab tuần tự và wrap trong các control của dialog, focus bị đưa trở lại wrapper nếu script chuyển ra ngoài.
+  `#main-content` và `.skip-link` thành `inert` khi mở. Đóng bằng nút menu, nút X, lớp phủ, Escape hoặc chọn một mục thì gỡ semantics modal/inert và trả focus về nút đã mở; riêng khi cửa sổ rộng ra qua 767px thì đóng mà KHÔNG kéo focus.
   Nút menu dùng symbol SVG `icon-menu` và không đổi hình khi mở; khi drawer mở `<body>` có class `is-drawer-open` (khóa cuộn nền, giữ chỗ thanh cuộn). `prefers-reduced-motion` dùng luật chung sẵn có (`transition-duration: 0.01ms !important`).
 
 **Token đang dùng cho sidebar** (nhóm `TOKEN MỚI, ĐANG DÙNG`, 16 token sau R3; chỉ trong luật của sidebar/tooltip/nút chính, `tests/sidebar-css.test.js` canh gác không cho cỡ chữ/spacing/bo góc lan ra ngoài):
