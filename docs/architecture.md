@@ -71,8 +71,8 @@ Section Sorting có `id="sorting-section"` (`app.html:203`); navigation và test
   `.visualizer-heading h3`, `.visualizer-header h3`.
 - Vùng cuộn: mọi luật `overflow` auto/scroll trong `style.css` ứng với 21 phần tử (5 `pre` mã giả, `#comparison-array`, khung mảng/Stack/Queue/Linked List,
   khung vẽ BST/Hash/Graph, 2 khung hàng đợi/ngăn xếp của BFS/DFS, 5 `.graph-panel-frame`, và `.sidebar-scroll` của sidebar). Mỗi vùng có `role="group"` và tên: `aria-label` tĩnh,
-  hoặc `aria-labelledby` trỏ tiêu đề h4 (5 `pre`; BST/Hash/Graph đổi chữ theo thao tác); `.sidebar-scroll` có nhãn tĩnh "Danh sách mục điều hướng". Không đặt `tabindex`: Chrome tự cho focus khi tràn.
-  `tests/a11y-scroll-regions.test.js` tìm vùng cuộn từ chính `style.css` (`tests/helpers/css-scroll-selectors.js`) và có bảng đặc tả 21 vùng: thêm vùng cuộn mới
+  hoặc `aria-labelledby` trỏ tiêu đề h4 (5 `pre`; BST/Hash/Graph đổi chữ theo thao tác); `.sidebar-scroll` có nhãn tĩnh "Danh sách mục điều hướng". 19 vùng cuộn độc lập có thể tràn có `tabindex="0"` để hỗ trợ cuộn bằng bàn phím và dùng vòng focus `:focus-visible` chung. Không thêm Tab stop cho `.sidebar-scroll` vì vùng này chứa các nút điều hướng đã nhận focus, hoặc `#graph-dfs-stack-frame` vì giới hạn 8 đỉnh vừa `max-height: 336px`.
+  `tests/a11y-scroll-regions.test.js` tìm vùng cuộn từ chính `style.css` (`tests/helpers/css-scroll-selectors.js`), kiểm chứng role, tên và chính sách `tabindex`, và có bảng đặc tả 21 vùng: thêm vùng cuộn mới
   phải thêm nhãn và một dòng vào bảng đó, nếu không test đỏ.
 
 ## Sorting và Searching

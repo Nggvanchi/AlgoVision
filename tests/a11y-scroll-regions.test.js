@@ -53,27 +53,27 @@ const describe = (element) => `${element.tagName.toLowerCase()}${element.id ? `#
 
 // Bảng đặc tả: vùng cuộn → nhãn tĩnh (label) hoặc phần tử tiêu đề đặt tên (labelledby). Dùng chính khung bọc của phần tử con.
 const SPEC = [
-  { find: (d) => d.querySelector('.sidebar-scroll'), label: 'Danh sách mục điều hướng' },
-  { find: (d) => d.querySelector('#learning-pseudocode').closest('pre'), labelledby: 'learning-pseudocode-title' },
-  { find: (d) => d.querySelector('#search-learning-pseudocode').closest('pre'), labelledby: 'search-learning-pseudocode-title' },
-  { find: (d) => d.querySelector('#bst-pseudocode').closest('pre'), labelledby: 'bst-pseudocode-title' },
-  { find: (d) => d.querySelector('#hash-table-pseudocode').closest('pre'), labelledby: 'hash-table-pseudocode-title' },
-  { find: (d) => d.querySelector('#graph-pseudocode').closest('pre'), labelledby: 'graph-pseudocode-title' },
-  { find: (d) => d.querySelector('#comparison-array'), label: 'Mảng đã sắp xếp dùng để so sánh hai thuật toán' },
-  { find: (d) => d.querySelector('#array-visualizer'), label: 'Các phần tử trong mảng' },
-  { find: (d) => d.querySelector('#stack-visualizer'), label: 'Các phần tử trong Stack' },
-  { find: (d) => d.querySelector('#queue-visualizer'), label: 'Các phần tử trong Queue' },
-  { find: (d) => d.querySelector('#linked-list-visualizer'), label: 'Các nút trong danh sách liên kết đơn' },
-  { find: (d) => d.querySelector('#bst-tree-frame'), label: 'Hình vẽ cây BST' },
-  { find: (d) => d.querySelector('#hash-table-frame'), label: 'Hình vẽ bảng băm' },
-  { find: (d) => d.querySelector('#graph-frame'), label: 'Hình vẽ đồ thị' },
-  { find: (d) => d.querySelector('#graph-bfs-queue-frame'), label: 'Hàng đợi Q của BFS' },
-  { find: (d) => d.querySelector('#graph-dfs-stack-frame'), label: 'Ngăn xếp gọi của DFS' },
-  { find: (d) => d.querySelector('#graph-bfs-table').closest('.graph-panel-frame'), label: 'Bảng khoảng cách và đỉnh cha' },
-  { find: (d) => d.querySelector('#graph-dfs-table').closest('.graph-panel-frame'), label: 'Bảng mốc vào, mốc ra và đỉnh cha' },
-  { find: (d) => d.querySelector('#graph-adjacency-list').closest('.graph-panel-frame'), label: 'Danh sách kề' },
-  { find: (d) => d.querySelector('#graph-adjacency-matrix').closest('.graph-panel-frame'), label: 'Ma trận kề' },
-  { find: (d) => d.querySelector('#graph-complexity-table').closest('.graph-panel-frame'), label: 'Bảng chi phí thời gian và bộ nhớ theo cách biểu diễn' },
+  { find: (d) => d.querySelector('.sidebar-scroll'), label: 'Danh sách mục điều hướng', tabStop: false },
+  { find: (d) => d.querySelector('#learning-pseudocode').closest('pre'), labelledby: 'learning-pseudocode-title', tabStop: true },
+  { find: (d) => d.querySelector('#search-learning-pseudocode').closest('pre'), labelledby: 'search-learning-pseudocode-title', tabStop: true },
+  { find: (d) => d.querySelector('#bst-pseudocode').closest('pre'), labelledby: 'bst-pseudocode-title', tabStop: true },
+  { find: (d) => d.querySelector('#hash-table-pseudocode').closest('pre'), labelledby: 'hash-table-pseudocode-title', tabStop: true },
+  { find: (d) => d.querySelector('#graph-pseudocode').closest('pre'), labelledby: 'graph-pseudocode-title', tabStop: true },
+  { find: (d) => d.querySelector('#comparison-array'), label: 'Mảng đã sắp xếp dùng để so sánh hai thuật toán', tabStop: true },
+  { find: (d) => d.querySelector('#array-visualizer'), label: 'Các phần tử trong mảng', tabStop: true },
+  { find: (d) => d.querySelector('#stack-visualizer'), label: 'Các phần tử trong Stack', tabStop: true },
+  { find: (d) => d.querySelector('#queue-visualizer'), label: 'Các phần tử trong Queue', tabStop: true },
+  { find: (d) => d.querySelector('#linked-list-visualizer'), label: 'Các nút trong danh sách liên kết đơn', tabStop: true },
+  { find: (d) => d.querySelector('#bst-tree-frame'), label: 'Hình vẽ cây BST', tabStop: true },
+  { find: (d) => d.querySelector('#hash-table-frame'), label: 'Hình vẽ bảng băm', tabStop: true },
+  { find: (d) => d.querySelector('#graph-frame'), label: 'Hình vẽ đồ thị', tabStop: true },
+  { find: (d) => d.querySelector('#graph-bfs-queue-frame'), label: 'Hàng đợi Q của BFS', tabStop: true },
+  { find: (d) => d.querySelector('#graph-dfs-stack-frame'), label: 'Ngăn xếp gọi của DFS', tabStop: false },
+  { find: (d) => d.querySelector('#graph-bfs-table').closest('.graph-panel-frame'), label: 'Bảng khoảng cách và đỉnh cha', tabStop: true },
+  { find: (d) => d.querySelector('#graph-dfs-table').closest('.graph-panel-frame'), label: 'Bảng mốc vào, mốc ra và đỉnh cha', tabStop: true },
+  { find: (d) => d.querySelector('#graph-adjacency-list').closest('.graph-panel-frame'), label: 'Danh sách kề', tabStop: true },
+  { find: (d) => d.querySelector('#graph-adjacency-matrix').closest('.graph-panel-frame'), label: 'Ma trận kề', tabStop: true },
+  { find: (d) => d.querySelector('#graph-complexity-table').closest('.graph-panel-frame'), label: 'Bảng chi phí thời gian và bộ nhớ theo cách biểu diễn', tabStop: true },
 ]
 
 test('mọi luật CSS cuộn parse được, chạy được và khớp phần tử trong template (lỗi thì báo rõ, không bỏ qua)', async () => {
@@ -132,5 +132,18 @@ test('nhãn của từng vùng cuộn đúng theo đặc tả (aria-label tĩnh 
         assert.ok(document.getElementById(entry.labelledby) !== null, `thiếu phần tử #${entry.labelledby} để đặt tên cho ${describe(element)}`)
       }
     }
+  })
+})
+
+test('chỉ vùng cuộn độc lập có thể tràn nhận tabindex=0; bỏ vùng có control con và khung DFS luôn vừa giới hạn', async () => {
+  await withFullApp(({ document }) => {
+    for (const entry of SPEC) {
+      const element = entry.find(document)
+      assert.equal(element.getAttribute('tabindex'), entry.tabStop ? '0' : null, describe(element))
+    }
+
+    const sidebar = document.querySelector('.sidebar-scroll')
+    assert.ok(sidebar.querySelector('button, a[href], input, select, textarea'))
+    assert.equal(document.querySelector('#graph-dfs-stack-frame').getAttribute('tabindex'), null)
   })
 })
