@@ -353,6 +353,42 @@ test('Tab và Shift+Tab wrap trong wrapper dialog; Tab không bị trap khi Draw
   }, { mobile: true })
 })
 
+test('Shift+Tab từ nút đóng về nút menu vẫn ở trong dialog và giữ nội dung nền inert', async () => {
+  await withSidebar(({ document }) => {
+    const shell = shellOf(document)
+    const toggle = toggleOf(document)
+    const close = closeOf(document)
+
+    toggle.click()
+    close.focus()
+    assert.ok(document.activeElement === close, 'nút đóng phải nhận focus trước khi thử Shift+Tab')
+
+    const shiftTab = new document.defaultView.KeyboardEvent('keydown', {
+      key: 'Tab',
+      shiftKey: true,
+      bubbles: true,
+      cancelable: true,
+    })
+    close.dispatchEvent(shiftTab)
+    assert.equal(shiftTab.defaultPrevented, false, 'di chuyển giữa các control trong dialog không bị chặn')
+
+    // happy-dom không mô phỏng hành động Tab mặc định của trình duyệt; đặt focus vào control đứng ngay trước nút đóng trong DOM.
+    const focusable = [...shell.querySelectorAll('a[href], area[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+      .filter((element) => !element.closest('.sidebar-footer'))
+    const closeIndex = focusable.indexOf(close)
+    assert.ok(closeIndex > 0, 'nút đóng phải có một control đứng trước trong thứ tự focus của dialog')
+    assert.ok(focusable[closeIndex - 1] === toggle, 'nút menu phải là control đứng trước nút đóng')
+    focusable[closeIndex - 1].focus()
+
+    assert.ok(document.activeElement === toggle, 'Shift+Tab phải đưa focus về nút menu theo thứ tự DOM')
+    assert.ok(shell.contains(document.activeElement), 'focus vẫn thuộc dialog .drawer-shell')
+    assert.equal(shell.getAttribute('aria-modal'), 'true')
+    assert.equal(toggle.getAttribute('aria-label'), 'Đóng menu điều hướng')
+    assert.equal(isInert(document.querySelector('main')), true, 'main vẫn inert khi dialog mở')
+    assert.equal(isInert(document.querySelector('.skip-link')), true, 'skip link vẫn inert khi dialog mở')
+  }, { mobile: true })
+})
+
 test('focus trap bỏ qua control hidden/disabled và không chặn tổ hợp Ctrl+Tab', async () => {
   await withSidebar(({ document }) => {
     toggleOf(document).click()
