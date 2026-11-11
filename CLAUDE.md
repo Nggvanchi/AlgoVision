@@ -15,12 +15,12 @@ pnpm dev                         # chạy thử trên trình duyệt
 
 ## Baseline
 
-Chỗ DUY NHẤT ghi số liệu chuẩn; skill `check` và `resume-check` so với mục này.
-Cập nhật ở commit cuối của mỗi PR làm thay đổi các số dưới đây.
+Mục này giữ số đo và giới hạn lịch sử sau R6c. Ngân sách bundle hiện hành sau R7a được ghi tại `docs/development-baseline.md`; skill `check` và `resume-check` dùng tài liệu đó làm nguồn chuẩn.
 
 - Đo gần nhất sau R6c trên Windows (Vite 8.3.5): `pnpm test` 1680/1680 pass, 0 fail, 0 skipped; `pnpm build` thành công. Đây là số đo Windows, không phải baseline đã xác minh trên mọi hệ điều hành.
 - Bundle sau R6c: JS 150.493 B, CSS 57.207 B. HTML và gzip không dùng làm ngưỡng của R6c.
-  Ngưỡng hiện hành đã duyệt cho R6b/R6c: JS <= 150.500 B, CSS <= 57.500 B. Còn 7 B JS và 293 B CSS; cần đo lại cùng lệnh build trước/sau từng PR.
+  Ngưỡng lịch sử đã duyệt sau R6b/R6c (được thay thế sau R7a): JS <= 150.500 B, CSS <= 57.500 B. Tại lần đo sau R6c còn 7 B JS và 293 B CSS; cần đo lại cùng lệnh build trước/sau từng PR.
+  Ngân sách hiện hành sau R7a: JS <= 154000 B, CSS <= 58500 B; xem `docs/development-baseline.md`.
   Ngưỡng trước R6b (trần riêng của R6a, ƯỚC TÍNH không qua bản mẫu): JS <= 151,5 kB (gzip <= 44,5), CSS <= 56,5 kB (gzip <= 11,5); số đo sau R6a: 1636 test, JS 150.223 B, CSS 56.483 B.
   Ngưỡng trước R6a (trần riêng của `feat/controller-seek`): JS <= 150,0 kB (gzip <= 44,0), CSS <= 55,5 kB (gzip <= 11,0); số đo sau PR đó: 1580 test, JS 149.903 B, CSS 55.079 B.
   Trần cuối cho toàn Redesign (ước tính, người dùng đặt): JS <= 158 kB (gzip <= 46), CSS <= 64 kB (gzip <= 12,8). Trần của PR trước không áp cho PR sau: mỗi PR đo và đặt trần riêng.

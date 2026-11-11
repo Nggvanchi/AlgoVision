@@ -1,8 +1,8 @@
 # Kiến trúc AlgoVision
 
-Tài liệu tra cứu chi tiết cho người (và Claude Code) sửa một module. Tổng quan ngắn nằm trong `CLAUDE.md`.
+Tài liệu tra cứu chi tiết cho người và Codex sửa một module. Hướng dẫn tổng quan nằm trong `AGENTS.md`.
 Dẫn chứng `file:dòng` ở phần module lịch sử được ghi nhận theo các lần đối chiếu nêu tại từng mục; các mô tả Sidebar/Visualizer cập nhật theo `main` tại merge R6c `e23b560` (PR #42). Khi sửa code làm lệch dòng hoặc hành vi, cập nhật dẫn chứng tương ứng.
-Phần mô tả hành vi chi tiết của từng module chuyển từ CLAUDE.md và có test tương ứng; dẫn chứng `file:dòng` chỉ gắn cho định nghĩa chính.
+Phần mô tả hành vi chi tiết của từng module được duy trì cùng hướng dẫn dự án và có test tương ứng; dẫn chứng `file:dòng` chỉ gắn cho định nghĩa chính.
 
 ## Các lớp của một module (BST, Hash Table, Graph)
 
