@@ -43,10 +43,10 @@ số PR ghi sau khi tạo PR. Các dòng Phase 5/6 ở bảng tổng quan phía 
 | R6b | `feat/visualizer-panel` | Tách từ R6: panel accordion (Mã giả, Độ phức tạp, Kiến thức; "Giải thích bước" là vùng aria-live ngoài accordion), màu canvas (gỡ `--purple`), `--border-control` cho 5 luật điều khiển còn lại | Đã merge | #41 |
 | R6c | `feat/visualizer-a11y-contrast` | Tách tiếp: sửa tương phản Visualizer, dấu "✓" dùng `--av-text`, Sidebar tự thu gọn ở Visualizer >= 1280 px bằng `detail.topic` và tôn trọng thao tác thủ công | Đã merge | #42 |
 | R6 (gốc) | `feat/visualizer-frame` | Khung Visualizer, điều khiển, tốc độ `radiogroup`, "Bước x/y", panel accordion và nội dung học tập trong panel; thanh trượt bước cần controller có `seek` | Hoàn thành qua R6a/R6b/R6c; phạm vi là năm Visualizer đã có controller, không bao gồm chuyển Array/Stack/Queue/Linked List thành mô phỏng theo bước. Cách gọi số lượng accordion giữa quyết định 20 và 30 cần người duyệt làm rõ, không thay đổi nội dung quyết định ở đây | #40, #41, #42 |
-| R7 | `chore/a11y-responsive-audit` | Audit trợ năng và responsive, chia nhỏ theo nhóm: R7a Drawer/focus management; R7b focus bàn phím, vùng cuộn, touch target; R7c thông báo và screen reader; R7d xác minh responsive, đa trình duyệt và thiết bị thật | Chưa làm; hiện chỉ là kế hoạch, chưa triển khai | — |
+| R7 | `chore/a11y-responsive-audit` | Audit trợ năng và responsive, chia nhỏ theo nhóm: R7a Drawer/focus management; R7b focus bàn phím, vùng cuộn, touch target; R7c thông báo và screen reader; R7d xác minh responsive, đa trình duyệt và thiết bị thật | R7a đã merge PR #44; R7b đang triển khai; R7c/R7d chưa bắt đầu | #44 (R7a) |
 
 Quy tắc cho cả lộ trình:
-- Mỗi PR xin trần bundle riêng ở bước lập kế hoạch, người dùng duyệt trước khi làm. Trần đã duyệt hiện hành sau R6c: JS <= 150.500 B, CSS <= 57.500 B (số đo gần nhất trên Windows; xem Baseline trong CLAUDE.md). R5c và các mức cũ bên dưới chỉ là lịch sử.
+- Mỗi PR xin trần bundle riêng ở bước lập kế hoạch, người dùng duyệt trước khi làm. Sau R7a, ngân sách hiện hành đã duyệt là JS <= 154.000 B, CSS <= 58.500 B; điều chỉnh để giữ tính năng drawer/focus accessibility đã thêm ở R7a. Số đo và giới hạn R6c là lịch sử; xem `docs/development-baseline.md`. R5c và các mức cũ bên dưới chỉ là lịch sử.
 - R2 phải đo và đề xuất trần cuối cho cả Redesign (đề xuất tạm: JS <= 158 kB, CSS <= 56 kB) để người dùng duyệt một lần; các PR sau làm trong trần đó và vẫn báo byte từng commit.
 - Hai quy tắc sản phẩm trong `docs/design/decisions.md` (không theo dõi tiến độ cá nhân; không số giả) áp dụng cho mọi PR ở bảng này.
 Ghi chú:
@@ -56,8 +56,8 @@ Ghi chú:
 - Giai đoạn 9 ban đầu gồm cả README và CI; hai phần này làm ở PR cấu trúc repo.
 - Deployment: Vercel, production https://algo-vision-gamma.vercel.app tự deploy từ `main`, mỗi PR có link preview.
   Cấu hình nằm trên Vercel, không có file trong repo.
-- Mỗi Phase redesign cần dư địa bundle riêng (ngưỡng hiện hành ở mục Baseline của CLAUDE.md). Không nâng ngưỡng khi chưa được người dùng duyệt;
+- Mỗi Phase redesign cần dư địa bundle riêng (ngưỡng hiện hành ghi tại `docs/development-baseline.md`). Không nâng ngưỡng khi chưa được người dùng duyệt;
   trần của một PR trước đó (Phase 3b: JS 160 kB, CSS 54,5 kB; Phase 4: JS 160 kB, CSS 56 kB) không áp cho PR sau.
-  Sau khi gỡ tiến độ ngưỡng là JS 146,0 kB và CSS 49,5 kB; R2 nâng riêng CSS lên 51,0 kB; R3 nâng riêng JS lên 147,0 kB (đo 146.358 B, dư 642 B; mục Baseline của CLAUDE.md). Mỗi PR Redesign v1.0 cần trần riêng, duyệt riêng ở bước lập kế hoạch.
+  Sau khi gỡ tiến độ ngưỡng là JS 146,0 kB và CSS 49,5 kB; R2 nâng riêng CSS lên 51,0 kB; R3 nâng riêng JS lên 147,0 kB (đo 146.358 B, dư 642 B; các số này là lịch sử). Mỗi PR Redesign v1.0 cần trần riêng, duyệt riêng ở bước lập kế hoạch.
 - Để sau: phân loại 4 loại cạnh DFS (cây/ngược/xuôi/chéo) dựa trên mốc vào/ra đã có.
 - Việc còn tồn tại, chưa xếp vào giai đoạn nào: `docs/backlog.md`.

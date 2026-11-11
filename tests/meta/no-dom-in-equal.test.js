@@ -1,4 +1,4 @@
-// Canh gác quy tắc trong .claude/rules/tests.md: không truyền kết quả truy vấn DOM vào
+// Canh gác quy tắc trong .agents/rules/tests.md: không truyền kết quả truy vấn DOM vào
 // assert.equal/strictEqual/notEqual/notStrictEqual/deepEqual/deepStrictEqual.
 // Khi test đỏ, Node in cả phần tử happy-dom nên tràn heap hoặc treo và mất thông điệp lỗi.
 // Dùng assert.ok(<biểu thức> === null, '<mô tả>') thay thế.

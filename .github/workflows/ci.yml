@@ -47,4 +47,4 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
       - run: pnpm build
-      - run: node .claude/skills/check/scripts/check-encoding.mjs --all
+      - run: node .agents/skills/check/scripts/check-encoding.mjs --all
