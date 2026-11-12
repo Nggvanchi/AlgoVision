@@ -241,8 +241,7 @@ button:focus-visible {
 }
 
 /* Mọi phần tử còn lại (select, input, textarea, [tabindex], pre và vùng cuộn mà Chrome tự cho focus như #array-visualizer ở 360px):
-   trước đây rơi về vòng mặc định của trình duyệt (gần đen trên nền tối). Độ ưu tiên thấp nhất nên mọi luật riêng thắng; đứng TRƯỚC
-   `.main-content:focus` và `.array-operation-card input` để hai luật `outline: none` đó (R7 sẽ quyết ô nhập Mảng) vẫn thắng. */
+   trước đây rơi về vòng mặc định của trình duyệt (gần đen trên nền tối). Độ ưu tiên thấp nhất nên mọi luật riêng thắng. */
 :focus-visible {
   outline: 2px solid var(--av-focus);
   outline-offset: 2px;
@@ -2184,7 +2183,11 @@ button.structure-card:hover {
 
 .array-operation-card input:focus {
   border-color: var(--av-primary-line);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+}
+
+.array-operation-card input:focus-visible {
+  outline: 2px solid var(--av-focus);
+  outline-offset: 2px;
 }
 
 .array-operation-card .control-button {
