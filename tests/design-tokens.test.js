@@ -589,15 +589,16 @@ test('luật :focus-visible chung (select, input, textarea, [tabindex], pre và 
   assert.equal(generic.declarations.find((declaration) => declaration.property === 'outline-offset')?.value, '2px')
 })
 
-test('luật focus-visible chung đứng TRƯỚC `.main-content:focus` và `.array-operation-card input` để hai luật bỏ vòng này (cùng độ ưu tiên) thắng theo thứ tự', () => {
+test('luật focus-visible chung đứng trước luật riêng của main và input Array; input Array có rule focus-visible riêng dùng token', () => {
   const selectorsInOrder = sheet.rules.filter((rule) => rule.media === null).map((rule) => rule.selectors.join(', '))
   const at = (selector) => selectorsInOrder.findIndex((text) => text === selector || text.split(', ').includes(selector))
   const generic = at(':focus-visible')
 
   assert.ok(generic !== -1)
   assert.ok(generic < at('.main-content:focus'), 'luật chung phải trước .main-content:focus (outline: none cho vùng nội dung được focus bằng chương trình)')
-  assert.ok(generic < at('.array-operation-card input'), 'luật chung phải trước .array-operation-card input (outline: none + glow, để R7 quyết)')
-  assert.deepEqual(declarationValues(css, '.array-operation-card input', 'outline'), ['none'], 'ô nhập Mảng giữ outline: none + glow cho tới R7')
+  assert.ok(generic < at('.array-operation-card input'), 'luật chung phải trước .array-operation-card input (outline: none được rule focus-visible riêng ghi đè)')
+  assert.deepEqual(declarationValues(css, '.array-operation-card input', 'outline'), ['none'], 'outline mặc định chỉ bị tắt trước trạng thái focus-visible')
+  assert.deepEqual(declarationValues(css, '.array-operation-card input:focus-visible', 'outline'), ['2px solid var(--av-focus)'])
 })
 
 test('13 chỗ canvas BST/Hash/Graph từng dùng --purple nay dùng var(--av-primary-text) (R6b); --purple không còn', () => {
@@ -656,8 +657,7 @@ test('hex trùng giá trị Spec chưa có token chỉ nằm ở danh sách ngo�
   assert.ok(SPEC_HEX_EXCEPTIONS.every(([, , reason]) => reason.length > 10), 'mỗi ngoại lệ phải có lý do')
 })
 
-test('glow focus của ô nhập Mảng dùng rgba của --av-primary-line với alpha 0,15, không còn hex 8 chữ số #9b82ff26', () => {
-  const [red, green, blue] = [1, 3, 5].map((at) => Number.parseInt(tokens.get('--av-primary-line').slice(at, at + 2), 16))
-
-  assert.deepEqual(declarationValues(css, '.array-operation-card input:focus', 'box-shadow'), [`0 0 0 3px rgba(${red}, ${green}, ${blue}, 0.15)`])
+test('focus-visible của ô nhập Mảng dùng outline --av-focus và không còn glow box-shadow màu cứng', () => {
+  assert.deepEqual(declarationValues(css, '.array-operation-card input:focus-visible', 'outline'), ['2px solid var(--av-focus)'])
+  assert.deepEqual(declarationValues(css, '.array-operation-card input:focus', 'box-shadow'), [])
 })
