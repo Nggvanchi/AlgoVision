@@ -2,36 +2,36 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readStyle, rootTokens, declarationValues } from './helpers/css-tokens.js'
 
-// Redesign R2: khối token --av-* theo Spec v1.0 mục 2 (docs/design/spec.md dòng 46-65, 111) và --av-nav-active-text.
-// Bảng dưới là hợp đồng của Spec; giá trị Spec không đặt tên và chưa dùng ở R2 thì CHƯA khai báo.
+// UI v2: hợp đồng Light Minimal tại docs/design/v2-foundation.md; Spec v1 giữ làm lịch sử.
+// Bảng dưới là hợp đồng của Spec; giá trị Light v2 không đặt tên và chưa dùng ở R2 thì CHƯA khai báo.
 
 const { tokens, duplicates } = rootTokens(readStyle())
 
 const SPEC_TOKENS = {
-  '--av-bg': '#0B0B12',
-  '--av-sidebar': '#0E0E16',
-  '--av-surface-1': '#12121C',
-  '--av-surface-2': '#1A1A28',
-  '--av-surface-3': '#1E1E2C',
-  '--av-border': '#272738',
-  '--av-border-strong': '#2E2E44',
-  '--av-border-dashed': '#3A3A52',
-  '--av-text': '#ECECF4',
-  '--av-text-muted': '#A1A1B5',
-  '--av-text-subtle': '#8A8AA0',
-  '--av-primary': '#7C3AED',
-  '--av-primary-hover': '#6D28D9',
-  '--av-primary-text': '#A78BFA',
-  '--av-primary-line': '#8B5CF6',
-  '--av-accent': '#3B82F6',
-  '--av-accent-text': '#93C5FD',
-  '--av-success': '#34D399',
-  '--av-warning': '#FBBF24',
-  '--av-danger': '#F87171',
-  '--av-focus': '#C4B5FD',
-  '--av-nav-active-text': '#DDD6FE',
-  // Nền mềm của mục nav đang mở (Spec mục 12): rgba của --av-primary-line, alpha 0,18. Thay --purple-active (R3).
-  '--av-nav-active-bg': 'rgba(139, 92, 246, 0.18)',
+  '--av-bg': '#F7F8FC',
+  '--av-sidebar': '#FFFFFF',
+  '--av-surface-1': '#FFFFFF',
+  '--av-surface-2': '#F1F3F8',
+  '--av-surface-3': '#E8ECF3',
+  '--av-border': '#DDE2EB',
+  '--av-border-strong': '#7C879B',
+  '--av-border-dashed': '#7C879B',
+  '--av-text': '#172033',
+  '--av-text-muted': '#526075',
+  '--av-text-subtle': '#5B677A',
+  '--av-primary': '#6D28D9',
+  '--av-primary-hover': '#5B21B6',
+  '--av-primary-text': '#6D28D9',
+  '--av-primary-line': '#6D28D9',
+  '--av-accent': '#1D4ED8',
+  '--av-accent-text': '#1D4ED8',
+  '--av-success': '#166534',
+  '--av-warning': '#A16207',
+  '--av-danger': '#B91C1C',
+  '--av-focus': '#6D28D9',
+  '--av-nav-active-text': '#6D28D9',
+  // Nền mềm của mục nav đang mở (Spec mục 12): lavender đặc #EDE9FE theo Light v2. Thay --purple-active (R3).
+  '--av-nav-active-bg': '#EDE9FE',
   // Bo góc 10px của nút/input/select/nav item (Spec mục 5). Spec không đặt tên token bo góc: tên do R3 chọn.
   '--av-radius-control': '10px',
   '--av-space-1': '4px',
@@ -58,13 +58,13 @@ const SPEC_TOKENS = {
 }
 
 for (const [name, expected] of Object.entries(SPEC_TOKENS)) {
-  test(`token ${name} có trong :root và đúng giá trị Spec ${expected}`, () => {
+  test(`token ${name} có trong :root và đúng giá trị Light v2 ${expected}`, () => {
     assert.ok(tokens.has(name), `${name} chưa được khai báo trong :root`)
-    assert.equal(tokens.get(name).toLowerCase(), expected.toLowerCase(), `${name} sai giá trị so với Spec`)
+    assert.equal(tokens.get(name).toLowerCase(), expected.toLowerCase(), `${name} sai giá trị so với Light v2`)
   })
 }
 
-test('không có token --av-* ngoài danh sách Spec (giá trị Spec không tên chưa dùng thì chưa khai báo)', () => {
+test('không có token --av-* ngoài danh sách Spec (giá trị Light v2 không tên chưa dùng thì chưa khai báo)', () => {
   const extra = [...tokens.keys()].filter((name) => name.startsWith('--av-') && !(name in SPEC_TOKENS))
   assert.deepEqual(extra, [], `token --av-* ngoài hợp đồng: ${extra.join(', ')}`)
 })

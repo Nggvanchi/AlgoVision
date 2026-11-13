@@ -12,11 +12,13 @@ const value = (selector, property, media = null) => rule(selector, media)?.decla
 test('.primary-button có vùng chạm 44px và giữ nguyên các declaration tương tác', () => {
   assert.equal(value('.primary-button', 'min-height'), '44px')
   assert.equal(value('.primary-button', 'padding'), '11px 16px')
-  assert.equal(value('.primary-button:hover', 'transform'), 'translateY(-1px)')
-  assert.equal(value('.primary-button:hover', 'background'), 'var(--av-primary-hover)')
-  assert.equal(value('.primary-button:disabled', 'opacity'), '0.4')
-  assert.equal(value('.primary-button:disabled', 'cursor'), 'not-allowed')
-  assert.equal(value('.primary-button:disabled', 'transform'), 'none')
+  assert.equal(value('.primary-button:hover:not(:disabled)', 'transform'), 'translateY(-1px)')
+  assert.equal(value('.primary-button:hover:not(:disabled)', 'background'), 'var(--av-primary-hover)')
+  assert.equal(value('button:disabled', 'opacity'), '1')
+  assert.equal(value('button:disabled', 'cursor'), 'not-allowed')
+  assert.equal(value('.primary-button:hover', 'transform'), undefined)
+  assert.equal(value('button:disabled', 'background'), 'var(--av-surface-3)')
+  assert.equal(value('.array-operation-card .control-button:disabled', 'background'), 'var(--av-surface-3)')
 })
 
 test('.primary-button thừa hưởng focus-visible chung và không làm đổi nút dashboard', () => {

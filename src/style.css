@@ -93,6 +93,7 @@
 }
 
 :root {
+  color-scheme: light;
   font-family: var(--font-ui);
   color: var(--av-text);
   background: var(--av-bg);
@@ -101,32 +102,30 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* === TOKEN --av-* (Redesign R2, Spec v1.0 mục 2) ===
-     Nguồn giá trị duy nhất của bảng màu và khoảng cách mới (tests/av-tokens.test.js canh gác). Chỉ khai báo những giá trị Spec
-     đã đặt tên hoặc R2 cần; giá trị Spec không tên và chưa dùng (chữ/nền trạng thái, canvas...) chưa khai báo. */
-  --av-bg: #0B0B12;
-  --av-sidebar: #0E0E16;
-  --av-surface-1: #12121C;
-  --av-surface-2: #1A1A28;
-  --av-surface-3: #1E1E2C;
-  --av-border: #272738;
-  --av-border-strong: #2E2E44;
-  --av-border-dashed: #3A3A52;
-  --av-text: #ECECF4;
-  --av-text-muted: #A1A1B5;
-  --av-text-subtle: #8A8AA0;
-  --av-primary: #7C3AED;
-  --av-primary-hover: #6D28D9;
-  --av-primary-text: #A78BFA;
-  --av-primary-line: #8B5CF6;
-  --av-accent: #3B82F6;
-  --av-accent-text: #93C5FD;
-  --av-success: #34D399;
-  --av-warning: #FBBF24;
-  --av-danger: #F87171;
-  --av-focus: #C4B5FD;
-  --av-nav-active-text: #DDD6FE;
-  --av-nav-active-bg: rgba(139, 92, 246, 0.18);
+  /* TOKEN --av-* — Light Minimal v2: docs/design/v2-foundation.md. Giữ tên token theo vai trò và alias hiện hành. */
+  --av-bg: #F7F8FC;
+  --av-sidebar: #FFFFFF;
+  --av-surface-1: #FFFFFF;
+  --av-surface-2: #F1F3F8;
+  --av-surface-3: #E8ECF3;
+  --av-border: #DDE2EB;
+  --av-border-strong: #7C879B;
+  --av-border-dashed: #7C879B;
+  --av-text: #172033;
+  --av-text-muted: #526075;
+  --av-text-subtle: #5B677A;
+  --av-primary: #6D28D9;
+  --av-primary-hover: #5B21B6;
+  --av-primary-text: #6D28D9;
+  --av-primary-line: #6D28D9;
+  --av-accent: #1D4ED8;
+  --av-accent-text: #1D4ED8;
+  --av-success: #166534;
+  --av-warning: #A16207;
+  --av-danger: #B91C1C;
+  --av-focus: #6D28D9;
+  --av-nav-active-text: #6D28D9;
+  --av-nav-active-bg: #EDE9FE;
   --av-radius-control: 10px;
   --av-space-1: 4px;
   --av-space-2: 8px;
@@ -165,9 +164,9 @@
   --purple-dark: var(--av-primary); /* tạm, gỡ ở R6 */
 
   /* Màu trạng thái "đang xét": cột đang so sánh và dòng mã giả đang thực thi. Spec không quy định; giữ đến R6. */
-  --state-active: #f6c76a;
+  --state-active: #A16207;
 
-  /* Màu của cue ngoài màu trên cột Sắp xếp (viền dày, nét đứt, viền kép): gần đen, đạt >= 3:1 với mọi màu nền cột. */
+  /* Cue tối nằm trong cột trạng thái pastel: so sánh viền dày, đổi chỗ nét đứt, hoàn tất viền kép. */
   --bar-cue: #0d0f15;
 
   --border-color: var(--border); /* tạm, gỡ ở R6 */
@@ -191,8 +190,7 @@
 
 
 
-  /* Tím của sidebar và nút chính. KHÔNG đặt chữ trắng lên --av-primary-line hay --av-primary-text (không đạt 4,5:1 với chữ nhỏ).
-     --av-nav-active-bg (khối --av-*) là nền mềm của mục đang mở, chữ --av-nav-active-text; vạch 3px và icon hover dùng --av-primary-text. */
+  /* Tím nhấn v2 đạt AA với chữ trắng; nav active dùng nền lavender riêng, không chỉ dựa vào màu. */
 
   /* Cỡ chữ */
   --fs-xs: 12px;
@@ -210,12 +208,10 @@
   --radius-sm: 8px;
 
   /* Bóng (tooltip của sidebar thu gọn) */
-  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 2px 8px rgba(23, 32, 51, 0.08);
 
-  /* Viền của điều khiển (ô nhập, nút): đạt 3:1 trên nền (quyết định 9 và 12: giữ nguyên, KHÔNG dùng --av-border-strong #2E2E44
-     chỉ 1,41:1). --border (token cũ) chỉ để trang trí. R4: nút viền ở hero Dashboard là chỗ dùng đầu tiên; ô nhập/select
-     còn viết màu cứng (xem docs/backlog.md). */
-  --border-control: #6B6B87;
+  /* Light v2: viền điều khiển >= 3:1 trên surface sáng; viền card chỉ trang trí. */
+  --border-control: #7C879B;
 
   /* === TOKEN MỚI, CHƯA ĐƯỢC DÙNG ===
      Chỉ ĐỊNH NGHĨA; chưa luật nào tham chiếu (tests/design-tokens.test.js canh gác). Hiện rỗng sau R4. */
@@ -247,9 +243,12 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
-button:disabled {
+button:disabled,
+.array-operation-card .control-button:disabled {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: 1;
+  color: var(--av-text-subtle);
+  background: var(--av-surface-3);
 }
 
 #app {
@@ -301,7 +300,7 @@ button:disabled {
 
 .brand h1 {
   margin: 0;
-  color: #f6f4ff;
+  color: var(--text);
   font-size: 19px;
   letter-spacing: -0.7px;
 }
@@ -683,7 +682,7 @@ button:disabled {
 }
 
 .breadcrumb strong {
-  color: #e3e4ee;
+  color: var(--text);
   font-weight: 500;
 }
 
@@ -702,7 +701,7 @@ button:disabled {
 .page-heading h2 {
   max-width: 720px;
   margin: 0;
-  color: #f4f3fb;
+  color: var(--text);
   font-size: clamp(27px, 3vw, 38px);
   font-weight: 600;
   letter-spacing: -1.4px;
@@ -732,7 +731,7 @@ button:disabled {
 
 .section-heading h3 {
   margin: 0;
-  color: #e9eaf3;
+  color: var(--text);
   font-size: 16px;
   font-weight: 600;
 }
@@ -746,7 +745,7 @@ button:disabled {
 
 .count-label,
 .visualizer-tag {
-  color: #969bb0;
+  color: var(--muted);
   font-size: 10px;
   letter-spacing: 1px;
   white-space: nowrap;
@@ -778,14 +777,14 @@ button.structure-card {
 .algorithm-card:hover,
 button.structure-card:hover {
   transform: translateY(-2px);
-  border-color: #5c527f;
+  border-color: var(--border-control);
   background: var(--panel-hover);
 }
 
 .algorithm-card.selected {
   border-color: var(--av-primary-line);
-  background: linear-gradient(145deg, #1a1729, var(--panel) 75%);
-  box-shadow: inset 0 0 0 1px #9177f01a;
+  background: var(--panel);
+  box-shadow: none;
 }
 
 .card-top {
@@ -802,10 +801,10 @@ button.structure-card:hover {
   width: 34px;
   height: 34px;
   place-items: center;
-  border: 1px solid #554480;
+  border: 1px solid var(--border-control);
   border-radius: 9px;
-  background: #8b72f51b;
-  color: #c4b4ff;
+  background: var(--av-nav-active-bg);
+  color: var(--av-primary-text);
   font-size: 20px;
 }
 
@@ -817,19 +816,19 @@ button.structure-card:hover {
 }
 
 .difficulty.easy {
-  background: #18372c;
-  color: #79d8a8;
+  background: #DCFCE7;
+  color: var(--av-success);
 }
 
 .difficulty.medium {
-  background: #392b1b;
-  color: #edc17a;
+  background: #FEF3C7;
+  color: #713F12;
 }
 
 .algorithm-card h4,
 .structure-card-title {
   margin: 0;
-  color: #f1effb;
+  color: var(--text);
   font-size: var(--av-fs-card);
   font-weight: 600;
 }
@@ -891,7 +890,7 @@ button.structure-card:hover {
 
 .visualizer-placeholder h4 {
   margin: 19px 0 0;
-  color: #e8e6f3;
+  color: var(--text);
   font-size: 16px;
   font-weight: 600;
 }
@@ -911,7 +910,7 @@ button.structure-card:hover {
   gap: 12px;
   min-height: 44px;
   padding: 11px 16px;
-  border: 1px solid #a18aff;
+  border: 1px solid var(--av-primary-line);
   border-radius: 8px;
   background: var(--purple-dark);
   color: white;
@@ -921,7 +920,7 @@ button.structure-card:hover {
   transition: background 160ms ease, transform 160ms ease;
 }
 
-.primary-button:hover {
+.primary-button:hover:not(:disabled) {
   transform: translateY(-1px);
   background: var(--av-primary-hover);
 }
@@ -933,7 +932,7 @@ button.structure-card:hover {
   gap: 16px;
   padding: 23px 0 28px;
   border-top: 1px solid var(--border);
-  color: #777d92;
+  color: var(--muted);
   font-size: 10px;
 }
 
@@ -1117,11 +1116,9 @@ button.structure-card:hover {
   display: block;
   min-height: 300px;
   padding: 24px;
-  border: 1px dashed #393447;
+  border: 1px dashed var(--border);
   border-radius: 13px;
-  background:
-    radial-gradient(ellipse at 50% 0%, #8b72f50c, transparent 65%),
-    #101118;
+  background: var(--panel);
   text-align: left;
 }
 
@@ -1135,7 +1132,7 @@ button.structure-card:hover {
 /* #visualizer-title là h3 (dưới h2 tiêu đề trang) nhưng giữ nguyên kiểu cũ của h4: đã đo computed style trước và sau. */
 .visualizer-heading h3 {
   margin: 0;
-  color: #e8e6f3;
+  color: var(--text);
   font-size: 16px;
   font-weight: 600;
 }
@@ -1149,7 +1146,7 @@ button.structure-card:hover {
 
 .array-count {
   padding: 6px 9px;
-  border: 1px solid #393447;
+  border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--av-focus);
   font-size: 11px;
@@ -1168,7 +1165,7 @@ button.structure-card:hover {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #a4a9bb;
+  color: var(--muted);
   font-size: 12px;
 }
 
@@ -1177,7 +1174,7 @@ button.structure-card:hover {
   padding: 8px 12px;
   border: 1px solid var(--border-control);
   border-radius: 7px;
-  background: #171923;
+  background: var(--panel);
   color: var(--text);
   font: inherit;
   cursor: pointer;
@@ -1197,17 +1194,17 @@ button.structure-card:hover {
   margin-top: 26px;
   padding: 12px 12px 0;
   overflow: hidden;
-  border-bottom: 1px solid #393447;
+  border-bottom: 1px solid var(--border);
   background-image: linear-gradient(
     to top,
     transparent calc(25% - 1px),
-    #ffffff08 25%,
+    #1720330d 25%,
     transparent calc(25% + 1px),
     transparent calc(50% - 1px),
-    #ffffff08 50%,
+    #1720330d 50%,
     transparent calc(50% + 1px),
     transparent calc(75% - 1px),
-    #ffffff08 75%,
+    #1720330d 75%,
     transparent calc(75% + 1px)
   );
 }
@@ -1220,17 +1217,17 @@ button.structure-card:hover {
   justify-content: center;
   min-width: 0;
   max-width: 52px;
-  border: 1px solid #a58cff55;
+  border: 1px solid var(--av-primary-line);
   border-bottom: none;
   border-radius: 6px 6px 0 0;
-  background: linear-gradient(180deg, var(--av-primary-text), #7654d5);
+  background: var(--av-primary-text);
   transition: height 180ms ease, background 180ms ease;
 }
 
 .bar-value {
   position: absolute;
   top: -20px;
-  color: #c9c1e8;
+  color: var(--text);
   font-size: 10px;
   font-variant-numeric: tabular-nums;
 }
@@ -1241,7 +1238,7 @@ button.structure-card:hover {
   justify-content: space-between;
   gap: 12px;
   margin-top: 14px;
-  color: #858ba0;
+  color: var(--muted);
   font-size: 10px;
 }
 
@@ -1255,7 +1252,7 @@ button.structure-card:hover {
   width: 8px;
   height: 8px;
   border-radius: 3px;
-  background: #9576ed;
+  background: var(--av-primary);
 }
 
 @media (max-width: 700px) {
@@ -1295,22 +1292,6 @@ button.structure-card:hover {
   margin-top: 24px;
 }
 
-.control-button:hover:not(:disabled) {
-  border-color: #7965b6;
-  background: #222031;
-}
-
-.control-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.4;
-}
-
-.primary-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.4;
-  transform: none;
-}
-
 /* Trạng thái của cột Sắp xếp: không chỉ dựa vào màu. Cue nằm TRONG cột (inset), không chiếm thêm chỗ nên hai cột kề nhau
    không chạm; đọc được cả ở cột 7,6px (24 cột ở 360px). Mẫu trong chú giải (.sort-legend-swatch) dùng cùng quy tắc.
    Đang so sánh: viền dày (vòng trong 2px). Đã đổi chỗ: viền nét đứt. Đã sắp xếp: viền kép (vòng trong 1px).
@@ -1318,25 +1299,25 @@ button.structure-card:hover {
 .array-bar.is-comparing,
 .sort-legend-swatch.is-comparing {
   border-color: var(--state-active);
-  background: linear-gradient(180deg, var(--state-active), #c58a31);
+  background: #FEF3C7;
   box-shadow: inset 0 0 0 2px var(--bar-cue);
 }
 
 .array-bar.is-swapped,
 .sort-legend-swatch.is-swapped {
-  border-color: #ff8c9b;
+  border-color: var(--av-accent);
   background:
     repeating-linear-gradient(to bottom, var(--bar-cue) 0 4px, transparent 4px 8px) left 1px top / 2px 100% no-repeat,
     repeating-linear-gradient(to bottom, var(--bar-cue) 0 4px, transparent 4px 8px) right 1px top / 2px 100% no-repeat,
-    linear-gradient(180deg, #ff8c9b, #d84e70);
+    #DBEAFE;
   /* Cột vừa so sánh vừa đổi chỗ có cả hai lớp: đã đổi chỗ thắng, không cộng thêm vòng của đang so sánh. */
   box-shadow: none;
 }
 
 .array-bar.is-sorted,
 .sort-legend-swatch.is-sorted {
-  border-color: #5ce0a0;
-  background: linear-gradient(180deg, #5ce0a0, #219b70);
+  border-color: var(--av-success);
+  background: #DCFCE7;
   box-shadow: inset 0 0 0 1px var(--bar-cue);
 }
 
@@ -1346,10 +1327,10 @@ button.structure-card:hover {
   flex: none;
   width: 10px;
   height: 18px;
-  border: 1px solid #a58cff55;
+  border: 1px solid var(--av-primary-line);
   border-bottom: none;
   border-radius: 4px 4px 0 0;
-  background: linear-gradient(180deg, var(--av-primary-text), #7654d5);
+  background: var(--av-primary-text);
 }
 
 /* Ở màn hẹp, chú giải của Bubble và Selection (3 mục) cao hơn của Insertion (2 mục): đo Chrome 78px so với 62px ở 360px.
@@ -1363,7 +1344,7 @@ button.structure-card:hover {
 /* Nhãn "Đang chèn" của Insertion Sort: luôn giữ chỗ để khung không đổi chiều cao giữa các bước */
 .insertion-key {
   margin: 14px 0 0;
-  color: #858ba0;
+  color: var(--muted);
   font-size: 12px;
   line-height: 1.5;
 }
@@ -1397,7 +1378,7 @@ button.structure-card:hover {
   padding: 14px;
   border: 1px solid var(--border);
   border-radius: 9px;
-  background: #141620;
+  background: var(--panel);
 }
 
 .stat-card span {
@@ -1406,7 +1387,7 @@ button.structure-card:hover {
 }
 
 .stat-card strong {
-  color: #e9e5ff;
+  color: var(--text);
   font-size: 21px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -1415,10 +1396,10 @@ button.structure-card:hover {
 .simulation-message {
   margin: 16px 0 0;
   padding: 12px 14px;
-  border: 1px solid #39304f;
+  border: 1px solid var(--border);
   border-radius: 8px;
   background: #8b72f50d;
-  color: #c6bddf;
+  color: var(--muted);
   font-size: 12px;
   line-height: 1.8;
 }
@@ -1518,7 +1499,7 @@ button.structure-card:hover {
 }
 
 .step-slider input[type="range"]:disabled {
-  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .step-slider input[type="range"]:focus-visible {
@@ -1644,7 +1625,7 @@ button.structure-card:hover {
 }
 
 .complexity-heading span {
-  color: #a99aff;
+  color: var(--av-primary-text);
   font-size: 10px;
   letter-spacing: 1px;
 }
@@ -1660,7 +1641,7 @@ button.structure-card:hover {
   padding: 15px;
   border: 1px solid var(--border);
   border-radius: 9px;
-  background: #141620;
+  background: var(--panel);
 }
 
 .complexity-card > span {
@@ -1817,34 +1798,31 @@ button.structure-card:hover {
 
 
 .search-cell.is-eliminated {
-  border: 1px dashed #a1a1aa;
-  background: #3b3b43;
+  border: 1px dashed var(--av-text-muted);
+  background: var(--av-surface-2);
   color: var(--av-text);
 }
 
-/* Trạng thái ô Tìm kiếm không chỉ dựa vào màu: đang kiểm tra viền dày + ▶, tìm thấy khung kép + ✓,
-   đã kiểm tra viền nét đứt; đã loại bỏ dùng nền xám riêng và chữ sáng. Cue nằm trong ô (inset) nên kích thước ô không đổi.
-   Màu cue dùng lại màu chữ của chính ô để đạt >= 3:1 với nền ô: #92400e trên #fef3c7 = 6,37; #166534 trên #dcfce7 = 6,49;
-   viền nét đứt #a1a1aa trên #27272a = 5,81; #a1a1aa trên #3b3b43 cũng vượt 3:1 (bản đầu dùng #d97706 = 2,86, #16a34a = 3,00, #71717a = 2,45 sau khi mờ). */
+/* Trạng thái Tìm kiếm giữ cue và kích thước ô: màu chữ/viền đậm trên nền pastel, không giảm opacity. */
 .search-cell.is-checked {
-  background: #27272a;
-  border-color: #a1a1aa;
+  background: var(--av-surface-3);
+  border-color: var(--av-text-muted);
   border-style: dashed;
-  color: #a1a1aa;
+  color: var(--av-text-muted);
 }
 
 .search-cell.is-current {
   background: #fef3c7;
-  border-color: #d97706;
+  border-color: #92400e;
   color: #92400e;
   box-shadow: inset 0 0 0 2px #92400e, 0 0 0 2px rgb(245 158 11 / 20%);
 }
 
 .search-cell.is-found {
   background: #dcfce7;
-  border-color: #16a34a;
-  color: #166534;
-  box-shadow: inset 0 0 0 2px #dcfce7, inset 0 0 0 3px #166534, 0 0 0 2px rgb(34 197 94 / 20%);
+  border-color: var(--av-success);
+  color: var(--av-success);
+  box-shadow: inset 0 0 0 2px #dcfce7, inset 0 0 0 3px var(--av-success), 0 0 0 2px rgb(34 197 94 / 20%);
 }
 
 /* ▶ / ✓ ở góc trên bên trái, không đè chữ giá trị căn giữa ô (ô tối thiểu 48px). */
@@ -1894,19 +1872,19 @@ button.structure-card:hover {
 }
 
 .search-legend-dot.is-eliminated {
-  border: 1px dashed #a1a1aa;
-  background: #3b3b43;
+  border: 1px dashed var(--av-text-muted);
+  background: var(--av-surface-2);
 }
 
 .search-legend-dot.is-checked {
-  border: 1px dashed #a1a1aa;
-  background: #27272a;
+  border: 1px dashed var(--av-text-muted);
+  background: var(--av-surface-3);
 }
 
 .search-legend-dot.is-found {
-  border: 1px solid #16a34a;
+  border: 1px solid var(--av-success);
   background: #dcfce7;
-  box-shadow: inset 0 0 0 2px #dcfce7, inset 0 0 0 3px #166534;
+  box-shadow: inset 0 0 0 2px #dcfce7, inset 0 0 0 3px var(--av-success);
 }
 
 .search-range-panel {
@@ -2001,8 +1979,8 @@ button.structure-card:hover {
 .array-panel {
   margin-top: 24px;
   padding: 24px;
-  background: #151923;
-  border: 1px solid #2b3240;
+  background: var(--panel);
+  border: 1px solid var(--border);
   border-radius: 16px;
 }
 
@@ -2017,14 +1995,14 @@ button.structure-card:hover {
 .array-panel-heading h4,
 .array-operation-card h4 {
   margin: 0 0 8px;
-  color: #f3f4f6;
+  color: var(--text);
   font-size: var(--av-fs-card);
 }
 
 .array-panel-heading p,
 .array-operation-card p {
   margin: 0 0 16px;
-  color: #9ca3af;
+  color: var(--muted);
   font-size: 13px;
   line-height: 1.6;
 }
@@ -2046,7 +2024,7 @@ button.structure-card:hover {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  border: 1px solid #3b4960;
+  border: 1px solid var(--border-control);
   border-radius: 12px;
   transition:
     background-color 0.2s ease,
@@ -2059,7 +2037,7 @@ button.structure-card:hover {
 }
 
 .array-cell-value {
-  color: #f9fafb;
+  color: var(--text);
   font-size: 22px;
   font-weight: 700;
   overflow-wrap: anywhere;
@@ -2072,18 +2050,18 @@ button.structure-card:hover {
 .array-status {
   margin: 16px 0 0;
   padding: 12px 14px;
-  color: #a7f3d0;
-  background: #142a27;
-  border: 1px solid #245448;
+  color: var(--av-success);
+  background: #DCFCE7;
+  border: 1px solid var(--av-success);
   border-radius: 10px;
   font-size: 13px;
   line-height: 1.6;
 }
 
 .array-status[data-state="error"] {
-  color: #fecaca;
-  background: #321d24;
-  border-color: #71313c;
+  color: var(--av-danger);
+  background: #FEE2E2;
+  border-color: var(--av-danger);
 }
 
 .array-operations {
@@ -2099,14 +2077,14 @@ button.structure-card:hover {
   flex-direction: column;
   align-items: stretch;
   padding: 22px;
-  background: #151923;
-  border: 1px solid #2b3240;
+  background: var(--panel);
+  border: 1px solid var(--border);
   border-radius: 16px;
 }
 
 .array-operation-card label {
   margin: 4px 0 8px;
-  color: #d1d5db;
+  color: var(--muted);
   font-size: 13px;
 }
 
@@ -2116,8 +2094,8 @@ button.structure-card:hover {
   box-sizing: border-box;
   margin-bottom: 14px;
   padding: 10px 12px;
-  color: #f9fafb;
-  background: #0f131b;
+  color: var(--text);
+  background: var(--panel);
   border: 1px solid var(--border-control);
   border-radius: 9px;
   font: inherit;
@@ -2125,14 +2103,14 @@ button.structure-card:hover {
 }
 
 .array-operation-card input::placeholder {
-  color: #9ca3af;
+  color: var(--muted);
 }
 
 .control-button {
   min-height: 44px;
   padding: 10px 14px;
-  color: #f9fafb;
-  background: #2563eb;
+  color: white;
+  background: var(--av-primary);
   border: 1px solid var(--av-accent);
   border-radius: 9px;
   font: inherit;
@@ -2144,8 +2122,8 @@ button.structure-card:hover {
     transform 0.2s ease;
 }
 
-.control-button:hover {
-  background: #1d4ed8;
+.control-button:hover:not(:disabled) {
+  background: var(--av-primary-hover);
 }
 
 .control-button:active {
@@ -2173,12 +2151,12 @@ button.structure-card:hover {
 }
 
 .array-cell:hover {
-  background: #201d30;
+  background: var(--av-nav-active-bg);
   border-color: var(--av-primary-line);
 }
 
 .array-cell-index {
-  color: #c4b5ff;
+  color: var(--av-primary-text);
 }
 
 .array-operation-card input:focus {
@@ -2195,7 +2173,7 @@ button.structure-card:hover {
   border-color: var(--av-primary-line);
 }
 
-.array-operation-card .control-button:hover {
+.array-operation-card .control-button:hover:not(:disabled) {
   background: var(--av-primary-hover);
 }
 
@@ -2275,7 +2253,7 @@ button.structure-card:hover {
 }
 
 .stack-cell.is-top {
-  background: #211b38;
+  background: var(--av-nav-active-bg);
   border-color: var(--av-primary-line);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--av-primary-text) 15%, transparent);
 }
@@ -2283,7 +2261,7 @@ button.structure-card:hover {
 .stack-top-label {
   position: absolute;
   right: 12px;
-  color: #c4b5ff;
+  color: var(--av-primary-text);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -2329,9 +2307,9 @@ button.structure-card:hover {
 }
 
 #stack-status.is-error {
-  color: #fca5a5;
-  background: #35191d;
-  border-color: #71313a;
+  color: var(--av-danger);
+  background: #FEE2E2;
+  border-color: var(--av-danger);
 }
 
 @media (max-width: 760px) {
@@ -2412,7 +2390,7 @@ button.structure-card:focus-visible,
   padding: 20px;
   overflow-x: auto;
   border-radius: 12px;
-  background: rgba(10, 10, 25, 0.28);
+  background: var(--av-bg);
 }
 
 .linked-list-node {
@@ -2422,15 +2400,15 @@ button.structure-card:focus-visible,
   align-items: center;
   gap: 8px;
   padding: 14px 10px;
-  border: 1px solid rgba(155, 120, 255, 0.35);
+  border: 1px solid var(--border-control);
   border-radius: 12px;
-  background: rgba(120, 80, 220, 0.12);
+  background: var(--av-surface-2);
   transition: border-color 0.2s, background 0.2s, transform 0.2s;
 }
 
 .linked-list-node.is-highlighted {
   border-color: var(--av-primary-text);
-  background: rgba(139, 92, 246, 0.25);
+  background: var(--av-nav-active-bg);
   transform: translateY(-3px);
 }
 
@@ -2460,7 +2438,7 @@ button.structure-card:focus-visible,
 .linked-list-null {
   flex: 0 0 auto;
   padding: 8px 10px;
-  border: 1px dashed rgba(255, 255, 255, 0.3);
+  border: 1px dashed var(--border-control);
   border-radius: 8px;
   font-size: 13px;
   color: var(--av-focus);
@@ -2494,7 +2472,7 @@ button.structure-card:focus-visible,
 }
 
 #linked-list-status[data-type="error"] {
-  color: #fca5a5;
+  color: var(--av-danger);
 }
 
 @media (max-width: 640px) {
@@ -2560,11 +2538,11 @@ button.structure-card:focus-visible,
 }
 
 .queue-cell.is-front {
-    border: 2px solid #22c55e;
+    border: 2px solid var(--av-success);
 }
 
 .queue-cell.is-rear {
-    border: 2px solid #60a5fa;
+    border: 2px solid var(--av-accent);
 }
 
 .queue-front-label,
@@ -2577,11 +2555,11 @@ button.structure-card:focus-visible,
 }
 
 .queue-front-label {
-    color: #22c55e;
+    color: var(--av-success);
 }
 
 .queue-rear-label {
-    color: #60a5fa;
+    color: var(--av-accent);
 }
 
 .queue-empty {
@@ -2712,7 +2690,7 @@ button.structure-card:focus-visible,
   display: block;
   width: max-content;
   min-width: 100%;
-  color: #c8bbff;
+  color: var(--av-primary-text);
   font-family: var(--font-mono);
   font-size: 12px;
   line-height: 1.8;
@@ -2890,7 +2868,7 @@ button.structure-card:focus-visible,
 }
 
 .demo-bar.is-swapped {
-  fill: #ff8c9b;
+  fill: var(--av-accent);
 }
 
 .dashboard-demo-text {
@@ -3325,7 +3303,7 @@ button.dashboard-card:hover {
 
 .bst-error {
   margin: 8px 0 0;
-  color: #fca5a5;
+  color: var(--av-danger);
   font-size: 14px;
   font-weight: 600;
 }
@@ -3354,7 +3332,7 @@ button.dashboard-card:hover {
 }
 
 .bst-edge {
-  stroke: var(--border);
+  stroke: var(--border-control);
   stroke-width: 2;
 }
 
@@ -3392,19 +3370,19 @@ button.dashboard-card:hover {
 }
 
 .bst-node.is-successor .bst-node-circle {
-  stroke: #38bdf8;
+  stroke: var(--av-accent);
   stroke-width: 3;
   stroke-dasharray: 4 3;
 }
 
 .bst-node-ring {
   fill: none;
-  stroke: #22c55e;
+  stroke: var(--av-success);
   stroke-width: 2;
 }
 
 .bst-node.is-found .bst-node-circle {
-  fill: color-mix(in srgb, #22c55e 22%, var(--panel));
+  fill: color-mix(in srgb, var(--av-success) 22%, var(--panel));
 }
 
 .bst-output {
@@ -3429,13 +3407,13 @@ button.dashboard-card:hover {
 }
 
 .bst-legend-dot.is-found {
-  border-color: #22c55e;
-  outline: 2px solid #22c55e;
+  border-color: var(--av-success);
+  outline: 2px solid var(--av-success);
   outline-offset: 1px;
 }
 
 .bst-legend-dot.is-successor {
-  border: 2px dashed #38bdf8;
+  border: 2px dashed var(--av-accent);
 }
 
 .simulation-stats.bst-stats {
@@ -3485,7 +3463,7 @@ button.dashboard-card:hover {
 
 .hash-cell {
   fill: var(--panel);
-  stroke: var(--border);
+  stroke: var(--border-control);
   stroke-width: 2;
 }
 
@@ -3551,12 +3529,12 @@ button.dashboard-card:hover {
 
 .hash-entry-ring {
   fill: none;
-  stroke: #22c55e;
+  stroke: var(--av-success);
   stroke-width: 2;
 }
 
 .hash-entry.is-found .hash-entry-box {
-  fill: color-mix(in srgb, #22c55e 22%, var(--panel));
+  fill: color-mix(in srgb, var(--av-success) 22%, var(--panel));
 }
 
 .hash-legend-box {
@@ -3576,8 +3554,8 @@ button.dashboard-card:hover {
 }
 
 .hash-legend-box.is-found {
-  border-color: #22c55e;
-  outline: 2px solid #22c55e;
+  border-color: var(--av-success);
+  outline: 2px solid var(--av-success);
   outline-offset: 1px;
 }
 
@@ -3658,12 +3636,12 @@ button.dashboard-card:hover {
 
 .graph-vertex-ring {
   fill: none;
-  stroke: #22c55e;
+  stroke: var(--av-success);
   stroke-width: 2;
 }
 
 .graph-vertex.is-output .graph-vertex-circle {
-  fill: color-mix(in srgb, #22c55e 22%, var(--panel));
+  fill: color-mix(in srgb, var(--av-success) 22%, var(--panel));
 }
 
 .graph-vertex-check {

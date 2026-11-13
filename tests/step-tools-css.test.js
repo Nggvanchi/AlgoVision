@@ -1,10 +1,15 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { readStyle, declarationValues, parseStylesheet, countVarUses } from './helpers/css-tokens.js'
+import { readStyle, declarationValues, parseStylesheet, countVarUses, rootTokens } from './helpers/css-tokens.js'
 import { contrastRatio } from './helpers/contrast.js'
 
 const css = readStyle()
 const sheet = parseStylesheet(css)
+const tokens = rootTokens(css).tokens
+const resolve = (value) => {
+  const name = /^var\((--[\w-]+)\)$/.exec(value)?.[1]
+  return name ? resolve(tokens.get(name)) : value
+}
 
 const value = (selector, property) => declarationValues(css, selector, property).at(-1)
 
@@ -23,7 +28,11 @@ test('rãnh thanh trượt dùng --border-control ở cả WebKit và Firefox (c
   assert.equal(value('.step-slider input[type="range"]::-moz-range-track', 'background'), 'var(--border-control)')
 
   // Giá trị thật của token trên nền khung (surface-1) phải đạt 3:1 (WCAG 1.4.11).
-  assert.ok(contrastRatio('#6B6B87', '#12121C') >= 3)
+  const background = resolve(value('.visualizer-placeholder', 'background'))
+  for (const pseudo of ['::-webkit-slider-runnable-track', '::-moz-range-track']) {
+    const track = resolve(value(`.step-slider input[type="range"]${pseudo}`, 'background'))
+    assert.ok(contrastRatio(track, background) >= 3, `${pseudo} trên nền Visualizer phải đạt 3:1`)
+  }
 })
 
 test('núm kéo dùng màu chữ nhấn --av-primary-text, viền màu nền, ở cả WebKit và Firefox', () => {

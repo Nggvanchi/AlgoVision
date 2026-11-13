@@ -244,10 +244,10 @@ test('logo .brand-icon: icon lưới nét mảnh màu --av-primary-text, KHÔNG 
   assert.ok(ratio('var(--av-primary-text)', SIDEBAR_BG) >= 4.5)
 })
 
-test('mục active dùng chữ --av-nav-active-text (Spec; 11,51:1 trên nền pill --av-nav-active-bg), không chỉ "vừa đủ 4,5"', () => {
+test('v2: mục active dùng chữ --av-nav-active-text đạt AA trên nền lavender', () => {
   assert.equal(requireValue('.nav-item.active', 'color'), 'var(--av-nav-active-text)')
   assert.equal(requireValue('.nav-subitem.active', 'color'), 'var(--av-nav-active-text)')
-  assert.ok(ratio('var(--av-nav-active-text)', 'var(--av-nav-active-bg)') >= 9.9)
+  assert.ok(ratio('var(--av-nav-active-text)', 'var(--av-nav-active-bg)') >= 4.5)
 })
 
 test('.sidebar rộng đúng var(--sidebar-width) (không gõ chết số), nên đổi token là đổi cả sidebar lẫn bài kiểm bề rộng', () => {
