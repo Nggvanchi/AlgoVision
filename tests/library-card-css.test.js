@@ -70,7 +70,7 @@ const PAIRS = [
 
 for (const [name, foreground, background, minimum] of PAIRS) {
   test(`tương phản: ${name} >= ${minimum}:1`, () => {
-    const ratio = contrastRatio(foreground, background)
+    const ratio = contrastRatio(resolve(foreground), resolve(background))
 
     assert.ok(ratio >= minimum, `chỉ ${ratio.toFixed(2)}:1`)
   })

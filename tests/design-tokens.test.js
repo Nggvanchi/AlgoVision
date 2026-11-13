@@ -110,14 +110,15 @@ for (const [name, target] of [['--purple-strong', '--av-primary'], ['--purple-pr
   })
 }
 
-test('token mới --border-control = #6B6B87 (quyết định 9 và 12: viền điều khiển giữ nguyên, không dùng --av-border-strong)', () => {
+test('token mới --border-control = #7C879B (quyết định 9 và 12: viền điều khiển giữ nguyên, không dùng --av-border-strong)', () => {
   assert.ok(tokens.has('--border-control'), ':root phải khai báo --border-control')
-  assert.equal(normalize(tokens.get('--border-control')), '#6b6b87')
+  assert.equal(normalize(tokens.get('--border-control')), '#7c879b')
 })
 
-test('token --av-nav-active-bg là nền mềm Spec: rgba của --av-primary-line với alpha 0,18 (thay --purple-active ở R3)', () => {
+test('v2: nav active dùng nền lavender đặc và chữ đạt AA', () => {
   const [red, green, blue] = [1, 3, 5].map((at) => Number.parseInt(tokens.get('--av-primary-line').slice(at, at + 2), 16))
-  assert.equal(tokens.get('--av-nav-active-bg'), `rgba(${red}, ${green}, ${blue}, 0.18)`)
+  assert.equal(tokens.get('--av-nav-active-bg'), '#EDE9FE')
+  assert.ok(contrastRatio(resolve('--av-nav-active-text'), resolve('--av-nav-active-bg')) >= 4.5)
 })
 
 // Token đã gỡ ở R2 (từng là NEW_COLORS/token chưa dùng): không còn trong :root và không luật nào nhắc.
@@ -159,7 +160,7 @@ test('token bo góc đang dùng: --radius-sm 8px; --radius-md/lg/pill chưa dùn
 })
 
 test('token bóng: --shadow-card còn; --glow-purple chưa dùng đã gỡ', () => {
-  assert.equal(tokens.get('--shadow-card'), '0 8px 24px rgba(0, 0, 0, 0.35)')
+  assert.equal(tokens.get('--shadow-card'), '0 2px 8px rgba(23, 32, 51, 0.08)')
   assert.ok(!tokens.has('--glow-purple'))
 })
 
@@ -173,7 +174,7 @@ const OLD_TO_AV = {
   '--background': '--av-bg', '--panel': '--av-surface-1', '--panel-hover': '--av-surface-2', '--border': '--av-border',
   '--text': '--av-text', '--muted': '--av-text-muted', '--purple-dark': '--av-primary',
 }
-const OLD_VALUES = { '--state-active': '#f6c76a', '--bar-cue': '#0d0f15' }
+const OLD_VALUES = { '--state-active': '#a16207', '--bar-cue': '#0d0f15' }
 const OLD_ALIASES = {
   '--text-muted': 'var(--muted)', '--border-color': 'var(--border)', '--card-background': 'var(--panel)',
   '--text-secondary': 'var(--muted)', '--surface-secondary': 'var(--panel)',
@@ -282,10 +283,10 @@ const PAIRS = [
   ['--av-nav-active-text', '--av-nav-active-bg', 4.5], ['--av-primary-text', '--av-surface-1', 4.5],
   ['#ffffff', '--av-primary', 4.5], ['#ffffff', '--av-primary-hover', 4.5], ['#ffffff', '--purple-dark', 4.5],
   ['--av-bg', '--av-primary-text', 4.5],
-  ['--bar-cue', '--av-primary-text', 3],
+  ['--bar-cue', '#FEF3C7', 3],
   ['--av-accent-text', '--av-surface-1', 4.5], ['--state-active', '--av-surface-1', 4.5], ['--av-success', '--av-surface-1', 4.5],
   ['--border-control', '--av-surface-1', 3], ['--border-control', '--av-bg', 3], ['--border-control', '--av-surface-2', 3],
-  ['--av-nav-active-text', '--av-nav-active-bg', 9.9], ['--av-primary-text', '--av-nav-active-bg', 3], ['--av-primary-text', '--av-sidebar', 4.5],
+  ['--av-nav-active-text', '--av-nav-active-bg', 4.5], ['--av-primary-text', '--av-nav-active-bg', 3], ['--av-primary-text', '--av-sidebar', 4.5],
   ['--av-primary-text', '--av-surface-1', 4.5], ['--av-primary-line', '--av-sidebar', 3], ['--av-primary-line', '--av-bg', 3],
   ['--av-focus', '--av-bg', 3], ['--av-focus', '--av-surface-1', 3],
 ]
@@ -297,14 +298,15 @@ for (const [foreground, background, minimum] of PAIRS) {
   })
 }
 
-test('pill active hiện ra đúng bằng --av-primary-line 18% trên --av-sidebar (tính, không gõ tay)', () => {
-  assert.equal(colorOf('--av-nav-active-bg'), blend(resolve('--av-primary-line'), 0.18, resolve('--av-sidebar')))
+test('v2: pill active có nền lavender và focus đạt 3:1', () => {
+  assert.equal(colorOf('--av-nav-active-bg'), '#EDE9FE')
+  assert.ok(contrastRatio(resolve('--av-focus'), colorOf('--av-nav-active-bg')) >= 3)
 })
 
-test('--av-primary-line chỉ cho icon, viền, chữ lớn: chữ nhỏ trên --av-surface-1 chỉ 4,39:1 và chữ trắng trên nó chỉ 4,23:1 (cả hai dưới 4,5, vì vậy bị cấm)', () => {
-  assert.ok(contrastRatio(resolve('--av-primary-line'), resolve('--av-surface-1')) < 4.5)
-  assert.ok(contrastRatio('#ffffff', resolve('--av-primary-line')) < 4.5)
-  assert.ok(contrastRatio(resolve('--av-primary-line'), resolve('--av-surface-1')) >= 4.3, 'số đo đã ghi trong báo cáo R2a: 4,39')
+test('v2: tím nhấn đạt AA trên trắng và chữ trắng trên tím đạt AA', () => {
+  assert.ok(contrastRatio(resolve('--av-primary-line'), resolve('--av-surface-1')) >= 4.5)
+  assert.ok(contrastRatio('#ffffff', resolve('--av-primary-line')) >= 4.5)
+  assert.equal(contrastRatio(resolve('--av-primary-line'), resolve('--av-surface-1')).toFixed(2), '7.10')
 })
 
 test('không luật nào dùng --av-primary-line làm màu chữ (color)', () => {
@@ -315,8 +317,8 @@ test('không luật nào dùng --av-primary-line làm màu chữ (color)', () =>
   assert.deepEqual(bad, [])
 })
 
-test('cấm chữ trắng trên --av-primary-text (màu canvas và cột): tỉ lệ thật dưới 4,5 (vì vậy bị cấm)', () => {
-  assert.ok(contrastRatio('#ffffff', resolve('--av-primary-text')) < 4.5)
+test('v2: chữ trắng trên màu canvas tím đạt AA', () => {
+  assert.ok(contrastRatio('#ffffff', resolve('--av-primary-text')) >= 4.5)
 })
 
 // Luật đặt nền tím sáng (#9B82FF) cùng chữ trắng. .dashboard-primary-button từng vi phạm (2,99:1) và đã sửa ở Redesign Phase 2
@@ -544,21 +546,23 @@ for (const [selector, property, was, token] of HEX_TO_TOKEN) {
 // Màu visualization không đổi
 // ---------------------------------------------------------------------------------------------------------------------
 
-test('màu trạng thái giữ nguyên: --state-active #f6c76a, --bar-cue #0d0f15', () => {
-  assert.equal(normalize(tokens.get('--state-active')), '#f6c76a')
+test('màu trạng thái giữ nguyên: --state-active #a16207, --bar-cue #0d0f15', () => {
+  assert.equal(normalize(tokens.get('--state-active')), '#a16207')
   assert.equal(normalize(tokens.get('--bar-cue')), '#0d0f15')
 })
 
-test('#22c55e (trạng thái tìm thấy/đầu hàng đợi) vẫn viết thẳng ở đúng 12 chỗ (dấu ✓ Graph dùng --av-text ở R6c)', () => {
+test('v2: không còn xanh sáng dark; Queue front dùng token success', () => {
   const outsideRoot = stripComments(css).replace(rootRawBlock(stripComments(css)), '')
-  assert.equal((outsideRoot.match(/#22c55e/gi) ?? []).length, 12)
+  assert.equal((outsideRoot.match(/#22c55e/gi) ?? []).length, 0)
+  assert.equal(declarationValues(css, '.queue-front-label', 'color').at(-1), 'var(--av-success)')
 })
 
 // Từ 4 xuống 2 ở PR chore/bundle-headroom: hai chỗ bị gỡ là khai báo chết (border-color của .array-cell:hover và .array-operation-card input:focus)
 // bị khối sau ghi đè bằng var(--purple), nên màu hiển thị không đổi. Hai chỗ còn lại (viền và nhãn của hàng đợi) vẫn viết thẳng.
-test('#60a5fa (viền, nhãn đầu cuối hàng đợi) vẫn viết thẳng ở đúng 2 chỗ (#60a5fa là màu icon nhỏ của Spec, chưa có token tên)', () => {
+test('v2: không còn xanh sáng dark; Queue rear dùng token accent', () => {
   const outsideRoot = stripComments(css).replace(rootRawBlock(stripComments(css)), '')
-  assert.equal((outsideRoot.match(/#60a5fa/gi) ?? []).length, 2)
+  assert.equal((outsideRoot.match(/#60a5fa/gi) ?? []).length, 0)
+  assert.equal(declarationValues(css, '.queue-rear-label', 'color').at(-1), 'var(--av-accent)')
 })
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -617,13 +621,7 @@ const NAMED_SPEC_COLORS = new Map([...tokens].filter(([name, value]) => /^--av-/
 
 // Ngoại lệ: hex trùng giá trị Spec nhưng Spec KHÔNG đặt tên token (R2 chưa khai báo), nên chưa thể thay. Mỗi mục có lý do; khi R3-R6
 // khai báo token tương ứng thì chuyển luật sang token và xóa mục khỏi danh sách (test mục cuối bắt mục thừa).
-const SPEC_HEX_EXCEPTIONS = [
-  ['#stack-status.is-error', '#fca5a5', 'danger-text của Spec chưa có token (R2 không khai báo giá trị Spec không tên)'],
-  ['#linked-list-status[data-type="error"]', '#fca5a5', 'danger-text của Spec chưa có token'],
-  ['.bst-error', '#fca5a5', 'danger-text của Spec chưa có token'],
-  ['.queue-cell.is-rear', '#60a5fa', 'accent-icon của Spec chưa có token'],
-  ['.queue-rear-label', '#60a5fa', 'accent-icon của Spec chưa có token'],
-]
+const SPEC_HEX_EXCEPTIONS = []
 
 function specHexOutsideRoot() {
   const found = []

@@ -10,6 +10,25 @@
 - Bundle: JavaScript 150.493 B; CSS 57.207 B. HTML và gzip không phải ngưỡng được dùng lần đo này.
 - Font tự host: 10 WOFF2, tổng 172.912 B, cùng 2 giấy phép OFL; ngưỡng ghi nhận 175 kB. Font không nằm trong bundle JS/CSS.
 
+## UI v2-1 — bằng chứng trước review, Windows ngày 2026-11-13
+
+- Branch `feat/ui-v2-foundation`, base `07be7660c61459cb38e8426c5407904cca016aeb`; thay đổi chưa commit khi đo. Chỉ CSS, test và docs; không đổi JS runtime/template, Spec hoặc decisions v1.
+- TDD: hợp đồng token light RED trước khi sửa CSS (23 giá trị palette chưa đúng); sau triển khai GREEN. Full suite trước review: 1739 tests PASS, 0 FAIL, 0 skipped, 0 todo, 45,327 s; tăng 14 test so với 1725 của R7c.
+- `pnpm build` PASS (Vite 8.3.5): JS raw 152734 B, CSS raw 58452 B. So với R7c: JS +0 B, CSS +633 B. Dư 1266 B JS và 48 B CSS dưới trần 154000/58500 B. Gzip do Vite hiển thị: JS 44,81 kB, CSS 10,58 kB; không phải trần nghiệm thu.
+- Build đầu CSS 58654 B vượt trần; đã gỡ luật hover/disabled dư trong phạm vi, không nâng ngân sách. Số đo cuối ở trên thay cho lần build vượt trần.
+- Encoding UTF-8/LF, diff và test tương phản palette/control/focus/trạng thái PASS. Tính màu từ CSS không thay browser QA; xem `docs/design/v2-foundation.md`.
+- Mutation nguồn CSS: đổi chữ chính thành trắng bị bốn test nền sáng bắt (exit 1, heap 512 MB). Snapshot helper không truy xuất được bản tạm giữa lệnh sandbox; đã khôi phục thay đổi chính xác và đối chiếu SHA-256 trước/sau: `ac6cd1d7ca0efac3a22d380bedc5987d859f77c1d1154da0f291def98f11cff5` (trước lần sửa comment thuần túy cuối). Full test/build cuối chạy sau khôi phục; không để mutation trong diff.
+- Chrome 360/767/768/1279/1280/1440 CSS px: NOT VERIFIED, chưa có Chrome/CDP khả dụng trong phiên sandbox. Zoom thật 200%, Vercel browser smoke, Firefox/Safari/thiết bị thật/screen reader vẫn NOT VERIFIED. 137 case R7 là lịch sử của palette v1, không nghiệm thu light v2.
+- Dashboard/Library/Visualizer redesign riêng và layout hai cột chưa triển khai. Browser QA và review còn lại; không commit/push/PR trong phiên này.
+
+## UI v2-1 — nghiệm thu ba patch sau review
+
+- Khôi phục marker comment `TOKEN --av-*` mà không đổi test; riêng `.hash-cell` đổi stroke từ viền trang trí sang `--border-control`. Viền ô/khung đạt 3,62:1/3,41:1 từ token thật. Giữ mọi viền trang trí khác.
+- Regression Hash Table RED trước patch; test marker cũng RED. Sau patch, nhóm focused 154/154 PASS. Test track WebKit/Firefox giải nền và màu track từ CSS hiện hành, vẫn giữ ngưỡng >=3:1; không dùng cặp dark viết cứng.
+- Full suite mới trên trạng thái cuối: 1740 PASS, 0 FAIL, 0 skipped, 0 todo; 55,857 s. Build PASS: JS raw 152734 B; CSS raw 58460 B (dư 1266/40 B dưới trần). Gzip đo bằng Node zlib mặc định: JS 44546 B, CSS 10529 B; khác thiết lập gzip do Vite hiển thị.
+- Phạm vi cuối là 14 file (12 modified, 2 untracked): 13 file Foundation ban đầu cộng `tests/step-tools-css.test.js` đã được chủ dự án chỉ định sửa. Không stage/commit hoặc thay đổi runtime/template.
+- Kiểm inventory Chrome trực tiếp: chỉ có cửa sổ cá nhân, chưa có cửa sổ QA riêng hoặc kết nối Chrome trong công cụ; không tác động cửa sổ cá nhân. Browser QA 360/767/768/1279/1280/1440 CSS px vẫn NOT VERIFIED; không dùng PASS của unit/CSS test thay cho browser.
+
 ## R7c — bằng chứng lịch sử, PR #51
 
 - Baseline sau merge: `ef34955fa945a96336195c10dae6a5367ea2dfc6` ([PR #51](https://github.com/Nggvanchi/AlgoVision/pull/51)).

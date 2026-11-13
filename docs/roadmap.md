@@ -61,3 +61,11 @@ Ghi chú:
   Sau khi gỡ tiến độ ngưỡng là JS 146,0 kB và CSS 49,5 kB; R2 nâng riêng CSS lên 51,0 kB; R3 nâng riêng JS lên 147,0 kB (đo 146.358 B, dư 642 B; các số này là lịch sử). Mỗi PR Redesign v1.0 cần trần riêng, duyệt riêng ở bước lập kế hoạch.
 - Để sau: phân loại 4 loại cạnh DFS (cây/ngược/xuôi/chéo) dựa trên mốc vào/ra đã có.
 - Việc còn tồn tại, chưa xếp vào giai đoạn nào: `docs/backlog.md`.
+
+## UI Redesign v2
+
+| Giai đoạn | Phạm vi | Trạng thái |
+|---|---|---|
+| UI v2-1 | Light Minimal Foundation: palette, shell/header/sidebar và shared controls; sửa tương phản phát sinh trên các màn, giữ JS/layout hiện hành | Đã triển khai trên `feat/ui-v2-foundation`, chờ review; 1740 test PASS, build PASS; Chrome QA mới NOT VERIFIED. Hợp đồng: `docs/design/v2-foundation.md` |
+
+Dashboard/Library và Visualizer/QA là các bước tiếp theo, chưa triển khai. Không coi Foundation đã hoàn tất toàn bộ UI v2.
