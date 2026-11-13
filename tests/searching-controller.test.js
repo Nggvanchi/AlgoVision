@@ -12,6 +12,51 @@ const templatePath = new URL(
 
 const template = await readFile(templatePath, 'utf8')
 
+for (const algorithm of ['linear', 'binary']) {
+  test(`R7c ${algorithm}: autoplay im lặng, thao tác và kết quả có live, reset hủy timer`, async () => {
+    const scheduler = createFakeScheduler()
+    const app = await setupSearching({ scheduler, initialNumbers: [10, 20, 30, 40] })
+    try {
+      const { document, window } = app
+      const $ = (id) => document.querySelector(id)
+      $('#search-algorithm').value = algorithm
+      $('#search-algorithm').dispatchEvent(new window.Event('change'))
+      $('#search-target').value = '40'
+      $('#search-target').focus()
+      $('#search-run').click()
+      assert.equal($('#search-message').getAttribute('aria-live'), 'off', 'autoplay không phát live')
+      scheduler.advance(BASE_DELAY)
+      assert.equal($('#search-message').getAttribute('aria-live'), 'off', 'tick vẫn im lặng')
+      assert.ok(!$('#search-range-message').hasAttribute('aria-live'), 'phạm vi không là kênh live thứ hai')
+      $('#search-pause').click()
+      $('#search-next').click()
+      assert.equal($('#search-message').getAttribute('aria-live'), 'polite', 'Next phát phản hồi')
+      const slider = $('#search-step-slider')
+      slider.value = slider.max
+      slider.dispatchEvent(new window.Event('change'))
+      assert.match($('#search-message').textContent, /40/, 'seek cuối có kết quả')
+      $('#search-reset').click()
+      assert.match($('#search-message').textContent, /Nhập giá trị/, 'reset bỏ kết quả cũ')
+      for (const target of ['40', '99']) {
+        $('#search-target').value = target
+        $('#search-target').dispatchEvent(new window.Event('input'))
+        $('#search-run').click()
+        scheduler.advance(BASE_DELAY * 30)
+        assert.equal($('#search-message').getAttribute('aria-live'), 'polite', 'hoàn tất được đọc')
+        assert.match($('#search-message').textContent, target === '99' ? /[Kk]hông tìm thấy/ : /40/)
+      }
+      $('#search-run').click()
+      $('#search-section').hidden = true
+      document.dispatchEvent(new window.CustomEvent('algovision:viewchange'))
+      const before = $('#search-message').textContent
+      scheduler.advance(BASE_DELAY * 30)
+      assert.equal($('#search-message').textContent, before, 'rời module không phát muộn')
+      assert.equal(scheduler.pendingCount, 0)
+      assert.ok(document.activeElement === $('#search-target'), 'giữ focus input')
+    } finally { app.cleanup() }
+  })
+}
+
 async function setupSearching(options = {}) {
   const window = new Window()
   const { document } = window
@@ -55,6 +100,64 @@ async function setupSearching(options = {}) {
     globalThis.document = previousDocument
     globalThis.window = previousWindow
     throw error
+  }
+}
+
+test('R7c: seek cùng chỉ số đang autoplay dừng timer, giữ bước và focus', async () => {
+  const scheduler = createFakeScheduler()
+  const app = await setupSearching({ scheduler, initialNumbers: [10, 20, 30, 40] })
+  try {
+    const { document, window } = app
+    const $ = (selector) => document.querySelector(selector)
+    $('#search-target').value = '99'
+    $('#search-run').click()
+    scheduler.advance(BASE_DELAY)
+    const slider = $('#search-step-slider')
+    slider.focus()
+    const before = { index: slider.value, message: $('#search-message').textContent, array: $('#search-array').innerHTML }
+    slider.dispatchEvent(new window.Event('change'))
+    assert.equal(scheduler.pendingCount, 0, 'seek cùng chỉ số cũng phải hủy autoplay')
+    assert.equal($('#search-message').getAttribute('aria-live'), 'polite')
+    assert.equal($('#search-run').textContent.trim(), 'Tiếp tục')
+    assert.equal(slider.value, before.index)
+    assert.equal($('#search-array').innerHTML, before.array)
+    assert.equal($('#search-message').textContent, before.message, 'ghi nhận DOM: seek cùng bước không tạo câu mới')
+    scheduler.advance(BASE_DELAY * 20)
+    assert.equal($('#search-message').textContent, before.message, 'không có tick đến muộn')
+    assert.ok(document.activeElement === slider, 'seek giữ focus thanh trượt')
+  } finally { app.cleanup() }
+})
+
+for (const algorithm of ['linear', 'binary']) {
+  for (const target of ['40', '99']) {
+    test(`R7c ${algorithm}/${target}: completion bật polite trước khi ghi kết quả`, async () => {
+      const scheduler = createFakeScheduler()
+      const app = await setupSearching({ scheduler, initialNumbers: [10, 20, 30, 40] })
+      const { document, window } = app
+      const message = document.querySelector('#search-message')
+      const observer = new window.MutationObserver(() => {})
+      try {
+        const select = document.querySelector('#search-algorithm')
+        select.value = algorithm
+        select.dispatchEvent(new window.Event('change'))
+        document.querySelector('#search-target').value = target
+        document.querySelector('#search-run').click()
+        assert.equal(message.getAttribute('aria-live'), 'off')
+        // Chạy tới ngay trước bước cuối để chỉ quan sát lần chuyển sang completed.
+        const last = Number(document.querySelector('#search-step-slider').max)
+        scheduler.advance(BASE_DELAY * (last - 1))
+        observer.observe(message, { attributes: true, attributeOldValue: true, attributeFilter: ['aria-live'], childList: true })
+        scheduler.advance(BASE_DELAY)
+        const records = observer.takeRecords()
+        const liveIndex = records.findIndex((record) => record.type === 'attributes' && record.oldValue === 'off')
+        const textIndex = records.findIndex((record) => record.type === 'childList' && record.addedNodes.length > 0)
+        assert.ok(liveIndex >= 0 && textIndex > liveIndex, 'DOM bật polite trước khi thay câu kết quả')
+        assert.equal(message.getAttribute('aria-live'), 'polite')
+        assert.match(message.textContent, target === '99' ? /Không tìm thấy 99/ : /Đã tìm thấy 40/)
+        assert.equal(scheduler.pendingCount, 0, 'completion không để timer sống')
+        assert.ok(!document.querySelector('#search-range-message').hasAttribute('aria-live'))
+      } finally { observer.disconnect(); app.cleanup() }
+    })
   }
 }
 

@@ -244,7 +244,8 @@
         <div class="library-search" role="search">
             <input type="search" class="library-search-input" id="library-search" placeholder="Tìm trong thư viện" aria-label="Tìm trong thư viện" autocomplete="off">
         </div>
-        <p class="library-count" role="status">Hiển thị 0 mục</p>
+        <p class="library-count" role="status" aria-live="off">Hiển thị 0 mục</p>
+        <p class="library-announcement visually-hidden" role="status" aria-atomic="true"></p>
         <div class="library-chips" role="group" aria-label="Phân loại cấu trúc dữ liệu" data-tab="structures">
             <button type="button" class="library-chip" data-category-filter="all" aria-pressed="true">Tất cả</button>
             <button type="button" class="library-chip" data-category-filter="linear" aria-pressed="false">Tuyến tính</button>
@@ -830,7 +831,7 @@
             </div>
         </div>
 
-        <p id="search-range-message" aria-live="polite">
+        <p id="search-range-message">
             Nhấn Bước tiếp theo để bắt đầu.
         </p>
         </div>
@@ -1192,8 +1193,7 @@
                     class="queue-visualizer"
                     role="group"
                     tabindex="0"
-                    aria-label="Các phần tử trong Queue"
-                    aria-live="polite"></div>
+                    aria-label="Các phần tử trong Queue"></div>
 
                 <p id="queue-status" class="queue-status" role="status">
                 </p>

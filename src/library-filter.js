@@ -8,10 +8,19 @@ const PANELS = { structures: '#structure-panel', algorithms: '#algorithm-panel' 
 // Bỏ dấu tiếng Việt để "do thi" khớp "Đồ thị", "tim kiem" khớp "Tìm kiếm".
 const normalize = (text) => text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/\s+/g, ' ')
 
-export function initLibraryFilter(document) {
+export function initLibraryFilter(document, { scheduler = {
+  schedule: (callback, delay) => setTimeout(callback, delay),
+  cancel: (id) => clearTimeout(id),
+} } = {}) {
   const root = document.querySelector('.library-filters')
   const input = root.querySelector('.library-search-input')
   const count = root.querySelector('.library-count')
+  const announcement = root.querySelector('.library-announcement')
+  let pending = null
+  function cancelAnnouncement() {
+    if (pending !== null) scheduler.cancel(pending)
+    pending = null
+  }
   const empty = document.querySelector('.library-empty')
   const tabs = document.querySelector('.library-tabs')
   const categories = { structures: 'all', algorithms: 'all' }
@@ -20,11 +29,13 @@ export function initLibraryFilter(document) {
   const cardText = (card) => normalize([...card.querySelectorAll('h4, p, .structure-card-title, .structure-card-description')].map((part) => part.textContent).join(' '))
 
   function showAll() {
+    cancelAnnouncement()
     document.querySelectorAll('[data-category]').forEach((card) => {
       card.hidden = false
     })
     document.querySelectorAll('.is-filtered-out').forEach((section) => section.classList.remove('is-filtered-out'))
     root.hidden = true
+    if (announcement.textContent !== '') announcement.textContent = ''
     empty.hidden = true
   }
 
@@ -45,6 +56,12 @@ export function initLibraryFilter(document) {
 
     root.hidden = false
     count.textContent = `Hiển thị ${shown} mục`
+    cancelAnnouncement()
+    const message = count.textContent
+    pending = scheduler.schedule(() => {
+      pending = null
+      if (announcement.textContent !== message) announcement.textContent = message
+    }, 275)
     empty.hidden = shown > 0
     root.querySelectorAll('[data-tab]').forEach((group) => {
       group.hidden = group.dataset.tab !== page
@@ -73,6 +90,7 @@ export function initLibraryFilter(document) {
   })
 
   document.addEventListener('algovision:viewchange', (event) => {
+    cancelAnnouncement()
     page = event.detail.page
     apply()
   })
