@@ -1,14 +1,34 @@
 # Baseline phát triển AlgoVision
 
-Đây là bản ghi số liệu lịch sử sau R6c, không phải kết quả đo trong phiên hiện tại. Chạy lại các lệnh trên đúng môi trường trước khi kết luận trạng thái hiện nay.
+Đây là bản ghi số liệu lịch sử R6c–R7, không phải kết quả đo trong phiên hiện tại. Chạy lại các lệnh trên đúng môi trường trước khi kết luận trạng thái hiện nay.
 
-## Lần đo gần nhất được ghi nhận sau R6c
+## Lần đo lịch sử sau R6c
 
 - Môi trường: Windows, Vite 8.3.5.
 - `pnpm test`: 1.680 test, tất cả pass; 0 fail, 0 skipped.
 - `pnpm build`: thành công.
 - Bundle: JavaScript 150.493 B; CSS 57.207 B. HTML và gzip không phải ngưỡng được dùng lần đo này.
 - Font tự host: 10 WOFF2, tổng 172.912 B, cùng 2 giấy phép OFL; ngưỡng ghi nhận 175 kB. Font không nằm trong bundle JS/CSS.
+
+## R7c — bằng chứng lịch sử, PR #51
+
+- Baseline sau merge: `ef34955fa945a96336195c10dae6a5367ea2dfc6` ([PR #51](https://github.com/Nggvanchi/AlgoVision/pull/51)).
+- Unit tests: 1725 PASS, 0 FAIL; build PASS. Đây là kết quả lịch sử R7c, không chạy lại trong Closeout docs-only.
+- Bundle lịch sử: JS 152734 B; CSS 57819 B. So với trần hiện hành 154000 B/58500 B, dư 1266 B JS và 681 B CSS; không nâng ngân sách.
+- DOM A1–A8 PASS; cleanup VERIFIED trong phạm vi R7c. Không thay thế xác minh screen reader hoặc mọi module ngoài phạm vi PR #51.
+
+## R7d — Closeout PARTIAL PASS với accepted risks
+
+- Chủ dự án phê duyệt Closeout PARTIAL PASS; không tuyên bố QA toàn diện. SHA của toàn bộ evidence: `ef34955fa945a96336195c10dae6a5367ea2dfc6`.
+- 137 browser QA case duy nhất PASS = 124 kế thừa + 13 mới, đã đối chiếu SHA và tên case để không cộng trùng. Đây là browser cases, không cộng vào 1725 unit tests R7c.
+- Môi trường evidence: Chrome 152.0.7977.83, Windows 10.0.26200 x64.
+- 84 responsive case PASS = 12 màn × 7 viewport CSS (360, 700, 701, 767, 768, 1279, 1280 px): Dashboard, hai tab Library, Sorting, Searching, Array, Stack, Queue, Linked List, BST, Hash Table, Graph.
+- Drawer/rail, focus restore, resize qua breakpoint, keyboard/controls và overflow PASS trong phạm vi case đã kiểm; viewport thấp và Chrome touch EMULATION PASS. Tab/Shift+Tab là kiểm mẫu (12 lượt Tab và một lượt ngược mỗi màn), không chứng minh mọi tổ hợp bàn phím. Touch emulation không chứng minh thiết bị thật.
+- Evidence report: `r7d-evidence-1794568325490/report.json` (runner `r7d-qa-4`, artifact ngoài repo trong thư mục visualization của phiên QA). Report chứa 13 case mới và 124 PASS kế thừa từ report trước; 0 application exception, 0 console error, 0 failed request trong báo cáo, không phải phép đo mới tại Closeout.
+- Không phát hiện P0/P1 trong phạm vi đã kiểm; không suy diễn bên ngoài. P0/P1 phát hiện sau cần patch riêng; P2 ghi backlog UI v2, không triển khai trong Closeout.
+- Accepted risks đã được chủ dự án chấp thuận hoãn: Chrome zoom thật 200%, Vercel browser smoke 360/1280, Firefox, Safari, thiết bị thật và screen reader đều NOT VERIFIED. Không dùng CDP viewport/touch emulation để thay browser zoom hoặc thiết bị thật.
+- Vercel deployment SUCCESS gắn đúng SHA trên GitHub ([deployment](https://vercel.com/nggvanchi-4548/algo-vision/Af9yL1YCJbnC2LHwDmJeRB4Ykykh)); trạng thái triển khai không chứng minh browser smoke PASS.
+- Phiên Closeout docs-only: 137 browser cases, unit tests, build và mutation NOT RUN theo phạm vi đã duyệt; chỉ kiểm diff, UTF-8/LF, Markdown và tính nhất quán số liệu/tham chiếu. Giữ nguyên lịch sử R6c/R7a và ngân sách hiện hành.
 
 ## Ngân sách bundle lịch sử sau R6b/R6c
 
