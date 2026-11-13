@@ -326,7 +326,7 @@ export function initSearching(options = {}) {
     }
   }
 
-  function renderSearch({ step = createIdleStep(), stepIndex, stepCount, controls }) {
+  function renderSearch({ state, step = createIdleStep(), stepIndex, stepCount, controls }) {
     stepTools.sync({ stepIndex, stepCount })
     renderSearchArray(step)
     renderSearchRange(step)
@@ -338,7 +338,9 @@ export function initSearching(options = {}) {
     }
 
     searchComparisons.textContent = String(step.comparisons)
-    searchMessage.textContent = step.message
+    // Autoplay vẫn vẽ từng bước; chỉ thao tác thủ công và kết luận được đọc.
+    searchMessage.setAttribute('aria-live', state === 'running' ? 'off' : 'polite')
+    if (searchMessage.textContent !== step.message) searchMessage.textContent = step.message
 
     searchRunButton.textContent = getRunLabel(controls.runMode)
     searchRunButton.disabled = !controls.run
