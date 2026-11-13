@@ -1,11 +1,11 @@
 ---
 name: resume-check
-description: Kiểm tra trạng thái repo AlgoVision trước khi làm tiếp, chỉ đọc. Dùng khi bắt đầu phiên mới, sau khi đổi máy giữa Windows và Ubuntu, hoặc khi người dùng hỏi "đang làm tới đâu", "kiểm tra tiến độ", "tiếp tục công việc", "vừa chuyển máy". Phát hiện node_modules sai hệ điều hành, CRLF/BOM/lỗi mã hóa, thao tác git dở dang, mutation chưa restore trong src/, và so AGENTS.md với thực tế.
+description: Kiểm tra chỉ đọc repo AlgoVision khi bắt đầu hoặc tiếp tục phiên Windows/PowerShell/Codex. Kiểm tra Git refs/status, dependencies và native bindings, CRLF/BOM/lỗi mã hóa, thao tác Git dở dang, mutation chưa khôi phục và baseline lịch sử.
 ---
 
 # Kiểm tra trước khi làm tiếp
 
-Mục tiêu: biết chính xác trạng thái thật trước khi sửa bất cứ thứ gì. Phiên trước có thể bị ngắt giữa chừng, ví dụ đang mutation test dở thì đổi máy.
+Mục tiêu: biết trạng thái thật trước khi sửa. Phiên trước có thể bị ngắt khi đang mutation test; không khôi phục file hoặc cài dependencies tự động.
 
 ## Quy tắc trong lúc kiểm tra
 
@@ -16,13 +16,15 @@ Mục tiêu: biết chính xác trạng thái thật trước khi sửa bất c�
 ## Các bước
 
 1. Chạy `node .agents/skills/resume-check/scripts/env-check.mjs` từ gốc repo (chỉ đọc, luôn exit 0). Đọc mọi dòng `WARN`.
-2. Nếu WARN về node_modules sai hệ điều hành hoặc thiếu, ghi lại và dừng; không tự cài.
+2. Nếu WARN về dependencies/native bindings thiếu hoặc không phù hợp, ghi lại và dừng; không tự cài, sửa store hoặc cấu hình hệ thống.
 3. Nếu WARN về `src/` có thay đổi chưa commit:
-   - In `git diff -- src/` và đối chiếu với mutation được nhắc trong ghi chú `$ARGUMENTS`.
+   - In `git diff -- src/` và `git diff --cached -- src/`, đối chiếu với ghi chú mutation của phiên trước.
    - Chỉ đọc diff; không ghi patch, không khôi phục file. Báo cáo và chờ người dùng quyết định.
-4. Với test đã sửa mà chưa commit, kiểm xem có chỗ nào đang ở trạng thái "đảo điều kiện" của mutation test hay không (ví dụ `=== null` bị đổi thành `!== null`).
+4. Với test đã sửa, đọc cả diff staged/unstaged để kiểm tra mutation chưa khôi phục (ví dụ `=== null` bị đổi thành `!== null`). Script chỉ cảnh báo thay đổi có nguy cơ; không thể kết luận một thay đổi là mutation từ tên file.
 5. Chỉ đọc log/branch/ref đã có sẵn trong local repo; không fetch. Đối chiếu `docs/development-baseline.md`, `docs/roadmap.md` và `docs/backlog.md` với trạng thái dự án; ghi rõ mọi điều chưa thể xác minh từ dữ liệu local.
 6. Không chạy test/build trong skill chỉ đọc. Dùng skill `check` khi người dùng yêu cầu kiểm chứng hoặc khi quy trình đã được duyệt.
+
+Tham chiếu môi trường: [Windows và PowerShell](../../rules/cross-platform.md). Script dùng root Git và native bindings của nền tảng hiện tại, không khóa vào Windows; CI hai hệ điều hành được giữ nguyên.
 
 ## Báo cáo
 

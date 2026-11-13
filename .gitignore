@@ -26,6 +26,3 @@ dist-ssr
 .env
 .env.*
 !.env.example
-
-# Claude Code: cấu hình cá nhân theo máy
-.claude/settings.local.json

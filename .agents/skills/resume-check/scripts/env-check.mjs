@@ -5,6 +5,9 @@
 import { execFileSync, execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url)
 
 const warnings = []
 const show = (label, value) => console.log(`${label.padEnd(18)} ${value}`)
@@ -15,7 +18,10 @@ const warn = (message) => {
 
 function git(args) {
   try {
-    return execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trimEnd()
+    return execFileSync('git', args, {
+      encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'],
+      env: { ...process.env, GIT_OPTIONAL_LOCKS: '0' },
+    }).trimEnd()
   } catch {
     return null
   }
@@ -52,6 +58,7 @@ if (!root) {
 process.chdir(root)
 
 console.log('== Môi trường ==')
+show('root', root)
 show('platform', `${process.platform} ${process.arch}`)
 show('node', process.version)
 show('pnpm', shell('pnpm -v') ?? 'không tìm thấy')
@@ -61,6 +68,15 @@ try {
   const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'))
   show('engines.node', pkg.engines?.node ?? '(chưa khai báo)')
   show('packageManager', pkg.packageManager ?? '(chưa khai báo)')
+  for (const name of ['vite', 'happy-dom']) {
+    try {
+      if (!fs.existsSync(path.join('node_modules', name))) throw new Error('Thiếu dependency')
+      require.resolve(name)
+      show(name, 'tìm thấy dependency')
+    } catch {
+      warn(`Không tìm thấy dependency ${name}; không tự cài hoặc sửa môi trường.`)
+    }
+  }
 } catch {
   warn('Không đọc được package.json')
 }
@@ -74,9 +90,27 @@ if (!fs.existsSync('node_modules')) {
   const natives = entries.filter((name) => /(binding|lightningcss)-(win32|linux|darwin)-/.test(name))
   const nativeOses = new Set(natives.map((name) => name.match(/-(win32|linux|darwin)-/)[1]))
   show('native bindings', natives.length ? natives.join(', ') : '(không thấy)')
-  if (natives.length && !nativeOses.has(currentOs)) {
-    warn(`node_modules chứa binary của ${[...nativeOses].join('/')}, thiếu bản ${currentOs}: không tự cài trong bước kiểm tra chỉ đọc; xin duyệt trước khi cài frozen lockfile`)
+  for (const family of ['binding', 'lightningcss']) {
+    if (!natives.some((name) => name.includes(`${family}-${currentOs}-${process.arch}`))) {
+      warn(`Thiếu native binding ${family} cho ${currentOs}/${process.arch} (có: ${[...nativeOses].join('/') || 'không thấy'}); không tự cài hoặc sửa môi trường.`)
+    }
   }
+}
+
+console.log('\n== Baseline lịch sử ==')
+const baselinePath = path.join('docs', 'development-baseline.md')
+if (fs.existsSync(baselinePath)) {
+  const baseline = fs.readFileSync(baselinePath, 'utf8')
+  show('tài liệu', baselinePath)
+  const recordedTests = baseline.split('\n').find((line) => line.startsWith('- `pnpm test`:'))
+  show('test đã ghi nhận', recordedTests ?? '(không thấy số liệu lịch sử)')
+  const budget = baseline.match(/## Ngân sách bundle hiện hành[^\n]*\n([\s\S]*?)(?=\n## |$)/)?.[1]
+  const limits = budget?.split('\n').filter((line) => /^- (JavaScript|CSS):/.test(line)) ?? []
+  if (limits.length === 2) show('ngân sách', limits.join(' '))
+  else warn('Không đọc được ngân sách bundle hiện hành trong tài liệu baseline.')
+  console.log('Chưa chạy test/build; số liệu lịch sử không xác nhận trạng thái hiện tại.')
+} else {
+  warn(`Thiếu ${baselinePath}; chưa thể đối chiếu baseline.`)
 }
 
 console.log('\n== Git ==')
@@ -102,6 +136,8 @@ if (fetchHead && fs.existsSync(fetchHead)) {
 
 const localMain = git(['rev-parse', '--verify', '--quiet', 'main'])
 const remoteMain = git(['rev-parse', '--verify', '--quiet', 'origin/main'])
+show('main', localMain ?? '(không có ref local)')
+show('origin/main', remoteMain ?? '(không có ref remote tại máy)')
 if (localMain && remoteMain) {
   const [mainBehind, mainAhead] = (git(['rev-list', '--left-right', '--count', 'origin/main...main']) ?? '0 0').split(/\s+/)
   show('main so với origin/main', `ahead ${mainAhead}, behind ${mainBehind}`)
@@ -115,7 +151,7 @@ const goneBranches = (git(['branch', '-vv']) ?? '')
   .split('\n')
   .filter((entry) => /\[[^\]]*: gone\]/.test(entry))
   .map((entry) => entry.replace(/^\*?\s+/, '').split(/\s+/)[0])
-if (goneBranches.length) show('upstream đã mất', `${goneBranches.join(', ')} (đã merge và xóa trên GitHub; dọn khi tiện)`)
+if (goneBranches.length) show('upstream đã mất', `${goneBranches.join(', ')} (không suy ra đã merge; không tự dọn ref)`)
 
 const mainRef = localMain ? 'main' : null
 if (mainRef) {
@@ -123,16 +159,18 @@ if (mainRef) {
   show('commit so với main', onlyHere ? `\n${onlyHere.split('\n').map((l) => '   ' + l).join('\n')}` : '(không có)')
 }
 
-for (const marker of ['MERGE_HEAD', 'CHERRY_PICK_HEAD', 'REVERT_HEAD', 'rebase-merge', 'rebase-apply', 'index.lock']) {
+for (const marker of ['MERGE_HEAD', 'CHERRY_PICK_HEAD', 'REVERT_HEAD', 'rebase-merge', 'rebase-apply', 'sequencer', 'BISECT_START', 'index.lock', 'HEAD.lock', 'packed-refs.lock']) {
   const markerPath = git(['rev-parse', '--git-path', marker])
   if (markerPath && fs.existsSync(markerPath)) warn(`Thao tác git dở dang: ${marker}`)
 }
 
-const statusLines = (git(['status', '--porcelain=v1']) ?? '').split('\n').filter(Boolean)
-show('working tree', statusLines.length ? `${statusLines.length} mục` : 'sạch')
+const status = git(['-c', 'core.quotePath=false', 'status', '--porcelain=v1', '--untracked-files=all'])
+const statusLines = (status ?? '').split('\n').filter(Boolean)
+if (status === null) warn('Không đọc được Git status; không thể kết luận working tree sạch.')
+else show('working tree', statusLines.length ? `${statusLines.length} mục` : 'sạch')
 for (const entry of statusLines) console.log(`   ${entry}`)
-if (statusLines.some((entry) => entry.slice(3).replace(/^"/, '').startsWith('src/'))) {
-  warn('src/ có thay đổi chưa commit. Có thể là mutation chưa restore: xem git diff -- src/ và hỏi người dùng trước khi restore.')
+if (statusLines.some((entry) => /^(src|tests)\//.test(entry.slice(3).replace(/^"/, '')))) {
+  warn('src/ hoặc tests/ có thay đổi chưa commit: đọc cả diff staged/unstaged để kiểm tra mutation chưa khôi phục; không tự khôi phục file.')
 }
 
 const stash = git(['stash', 'list'])

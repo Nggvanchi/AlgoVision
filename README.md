@@ -57,7 +57,11 @@ Node.js Test Runner và happy-dom cho kiểm thử.
 
 Yêu cầu: Node.js `^20.19.0 || >=22.12.0` (trường `engines` trong `package.json`) và pnpm.
 
-```bash
+Môi trường phát triển cục bộ: Windows + PowerShell + Codex. Hướng dẫn dự án nằm ở
+[`AGENTS.md`](AGENTS.md), quy tắc Windows ở [`.agents/rules/cross-platform.md`](.agents/rules/cross-platform.md).
+Trong phiên Codex, chạy `resume-check` trước; không tự cài dependencies hoặc sửa cấu hình khi môi trường bị chặn.
+
+```powershell
 git clone https://github.com/Nggvanchi/AlgoVision.git
 cd AlgoVision
 pnpm install --frozen-lockfile
@@ -68,7 +72,7 @@ pnpm preview    # chạy thử bản build
 
 ## Kiểm thử
 
-```bash
+```powershell
 pnpm test                          # toàn bộ test
 node --test tests/<file>.test.js   # một file
 ```
