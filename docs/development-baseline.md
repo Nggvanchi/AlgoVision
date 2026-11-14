@@ -10,6 +10,15 @@
 - Bundle: JavaScript 150.493 B; CSS 57.207 B. HTML và gzip không phải ngưỡng được dùng lần đo này.
 - Font tự host: 10 WOFF2, tổng 172.912 B, cùng 2 giấy phép OFL; ngưỡng ghi nhận 175 kB. Font không nằm trong bundle JS/CSS.
 
+## UI v2-2 — Dashboard & Library, Windows 2026-11-14
+
+- Base `5e506b436c7021d46a061d57b57d96ae6ff0d40c`, branch `feat/ui-v2-dashboard-library`, thay đổi chưa commit. Không đổi runtime JS, template, controller hoặc Visualizer.
+- TDD: 8 test mới RED trước CSS, GREEN sau triển khai. Full suite mới: 1748 PASS, 0 FAIL, 0 skipped, 0 todo; 41,159 s. Các regression dữ liệu/handlers/keyboard/live announcements cũ giữ nguyên; hai assertion layout v1 được thay bằng hợp đồng grid fluid/mobile v2 cụ thể, không hạ ngưỡng accessibility.
+- Hai mutation nguồn CSS (grid bốn cột; ô tìm cố định 520px) bị regression mới bắt, exit 1, heap 512 MB, timeout 15 s; sau mỗi mutation khôi phục nguyên byte, test GREEN. SHA-256 sau khôi phục: `03c30f1fec40b20e5e7d460580004ada8c748fd256703a2aa6ba381a67e70172`.
+- Build PASS: JS raw 152734 B, CSS raw 57994 B; so với Foundation JS +0 B, CSS -466 B. Đạt mục tiêu CSS <=58400 B; dư 1266 B JS, 506 B CSS dưới trần 154000/58500 B. Gzip Node zlib mặc định: JS 44546 B, CSS 10535 B (không phải ngưỡng nghiệm thu).
+- Browser QA NOT VERIFIED: Vite local 127.0.0.1:5199 khởi chạy được nhưng trình duyệt tích hợp trả ERR_CONNECTION_TIMED_OUT. Không suy diễn test CSS/toán ngưỡng thành browser reflow PASS; các viewport và checklist còn lại ghi tại `docs/design/v2-dashboard-library.md`.
+- Encoding UTF-8/LF, diff check và kiểm phạm vi chạy riêng sau cập nhật docs; không cài dependencies, không commit/push/PR.
+
 ## UI v2-1 — bằng chứng trước review, Windows ngày 2026-11-13
 
 - Branch `feat/ui-v2-foundation`, base `07be7660c61459cb38e8426c5407904cca016aeb`; thay đổi chưa commit khi đo. Chỉ CSS, test và docs; không đổi JS runtime/template, Spec hoặc decisions v1.

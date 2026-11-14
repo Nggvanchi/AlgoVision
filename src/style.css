@@ -752,9 +752,10 @@ button:disabled,
 }
 
 .algorithm-grid,
-.structure-grid {
+.structure-grid,
+.dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, max(260px, calc((100% - 32px) / 3))), 1fr));
   gap: 16px;
 }
 
@@ -765,7 +766,7 @@ button.structure-card {
   min-width: 0;
   padding: 20px;
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 16px;
   background: var(--panel);
   color: var(--text);
   text-align: left;
@@ -838,7 +839,7 @@ button.structure-card:hover {
   flex: 1;
   margin: 8px 0 16px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.6;
 }
 
@@ -870,9 +871,6 @@ button.structure-card:hover {
 .card-link {
   color: var(--av-primary-text);
   font-weight: 600;
-}
-
-.card-link {
   margin-left: auto;
 }
 
@@ -940,14 +938,6 @@ button.structure-card:hover {
 @media (max-width: 1100px) {
   .main-content {
     padding: 0 28px;
-  }
-
-  .algorithm-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .algorithm-card:last-child:nth-child(odd) {
-    grid-column: 1 / -1;
   }
 }
 
@@ -1077,14 +1067,6 @@ button.structure-card:hover {
 
   .page-heading h2 {
     font-size: 27px;
-  }
-
-  .algorithm-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .algorithm-card:last-child:nth-child(odd) {
-    grid-column: auto;
   }
 
   .section-heading {
@@ -2335,11 +2317,7 @@ button.structure-card:hover {
     flex-direction: column;
   }
 }
-/* Structure Library: chung khung với thẻ thuật toán (.algorithm-card), chỉ khác lưới 2 cột và biểu tượng */
-
-.structure-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
+/* Thư viện cấu trúc dùng chung khung và grid fluid v2; giữ biểu tượng riêng. */
 
 .structure-card-icon {
   align-self: flex-start;
@@ -2352,9 +2330,11 @@ button.structure-card:focus-visible,
   outline-offset: 2px;
 }
 
-@media (max-width: 700px) {
-  .structure-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 767px) {
+  .algorithm-grid,
+  .structure-grid,
+  .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -2774,7 +2754,8 @@ button.structure-card:focus-visible,
 
 .dashboard-hero h2 {
   max-width: 720px;
-  margin: 14px 0 18px;
+  margin: 0 0 16px;
+  text-wrap: balance;
   font-size: var(--av-fs-hero);
   line-height: 1.2;
   letter-spacing: -0.02em;
@@ -2796,6 +2777,7 @@ button.structure-card:focus-visible,
 
 .dashboard-primary-button,
 .dashboard-outline-button {
+  flex: 1 1 180px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2929,19 +2911,13 @@ button.structure-card:focus-visible,
   cursor: pointer;
 }
 
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-}
-
 .dashboard-card {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
   min-width: 0;
-  padding: 22px;
+  padding: 20px;
   border: 1px solid var(--border);
   border-radius: 16px;
   background: var(--panel);
@@ -3023,7 +2999,8 @@ button.dashboard-card:hover {
   list-style: none;
 }
 
-.dashboard-chip {
+.dashboard-chip,
+.library-chip {
   min-height: 44px;
   padding: 0 16px;
   border: 1px solid var(--border-control);
@@ -3037,7 +3014,8 @@ button.dashboard-card:hover {
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 
-.dashboard-chip:hover {
+.dashboard-chip:hover,
+.library-chip:hover {
   border-color: var(--av-primary-line);
   background: var(--av-surface-2);
 }
@@ -3046,20 +3024,12 @@ button.dashboard-card:hover {
   border-color: var(--av-accent);
 }
 
-/* Đặt SAU luật gốc của .dashboard-grid (cùng độ ưu tiên, luật sau thắng). */
-@media (max-width: 900px) {
-  .dashboard-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
 @media (max-width: 700px) {
   .dashboard-section {
     gap: 24px;
     padding-top: 18px;
   }
 
-  .dashboard-grid,
   .dashboard-quick-groups {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -3129,8 +3099,14 @@ button.dashboard-card:hover {
   margin-bottom: 20px;
 }
 
-.library-search-input {
+.library-search {
   flex: 1 1 280px;
+  min-width: 0;
+}
+
+.library-search-input {
+  width: 100%;
+  min-width: 0;
   min-height: 44px;
   max-width: 420px;
   padding: 0 14px;
@@ -3153,24 +3129,8 @@ button.dashboard-card:hover {
   order: 3;
 }
 
-.library-chip {
-  min-height: 44px;
-  padding: 0 16px;
-  border: 1px solid var(--border-control);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--text);
-  font: inherit;
-  font-size: var(--av-fs-caption);
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.library-chip:hover {
-  background: var(--av-surface-2);
-}
-
 .library-chip[aria-pressed="true"] {
+  font-weight: 700;
   border-color: var(--av-primary-line);
   background: var(--av-nav-active-bg);
   color: var(--av-nav-active-text);
@@ -3183,6 +3143,7 @@ button.dashboard-card:hover {
 }
 
 .library-empty {
+  background: var(--panel);
   padding: 32px 16px;
   border: 1px dashed var(--av-border-dashed);
   border-radius: 16px;

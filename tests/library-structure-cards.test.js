@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 
 import { withFullApp } from './helpers/app-dom.js'
+import { parseStylesheet } from './helpers/css-tokens.js'
 
 // Redesign Phase 4, giai đoạn c: thẻ Cấu trúc dữ liệu dùng cùng khung với thẻ thuật toán nhưng KHÔNG có pill độ khó,
 // KHÔNG có hàng Thời gian/Bộ nhớ.
@@ -90,6 +91,11 @@ test('CSS: khoảng cách trên của .card-status chỉ áp khi đứng sau .ca
   assert.equal(selectorListContaining('.card-status'), '.card-metric,\n.card-status ', 'luật .card-status chung chỉ là phần căn hàng, không mang margin-top')
 })
 
-test('CSS: lưới cấu trúc về 1 cột ở <= 700px (cùng điểm gãy với lưới thuật toán)', () => {
-  assert.match(css, /@media \(max-width: 700px\) \{\s*\.structure-grid \{\s*grid-template-columns: 1fr;/)
+test('CSS: lưới cấu trúc và thuật toán cùng về một cột trong shell mobile <=767px', () => {
+  const mobile = parseStylesheet(css).rules.filter((rule) => rule.media === '@media (max-width: 767px)')
+  for (const selector of ['.structure-grid', '.algorithm-grid']) {
+    const rules = mobile.filter((rule) => rule.selectors.includes(selector))
+    assert.ok(rules.length > 0, selector)
+    assert.deepEqual(rules.flatMap((rule) => rule.declarations.filter((d) => d.property === 'grid-template-columns').map((d) => d.value)), ['minmax(0, 1fr)'])
+  }
 })
