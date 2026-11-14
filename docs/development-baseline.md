@@ -10,7 +10,28 @@
 - Bundle: JavaScript 150.493 B; CSS 57.207 B. HTML và gzip không phải ngưỡng được dùng lần đo này.
 - Font tự host: 10 WOFF2, tổng 172.912 B, cùng 2 giấy phép OFL; ngưỡng ghi nhận 175 kB. Font không nằm trong bundle JS/CSS.
 
+## UI v2-3b — Data Structures, Windows 2026-11-14
+
+**Trạng thái mới nhất sau sửa hai regression được duyệt: test/build/bundle PASS; browser QA NOT VERIFIED.** Các số FAIL bên dưới giữ làm bằng chứng lần kiểm trước.
+
+- Sửa tối thiểu: panel chung dùng `var(--panel-bg)` thực sự có hiệu lực (alias trỏ `--panel`); `.hash-table-frame` đứng cuối nhóm selector chung để bộ đọc test thấy padding/border. Không sửa test cũ/test mới, JS runtime hoặc template. Hai regression 2/2 PASS, 0 fail/skip/todo, 0,095 s; nhóm liên quan gồm 7 test mới 80/80 PASS, 4,019 s.
+- Đối chiếu CSS trước/sau hai sửa bằng happy-dom: 164 phần tử × 25 thuộc tính × 8 viewport (360/640/700/760/768/900/1280/1440) × default/disabled = 65600 đối chiếu KHỚP; không thay browser render QA.
+- Full `pnpm test` mới **1762/1762 PASS**, 0 fail/skipped/todo/cancelled, **47,274 s**. `pnpm build` PASS, Vite 8.3.5, 149 ms (tổng lệnh 743 ms): JS raw/gzip **152734/44546 B**, CSS raw/gzip **58480/10584 B** (Node zlib mặc định). So với trước sửa hai lỗi: JS +0/+0 B, CSS +3/+6 B; so với base: CSS +80/+37 B. Headroom JS/CSS **1266/20 B**, không nâng trần 154000/58500 B.
+- Không mutation mới trong lượt sửa regression. Đối chiếu trong bộ nhớ: ngoài đúng hai sửa được duyệt, CSS khớp nguyên byte SHA sau restore mutation cũ. CSS cuối SHA-256 `198f5de35cbef85687250e40830b6b76d8b3f567df2cacb95116f1ca420a1a65`; test mới SHA-256 không đổi `ea02e938ee8d8d7c424a4e33bdd33559acd12d9b3a8d7e01856b8cb555c9ab1c`.
+- Thử browser lại: Vite ready 528 ms, browser tích hợp vẫn `net::ERR_CONNECTION_TIMED_OUT` tại `http://127.0.0.1:5199/`; đã dừng dev server của phiên. Browser/CI/Vercel smoke/zoom thật/đa trình duyệt/thiết bị/screen reader vẫn NOT VERIFIED. Diff chờ nghiệm thu, chưa commit/push/merge.
+
+### Bằng chứng lượt triển khai đầu và lần FAIL trước sửa
+
+- Base `6ec0d593593be18bb94a543b182e632f747f98da`, branch `feat/ui-v2-3b`; diff chưa commit. Trước triển khai: 1755/1755 PASS, 0 fail/skip/todo/cancelled, 46,065 s; JS/CSS raw 152734/58400 B, gzip Node zlib mặc định 44546/10547 B. Dependencies đã đầy đủ, không cài lại trong triển khai.
+- Chỉ `src/style.css`, test mới và docs; không sửa JS runtime/template/thuật toán. Sau gom/gỡ thuần: 2856 computed-style comparisons KHỚP bằng happy-dom trên 28 phần tử × 17 thuộc tính × 6 viewport; CSS artifact 57574 B/gzip 10505 B, giảm 826/42 B. Không coi đây là browser layout QA.
+- TDD 7 test mới: RED 6 fail/1 pass trước CSS, GREEN 7/7 sau CSS. Nhóm regression liên quan 80/80 PASS (3,842 s); sau đó bổ sung assert computed style 360/760/1280 trong test mới, 7/7 PASS (0,676 s). Full suite **FAIL: 1760/1762 PASS, 2 FAIL, 0 skipped/todo/cancelled, 50,583 s**. Hai regression: `tests/dead-code-removed.test.js:101` yêu cầu đúng một nơi dùng `var(--panel-bg)` nhưng gom panel đã bỏ nơi dùng; `tests/hash-table-layout.test.js:128` đọc rule `.hash-table-frame` riêng không tìm thấy padding sau khi gom vào selector chung. Không sửa/giảm test; dừng triển khai theo gate người dùng, chờ duyệt xử lý CSS. Computed style tương đương không đủ bảo vệ các hợp đồng nguồn này.
+- Build trước full suite PASS, Vite 8.3.5, 144 ms: JS raw/gzip 152734/44546 B (không đổi), CSS raw/gzip 58477/10578 B (+77/+31 B). Dư 1266 B JS và 23 B CSS dưới trần 154000/58500 B; không nâng ngân sách. CSS giữ nguyên sau build/mutation; không chạy lại build sau khi gate test FAIL.
+- Mutation nguồn CSS, heap 512 MB, timeout 15 s/test: slider 0→240px (GREEN 0,6 s/16 dòng, mutant exit 1, 0,6 s/34 dòng); wrapper border 0→1px (GREEN 0,6 s/16 dòng, mutant exit 1, 0,6 s/36 dòng); control border-control→border (GREEN 0,7 s/16 dòng, mutant exit 1, 0,6 s/30 dòng). Tất cả mutant RED đúng assert, không tràn heap. Restore/verify KHỚP nguyên byte sau mỗi phép; snapshot tạm đã clear. CSS SHA-256 `c7158ca9a3ba30ffc1f58dc83c0ddba938b42bdd14076e05a85b69212f124a60`.
+- Browser NOT VERIFIED: Vite local `127.0.0.1:5199` khởi chạy nhưng browser tích hợp trả `net::ERR_CONNECTION_TIMED_OUT`; đã dừng dev server. Không tác động Chrome cá nhân. CI/Vercel smoke/zoom thật 200%/đa trình duyệt/thiết bị thật/screen reader chưa xác minh. [Hợp đồng và checklist](design/v2-data-structures.md). Chưa đóng exit gate UI v2-3.
+
 ## UI v2-3a — Sorting & Searching, test/build PASS, Windows 2026-11-14
+
+Trạng thái hiện tại: MERGED PR #56 tại `6ec0d593593be18bb94a543b182e632f747f98da`. Các dòng bên dưới giữ nguyên bằng chứng đo trước commit; “diff chưa commit” mô tả thời điểm đo đó.
 
 - Base `c9b5ed5f2992291502b36d38f5481f3fbd5c2e43`, branch `feat/ui-v2-3a`; diff chưa commit. Sản phẩm chỉ sửa `src/style.css`; không sửa runtime JS/template/dependency.
 - Baseline đo trước triển khai trong phiên: 1748 PASS, 0 FAIL/skipped/todo/cancelled; 50,804 s. Build PASS, Vite 8.3.5, 268 ms: JS raw 152734 B, CSS raw 57994 B; gzip Node zlib mặc định 44546/10535 B. Dư 1266/506 B dưới trần 154000/58500 B.

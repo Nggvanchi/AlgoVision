@@ -1933,16 +1933,25 @@ button.structure-card:hover {
 
 /* Array Visualizer */
 
-.array-panel {
-  margin-top: 24px;
+.array-panel,
+.stack-panel,
+.queue-panel,
+.linked-list-panel {
   padding: 24px;
-  background: var(--panel);
+  background: var(--panel-bg);
   border: 1px solid var(--border);
   border-radius: 16px;
 }
 
-.array-panel-heading {
+.array-panel {
+  margin-top: 24px;
+}
+
+.array-panel-heading,
+.stack-panel-heading,
+.linked-list-panel-heading {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -1960,7 +1969,7 @@ button.structure-card:hover {
 .array-operation-card p {
   margin: 0 0 16px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.6;
 }
 
@@ -2047,6 +2056,7 @@ button.structure-card:hover {
 
 .array-operation-card input {
   width: 100%;
+  min-width: 0;
   min-height: 44px;
   box-sizing: border-box;
   margin-bottom: 14px;
@@ -2096,12 +2106,6 @@ button.structure-card:hover {
   flex-shrink: 0;
 }
 
-.array-panel,
-.array-operation-card {
-  background: var(--panel);
-  border-color: var(--border);
-}
-
 .array-cell {
   background: var(--panel-hover);
   border-color: var(--border);
@@ -2141,18 +2145,6 @@ button.structure-card:hover {
 /* Stack Visualizer */
 
 .stack-panel {
-  margin-bottom: 24px;
-  padding: 24px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-}
-
-.stack-panel-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
   margin-bottom: 24px;
 }
 
@@ -2238,11 +2230,7 @@ button.structure-card:hover {
 }
 
 .stack-operations .array-operation-card {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
   gap: 12px;
-  min-width: 0;
 }
 
 .stack-operations .array-operation-card p {
@@ -2315,17 +2303,9 @@ button.structure-card:focus-visible,
 
 .linked-list-panel {
   margin-top: 24px;
-  padding: 24px;
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  background: var(--panel-bg);
 }
 
 .linked-list-panel-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
   margin-bottom: 20px;
 }
 
@@ -2412,10 +2392,6 @@ button.structure-card:focus-visible,
   margin-top: 20px;
 }
 
-.linked-list-operations .array-operation-card {
-  min-width: 0;
-}
-
 .linked-list-operations input {
   width: 100%;
   box-sizing: border-box;
@@ -2446,10 +2422,6 @@ button.structure-card:focus-visible,
 
 .queue-panel {
   margin-top: 24px;
-  padding: 24px;
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  background: var(--card-background);
 }
 
 .queue-panel-heading {
@@ -2543,10 +2515,6 @@ button.structure-card:focus-visible,
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
     margin-top: 24px;
-}
-
-.queue-operations .array-operation-card {
-    min-width: 0;
 }
 
 .queue-operations label {
@@ -2710,6 +2678,38 @@ button.structure-card:focus-visible,
   background: var(--av-surface-2);
 }
 /* Kết thúc UI v2-3a */
+
+/* UI v2-3b: chỉ BST/Hash/Graph; giữ workspace một cột và các vùng cuộn. */
+:where(#bst-section, #hash-table-section, #graph-section) .panel-accordion > :not(summary) {
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+:where(#bst-section, #hash-table-section, #graph-section) .learning-content {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:where(#bst-section, #hash-table-section, #graph-section) .visualizer-placeholder p {
+  max-width: none;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+:where(#bst-section, #hash-table-section, #graph-section) .step-slider input[type="range"],
+:where(#bst-section, #hash-table-section, #graph-section) .stat-card {
+  min-width: 0;
+}
+
+:where(#bst-section, #hash-table-section, #graph-section) .stat-card {
+  overflow-wrap: anywhere;
+}
+
+:where(#bst-section, #hash-table-section, #graph-section) .speed-option input:hover:not(:checked):not(:disabled) + span,
+:where(#bst-section, #hash-table-section, #graph-section) .panel-accordion > summary:hover {
+  background: var(--av-surface-2);
+}
+/* Kết thúc UI v2-3b */
 
 .back-button {
   display: inline-flex;
@@ -3244,6 +3244,8 @@ button.dashboard-card:hover {
 .bst-toolbar input,
 .bst-toolbar select {
   min-height: 44px;
+  min-width: 0;
+  max-width: 100%;
   padding: 9px 12px;
   border: 1px solid var(--border-control);
   border-radius: 8px;
@@ -3276,13 +3278,8 @@ button.dashboard-card:hover {
 
 /* Cây rộng hơn khung thì cuộn ngang bên trong khung, không làm tràn trang. */
 .bst-tree-frame {
-  max-width: 100%;
   min-height: 80px;
-  padding: 8px;
   overflow-x: auto;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--background);
 }
 
 .bst-tree {
@@ -3391,24 +3388,25 @@ button.dashboard-card:hover {
   grid-template-columns: minmax(0, 1fr);
 }
 
-.bst-code-panel pre {
-  overflow-x: auto;
-}
-
 /* ===== Hash Table ===== */
 .hash-toolbar + .hash-toolbar {
   margin-top: 12px;
 }
 
 /* Bảng cao/rộng hơn khung thì cuộn bên trong khung, không làm tràn trang. */
+.bst-tree-frame,
+.graph-frame,
 .hash-table-frame {
   max-width: 100%;
-  max-height: 440px;
   padding: 8px;
-  overflow: auto;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--background);
+}
+
+.hash-table-frame {
+  max-height: 440px;
+  overflow: auto;
 }
 
 .hash-table-svg {
@@ -3537,12 +3535,7 @@ button.dashboard-card:hover {
 /* SVG 300×300 theo viewBox: khung hẹp hơn (360px) thì co lại cho vừa (tọa độ layout giữ nguyên);
    khung vẫn overflow: auto để không bao giờ làm tràn trang. */
 .graph-frame {
-  max-width: 100%;
-  padding: 8px;
   overflow: auto;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--background);
 }
 
 .graph-svg {

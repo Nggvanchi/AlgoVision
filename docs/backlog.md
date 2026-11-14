@@ -139,8 +139,15 @@ mọi số đo bên dưới là lịch sử nếu chưa được tái đo trên 
 ## UI v2-3a — phần còn chờ nghiệm thu
 
 - Gate test/build/bundle PASS sau khi khôi phục đúng comment mốc `/* Bảng phân tích thuật toán */`, không sửa test/logic CSS: 1755/1755 PASS, 0 fail/skip/todo; JS/CSS raw 152734/58400 B. CSS chỉ còn 100 B dưới trần; các thay đổi tiếp theo cần thay/gom luật cũ trước khi thêm. Browser và review vẫn còn chờ nghiệm thu.
-- Diff Sorting/Searching trên `feat/ui-v2-3a` đã xử lý font nhãn cột, co giãn toolbar/slider, typography đoạn văn, wrapper accordion và bố cục ba khối Kiến thức một cột; xem [hợp đồng v2-3a](design/v2-sorting-searching.md). Đây là cập nhật phạm vi hai màn đối với ghi nhận R6b phía trên; chưa áp cho BST/Hash/Graph. Tiêu đề Mã giả lặp vẫn giữ vì không sửa template trong đợt này.
+- Sorting/Searching trên `feat/ui-v2-3a` đã MERGED PR #56; xử lý font nhãn cột, co giãn toolbar/slider, typography đoạn văn, wrapper accordion và bố cục ba khối Kiến thức một cột; xem [hợp đồng v2-3a](design/v2-sorting-searching.md). Bằng chứng đo trước commit được giữ trong baseline. Tiêu đề Mã giả lặp vẫn giữ vì không sửa template trong đợt này.
 - Browser QA NOT VERIFIED: Vite khởi chạy nhưng browser tích hợp timeout localhost. Cần đo nhãn 24 cột/font thật, reflow, controls, keyboard/focus, hover/disabled, live announcements và các viewport theo roadmap; CSS/happy-dom không chứng minh render. Zoom 200%, đa trình duyệt, thiết bị thật, screen reader và CI/Vercel smoke chưa xác minh. Layout adaptive hai cột thuộc v2-3c; không đóng exit gate UI v2-3 bằng kết quả unit test.
+
+## UI v2-3b — phần còn chờ nghiệm thu
+
+- Diff Data Structures Light Minimal trên `feat/ui-v2-3b`: chỉ CSS/test/docs, giữ JS/template và workspace một cột. Xem [hợp đồng](design/v2-data-structures.md) và [baseline](development-baseline.md).
+- Browser NOT VERIFIED: browser tích hợp timeout local. Chờ kiểm bảy màn, vùng cuộn SVG/bảng, responsive, focus/keyboard/disabled/live announcements, zoom 200%, đa trình duyệt và screen reader. Test CSS/happy-dom không thay evidence render; chưa đóng gate UI v2-3.
+- CSS artifact mới 58480 B, còn 20 B dưới trần 58500 B; không thêm CSS trong bước sau nếu chưa thay/gom và đo lại. Adaptive hai cột thuộc v2-3c.
+- Hai regression của lượt 1760/1762 đã xử lý bằng CSS theo duyệt: giữ alias `--panel-bg` có hiệu lực và để `.hash-table-frame` cuối nhóm selector chung. Giữ nguyên test; hai regression 2/2 PASS, full suite 1762/1762 PASS, build PASS. 65600 computed-style comparisons trước/sau hai sửa KHỚP; kiểm SHA xác nhận không còn mutation tạm. Blocker code đã hết; browser QA và nghiệm thu vẫn còn.
 
 ## Dọn dẹp
 - `viewchange.detail.topic` vẫn là hợp đồng cần giữ: `navigation.js` phát topic khi mở chi tiết, và `sidebar.js` đọc nó từ R6c để quản lý trạng thái Sidebar. Không gỡ `topic`/`topicId` khi còn được dùng và test bảo vệ.
