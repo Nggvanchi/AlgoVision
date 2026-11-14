@@ -85,7 +85,7 @@ và vẫn cần duyệt kế hoạch riêng. Lộ trình không cam kết lịch
 
 | Giai đoạn | Kết quả cần bàn giao | Phụ thuộc | Trạng thái |
 |---|---|---|---|
-| UI v2-3 | Visualizer Light Minimal và bằng chứng QA UI v2 | UI v2-1/#53, UI v2-2/#54 | CHƯA BẮT ĐẦU; browser QA v2 NOT VERIFIED |
+| UI v2-3 | Visualizer Light Minimal và bằng chứng QA UI v2 | UI v2-1/#53, UI v2-2/#54 | ĐANG TRIỂN KHAI: diff UI v2-3a Sorting/Searching trên `feat/ui-v2-3a`; browser QA v2 NOT VERIFIED |
 | C1 | Kiểm kê và chốt phạm vi release v1.0.0 | UI v2-3 đạt exit gate | CHƯA BẮT ĐẦU |
 | EDU-1 | Nguồn UIT đã xác minh và mapping chương/mục | C1 | CHƯA BẮT ĐẦU; nguồn UIT CHƯA XÁC MINH |
 | EDU-2 | Nội dung nền tảng, Sorting và Searching theo mapping | EDU-1 | CHƯA BẮT ĐẦU |
@@ -132,7 +132,10 @@ và vẫn cần duyệt kế hoạch riêng. Lộ trình không cam kết lịch
 - **Rủi ro/exit gate:** dư CSS lịch sử sau #54 chỉ 506 B; thay/gom luật trong scope trước khi thêm.
   QA bị chặn phải ghi NOT VERIFIED. Đóng gate khi phạm vi UI v2 đã được nghiệm thu bằng evidence;
   khoảng trống zoom/đa trình duyệt/thiết bị/screen reader phải được xử lý hoặc ghi rõ để C4 kiểm lại,
-  không kế thừa accepted risks R7 như bằng chứng PASS. **Trạng thái: CHƯA BẮT ĐẦU.**
+  không kế thừa accepted risks R7 như bằng chứng PASS. **Trạng thái: ĐANG TRIỂN KHAI** —
+  diff trình bày Sorting/Searching v2-3a chưa commit; test 1755/1755 PASS, build PASS, JS/CSS raw 152734/58400 B;
+  [hợp đồng và checklist](design/v2-sorting-searching.md).
+  Browser QA NOT VERIFIED; nhóm cấu trúc dữ liệu và QA tổng thể chưa hoàn tất. Layout adaptive hai cột thuộc v2-3c, không thuộc diff này.
 
 ### C1 — Kiểm kê và chốt phạm vi v1.0.0
 

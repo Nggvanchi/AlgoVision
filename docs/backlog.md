@@ -136,6 +136,12 @@ mọi số đo bên dưới là lịch sử nếu chưa được tái đo trên 
 - D9: câu hỏi ôn tập hoãn sau R6; không chấm điểm, không lưu (quy tắc a).
 - D10: nâng Array, Stack, Queue, Linked List lên mức có hàm sinh bước, sau R7 và sau cơ chế tách chunk.
 
+## UI v2-3a — phần còn chờ nghiệm thu
+
+- Gate test/build/bundle PASS sau khi khôi phục đúng comment mốc `/* Bảng phân tích thuật toán */`, không sửa test/logic CSS: 1755/1755 PASS, 0 fail/skip/todo; JS/CSS raw 152734/58400 B. CSS chỉ còn 100 B dưới trần; các thay đổi tiếp theo cần thay/gom luật cũ trước khi thêm. Browser và review vẫn còn chờ nghiệm thu.
+- Diff Sorting/Searching trên `feat/ui-v2-3a` đã xử lý font nhãn cột, co giãn toolbar/slider, typography đoạn văn, wrapper accordion và bố cục ba khối Kiến thức một cột; xem [hợp đồng v2-3a](design/v2-sorting-searching.md). Đây là cập nhật phạm vi hai màn đối với ghi nhận R6b phía trên; chưa áp cho BST/Hash/Graph. Tiêu đề Mã giả lặp vẫn giữ vì không sửa template trong đợt này.
+- Browser QA NOT VERIFIED: Vite khởi chạy nhưng browser tích hợp timeout localhost. Cần đo nhãn 24 cột/font thật, reflow, controls, keyboard/focus, hover/disabled, live announcements và các viewport theo roadmap; CSS/happy-dom không chứng minh render. Zoom 200%, đa trình duyệt, thiết bị thật, screen reader và CI/Vercel smoke chưa xác minh. Layout adaptive hai cột thuộc v2-3c; không đóng exit gate UI v2-3 bằng kết quả unit test.
+
 ## Dọn dẹp
 - `viewchange.detail.topic` vẫn là hợp đồng cần giữ: `navigation.js` phát topic khi mở chi tiết, và `sidebar.js` đọc nó từ R6c để quản lý trạng thái Sidebar. Không gỡ `topic`/`topicId` khi còn được dùng và test bảo vệ.
 - Dữ liệu `algovision:progress` đã ghi vào `localStorage` của người dùng trước khi gỡ tiến độ vẫn nằm trong trình duyệt của họ (khoảng dưới 2 kB, không ai đọc). Không có mã xóa; nếu muốn dọn thì thêm

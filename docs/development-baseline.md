@@ -10,6 +10,17 @@
 - Bundle: JavaScript 150.493 B; CSS 57.207 B. HTML và gzip không phải ngưỡng được dùng lần đo này.
 - Font tự host: 10 WOFF2, tổng 172.912 B, cùng 2 giấy phép OFL; ngưỡng ghi nhận 175 kB. Font không nằm trong bundle JS/CSS.
 
+## UI v2-3a — Sorting & Searching, test/build PASS, Windows 2026-11-14
+
+- Base `c9b5ed5f2992291502b36d38f5481f3fbd5c2e43`, branch `feat/ui-v2-3a`; diff chưa commit. Sản phẩm chỉ sửa `src/style.css`; không sửa runtime JS/template/dependency.
+- Baseline đo trước triển khai trong phiên: 1748 PASS, 0 FAIL/skipped/todo/cancelled; 50,804 s. Build PASS, Vite 8.3.5, 268 ms: JS raw 152734 B, CSS raw 57994 B; gzip Node zlib mặc định 44546/10535 B. Dư 1266/506 B dưới trần 154000/58500 B.
+- TDD: 7 test mới RED trên CSS cũ rồi GREEN; refinement nhãn dưới chân cột cũng RED → GREEN. Nhóm liên quan 167/167 PASS, 13,239 s; nhóm CSS/token/scroll riêng 274/274 PASS. Đối chiếu happy-dom 30 phần tử × 11 thuộc tính của BST/Hash/Graph không khác baseline; không phải browser layout QA.
+- Lần trước full suite FAIL 1754/1755 do đổi comment mốc `/* Bảng phân tích thuật toán */`, khiến assert tại `tests/step-tools-css.test.js:88` đỏ. Đã khôi phục chính xác comment tại chỗ cũ, không sửa test hoặc logic CSS. Lần kiểm chứng mới nhất: test cũ và 7 test mới **17/17 PASS**, 0,847 s; full suite **1755/1755 PASS**, 0 FAIL/skipped/todo/cancelled, 46,798 s. Tăng 7 test so với baseline 1748.
+- Build mới nhất **PASS**, Vite 8.3.5, 160 ms: JS raw 152734 B, CSS raw 58400 B; gzip Node zlib mặc định 44546/10547 B. So với baseline: JS raw/gzip +0/+0 B, CSS raw/gzip +406/+12 B. Dư 1266 B JS và 100 B CSS dưới trần 154000/58500 B. Đây là số đo artifact build mới, thay cho ước lượng lightningcss riêng trước đó.
+- Ba mutation nguồn CSS đều bị bắt đúng assert, heap 512 MB, timeout 15 s/test, không tràn heap: font nhãn 12→8px (đối chứng 0,9 s / 16 dòng, mutant exit 1, 0,7 s / 34 dòng); viền wrapper 0→1px (0,8 s / 16 dòng; exit 1, 0,7 s / 36 dòng); min-width slider 0→240px (0,8 s / 16 dòng; exit 1, 0,7 s / 34 dòng). Mọi đối chứng exit 0/GREEN; mọi mutant ĐỎ đúng thông điệp. Snapshot restore/verify KHỚP sau từng phép; SHA-256 trước sửa comment `5ff0ba26bf59e266b7fc8d6c8c5fe01f9b5c0d94d11fe14ce92256e1d183319f`. CSS cuối `d5a9a47b342e7f077b86cea44049cfb36f2e46bb9d0a10fe4cf2d63521fa9ab1`; đối chiếu SHA sau chuẩn hóa duy nhất comment KHỚP bản đã khôi phục mutation. Không chạy mutation mới trong lượt sửa comment; không còn mutation tạm.
+- Browser **NOT VERIFIED**: Vite `127.0.0.1:5199` khởi chạy, browser tích hợp trả `net::ERR_CONNECTION_TIMED_OUT`. Không tác động Chrome cá nhân. CI, Vercel smoke, zoom 200%, browser khác, thiết bị thật và screen reader chưa xác minh. Checklist ở [hợp đồng v2-3a](design/v2-sorting-searching.md).
+- Test/build/bundle đạt gate kỹ thuật; nghiệm thu UI/browser còn NOT VERIFIED, chưa đóng exit gate UI v2-3. Giữ diff để review, không commit/push/merge. Kiểm UTF-8 không BOM/LF, diff và phạm vi thực hiện sau cập nhật báo cáo.
+
 ## UI v2-2 — Dashboard & Library, Windows 2026-11-14
 
 - Base `5e506b436c7021d46a061d57b57d96ae6ff0d40c`, branch `feat/ui-v2-dashboard-library`, thay đổi chưa commit. Không đổi runtime JS, template, controller hoặc Visualizer.
