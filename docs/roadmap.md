@@ -66,6 +66,7 @@ Ghi chú:
 
 | Giai đoạn | Phạm vi | Trạng thái |
 |---|---|---|
-| UI v2-1 | Light Minimal Foundation: palette, shell/header/sidebar và shared controls; sửa tương phản phát sinh trên các màn, giữ JS/layout hiện hành | Đã triển khai trên `feat/ui-v2-foundation`, chờ review; 1740 test PASS, build PASS; Chrome QA mới NOT VERIFIED. Hợp đồng: `docs/design/v2-foundation.md` |
+| UI v2-1 | Light Minimal Foundation: palette, shell/header/sidebar và shared controls; sửa tương phản phát sinh trên các màn, giữ JS/layout hiện hành | Đã merge qua PR #53; số liệu lịch sử 1740 test PASS, build PASS; Chrome QA không suy diễn từ deployment. Hợp đồng: `docs/design/v2-foundation.md` |
+| UI v2-2 | Dashboard/Library Light Minimal: grid fluid 1–3 cột, Hero/CTA, card/chip và search reflow; giữ dữ liệu/handlers | Đã triển khai, chờ review; 1748 tests PASS, build JS 152734 B / CSS 57994 B; browser QA NOT VERIFIED |
 
-Dashboard/Library và Visualizer/QA là các bước tiếp theo, chưa triển khai. Không coi Foundation đã hoàn tất toàn bộ UI v2.
+Visualizer/QA là bước tiếp theo, chưa triển khai. Không coi các bước hiện tại đã hoàn tất toàn bộ UI v2.
