@@ -1,7 +1,29 @@
 # Backlog AlgoVision
 
-Việc còn tồn tại, chưa nằm trong PR nào. Thêm mục khi phát hiện; xóa mục ở commit cuối của PR đã xử lý nó.
-Lộ trình giai đoạn: `docs/roadmap.md`.
+Việc còn tồn tại hoặc cần xác minh; việc đã được xếp giai đoạn vẫn giữ ở đây đến khi có bằng chứng xử lý.
+Thêm mục khi phát hiện; chỉ đóng mục sau nghiệm thu, giữ các ghi chú lịch sử cần truy vết.
+Lộ trình giai đoạn: [roadmap](roadmap.md#chuẩn-hóa-v100).
+
+## Phân việc cho v1.0.0 (2026-11-14)
+
+Thứ tự: UI v2-3 → C1 → EDU-1–4 → C2 (source) → C3 (test) → C4 (release v1.0.0) → C5 (cleanup).
+Đây là phân việc dự kiến, không phải bằng chứng hoàn thành hay quyền triển khai giai đoạn chưa được duyệt.
+
+| Giai đoạn | Việc còn mở / điều kiện đóng |
+|---|---|
+| UI v2-3 | UI v2-1 MERGED #53, UI v2-2 MERGED #54; CI Ubuntu/Windows PASS theo xác nhận của chủ dự án, browser QA vẫn NOT VERIFIED. Hoàn thiện Visualizer Light Minimal và kiểm shell/Dashboard/Library/Visualizer theo gate trong roadmap. |
+| C1 | Rà lại từng mục cũ dưới đây với code hiện hành trước khi phân loại giữ/sửa/hoãn cho release; các mục đã có số đo lịch sử chưa phải lỗi tái hiện hiện tại. Chốt danh mục module/thao tác và acceptance v1.0.0. |
+| EDU-1 | Nguồn giáo trình UIT CHƯA XÁC MINH: cần nguồn chính thức, metadata/phiên bản, quyền dùng và mapping chương/mục → module → kiến thức → trạng thái → nguồn. Không tự đặt tên/số chương, sao chép tài liệu có bản quyền hoặc đưa nguồn chưa xác minh vào nội dung release. |
+| EDU-2–4 | Biên soạn độc lập theo mapping đã duyệt: nền tảng/Sorting/Searching → cấu trúc dữ liệu → Graph/BFS/DFS và rà học thuật toàn bộ. Giữ Big-O/mã giả đúng implementation; không tự thêm thuật toán hoặc chuyển module cũ sang generator. |
+| C2 | Các ứng viên source/hiệu năng như `buildGraph`, logic Searching trùng và tên thuộc tính cần C1 xác nhận. Bắt buộc baseline và benchmark trước–sau, không giảm số test hoặc nâng bundle. |
+| C3 | Các ứng viên ở mục “Tối ưu bộ test” chỉ thực hiện sau C2; profile thời gian/RSS/heap theo file, giữ số test/assertion và chứng minh mutation vẫn bị bắt. Những đề xuất đổi assertion cần duyệt riêng vẫn giữ điều kiện đó. |
+| C4 | Bằng chứng trên release SHA: CI Ubuntu/Windows hoàn tất PASS, test/build/bundle, browser, accessibility và production smoke. Zoom thật 200%, Firefox/Safari, thiết bị thật, screen reader và Vercel smoke chưa được nghiệm thu cho UI v2; bằng chứng bắt buộc NOT VERIFIED chặn release. |
+| C5 | Chỉ cleanup sau release; cần danh sách đường dẫn/ảnh hưởng và phê duyệt riêng trước mọi xóa/di chuyển. Không tự gộp cleanup vào C2/C3 hoặc xóa các ghi chú lịch sử. |
+
+Các accepted risks R7 vẫn là lịch sử của lần nghiệm thu R7; không thay bằng chứng C4.
+Không khôi phục theo dõi tiến độ cá nhân, lịch sử truy cập hay trạng thái học tập; đề xuất cũ trái quy tắc này
+không thuộc v1.0.0. Chỉ dùng dữ liệu thật hoặc ghi “Minh họa”. Trần raw giữ JS <=154000 B, CSS <=58500 B;
+mọi số đo bên dưới là lịch sử nếu chưa được tái đo trên SHA đang nghiệm thu.
 
 ## Lỗi
 - (hiện không có mục nào)
@@ -11,7 +33,7 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
   2000 đỉnh 5,6 s. Sửa không đổi hành vi: tách phần sửa tại chỗ dùng nội bộ, `buildGraph` sửa trên một bản nháp riêng; chứng minh
   bằng `deepEqual` với cách dựng cũ (gọi lần lượt `addVertex`/`addEdge`) trên cặp ngẫu nhiên có cạnh trùng, khuyên, cả hai chế độ.
   Chưa đủ để nâng test sao/đường thẳng lên 1000 đỉnh: DFS sao 1000 đỉnh mất 4,1 s, trong đó 2,6 s là bản sao đồ thị của từng bước.
-  Đề xuất cho giai đoạn 9.
+  Đề xuất lịch sử cho giai đoạn 9; hiện là ứng viên C2, cần baseline/benchmark mới và phạm vi C1 duyệt.
 - `tests/graph-controller.test.js` vẫn tốn 511–679 MB RSS ở heap mặc định (71 test, mỗi test nạp `app.html` vào một cửa sổ riêng).
   Ứng viên số một cho việc dùng chung cửa sổ trong PR `chore/test-consolidate`.
 - `tests/graph-complexity.test.js` giảm RSS 360 → 243 MB sau PR test-hardening dù không dùng happy-dom; chưa rõ nguyên nhân.
@@ -127,7 +149,7 @@ Lộ trình giai đoạn: `docs/roadmap.md`.
 - Còn 22 chỗ dùng `var(--text-secondary|--border-color|--card-background, <giá trị dự phòng>)` (`style.css`): ba alias luôn được định nghĩa trong `:root` nên giá trị dự phòng không bao giờ dùng tới;
   bỏ được bằng cách như PR `chore/bundle-headroom` (so computed style ở 360px và 1280px). Cùng loại: `.array-panel` và `.array-operation-card` còn `background`/màu viền bị luật `.array-panel, .array-operation-card` ở cuối khối Array ghi đè.
 
-## Tối ưu bộ test (chạy SAU R7, KHÔNG làm trong chuỗi Redesign)
+## Tối ưu bộ test (C3, sau C2; không làm trong chuỗi UI v2)
 - (a) Helper dựng DOM happy-dom từ `public/templates/app.html` được gọi cho MỖI test ở nhiều file (ví dụ `withFilter` trong `tests/library-filter.test.js`, `withTabs`, `withLibrary`, `withNavigation`): đo chi phí dựng mỗi lần và cân nhắc dựng một lần mỗi file khi test chỉ đọc (test có thao tác sửa DOM vẫn cần DOM mới).
 - (b) Ít nhất 5 file test cùng phân tích `src/style.css` riêng (`library-css`, `library-filter-css`, `sidebar-css`, `design-tokens`, `av-tokens`; thêm `dashboard-*`): đo chi phí phân tích rồi quyết có chung một helper phân tích (tính một lần mỗi tiến trình) hay không.
 - (c) Mỗi PR Redesign thêm khoảng 38–45 test nên thời gian chạy bộ test tăng dần (25–31 s ở 1527 test; có lần đo 38,7 s khi máy bận): theo dõi bằng skill `test-profile` trước và sau khi làm (a), (b).
