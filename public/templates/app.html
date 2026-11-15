@@ -363,6 +363,7 @@
     </section>
     </div>
 
+    <h2 id="algorithm-library-heading" class="visually-hidden" hidden>Giải thuật</h2>
     <div id="algorithm-panel" role="tabpanel" aria-labelledby="library-tab-algorithms">
     <section class="algorithm-section" id="sorting-algorithm-library">
     <div class="section-heading">
@@ -523,17 +524,19 @@
         <button type="button">Xóa bộ lọc</button>
     </div>
 
-    <section class="visualizer-section" id="sorting-section">
+    <section class="visualizer-section adaptive-visualizer" id="sorting-section">
     <button
         type="button"
         class="back-button"
         data-back-to-sorting-algorithms>
         ← Quay lại danh sách thuật toán
     </button>
-    <div class="visualizer-placeholder">
+    <div class="visualizer-placeholder visualizer-workspace">
+        <div class="visualizer-stage">
         <div class="visualizer-heading">
         <div>
-            <h3 id="visualizer-title">Mảng dữ liệu</h3>
+            <h2 id="visualizer-title">Mảng dữ liệu</h2>
+        <h3 class="visually-hidden">Mô phỏng</h3>
             <p id="visualizer-description">
             Tạo mảng ngẫu nhiên để chuẩn bị mô phỏng thuật toán.
             </p>
@@ -651,6 +654,8 @@
         Sẵn sàng bắt đầu mô phỏng.
         </p>
 
+        </div>
+        <div class="visualizer-panel">
         <details class="panel-accordion" open>
         <summary>Mã giả</summary>
                 <article class="learning-block">
@@ -733,10 +738,11 @@
         <span id="array-range">Giá trị từ 10 đến 100</span>
         </div>
     </div>
+    </div>
 
     </section>
 
-    <section class="visualizer-section" id="search-section" hidden>
+    <section class="visualizer-section adaptive-visualizer" id="search-section" hidden>
     <button
         type="button"
         class="back-button"
@@ -745,13 +751,15 @@
     </button>
     <div class="section-heading">
         <div>
-        <h3 id="search-title">Linear Search</h3>
+        <h2 id="search-title">Linear Search</h2>
+        <h3 class="visually-hidden">Mô phỏng</h3>
         <p id="search-description">Tìm một giá trị bằng cách kiểm tra lần lượt từng phần tử.</p>
         </div>
         <span class="visualizer-tag" id="search-complexity">O(n)</span>
     </div>
 
-    <div class="visualizer-placeholder">
+    <div class="visualizer-placeholder visualizer-workspace">
+        <div class="visualizer-stage">
         <div class="search-toolbar">
         <label for="search-target">Giá trị cần tìm</label>
         <input
@@ -902,6 +910,8 @@
         </div>
         </div>
 
+        </div>
+        <div class="visualizer-panel">
         <details class="panel-accordion" open>
         <summary>Mã giả</summary>
                 <article class="learning-block">
@@ -979,6 +989,7 @@
         </div>
         </details>
     </div>
+    </div>
     </section>
 
     <section class="visualizer-section" id="array-section" hidden>
@@ -991,7 +1002,8 @@
         </button>
       <div class="section-heading">
         <div>
-          <h3>Array Visualizer</h3>
+          <h2>Array Visualizer</h2>
+        <h3 class="visually-hidden">Mô phỏng</h3>
           <p>
             Khám phá cách truy cập, thêm, chèn, xóa và tìm kiếm phần tử trong mảng.
           </p>
@@ -1075,7 +1087,8 @@
     </button>
     <div class="section-heading">
         <div>
-        <h3>Stack Visualizer</h3>
+        <h2>Stack Visualizer</h2>
+        <h3 class="visually-hidden">Mô phỏng</h3>
         <p>
             Khám phá cách ngăn xếp hoạt động theo nguyên tắc
             LIFO (Last In, First Out).
@@ -1171,7 +1184,8 @@
 
             <div class="visualizer-header">
                 <span class="visualizer-tag">DATA STRUCTURES</span>
-                <h3>Queue Visualizer</h3>
+                <h2>Queue Visualizer</h2>
+        <h3 class="visually-hidden">Mô phỏng</h3>
                 <p>
                     Mô phỏng cấu trúc hàng đợi theo nguyên tắc FIFO
                     (First In, First Out).
@@ -1268,7 +1282,8 @@
 
         <div class="section-heading">
             <div>
-                <h3>Singly Linked List Visualizer</h3>
+                <h2>Singly Linked List Visualizer</h2>
+        <h3 class="visually-hidden">Mô phỏng</h3>
                 <p>
                     Khám phá danh sách liên kết đơn thông qua các thao tác
                     thêm đầu, thêm cuối, chèn, xóa và tìm kiếm.
@@ -1401,7 +1416,7 @@
         </div>
     </section>
 
-    <section class="visualizer-section" id="bst-section" hidden>
+    <section class="visualizer-section adaptive-visualizer" id="bst-section" hidden>
     <button
         type="button"
         class="back-button"
@@ -1411,7 +1426,8 @@
 
     <div class="section-heading">
         <div>
-        <h3>Binary Search Tree</h3>
+        <h2>Binary Search Tree</h2>
+        <h3 class="visually-hidden">Mô phỏng</h3>
         <p>
             Cây nhị phân tìm kiếm: nhỏ hơn đi trái, lớn hơn đi phải.
             Cây không tự cân bằng, không chứa giá trị trùng.
@@ -1420,7 +1436,8 @@
         <span class="visualizer-tag" id="bst-complexity">O(h)</span>
     </div>
 
-    <div class="visualizer-placeholder">
+    <div class="visualizer-placeholder visualizer-workspace">
+        <div class="visualizer-stage">
         <div class="bst-toolbar">
         <label for="bst-operation">Thao tác</label>
         <select id="bst-operation">
@@ -1554,6 +1571,8 @@
         </div>
         </div>
 
+        </div>
+        <div class="visualizer-panel">
         <div class="learning-content bst-code-panel">
             <details class="panel-accordion" open>
             <summary>Mã giả</summary>
@@ -1633,9 +1652,10 @@
         </div>
         </details>
     </div>
+    </div>
     </section>
 
-    <section class="visualizer-section" id="hash-table-section" hidden>
+    <section class="visualizer-section adaptive-visualizer" id="hash-table-section" hidden>
     <button
         type="button"
         class="back-button"
@@ -1645,7 +1665,8 @@
 
     <div class="section-heading">
         <div>
-        <h3>Hash Table</h3>
+        <h2>Hash Table</h2>
+        <h3 class="visually-hidden">Mô phỏng</h3>
         <p>
             Bảng băm: hàm băm key mod m chọn ô cho khóa. Nhiều khóa cùng ô (va chạm)
             được xử lý bằng chaining hoặc linear probing. Không chứa khóa trùng.
@@ -1654,7 +1675,8 @@
         <span class="visualizer-tag" id="hash-table-complexity">O(1) trung bình</span>
     </div>
 
-    <div class="visualizer-placeholder">
+    <div class="visualizer-placeholder visualizer-workspace">
+        <div class="visualizer-stage">
         <div class="bst-toolbar hash-toolbar">
         <label for="hash-table-strategy">Xử lý va chạm</label>
         <select id="hash-table-strategy">
@@ -1805,6 +1827,8 @@
         </div>
         </div>
 
+        </div>
+        <div class="visualizer-panel">
         <div class="learning-content bst-code-panel">
             <details class="panel-accordion" open>
             <summary>Mã giả</summary>
@@ -1886,9 +1910,10 @@
         </div>
         </details>
     </div>
+    </div>
     </section>
 
-    <section class="visualizer-section" id="graph-section" hidden>
+    <section class="visualizer-section adaptive-visualizer" id="graph-section" hidden>
     <button
         type="button"
         class="back-button"
@@ -1898,7 +1923,8 @@
 
     <div class="section-heading">
         <div>
-        <h3>Graph</h3>
+        <h2>Graph</h2>
+        <h3 class="visually-hidden">Mô phỏng</h3>
         <p>
             Đồ thị đơn G = (V, E): không cạnh trùng, không khuyên. Dữ liệu lưu bằng danh sách kề;
             ma trận kề được suy ra từ cùng đồ thị để so sánh chi phí đọc.
@@ -1907,7 +1933,8 @@
         <span class="visualizer-tag">GRAPH</span>
     </div>
 
-    <div class="visualizer-placeholder">
+    <div class="visualizer-placeholder visualizer-workspace">
+        <div class="visualizer-stage">
         <div class="bst-toolbar hash-toolbar">
         <label for="graph-kind">Loại đồ thị</label>
         <select id="graph-kind">
@@ -2111,6 +2138,8 @@
         </div>
         </div>
 
+        </div>
+        <div class="visualizer-panel">
         <div class="learning-content bst-code-panel">
             <details class="panel-accordion" open>
             <summary>Mã giả</summary>
@@ -2226,6 +2255,7 @@
             </div>
         </div>
         </details>
+    </div>
     </div>
     </section>
 
