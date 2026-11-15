@@ -346,3 +346,58 @@ test('Thẻ cấu trúc dữ liệu không có section tương ứng: giữ nguy
     window.happyDOM.close()
   }
 })
+
+test('page-heading theo thư viện/chi tiết/Quay lại, kể cả xuất phát Giải thuật; giữ event/title/aria-current/focus', () => {
+  const routes = [
+    ['sorting', '[data-algorithm="bubble"]', '#sorting-section', '[data-back-to-sorting-algorithms]', 'sorting:bubble'],
+    ['searching', '[data-search-algorithm="binary"]', '#search-section', '[data-back-to-search-algorithms]', 'searching:binary'],
+    ...['array', 'stack', 'queue', 'linked-list', 'bst', 'hash-table', 'graph'].map(id => ['structures', '[data-structure-target="' + id + '"]', '#' + id + '-section', '[data-back-to-structures]', 'structure:' + id]),
+  ]
+  for (const [page, cardSelector, sectionSelector, backSelector, topic] of routes) {
+    for (const fromAlgorithms of [false, true]) {
+      // Thư viện Giải thuật chỉ có thẻ Sorting, Searching và BFS/DFS.
+      if (fromAlgorithms && page === 'structures' && topic !== 'structure:graph') continue
+      const window = new Window()
+      const { document } = window
+      try {
+        document.body.innerHTML = template
+        document.title = 'AlgoVision ban đầu'
+        initNavigation(document)
+        const heading = document.querySelector('.page-heading')
+        const events = []
+        document.addEventListener('algovision:viewchange', event => {
+          events.push({ ...event.detail, headingHidden: heading.hidden })
+        })
+        if (fromAlgorithms) document.querySelector('[data-dashboard-target="algorithms"]').click()
+        else if (page === 'structures') document.querySelector('.nav-item[data-page="structures"]').click()
+        else document.querySelector('[data-dashboard-target="' + page + '"]').click()
+        assert.equal(heading.hidden, fromAlgorithms)
+        const libraryTitle = document.title
+        const card = document.querySelector(fromAlgorithms && page === 'structures' ? '#graph-algorithm-library [data-dashboard-open="structure:graph:bfs"]' : cardSelector)
+        assert.ok(card !== null)
+        card.focus()
+        card.click()
+        assert.equal(heading.hidden, true, 'mọi màn chi tiết phải ẩn giới thiệu')
+        assert.equal(document.querySelector(sectionSelector).hidden, false)
+        assert.ok(document.activeElement === card, 'không tự chuyển focus khi đổi heading')
+        assert.ok(document.title.endsWith(' - AlgoVision'))
+        assert.equal(document.querySelectorAll('.topbar [aria-current="page"]').length, 1)
+        assert.equal(document.querySelectorAll('#sidebar [aria-current="page"]').length, 1)
+        const back = document.querySelector(sectionSelector + ' ' + backSelector)
+        back.focus()
+        back.click()
+        assert.equal(heading.hidden, fromAlgorithms, 'Quay lại khôi phục đúng quy tắc thư viện gốc')
+        assert.equal(document.title, libraryTitle)
+        assert.ok(document.activeElement === back, 'không thêm xử lý focus ngoài navigation cũ')
+        const origin = fromAlgorithms ? 'algorithms' : page
+        const expectedTopic = topic
+        assert.deepEqual(events, [
+          { page: origin, topic: null, headingHidden: fromAlgorithms },
+          { page, topic: expectedTopic, headingHidden: true },
+          { page: origin, topic: null, headingHidden: fromAlgorithms },
+        ], 'không thêm/bớt viewchange, heading đã đúng khi event được phát')
+        assert.equal(document.querySelectorAll('#sidebar [aria-current="page"]').length, fromAlgorithms ? 0 : 1)
+      } finally { window.happyDOM.close() }
+    }
+  }
+})

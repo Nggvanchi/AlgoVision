@@ -144,10 +144,23 @@ mọi số đo bên dưới là lịch sử nếu chưa được tái đo trên 
 
 ## UI v2-3b — phần còn chờ nghiệm thu
 
-- Diff Data Structures Light Minimal trên `feat/ui-v2-3b`: chỉ CSS/test/docs, giữ JS/template và workspace một cột. Xem [hợp đồng](design/v2-data-structures.md) và [baseline](development-baseline.md).
+- Data Structures Light Minimal đã MERGED PR #57, CI hậu merge PASS theo xác nhận chủ dự án; bằng chứng diff trước commit trên `feat/ui-v2-3b`: chỉ CSS/test/docs, giữ JS/template và workspace một cột. Xem [hợp đồng](design/v2-data-structures.md) và [baseline](development-baseline.md).
 - Browser NOT VERIFIED: browser tích hợp timeout local. Chờ kiểm bảy màn, vùng cuộn SVG/bảng, responsive, focus/keyboard/disabled/live announcements, zoom 200%, đa trình duyệt và screen reader. Test CSS/happy-dom không thay evidence render; chưa đóng gate UI v2-3.
 - CSS artifact mới 58480 B, còn 20 B dưới trần 58500 B; không thêm CSS trong bước sau nếu chưa thay/gom và đo lại. Adaptive hai cột thuộc v2-3c.
 - Hai regression của lượt 1760/1762 đã xử lý bằng CSS theo duyệt: giữ alias `--panel-bg` có hiệu lực và để `.hash-table-frame` cuối nhóm selector chung. Giữ nguyên test; hai regression 2/2 PASS, full suite 1762/1762 PASS, build PASS. 65600 computed-style comparisons trước/sau hai sửa KHỚP; kiểm SHA xác nhận không còn mutation tạm. Blocker code đã hết; browser QA và nghiệm thu vẫn còn.
+
+## UI v2-3c — nghiệm thu và QA còn lại
+
+**Kết quả mới nhất 2026-11-15:** P1 Library đã sửa bằng chuyển h2 trước panel; 1775/1775 test PASS, build PASS, JS/CSS raw 152843/58402 B (dư 1157/98 B). Nhóm UI 347/347 PASS, browser 1600px heading/panel/Big-O PASS trong mẫu; không phát hiện P0/P1 mới. Chờ nghiệm thu; browser version, exact 701/901, zoom thật, đa trình duyệt/thiết bị/screen reader/CI/preview còn NOT VERIFIED. Các bullet blocker bên dưới giữ làm lịch sử; xem hợp đồng cho kết quả cuối.
+
+**Cập nhật 2026-11-15:** hai blocker Big-O/heading đã PASS trong nhóm 344 test và 110 browser case. Build JS/CSS 152843/58402 B, còn 1157/98 B. **P1 mới:** full suite FAIL tại library-panels.test.js:28 do h2 Giải thuật là con trực tiếp thứ tư của algorithm-panel; dừng chờ duyệt vị trí heading bảo toàn ba section con. Không hạ assertion. Các bullet bên dưới giữ lịch sử phát hiện trước sửa; chi tiết mới nhất ở hợp đồng v2-3c.
+
+- **P1 page-heading:** bổ sung hidden theo page/detail giữ nguyên giới thiệu; 7 test page-heading/navigation PASS nhưng 2 test a11y-headings FAIL vì mất h2 và nhảy h1→h3 ở chi tiết. Dừng chờ duyệt heading ngữ nghĩa riêng cho từng màn/Giải thuật. Không hạ assertion, không tự sửa HTML/CSS. Full suite/build mới NOT RUN, không dùng số đo trước bổ sung làm PASS hiện tại.
+
+- Test/build/bundle PASS: 1770/1770, JS/CSS raw 152734/58292 B. Diff chưa commit; xem [hợp đồng](design/v2-adaptive-layout.md).
+- **P1:** browser local tái hiện card Big-O Sorting tràn trong Learning Panel 380px: clientWidth 76px, scrollWidth 81px. Complexity-grid vẫn bốn cột theo viewport lớn. Dừng sửa code chờ duyệt patch Grid nội bộ Panel và test tương ứng; không đổi nội dung/thuật toán.
+- 75 case resize năm màn không page overflow/Stage–Panel overlap trong mẫu; không đồng nghĩa UI PASS. Viewport 701/901 thực tế thành 702/902; case chính xác còn NOT VERIFIED. Keyboard thực/touch/zoom/đa trình duyệt/thiết bị/screen reader và CI/preview của diff còn NOT VERIFIED.
+- CSS còn 208 B; ngưỡng hai cột đã đo nhưng chưa nghiệm thu cuối. Không dùng CI của PR #57 thay browser QA.
 
 ## Dọn dẹp
 - `viewchange.detail.topic` vẫn là hợp đồng cần giữ: `navigation.js` phát topic khi mở chi tiết, và `sidebar.js` đọc nó từ R6c để quản lý trạng thái Sidebar. Không gỡ `topic`/`topicId` khi còn được dùng và test bảo vệ.

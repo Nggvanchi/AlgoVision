@@ -104,7 +104,9 @@ test('v2-3b: template giữ workspace một cột, ba accordion và live region 
       assert.ok(root.querySelector('.panel-accordion [aria-live]') === null)
       const wrapper = root.querySelector('.visualizer-placeholder')
       assert.ok(wrapper !== null)
-      assert.equal(window.getComputedStyle(wrapper).display, 'block', 'workspace giữ luồng block một cột')
+      assert.equal(window.getComputedStyle(wrapper).display, 'grid', 'v2-3c thay block bằng Grid thích ứng')
+      assert.equal(window.getComputedStyle(wrapper).gridTemplateColumns, 'minmax(0, 1fr)', 'fallback một cột khi container query không có hiệu lực')
+      assert.equal(wrapper.querySelectorAll(':scope > .visualizer-stage, :scope > .visualizer-panel').length, 2, 'hai vùng giữ thứ tự Stage rồi Learning')
       for (const width of [360, 760, 1280]) {
         window.happyDOM.setWindowSize({ width, height: 800 })
         const knowledge = root.querySelector('.learning-section .learning-content')

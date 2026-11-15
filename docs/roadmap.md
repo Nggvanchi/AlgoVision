@@ -71,7 +71,8 @@ Ghi chú:
 | UI v2-1 | Light Minimal Foundation: palette, shell/header/sidebar và shared controls; sửa tương phản phát sinh trên các màn, giữ JS/layout hiện hành | MERGED PR #53; CI Ubuntu/Windows PASS; số liệu lịch sử 1740 test PASS, build PASS; browser QA NOT VERIFIED. Hợp đồng: [Foundation](design/v2-foundation.md) |
 | UI v2-2 | Dashboard/Library Light Minimal: grid fluid 1–3 cột, Hero/CTA, card/chip và search reflow; giữ dữ liệu/handlers | MERGED PR #54; CI Ubuntu/Windows PASS; số liệu lịch sử 1748 test PASS, build JS 152734 B / CSS 57994 B; browser QA NOT VERIFIED. Hợp đồng: [Dashboard/Library](design/v2-dashboard-library.md) |
 | UI v2-3a | Sorting/Searching Light Minimal | MERGED PR #56 tại `6ec0d593593be18bb94a543b182e632f747f98da`; bằng chứng đo trước commit giữ trong baseline; browser QA NOT VERIFIED. |
-| UI v2-3b | Data Structures Light Minimal, CSS/test/docs | Diff chưa commit trên `feat/ui-v2-3b`, chờ nghiệm thu; đã sửa hai regression bằng CSS, 1762/1762 test PASS, build PASS, JS/CSS raw 152734/58480 B; [hợp đồng và checklist](design/v2-data-structures.md), số đo thực tế trong baseline; browser QA NOT VERIFIED. |
+| UI v2-3b | Data Structures Light Minimal, CSS/test/docs | MERGED PR #57 tại `f14986febf78878404ee5d8e0b7e8ea75339b771`; CI hậu merge PASS theo xác nhận chủ dự án; bằng chứng trước commit giữ trong baseline; browser QA riêng v2-3b chưa nghiệm thu toàn diện. |
+| UI v2-3c | Adaptive Grid cho năm Visualizer | Diff chưa commit, chờ nghiệm thu; P1 Library/heading/Big-O đã xử lý. Full 1775/1775 PASS, build PASS, JS/CSS raw 152843/58402 B. Browser 1600px kiểm lại PASS trong mẫu; QA còn giới hạn, không đóng gate UI v2 toàn diện. [Hợp đồng và số đo](design/v2-adaptive-layout.md). |
 
 Trạng thái merge đối chiếu Git local tại `c84f0bfaeffa848de4e1df77e093d6dd2c111ad6`;
 CI Ubuntu/Windows PASS là thông tin đã được chủ dự án xác nhận khi duyệt cập nhật này, không phải lần chạy
@@ -137,7 +138,7 @@ và vẫn cần duyệt kế hoạch riêng. Lộ trình không cam kết lịch
   không kế thừa accepted risks R7 như bằng chứng PASS. **Trạng thái: ĐANG TRIỂN KHAI** —
   Sorting/Searching v2-3a MERGED PR #56; số đo trước commit: test 1755/1755 PASS, build PASS, JS/CSS raw 152734/58400 B;
   [hợp đồng và checklist](design/v2-sorting-searching.md).
-  Nhóm cấu trúc dữ liệu có diff v2-3b chờ review; [hợp đồng](design/v2-data-structures.md) và baseline ghi bằng chứng riêng. Browser QA NOT VERIFIED; QA tổng thể chưa hoàn tất. Layout adaptive hai cột thuộc v2-3c.
+  Nhóm cấu trúc dữ liệu v2-3b MERGED PR #57; [hợp đồng](design/v2-data-structures.md) và baseline ghi bằng chứng riêng. Browser QA NOT VERIFIED; QA tổng thể chưa hoàn tất. Layout adaptive hai cột thuộc v2-3c.
 
 ### C1 — Kiểm kê và chốt phạm vi v1.0.0
 

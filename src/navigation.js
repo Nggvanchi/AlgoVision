@@ -31,6 +31,7 @@ export function initNavigation(document) {
 
   const dashboardSection = document.querySelector('#dashboard-section')
   const pageHeading = document.querySelector('.page-heading')
+  const algorithmHeading = document.querySelector('#algorithm-library-heading')
 
   const sortingLibrary = document.querySelector('#sorting-algorithm-library')
   const sortingVisualizer = document.querySelector('#sorting-section')
@@ -121,6 +122,9 @@ export function initNavigation(document) {
   }
 
   function renderTopbar() {
+    if (pageHeading) pageHeading.hidden = currentDetail !== null || currentPage === 'dashboard' || currentPage === 'algorithms'
+    if (algorithmHeading) algorithmHeading.hidden = currentPage !== 'algorithms'
+
     syncLibraryTabs()
     libraryPanels.forEach((panel) => {
       panel.hidden = [...panel.children].every((child) => child.hidden)
@@ -182,10 +186,6 @@ export function initNavigation(document) {
 
     hideAllSections()
     updateNavigation()
-
-    if (pageHeading) {
-      pageHeading.hidden = pageName === 'dashboard'
-    }
 
     if (pageName === 'dashboard') {
       dashboardSection.hidden = false

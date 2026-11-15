@@ -10,7 +10,43 @@
 - Bundle: JavaScript 150.493 B; CSS 57.207 B. HTML và gzip không phải ngưỡng được dùng lần đo này.
 - Font tự host: 10 WOFF2, tổng 172.912 B, cùng 2 giấy phép OFL; ngưỡng ghi nhận 175 kB. Font không nằm trong bundle JS/CSS.
 
+## UI v2-3c — P1 Library đã sửa, Windows 2026-11-15
+
+- Chỉ chuyển h2 Giải thuật ra trước algorithm-panel, giữ ba section trực tiếp. Không sửa CSS/navigation trong lượt này; thêm một regression vị trí/hidden/Quay lại theo RED → GREEN. Library/accessibility/navigation 13/13 PASS (1,454 s), nhóm UI 347/347 PASS (8,995 s).
+- Full pnpm test **1775/1775 PASS**, 0 fail/skipped/todo/cancelled, **37,268 s**. Không sửa/hạ assertion Library hoặc accessibility cũ.
+- Build PASS, Vite 8.3.5, 139 ms, tổng lệnh 450 ms; JS raw/gzip **152843/44574 B**, CSS **58402/10707 B**, không đổi so với lượt trước. Gzip Node zlib mặc định; dư **1157/98 B** dưới trần 154000/58500 B. So base v2-3b: JS raw +109 B, CSS raw -78 B.
+- Browser lại tại window.innerWidth 1600px/height 900: heading đứng trước panel ba section; Giải thuật → Bubble Sort → Quay lại giữ đúng hidden/title/h2; không page overflow hoặc Stage/Panel overlap. Panel 380px, bốn Big-O card client/scroll 166/166px. Browser version, exact 701/901 và các khoảng trống QA còn NOT VERIFIED như hợp đồng, không kế thừa thành PASS toàn diện.
+- Mutation cũ được kế thừa sau đối chiếu byte: CSS/navigation không đổi; template chỉ đổi vị trí h2, đảo riêng phép chuyển trong bộ nhớ khớp SHA sau restore trước. Không chạy mutation mới. Template SHA aa9c5b4da5c5046296ae169c37738775407b49b602b64afec6fb3147e2e2f2c5; CSS fd2d047cdec180b24e0463e07a1eac42fa436ec19f17d43690485a0ea205b1a6; navigation eb0986c7e29e7e94a31e127b86cb1f53674f69721d4040687aedd316bd4392a4.
+- Diff chưa commit, chờ nghiệm thu; không còn blocker P1 đã biết trong phạm vi kiểm, CSS còn ít headroom. Dev server đã dừng. Giữ nguyên các bản ghi FAIL lịch sử dưới đây; [hợp đồng và evidence](design/v2-adaptive-layout.md).
+
+### Lịch sử trước sửa vị trí h2 Library
+
+## UI v2-3c — sửa hai blocker, Windows 2026-11-15
+
+- Hai test accessibility RED trước sửa, hai regression Big-O/heading mới RED trước sửa; nhóm mục tiêu 20/20 PASS, nhóm UI 344/344 PASS (14,586 s), page-heading sau bổ sung assertion h2 Giải thuật 2/2 PASS. Giữ mọi assertion a11y cũ; tiêu đề h3→h2 giữ 54 computed properties.
+- Build PASS trước full suite, Vite 294 ms: JS raw/gzip 152843/44574 B; CSS 58402/10707 B. Dư 1157/98 B dưới trần JS/CSS 154000/58500 B. So base: JS +109/+28 B, CSS -78/+123 B. Gzip Node zlib mặc định.
+- Browser hai blocker PASS trong 110 case resize chín chi tiết (Hash thêm 1454/1456), không card/page overflow/overlap hoặc heading jump. Sorting 1600px Panel 380px: cả bốn card client/scroll 166/166px, thay lỗi 76/81px. window.innerWidth thực và giới hạn ở hợp đồng; exact 701/901 và browser version NOT VERIFIED. Keyboard mẫu slider/radio/accordion PASS, console warn/error rỗng; không suy thành QA toàn diện.
+- Ba mutation mới: Big-O bốn cột, h2 Sorting→h3, hidden h2 Giải thuật đảo điều kiện. Đối chứng GREEN, mutant RED đúng assert, heap 512 MB/timeout 15 s, không tràn heap; restore/verify nguyên byte sau từng phép, snapshot đã clear. CSS SHA fd2d047cdec180b24e0463e07a1eac42fa436ec19f17d43690485a0ea205b1a6; template 544dae256baca98f785f2846c3eebbb4d87d84f75c37ea50fe052c668c888740; navigation eb0986c7e29e7e94a31e127b86cb1f53674f69721d4040687aedd316bd4392a4.
+- **Full suite FAIL** sau restore: library-panels.test.js:28 không cho thêm h2 trực tiếp vào algorithm-panel vốn chỉ có ba section. Tổng PASS/FAIL chưa chốt từ phần summary, không dùng nhóm 344 PASS hoặc số 1770 cũ làm full gate hiện tại. Dừng sửa code, không sửa test Library, không chạy lại build sau regression. Chi tiết và phương án cần duyệt ở [hợp đồng](design/v2-adaptive-layout.md). Không commit/push/merge; dev server đã dừng.
+
+### Lịch sử triển khai và các lượt dừng trước đó
+
+## UI v2-3c — Adaptive layout, Windows 2026-11-14
+
+**Cập nhật page-heading:** navigation hidden đã sửa theo yêu cầu bổ sung, CSS/template không đổi. Hai file page-heading/navigation 7/7 PASS, 1,223 s (TDD RED → GREEN); nhóm liên quan phát hiện 2 test a11y-headings FAIL vì mất h2/nhảy h1→h3 trên màn chi tiết. Đã dừng theo chỉ dẫn, không sửa test accessibility/HTML, không chạy full suite/build sau regression. Các số 1770 PASS/bundle bên dưới là trước bổ sung navigation; hiện gate FAIL, bundle mới NOT VERIFIED. Chi tiết và hướng cần duyệt tại hợp đồng v2-adaptive-layout.
+
+- Base `f14986febf78878404ee5d8e0b7e8ea75339b771`, branch `feat/ui-v2-3c`; PR #57 MERGED xác nhận Git local, CI hậu merge PASS theo chủ dự án. Cài frozen lockfile thành công từ cache (24 package reused, 0 downloaded, 643 ms); lockfile không đổi, Git sạch sau cài.
+- Baseline phiên: 1762/1762 PASS, 0 fail/skip/todo/cancelled, 44,816 s; build PASS 241 ms, JS raw/gzip 152734/44546 B, CSS 58480/10584 B. Gzip Node zlib mặc định.
+- Tối ưu CSS trước Grid: gom bảy nhóm SVG/badge trùng, 4770 computed-style comparisons KHỚP, 46 test liên quan PASS; artifact CSS 57816/10562 B (giảm 664/22 B). Không xóa selector/comment test cũ cần.
+- TDD mới RED 8/8 → GREEN 8/8; thêm wrapper Stage/Panel năm màn, giữ ID/focus/reading order và live ngoài details. Test layout v2-3b thay một assertion block bằng ba assertion Grid/fallback/wrapper; không giảm test. Nhóm liên quan 118/118 PASS, 8,454 s.
+- Full suite sau mutation restore **1770/1770 PASS**, 0 fail/skipped/todo/cancelled, **40,575 s**. Build PASS trước browser QA, Vite 8.3.5, 136 ms: JS raw/gzip **152734/44546 B** (không đổi), CSS **58292/10677 B** (raw -188 B, gzip +93 B so baseline). Headroom JS/CSS 1266/208 B dưới trần 154000/58500 B.
+- Mutation nguồn min-width Stage, threshold Hash, wrapper Stage: đối chứng GREEN exit 0, mutant RED đúng assert exit 1; heap 512 MB, timeout 15 s, không tràn heap. Mỗi đối chứng 0,6 s/16 dòng; mutant 0,6 s, 34/4111/43 dòng. Restore/verify KHỚP nguyên byte sau từng phép, snapshot đã clear. CSS SHA-256 `803d8471c4089773332638ca21fb0885a2bd19a93f7ac4c26bef622e683f84f9`; template `0b5d77912cc41cc4900fcd849513dbaa0349d563f177313b6fa49b63340265f2`.
+- Browser tích hợp mở được local trong lượt này. 75 case resize trên năm màn không thấy page overflow/Stage–Panel overlap trong mẫu; ngưỡng đo và giới hạn ở [hợp đồng](design/v2-adaptive-layout.md). Browser version chính xác NOT VERIFIED; viewport yêu cầu 701/901 thực là 702/902.
+- **Browser regression / P1:** Sorting tại viewport 1600px, Learning Panel 380px, hai card Big-O có scrollWidth 81px > clientWidth 76px. Dừng sửa code theo chỉ dẫn; không chạy thêm build/test sau phát hiện browser regression. Chưa nghiệm thu layout/breakpoint, không đóng gate dù test/build PASS. Đã dừng dev server; không commit/push/merge. Phần QA còn lại NOT VERIFIED được ghi riêng trong hợp đồng.
+
 ## UI v2-3b — Data Structures, Windows 2026-11-14
+
+Trạng thái hiện tại: MERGED PR #57 tại `f14986febf78878404ee5d8e0b7e8ea75339b771`, CI hậu merge PASS theo chủ dự án. Bằng chứng đo trước commit dưới đây được giữ nguyên.
 
 **Trạng thái mới nhất sau sửa hai regression được duyệt: test/build/bundle PASS; browser QA NOT VERIFIED.** Các số FAIL bên dưới giữ làm bằng chứng lần kiểm trước.
 

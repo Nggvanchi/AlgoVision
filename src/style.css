@@ -729,7 +729,7 @@ button:disabled,
   margin-bottom: 17px;
 }
 
-.section-heading h3 {
+.section-heading :is(h2, h3) {
   margin: 0;
   color: var(--text);
   font-size: 16px;
@@ -879,9 +879,8 @@ button.structure-card:hover {
 }
 
 
-/* Tiêu đề Queue đổi từ h2 sang h3 (tránh hai h2 và bước nhảy h2 -> h4): giữ đúng số đo của h2 mặc định
-   (font-size 24px, margin 0,83em = 19,92px, đậm 700) để giao diện không đổi. */
-.visualizer-header h3 {
+/* Queue dùng h2 thật khi giới thiệu bị ẩn; giữ số đo tiêu đề hiện hành. */
+.visualizer-header h2 {
   margin: 0.83em 0;
   font-size: 1.5em;
 }
@@ -1112,8 +1111,8 @@ button.structure-card:hover {
   gap: 16px;
 }
 
-/* #visualizer-title là h3 (dưới h2 tiêu đề trang) nhưng giữ nguyên kiểu cũ của h4: đã đo computed style trước và sau. */
-.visualizer-heading h3 {
+/* Tiêu đề thật dùng h2, giữ nguyên kiểu chữ hiện hành. */
+.visualizer-heading h2 {
   margin: 0;
   color: var(--text);
   font-size: 16px;
@@ -3306,13 +3305,16 @@ button.dashboard-card:hover {
   stroke-width: 4;
 }
 
-.bst-node-circle {
+.bst-node-circle,
+.hash-entry-box,
+.graph-vertex-circle {
   fill: var(--panel-hover);
   stroke: var(--muted);
   stroke-width: 2;
 }
 
-.bst-node-label {
+.bst-node-label,
+.hash-entry-label {
   fill: var(--text);
   font-size: 13px;
   font-weight: 600;
@@ -3327,7 +3329,10 @@ button.dashboard-card:hover {
   stroke: var(--av-primary-text);
 }
 
-.bst-node.is-current .bst-node-circle {
+.bst-node.is-current .bst-node-circle,
+.hash-entry.is-current .hash-entry-box,
+.graph-edge.is-current,
+.graph-vertex.is-current .graph-vertex-circle {
   stroke: var(--state-active);
   stroke-width: 4;
 }
@@ -3338,13 +3343,17 @@ button.dashboard-card:hover {
   stroke-dasharray: 4 3;
 }
 
-.bst-node-ring {
+.bst-node-ring,
+.hash-entry-ring,
+.graph-vertex-ring {
   fill: none;
   stroke: var(--av-success);
   stroke-width: 2;
 }
 
-.bst-node.is-found .bst-node-circle {
+.bst-node.is-found .bst-node-circle,
+.hash-entry.is-found .hash-entry-box,
+.graph-vertex.is-output .graph-vertex-circle {
   fill: color-mix(in srgb, var(--av-success) 22%, var(--panel));
 }
 
@@ -3369,7 +3378,8 @@ button.dashboard-card:hover {
   border-color: var(--av-primary-text);
 }
 
-.bst-legend-dot.is-found {
+.bst-legend-dot.is-found,
+.hash-legend-box.is-found {
   border-color: var(--av-success);
   outline: 2px solid var(--av-success);
   outline-offset: 1px;
@@ -3470,36 +3480,14 @@ button.dashboard-card:hover {
   stroke-width: 2;
 }
 
-.hash-entry-box {
-  fill: var(--panel-hover);
-  stroke: var(--muted);
-  stroke-width: 2;
-}
 
-.hash-entry-label {
-  fill: var(--text);
-  font-size: 13px;
-  font-weight: 600;
-}
 
 .hash-entry.is-path .hash-entry-box {
   stroke: var(--av-primary-text);
 }
 
-.hash-entry.is-current .hash-entry-box {
-  stroke: var(--state-active);
-  stroke-width: 4;
-}
 
-.hash-entry-ring {
-  fill: none;
-  stroke: var(--av-success);
-  stroke-width: 2;
-}
 
-.hash-entry.is-found .hash-entry-box {
-  fill: color-mix(in srgb, var(--av-success) 22%, var(--panel));
-}
 
 .hash-legend-box {
   display: inline-block;
@@ -3517,11 +3505,6 @@ button.dashboard-card:hover {
   border-color: var(--av-primary-text);
 }
 
-.hash-legend-box.is-found {
-  border-color: var(--av-success);
-  outline: 2px solid var(--av-success);
-  outline-offset: 1px;
-}
 
 .hash-legend-box.is-tombstone {
   background: repeating-linear-gradient(45deg, var(--muted) 0 2px, transparent 2px 5px);
@@ -3558,10 +3541,6 @@ button.dashboard-card:hover {
 
 /* Trạng thái không chỉ dựa vào màu: cạnh/đỉnh đang xét viền dày (+ ▶), đỉnh đã ghi nhận vòng kép + ✓,
    u/v có nhãn chữ cạnh đỉnh. */
-.graph-edge.is-current {
-  stroke: var(--state-active);
-  stroke-width: 4;
-}
 
 .graph-arrow-head {
   fill: var(--muted);
@@ -3571,11 +3550,6 @@ button.dashboard-card:hover {
   fill: var(--state-active);
 }
 
-.graph-vertex-circle {
-  fill: var(--panel-hover);
-  stroke: var(--muted);
-  stroke-width: 2;
-}
 
 .graph-vertex-label {
   fill: var(--text);
@@ -3583,25 +3557,13 @@ button.dashboard-card:hover {
   font-weight: 600;
 }
 
-.graph-vertex.is-current .graph-vertex-circle {
-  stroke: var(--state-active);
-  stroke-width: 4;
-}
 
 .graph-vertex-marker {
   fill: var(--state-active);
   font-size: 12px;
 }
 
-.graph-vertex-ring {
-  fill: none;
-  stroke: var(--av-success);
-  stroke-width: 2;
-}
 
-.graph-vertex.is-output .graph-vertex-circle {
-  fill: color-mix(in srgb, var(--av-success) 22%, var(--panel));
-}
 
 .graph-vertex-check {
   fill: var(--av-text);
@@ -3642,7 +3604,8 @@ button.dashboard-card:hover {
   font-size: 15px;
 }
 
-.graph-panel-badge {
+.graph-panel-badge,
+.graph-row-badge {
   color: var(--muted);
   font-size: 12px;
   font-weight: 600;
@@ -3786,11 +3749,6 @@ button.dashboard-card:hover {
   border-left: 4px solid var(--state-active);
 }
 
-.graph-row-badge {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
-}
 
 .graph-row-badge:not(:empty)::before {
   content: '· ';
@@ -4085,4 +4043,41 @@ button.dashboard-card:hover {
 .load-error-detail {
   color: var(--muted);
   font-size: 13px;
+}
+
+/* UI v2-3c: container rộng bao gồm padding/viền workspace 50px; ngưỡng tạm chờ browser QA. */
+.adaptive-visualizer {
+  container: visualizer / inline-size;
+}
+
+#hash-table-section {
+  container-name: hash;
+}
+
+.visualizer-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.visualizer-stage,
+.visualizer-panel {
+  min-width: 0;
+}
+
+@container visualizer (min-width: 1094px) {
+  .visualizer-workspace {
+    grid-template-columns: minmax(680px, 1fr) minmax(340px, 380px);
+  }
+}
+
+@container hash (min-width: 1288px) {
+  .visualizer-workspace {
+    grid-template-columns: minmax(874px, 1fr) minmax(340px, 380px);
+  }
+}
+
+.visualizer-panel .complexity-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 148px), 1fr));
 }
