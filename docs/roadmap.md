@@ -72,7 +72,8 @@ Ghi chú:
 | UI v2-2 | Dashboard/Library Light Minimal: grid fluid 1–3 cột, Hero/CTA, card/chip và search reflow; giữ dữ liệu/handlers | MERGED PR #54; CI Ubuntu/Windows PASS; số liệu lịch sử 1748 test PASS, build JS 152734 B / CSS 57994 B; browser QA NOT VERIFIED. Hợp đồng: [Dashboard/Library](design/v2-dashboard-library.md) |
 | UI v2-3a | Sorting/Searching Light Minimal | MERGED PR #56 tại `6ec0d593593be18bb94a543b182e632f747f98da`; bằng chứng đo trước commit giữ trong baseline; browser QA NOT VERIFIED. |
 | UI v2-3b | Data Structures Light Minimal, CSS/test/docs | MERGED PR #57 tại `f14986febf78878404ee5d8e0b7e8ea75339b771`; CI hậu merge PASS theo xác nhận chủ dự án; bằng chứng trước commit giữ trong baseline; browser QA riêng v2-3b chưa nghiệm thu toàn diện. |
-| UI v2-3c | Adaptive Grid cho năm Visualizer | Diff chưa commit, chờ nghiệm thu; P1 Library/heading/Big-O đã xử lý. Full 1775/1775 PASS, build PASS, JS/CSS raw 152843/58402 B. Browser 1600px kiểm lại PASS trong mẫu; QA còn giới hạn, không đóng gate UI v2 toàn diện. [Hợp đồng và số đo](design/v2-adaptive-layout.md). |
+| UI v2-3c | Adaptive Grid cho năm Visualizer | MERGED PR #58 theo Git local tại `d639b42ad87e7f282950a88b653fd0030ea6350d`; giữ số đo 1775/1775 PASS và raw JS/CSS 152843/58402 B như bằng chứng lịch sử. QA có giới hạn tại [hợp đồng](design/v2-adaptive-layout.md); chưa đóng gate UI v2 toàn diện. |
+| UI v2-3d.1 | Learning Panel Dropdown, một native select cho năm Visualizer | Đã triển khai, diff chưa commit, chờ review. Full trước lượt nghiệm thu 1787/1787 PASS, build PASS, raw JS/CSS 153111/57906 B, mutation 3/3 có restore nguyên byte. Chrome/Edge/browser tương tác bị chặn; browser QA NOT VERIFIED. [Hợp đồng, chẩn đoán và checklist](design/v2-learning-panel.md); lần kiểm lại xem [baseline](development-baseline.md). |
 
 Trạng thái merge đối chiếu Git local tại `c84f0bfaeffa848de4e1df77e093d6dd2c111ad6`;
 CI Ubuntu/Windows PASS là thông tin đã được chủ dự án xác nhận khi duyệt cập nhật này, không phải lần chạy
@@ -88,7 +89,7 @@ và vẫn cần duyệt kế hoạch riêng. Lộ trình không cam kết lịch
 
 | Giai đoạn | Kết quả cần bàn giao | Phụ thuộc | Trạng thái |
 |---|---|---|---|
-| UI v2-3 | Visualizer Light Minimal và bằng chứng QA UI v2 | UI v2-1/#53, UI v2-2/#54 | ĐANG TRIỂN KHAI: v2-3a MERGED PR #56; diff v2-3b Data Structures chờ review; browser QA v2 NOT VERIFIED |
+| UI v2-3 | Visualizer Light Minimal và bằng chứng QA UI v2 | UI v2-1/#53, UI v2-2/#54 | ĐANG TRIỂN KHAI: v2-3a/#56, v2-3b/#57, v2-3c/#58 MERGED theo Git local; v2-3d.1 diff chưa commit, browser QA NOT VERIFIED, chưa đóng gate |
 | C1 | Kiểm kê và chốt phạm vi release v1.0.0 | UI v2-3 đạt exit gate | CHƯA BẮT ĐẦU |
 | EDU-1 | Nguồn UIT đã xác minh và mapping chương/mục | C1 | CHƯA BẮT ĐẦU; nguồn UIT CHƯA XÁC MINH |
 | EDU-2 | Nội dung nền tảng, Sorting và Searching theo mapping | EDU-1 | CHƯA BẮT ĐẦU |

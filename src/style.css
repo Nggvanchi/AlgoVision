@@ -1401,45 +1401,28 @@ button.structure-card:hover {
   }
 }
 
-/* Panel accordion (R6b): <details> gốc, không cần JS. Giải thích bước (aria-live) KHÔNG nằm trong accordion để luôn được đọc. */
-.panel-accordion {
-  margin-top: var(--av-space-4);
-  border: 1px solid var(--border);
+/* Learning Panel Dropdown: select gốc giữ tương tác bàn phím của trình duyệt. */
+.learning-panel-picker {
+  display: grid;
+  gap: var(--av-space-2);
+  font-weight: 600;
+}
+
+.learning-panel-picker select {
+  min-height: 44px;
+  width: 100%;
+  min-width: 0;
+  padding: 0 var(--av-space-3);
+  border: 1px solid var(--border-control);
   border-radius: var(--av-radius-control);
   background: var(--panel);
-}
-
-.panel-accordion > summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 44px;
-  padding: 0 var(--av-space-4);
-  font-weight: 600;
+  color: var(--text);
+  font: inherit;
   cursor: pointer;
-  list-style: none;
 }
 
-.panel-accordion > summary::-webkit-details-marker {
-  display: none;
-}
-
-.panel-accordion > summary::after {
-  content: "▾";
-  color: var(--av-text-muted);
-}
-
-.panel-accordion[open] > summary::after {
-  content: "▴";
-}
-
-.panel-accordion > summary:focus-visible {
-  outline: 2px solid var(--av-focus);
-  outline-offset: -2px;
-}
-
-.panel-accordion > :not(summary) {
-  margin: 0 var(--av-space-4) var(--av-space-4);
+.learning-pane {
+  margin-top: var(--av-space-4);
 }
 
 /* Thanh bước dùng chung (R6a): thanh trượt bước và nhóm tốc độ của mọi visualizer có controller */
@@ -2647,7 +2630,7 @@ button.structure-card:focus-visible,
 }
 
 /* UI v2-3a: chỉ hai workspace Sorting/Searching; giữ nguyên khung của các module khác. */
-:where(#sorting-section, #search-section) .panel-accordion > :not(summary) {
+:where(#sorting-section, #search-section) .learning-pane > * {
   border: 0;
   padding: 0;
   background: transparent;
@@ -2672,14 +2655,13 @@ button.structure-card:focus-visible,
   overflow-wrap: anywhere;
 }
 
-:where(#sorting-section, #search-section) .speed-option input:hover:not(:checked):not(:disabled) + span,
-:where(#sorting-section, #search-section) .panel-accordion > summary:hover {
+:where(#sorting-section, #search-section) .speed-option input:hover:not(:checked):not(:disabled) + span {
   background: var(--av-surface-2);
 }
 /* Kết thúc UI v2-3a */
 
 /* UI v2-3b: chỉ BST/Hash/Graph; giữ workspace một cột và các vùng cuộn. */
-:where(#bst-section, #hash-table-section, #graph-section) .panel-accordion > :not(summary) {
+:where(#bst-section, #hash-table-section, #graph-section) .learning-pane > * {
   border: 0;
   padding: 0;
   background: transparent;
@@ -2704,8 +2686,7 @@ button.structure-card:focus-visible,
   overflow-wrap: anywhere;
 }
 
-:where(#bst-section, #hash-table-section, #graph-section) .speed-option input:hover:not(:checked):not(:disabled) + span,
-:where(#bst-section, #hash-table-section, #graph-section) .panel-accordion > summary:hover {
+:where(#bst-section, #hash-table-section, #graph-section) .speed-option input:hover:not(:checked):not(:disabled) + span {
   background: var(--av-surface-2);
 }
 /* Kết thúc UI v2-3b */

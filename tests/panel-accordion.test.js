@@ -2,9 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { withFullApp } from './helpers/app-dom.js'
 
-// R6b: mỗi màn hình có controller có 3 accordion (<details>) Mã giả, Độ phức tạp, Kiến thức (quyết định 20 và 30).
-// "Giải thích bước hiện tại" là vùng aria-live nên nằm NGOÀI mọi accordion (vùng live trong <details> đóng sẽ không được đọc).
-
+// Hợp đồng R6b được chuyển sang dropdown v2-3d.1; giữ nội dung và nhãn truy cập.
 const SCREENS = [
   { name: 'Sắp xếp', section: '#sorting-section', live: '#simulation-message', pseudocode: '#learning-pseudocode', complexity: '.complexity-panel', knowledge: '#sorting-learning' },
   { name: 'Tìm kiếm', section: '#search-section', live: '#search-message', pseudocode: '#search-learning-pseudocode', complexity: '#search-complexity-panel', knowledge: '#search-learning' },
@@ -14,65 +12,58 @@ const SCREENS = [
 ]
 
 for (const screen of SCREENS) {
-  test(`${screen.name}: ba accordion Mã giả, Độ phức tạp, Kiến thức, summary là con đầu và mở mặc định`, async () => {
+  test(`${screen.name}: ba pane đúng thứ tự, chỉ Mã giả hiện mặc định`, async () => {
     await withFullApp(({ document }) => {
       const section = document.querySelector(screen.section)
-      const accordions = [...section.querySelectorAll('details.panel-accordion')]
-
-      assert.deepEqual(
-        accordions.map((details) => details.querySelector(':scope > summary')?.textContent.trim()),
-        ['Mã giả', 'Độ phức tạp', 'Kiến thức'],
-      )
-
-      for (const details of accordions) {
-        assert.ok(details.hasAttribute('open'), 'mặc định mở để giữ nội dung đang thấy')
-        assert.equal(details.firstElementChild.tagName, 'SUMMARY', 'summary phải là con đầu tiên')
-      }
+      const panes = [...section.querySelectorAll('[data-learning-pane]')]
+      assert.deepEqual(panes.map(n => n.dataset.learningPane), ['pseudocode', 'complexity', 'knowledge'])
+      assert.deepEqual(panes.map(n => n.hidden), [false, true, true])
+      assert.equal(section.querySelectorAll('.visualizer-panel select').length, 1)
     })
   })
 
-  test(`${screen.name}: mã giả, độ phức tạp và kiến thức nằm đúng accordion`, async () => {
+  test(`${screen.name}: mã giả, độ phức tạp và kiến thức nằm đúng pane`, async () => {
     await withFullApp(({ document }) => {
       const section = document.querySelector(screen.section)
-      const [pseudocode, complexity, knowledge] = [...section.querySelectorAll('details.panel-accordion')]
+      const [pseudocode, complexity, knowledge] = [...section.querySelectorAll('[data-learning-pane]')]
 
-      assert.ok(pseudocode.querySelector(screen.pseudocode) !== null, 'mã giả phải ở accordion Mã giả')
-      assert.ok(complexity.querySelector(screen.complexity) !== null, 'bảng phân tích phải ở accordion Độ phức tạp')
-      assert.ok(knowledge.querySelector(screen.knowledge) !== null || knowledge.matches(screen.knowledge), 'góc kiến thức phải ở accordion Kiến thức')
+      assert.ok(pseudocode.querySelector(screen.pseudocode) !== null, 'mã giả phải ở pane Mã giả')
+      assert.ok(complexity.querySelector(screen.complexity) !== null, 'bảng phân tích phải ở pane Độ phức tạp')
+      assert.ok(knowledge.querySelector(screen.knowledge) !== null || knowledge.matches(screen.knowledge), 'góc kiến thức phải ở pane Kiến thức')
 
-      assert.ok(knowledge.querySelector(screen.pseudocode) === null, 'Kiến thức không còn chứa mã giả (đã có accordion riêng)')
+      assert.ok(knowledge.querySelector(screen.pseudocode) === null, 'Kiến thức không còn chứa mã giả (đã có pane riêng)')
       assert.ok(complexity.querySelector(screen.pseudocode) === null)
     })
   })
 
-  test(`${screen.name}: <pre> mã giả có aria-labelledby trỏ tới tiêu đề nằm cùng accordion Mã giả; mô tả Kiến thức không còn nhắc "mã giả"`, async () => {
+  test(`${screen.name}: <pre> mã giả có aria-labelledby trỏ tới tiêu đề nằm cùng pane Mã giả; mô tả Kiến thức không còn nhắc "mã giả"`, async () => {
     await withFullApp(({ document }) => {
       const section = document.querySelector(screen.section)
-      const [pseudocode, , knowledge] = [...section.querySelectorAll('details.panel-accordion')]
+      const [pseudocode, , knowledge] = [...section.querySelectorAll('[data-learning-pane]')]
       const pre = pseudocode.querySelector('pre')
       const titleId = pre.getAttribute('aria-labelledby')
 
       assert.ok(titleId, '<pre> phải có aria-labelledby')
-      assert.ok(pseudocode.querySelector(`#${titleId}`) !== null, `tiêu đề #${titleId} phải nằm trong accordion Mã giả`)
-      assert.ok(!/mã giả/i.test(knowledge.querySelector('.learning-heading')?.textContent ?? ''), 'mô tả Kiến thức không được nhắc mã giả (đã có accordion riêng)')
+      assert.ok(pseudocode.querySelector(`#${titleId}`) !== null, `tiêu đề #${titleId} phải nằm trong pane Mã giả`)
+      assert.ok(!/mã giả/i.test(knowledge.querySelector('.learning-heading')?.textContent ?? ''), 'mô tả Kiến thức không được nhắc mã giả (đã có pane riêng)')
     })
   })
 
-  test(`${screen.name}: vùng aria-live giải thích bước nằm ngoài mọi accordion`, async () => {
+  test(`${screen.name}: vùng aria-live giải thích bước nằm ngoài mọi pane`, async () => {
     await withFullApp(({ document }) => {
       const live = document.querySelector(screen.live)
 
       assert.ok(live !== null, `thiếu ${screen.live}`)
       assert.equal(live.getAttribute('aria-live'), 'polite')
-      assert.ok(live.closest('details') === null, 'vùng live trong <details> đóng sẽ không được trình đọc màn hình đọc')
+      assert.ok(live.closest('[data-learning-pane]') === null, 'vùng live phải nằm ngoài pane có thể ẩn')
     })
   })
 }
 
-test('Array, Stack, Queue, Linked List (không có controller) không có accordion', async () => {
+test('Array, Stack, Queue, Linked List (không có controller) không có pane', async () => {
   await withFullApp(({ document }) => {
     for (const id of ['array', 'stack', 'queue', 'linked-list']) {
-      assert.equal(document.querySelectorAll(`#${id}-section details.panel-accordion`).length, 0, id)
+      assert.equal(document.querySelectorAll(`#${id}-section [data-learning-pane]`).length, 0, id)
     }
   })
 })

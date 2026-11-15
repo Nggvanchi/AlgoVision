@@ -44,7 +44,7 @@ test('v2-3a: slider co được, nhãn thống kê dài không ép rộng worksp
 })
 
 test('v2-3a: Learning Panel bỏ khung lồng, kiến thức giữ một cột', () => {
-  const panel = `${scope} .panel-accordion > :not(summary)`
+  const panel = `${scope} .learning-pane > *`
   assert.equal(value(panel, 'border'), '0', 'panel không còn viền lồng')
   assert.equal(value(panel, 'padding'), '0')
   assert.equal(value(panel, 'background'), 'transparent')
@@ -53,7 +53,7 @@ test('v2-3a: Learning Panel bỏ khung lồng, kiến thức giữ một cột',
   assert.equal(value(`${scope} .visualizer-placeholder p`, 'font-size'), '14px')
 })
 
-test('v2-3a: hover tốc độ/accordion có nền sáng; focus và disabled vẫn rõ', () => {
+test('v2-3a: hover tốc độ/dropdown có nền sáng; focus và disabled vẫn rõ', () => {
   const hover = `${scope} .speed-option input:hover:not(:checked):not(:disabled) + span`
   assert.equal(value(hover, 'background'), 'var(--av-surface-2)', 'tốc độ phải có hover khi được bật')
   for (const selector of [':focus-visible', '.step-slider input[type="range"]:focus-visible', '.speed-option input:focus-visible + span']) {
@@ -61,7 +61,7 @@ test('v2-3a: hover tốc độ/accordion có nền sáng; focus và disabled v�
   }
   assert.equal(value('button:disabled', 'opacity'), '1')
   assert.equal(value('button:disabled', 'cursor'), 'not-allowed')
-  for (const selector of ['.primary-button', '.control-button', '.size-control select', '#search-algorithm', '.search-toolbar input', '.speed-option span', '.panel-accordion > summary']) {
+  for (const selector of ['.primary-button', '.control-button', '.size-control select', '#search-algorithm', '.search-toolbar input', '.speed-option span', '.learning-panel-picker select']) {
     assert.ok(Number.parseFloat(value(selector, 'min-height')) >= 44, `${selector}: vùng chạm phải >=44px`)
   }
 })

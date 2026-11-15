@@ -26,9 +26,9 @@ test('v2-3b: toolbar BST/Hash/Graph wrap, input/select co trong khung hẹp', ()
   }
 })
 
-test('v2-3b: accordion bỏ khung lồng, kiến thức một cột và chữ 14px', () => {
-  const wrapper = `${scope} .panel-accordion > :not(summary)`
-  assert.equal(value(wrapper, 'border'), '0', 'wrapper accordion không có viền lồng')
+test('v2-3b: pane bỏ khung lồng, kiến thức một cột và chữ 14px', () => {
+  const wrapper = `${scope} .learning-pane > *`
+  assert.equal(value(wrapper, 'border'), '0', 'wrapper pane không có viền lồng')
   assert.equal(value(wrapper, 'padding'), '0')
   assert.equal(value(wrapper, 'background'), 'transparent')
   assert.equal(value(`${scope} .learning-content`, 'grid-template-columns'), 'minmax(0, 1fr)')
@@ -58,7 +58,7 @@ test('v2-3b: bốn module cũ giữ card co được, heading wrap và chữ mô
 })
 
 test('v2-3b: control/focus/disabled giữ vùng chạm và tương phản thực', () => {
-  for (const selector of ['.control-button', '.bst-toolbar input', '.bst-toolbar select', '.array-operation-card input', '.panel-accordion > summary']) {
+  for (const selector of ['.control-button', '.bst-toolbar input', '.bst-toolbar select', '.array-operation-card input', '.learning-panel-picker select']) {
     assert.ok(Number.parseFloat(value(selector, 'min-height')) >= 44, `${selector}: vùng chạm >=44px`)
   }
   const panel = resolve(tokens.get('--panel'))
@@ -74,7 +74,7 @@ test('v2-3b: control/focus/disabled giữ vùng chạm và tương phản thực
   assert.equal(value('button:disabled', 'opacity'), '1')
   assert.equal(value('button:disabled', 'cursor'), 'not-allowed')
   assert.ok(contrastRatio(resolve(value('button:disabled', 'color')), resolve(value('button:disabled', 'background'))) >= 4.5)
-  assert.equal(value(`${scope} .panel-accordion > summary:hover`, 'background'), 'var(--av-surface-2)')
+  assert.equal(value('.learning-panel-picker select', 'background'), 'var(--panel)')
   assert.equal(value(`${scope} .speed-option input:hover:not(:checked):not(:disabled) + span`, 'background'), 'var(--av-surface-2)')
 })
 
@@ -90,7 +90,7 @@ test('v2-3b: giữ cue SVG, reduced motion và khung cuộn thay vì cắt dữ 
   assert.ok(rules.some((rule) => rule.media === '@media (prefers-reduced-motion: reduce)'))
 })
 
-test('v2-3b: template giữ workspace một cột, ba accordion và live region ở ngoài', () => {
+test('v2-3b: template giữ workspace một cột, ba pane và live region ở ngoài', () => {
   const window = new Window()
   try {
     window.document.body.innerHTML = readFileSync(new URL('../public/templates/app.html', import.meta.url), 'utf8')
@@ -100,8 +100,8 @@ test('v2-3b: template giữ workspace một cột, ba accordion và live region 
     for (const section of ['bst', 'hash-table', 'graph']) {
       const root = window.document.querySelector(`#${section}-section`)
       assert.ok(root !== null)
-      assert.equal(root.querySelectorAll('.panel-accordion[open]').length, 3)
-      assert.ok(root.querySelector('.panel-accordion [aria-live]') === null)
+      assert.equal(root.querySelectorAll('[data-learning-pane]').length, 3)
+      assert.ok(root.querySelector('[data-learning-pane] [aria-live]') === null)
       const wrapper = root.querySelector('.visualizer-placeholder')
       assert.ok(wrapper !== null)
       assert.equal(window.getComputedStyle(wrapper).display, 'grid', 'v2-3c thay block bằng Grid thích ứng')
@@ -115,7 +115,7 @@ test('v2-3b: template giữ workspace một cột, ba accordion và live region 
         const paragraph = knowledge.querySelector('p')
         assert.ok(paragraph !== null)
         assert.equal(window.getComputedStyle(paragraph).fontSize, '14px')
-        for (const child of root.querySelectorAll('.panel-accordion > :not(summary)')) {
+        for (const child of root.querySelectorAll('.learning-pane > *')) {
           assert.equal(window.getComputedStyle(child).borderTopWidth, '0px', 'wrapper thực không có viền lồng')
           assert.equal(window.getComputedStyle(child).paddingTop, '0px')
         }

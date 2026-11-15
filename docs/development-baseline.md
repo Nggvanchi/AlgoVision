@@ -2,6 +2,30 @@
 
 Đây là bản ghi số liệu lịch sử R6c–R7, không phải kết quả đo trong phiên hiện tại. Chạy lại các lệnh trên đúng môi trường trước khi kết luận trạng thái hiện nay.
 
+## UI v2-3d.1 — Learning Panel Dropdown, Windows 2026-11-15
+
+- Branch feat/ui-v2-3d-learning-panel, base d639b42ad87e7f282950a88b653fd0030ea6350d;
+  diff chưa commit. Lượt nghiệm thu này giữ nguyên code/template/test.
+- Baseline trước sửa: 1775/1775 PASS, 0 fail/skip/todo/cancelled, 39,642 s;
+  build PASS, JS raw/gzip 152843/44574 B, CSS 58402/10707 B.
+- Sau triển khai ở lượt trước: TDD RED 12 → GREEN 12; full 1787/1787 PASS,
+  0 fail/skip/todo/cancelled, 39,161 s. Build PASS, JS raw/gzip 153111/44652 B,
+  CSS 57906/10624 B (gzip Node zlib mặc định). JS tăng 268 B, CSS giảm 496 B;
+  dư 889/594 B dưới trần JS/CSS 154000/58500 B.
+- Mutation nguồn 3/3 bị bắt đúng, heap 512 MB, timeout 30 s/test; restore/verify
+  và so nguyên byte PASS. Chi tiết, hash và giới hạn bằng chứng tại [hợp đồng](design/v2-learning-panel.md).
+- Browser nghiệm thu: Chrome executable 152.0.7977.83 thoát 4294930433 do Crashpad;
+  Edge executable 157.0.4341.46 tạo CDP nhưng kết nối loopback bị EACCES,
+  kèm lỗi AppContainer; browser tích hợp timeout trang local. Không có viewport
+  thực đo; mọi browser smoke và screen reader **NOT VERIFIED**. Không có bằng chứng P0/P1 UI mới,
+  không suy thành UI PASS. Dev server và tiến trình thử đã dừng; không đổi bảo mật/cấu hình hệ thống.
+- Kiểm lại sau cập nhật docs: regression 208/208 PASS (8,391 s); full pnpm test
+  **1787/1787 PASS**, 0 fail/skip/todo/cancelled, **54,530 s**, exit 0.
+  pnpm build PASS, Vite 8.3.5, 286 ms, exit 0; JS raw/gzip **153111/44652 B**,
+  CSS **57906/10624 B**, không đổi so với lượt trước. Thời gian chỉ là số đo lượt này,
+  không suy thành hồi quy hiệu năng. SHA-256 của cả 11 file code/template/test khớp
+  trước lượt nghiệm thu; package.json/lockfile và các phần ngoài phạm vi không có diff.
+
 ## Lần đo lịch sử sau R6c
 
 - Môi trường: Windows, Vite 8.3.5.
