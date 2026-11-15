@@ -4,6 +4,18 @@ Việc còn tồn tại hoặc cần xác minh; việc đã được xếp giai 
 Thêm mục khi phát hiện; chỉ đóng mục sau nghiệm thu, giữ các ghi chú lịch sử cần truy vết.
 Lộ trình giai đoạn: [roadmap](roadmap.md#chuẩn-hóa-v100).
 
+## UI v2-3d.2a — cập nhật QA (2026-11-15)
+
+- P2 contrast enabled: patch CSS scope năm Adaptive; frame regression ba lượt/browser
+  Edge/Chrome PASS, enabled min 7,1049:1, disabled min 4,8346:1. Chưa commit/merge.
+- Mouse-only đã hoàn tất 12/12 PASS: Windows native mouse, Edge/Chrome, đủ sáu luồng
+  và ba option mỗi ca; artifact gui-mouse-2026-11-15T11-31-19-256Z. Lịch sử driver
+  bị chặn được giữ trong báo cáo QA, không còn là trạng thái cuối.
+- 12 zoom thật 200% và 12 screen reader: NOT VERIFIED — chủ dự án chấp thuận hoãn C4;
+  bắt buộc xác minh trước release, không phải PASS. Đủ điều kiện đề xuất nghiệm thu
+  v2-3d.2/2a trong phạm vi đã kiểm, chờ duyệt; chưa đóng toàn bộ UI v2.
+- [Báo cáo patch và giới hạn](design/v2-learning-panel-contrast.md); giữ bản ghi lịch sử dưới đây.
+
 ## UI v2-3d.1 — nghiệm thu còn mở (2026-11-15)
 
 - Dropdown năm Visualizer đã triển khai, diff chưa commit. Giữ code/test đang PASS;
