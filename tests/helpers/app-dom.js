@@ -4,6 +4,7 @@ import { Window } from 'happy-dom'
 import { readFile } from 'node:fs/promises'
 import { createFakeScheduler } from './fake-scheduler.js'
 import { createFakeMatchMedia, DESKTOP_WIDTH } from './fake-media.js'
+import { initLearningPanels } from '../../src/learning-panel.js'
 
 export const template = await readFile(new URL('../../public/templates/app.html', import.meta.url), 'utf8')
 
@@ -25,6 +26,7 @@ export async function withFullApp(run, options = {}) {
   globalThis.window = window
 
   try {
+    initLearningPanels(document)
     const [navigation, sidebarModule, sorting, searching, array, stack, queue, linkedList, bst, hashTable, graph] = await Promise.all([
       import('../../src/navigation.js'),
       import('../../src/sidebar.js'),

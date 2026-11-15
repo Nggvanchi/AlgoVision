@@ -656,16 +656,21 @@
 
         </div>
         <div class="visualizer-panel">
-        <details class="panel-accordion" open>
-        <summary>Mã giả</summary>
+        <label class="learning-panel-picker">Nội dung học tập
+          <select data-learning-select>
+            <option value="pseudocode" selected>Mã giả</option>
+            <option value="complexity">Độ phức tạp</option>
+            <option value="knowledge">Kiến thức</option>
+          </select>
+        </label>
+        <div class="learning-pane" data-learning-pane="pseudocode">
                 <article class="learning-block">
                     <h4 id="learning-pseudocode-title">Mã giả</h4>
                     <pre role="group" aria-labelledby="learning-pseudocode-title" tabindex="0"><code id="learning-pseudocode"></code></pre>
                 </article>
-        </details>
+        </div>
 
-        <details class="panel-accordion" open>
-        <summary>Độ phức tạp</summary>
+        <div class="learning-pane" data-learning-pane="complexity" hidden>
         <div class="complexity-panel">
         <div class="complexity-heading">
             <h4>Phân tích thuật toán</h4>
@@ -698,10 +703,9 @@
             </div>
         </div>
         </div>
-        </details>
+        </div>
 
-        <details class="panel-accordion" open>
-        <summary>Kiến thức</summary>
+        <div class="learning-pane" data-learning-pane="knowledge" hidden>
         <div class="learning-section" id="sorting-learning">
             <div class="learning-heading">
                 <div>
@@ -731,7 +735,7 @@
                 </article>
             </div>
         </div>
-        </details>
+        </div>
 
         <div class="array-legend">
         <span><i class="legend-dot"></i> Giá trị trong mảng</span>
@@ -912,16 +916,21 @@
 
         </div>
         <div class="visualizer-panel">
-        <details class="panel-accordion" open>
-        <summary>Mã giả</summary>
+        <label class="learning-panel-picker">Nội dung học tập
+          <select data-learning-select>
+            <option value="pseudocode" selected>Mã giả</option>
+            <option value="complexity">Độ phức tạp</option>
+            <option value="knowledge">Kiến thức</option>
+          </select>
+        </label>
+        <div class="learning-pane" data-learning-pane="pseudocode">
                 <article class="learning-block">
                     <h4 id="search-learning-pseudocode-title">Mã giả</h4>
                     <pre role="group" aria-labelledby="search-learning-pseudocode-title" tabindex="0"><code id="search-learning-pseudocode"></code></pre>
                 </article>
-        </details>
+        </div>
 
-        <details class="panel-accordion" open>
-        <summary>Độ phức tạp</summary>
+        <div class="learning-pane" data-learning-pane="complexity" hidden>
         <div class="complexity-panel" id="search-complexity-panel">
         <div class="complexity-heading">
             <h4>Phân tích thuật toán</h4>
@@ -954,10 +963,9 @@
             </div>
         </div>
         </div>
-        </details>
+        </div>
 
-        <details class="panel-accordion" open>
-        <summary>Kiến thức</summary>
+        <div class="learning-pane" data-learning-pane="knowledge" hidden>
         <div class="learning-section" id="search-learning">
             <div class="learning-heading">
                 <div>
@@ -987,7 +995,7 @@
                 </article>
             </div>
         </div>
-        </details>
+        </div>
     </div>
     </div>
     </section>
@@ -1574,17 +1582,22 @@
         </div>
         <div class="visualizer-panel">
         <div class="learning-content bst-code-panel">
-            <details class="panel-accordion" open>
-            <summary>Mã giả</summary>
+            <label class="learning-panel-picker">Nội dung học tập
+          <select data-learning-select>
+            <option value="pseudocode" selected>Mã giả</option>
+            <option value="complexity">Độ phức tạp</option>
+            <option value="knowledge">Kiến thức</option>
+          </select>
+        </label>
+        <div class="learning-pane" data-learning-pane="pseudocode">
             <article class="learning-block">
                 <h4 id="bst-pseudocode-title">Mã giả: Insert</h4>
                 <pre role="group" aria-labelledby="bst-pseudocode-title" tabindex="0"><code id="bst-pseudocode"></code></pre>
             </article>
-            </details>
+            </div>
         </div>
 
-        <details class="panel-accordion" open>
-        <summary>Độ phức tạp</summary>
+        <div class="learning-pane" data-learning-pane="complexity" hidden>
         <div class="complexity-panel" id="bst-complexity-panel">
         <div class="complexity-heading">
             <h4>Phân tích thao tác</h4>
@@ -1617,10 +1630,9 @@
             </div>
         </div>
         </div>
-        </details>
+        </div>
 
-        <details class="panel-accordion" open>
-        <summary>Kiến thức</summary>
+        <div class="learning-pane" data-learning-pane="knowledge" hidden>
         <div class="learning-section" id="bst-learning">
             <div class="learning-heading">
                 <div>
@@ -1650,7 +1662,7 @@
                 </article>
             </div>
         </div>
-        </details>
+        </div>
     </div>
     </div>
     </section>
@@ -1830,17 +1842,22 @@
         </div>
         <div class="visualizer-panel">
         <div class="learning-content bst-code-panel">
-            <details class="panel-accordion" open>
-            <summary>Mã giả</summary>
+            <label class="learning-panel-picker">Nội dung học tập
+          <select data-learning-select>
+            <option value="pseudocode" selected>Mã giả</option>
+            <option value="complexity">Độ phức tạp</option>
+            <option value="knowledge">Kiến thức</option>
+          </select>
+        </label>
+        <div class="learning-pane" data-learning-pane="pseudocode">
             <article class="learning-block">
                 <h4 id="hash-table-pseudocode-title">Mã giả: Insert (chaining)</h4>
                 <pre role="group" aria-labelledby="hash-table-pseudocode-title" tabindex="0"><code id="hash-table-pseudocode"></code></pre>
             </article>
-            </details>
+            </div>
         </div>
 
-        <details class="panel-accordion" open>
-        <summary>Độ phức tạp</summary>
+        <div class="learning-pane" data-learning-pane="complexity" hidden>
         <div class="complexity-panel" id="hash-table-complexity-panel">
         <div class="complexity-heading">
             <h4>Phân tích thao tác</h4>
@@ -1874,10 +1891,9 @@
             </div>
         </div>
         </div>
-        </details>
+        </div>
 
-        <details class="panel-accordion" open>
-        <summary>Kiến thức</summary>
+        <div class="learning-pane" data-learning-pane="knowledge" hidden>
         <div class="learning-section" id="hash-table-learning">
             <div class="learning-heading">
                 <div>
@@ -1908,7 +1924,7 @@
                 </article>
             </div>
         </div>
-        </details>
+        </div>
     </div>
     </div>
     </section>
@@ -2141,17 +2157,22 @@
         </div>
         <div class="visualizer-panel">
         <div class="learning-content bst-code-panel">
-            <details class="panel-accordion" open>
-            <summary>Mã giả</summary>
+            <label class="learning-panel-picker">Nội dung học tập
+          <select data-learning-select>
+            <option value="pseudocode" selected>Mã giả</option>
+            <option value="complexity">Độ phức tạp</option>
+            <option value="knowledge">Kiến thức</option>
+          </select>
+        </label>
+        <div class="learning-pane" data-learning-pane="pseudocode">
             <article class="learning-block">
                 <h4 id="graph-pseudocode-title">Mã giả: Kiểm tra kề (danh sách kề)</h4>
                 <pre role="group" aria-labelledby="graph-pseudocode-title" tabindex="0"><code id="graph-pseudocode"></code></pre>
             </article>
-            </details>
+            </div>
         </div>
 
-        <details class="panel-accordion" open>
-        <summary>Độ phức tạp</summary>
+        <div class="learning-pane" data-learning-pane="complexity" hidden>
         <div class="complexity-panel" id="graph-complexity-panel">
         <div class="complexity-heading">
             <h4>Danh sách kề so với ma trận kề</h4>
@@ -2221,10 +2242,9 @@
             mà trình mô phỏng dùng để lưu từng bước.
         </p>
         </div>
-        </details>
+        </div>
 
-        <details class="panel-accordion" open>
-        <summary>Kiến thức</summary>
+        <div class="learning-pane" data-learning-pane="knowledge" hidden>
         <div class="learning-section" id="graph-learning">
             <div class="learning-heading">
                 <div>
@@ -2254,7 +2274,7 @@
                 </article>
             </div>
         </div>
-        </details>
+        </div>
     </div>
     </div>
     </section>

@@ -30,12 +30,20 @@ for (const [id, expected] of Object.entries(hashes)) {
       assert.deepEqual([...workspace.children].map(n => n.className), ['visualizer-stage', 'visualizer-panel'], 'Stage phải đứng trước Learning Panel')
       const [stage, panel] = workspace.children
       assert.equal(stage.querySelectorAll('.panel-accordion').length, 0)
-      assert.equal(panel.querySelectorAll('details.panel-accordion[open]').length, 3)
+      assert.equal(panel.querySelectorAll('[data-learning-pane]').length, 3)
       assert.ok(stage.querySelector('[aria-live="polite"]') !== null, 'live giải thích bước nằm trong Stage')
-      assert.ok(root.querySelector('details [aria-live]') === null)
+      assert.ok(root.querySelector('[data-learning-pane] [aria-live]') === null)
       assert.ok(panel.querySelector('pre[tabindex="0"][aria-labelledby]') !== null)
-      const ids = [...root.querySelectorAll('[id]')].map(n => n.id)
-      const focus = [...root.querySelectorAll('button,input,select,summary,[tabindex]')].map(n => [n.tagName, n.id, [...n.attributes].filter(a => a.name !== 'class').map(a => [a.name, a.value])])
+      // Chuẩn hóa đúng thay đổi đã duyệt: bỏ picker mới, tái tạo ba summary cũ để so fingerprint base.
+      const original = root.cloneNode(true)
+      original.querySelector('.learning-panel-picker').remove()
+      for (const [i, pane] of [...original.querySelectorAll('[data-learning-pane]')].entries()) {
+        const summary = w.document.createElement('summary')
+        summary.textContent = ['Mã giả', 'Độ phức tạp', 'Kiến thức'][i]
+        pane.prepend(summary)
+      }
+      const ids = [...original.querySelectorAll('[id]')].map(n => n.id)
+      const focus = [...original.querySelectorAll('button,input,select,summary,[tabindex]')].map(n => [n.tagName, n.id, [...n.attributes].filter(a => a.name !== 'class').map(a => [a.name, a.value])])
       assert.equal(createHash('sha256').update(JSON.stringify({ ids, focus })).digest('hex'), expected, 'ID/thuộc tính/thứ tự focus phải giữ đúng base')
     } finally { w.happyDOM.close() }
   })

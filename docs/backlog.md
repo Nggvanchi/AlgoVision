@@ -4,6 +4,19 @@ Việc còn tồn tại hoặc cần xác minh; việc đã được xếp giai 
 Thêm mục khi phát hiện; chỉ đóng mục sau nghiệm thu, giữ các ghi chú lịch sử cần truy vết.
 Lộ trình giai đoạn: [roadmap](roadmap.md#chuẩn-hóa-v100).
 
+## UI v2-3d.1 — nghiệm thu còn mở (2026-11-15)
+
+- Dropdown năm Visualizer đã triển khai, diff chưa commit. Giữ code/test đang PASS;
+  full trước lượt nghiệm thu 1787 PASS, raw JS/CSS 153111/57906 B, mutation 3/3 restore nguyên byte.
+- Browser QA **NOT VERIFIED**: Chrome 152.0.7977.83 tự thoát khi Crashpad không khởi chạy;
+  Edge 157.0.4341.46 mở CDP nhưng kết nối loopback bị EACCES; browser tích hợp timeout trang local.
+  Chưa có viewport thực đo hoặc ca smoke nào chạy thành công.
+- Còn kiểm trên cả năm màn (Graph gồm BFS/DFS): mặc định/chọn pane, Tab/Shift+Tab,
+  focus, aria-live, nội dung động khi ẩn, đổi màn/Quay lại và overflow/responsive.
+  Screen reader/zoom 200%/đa browser/thiết bị thật/production vẫn NOT VERIFIED.
+- Không nâng quyền hoặc tắt sandbox/bảo mật để đóng gate. Tiếp tục khi browser truy cập
+  được ứng dụng; [hợp đồng và chẩn đoán](design/v2-learning-panel.md), số đo mới ở [baseline](development-baseline.md).
+
 ## Phân việc cho v1.0.0 (2026-11-14)
 
 Thứ tự: UI v2-3 → C1 → EDU-1–4 → C2 (source) → C3 (test) → C4 (release v1.0.0) → C5 (cleanup).

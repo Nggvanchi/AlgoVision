@@ -12,8 +12,10 @@ import { initLinkedList } from './linked-list.js'
 import { initBst } from './bst.js'
 import { initHashTable } from './hash-table.js'
 import { initGraph } from './graph.js'
+import { initLearningPanels } from './learning-panel.js'
 
 function startApp() {
+  initLearningPanels(document)
   initNavigation(document)
   initSidebar(document)
   initLibraryFilter(document)
