@@ -4031,6 +4031,11 @@ button.dashboard-card:hover {
   container: visualizer / inline-size;
 }
 
+/* P2: đổi disabled không nội suy nền giữa hai màu chữ khác nhau. */
+.adaptive-visualizer .control-button {
+  transition-property: transform;
+}
+
 #hash-table-section {
   container-name: hash;
 }

@@ -2,6 +2,25 @@
 
 Đây là bản ghi số liệu lịch sử R6c–R7, không phải kết quả đo trong phiên hiện tại. Chạy lại các lệnh trên đúng môi trường trước khi kết luận trạng thái hiện nay.
 
+## UI v2-3d.2a — contrast patch, Windows 2026-11-15
+
+- Chưa commit: base 841a04e15f49fb828e36b28e2add8a1b37abd2ee; chỉ CSS transition,
+  regression mới và docs. TDD RED 5 Adaptive/4 legacy GREEN → 9/9 GREEN.
+- Mutation CSS bị bắt đúng; restore nguyên byte và đối chứng sau restore PASS.
+- Browser fix: Edge 157.0.4341.46 / Chrome 152.0.7977.83, 1280×900 thực,
+  ba lượt End→Home mỗi browser; 0 frame enabled dưới 4,5:1, min 7,1049:1;
+  disabled min 4,8346:1, smoke sáu luồng 12/12 PASS.
+- Mouse-only mới: 12/12 PASS (Edge 157/Chrome 152, 1280×900), 36 lựa chọn native mouse
+  và 36 screenshot; artifact gui-mouse-2026-11-15T11-31-19-256Z. URL/window được kiểm
+  trước input, không dùng keyboard/synthetic DOM events để chọn option. Server/browser QA đã dừng.
+- Source/test không đổi từ full gate; không chạy lại suite. Đề xuất nghiệm thu chờ duyệt;
+  không cộng trùng vào 297 PASS lịch sử hoặc coi 24 ca hoãn C4 là PASS.
+- 24 zoom/screen reader NOT VERIFIED — chủ dự án chấp thuận hoãn C4, không phải PASS.
+- Gate lần này: pnpm test **1796/1796 PASS**, 0 fail/skip/todo/cancelled, **41,136 s**.
+  Build PASS, Vite 8.3.5, 160 ms; JS raw/gzip **153111/44652 B**, CSS **57973/10641 B**.
+  JS không đổi, CSS +67 B raw so base; dưới trần 154000/58500 B. Encoding/diff PASS.
+- [Báo cáo](design/v2-learning-panel-contrast.md); giữ nguyên evidence 297 PASS cũ.
+
 ## UI v2-3d.1 — Learning Panel Dropdown, Windows 2026-11-15
 
 - Branch feat/ui-v2-3d-learning-panel, base d639b42ad87e7f282950a88b653fd0030ea6350d;

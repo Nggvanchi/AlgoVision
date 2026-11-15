@@ -74,6 +74,7 @@ Ghi chú:
 | UI v2-3b | Data Structures Light Minimal, CSS/test/docs | MERGED PR #57 tại `f14986febf78878404ee5d8e0b7e8ea75339b771`; CI hậu merge PASS theo xác nhận chủ dự án; bằng chứng trước commit giữ trong baseline; browser QA riêng v2-3b chưa nghiệm thu toàn diện. |
 | UI v2-3c | Adaptive Grid cho năm Visualizer | MERGED PR #58 theo Git local tại `d639b42ad87e7f282950a88b653fd0030ea6350d`; giữ số đo 1775/1775 PASS và raw JS/CSS 152843/58402 B như bằng chứng lịch sử. QA có giới hạn tại [hợp đồng](design/v2-adaptive-layout.md); chưa đóng gate UI v2 toàn diện. |
 | UI v2-3d.1 | Learning Panel Dropdown, một native select cho năm Visualizer | Đã triển khai, diff chưa commit, chờ review. Full trước lượt nghiệm thu 1787/1787 PASS, build PASS, raw JS/CSS 153111/57906 B, mutation 3/3 có restore nguyên byte. Chrome/Edge/browser tương tác bị chặn; browser QA NOT VERIFIED. [Hợp đồng, chẩn đoán và checklist](design/v2-learning-panel.md); lần kiểm lại xem [baseline](development-baseline.md). |
+| UI v2-3d.2a | Sửa P2 contrast enabled trong năm Adaptive Visualizer | Diff chưa commit; frame regression Edge/Chrome PASS trên base + CSS hash; mouse-only 12/12 PASS, đề xuất nghiệm thu chờ duyệt. 24 ca zoom/screen reader NOT VERIFIED, chủ dự án chấp thuận hoãn C4. [Bằng chứng](design/v2-learning-panel-contrast.md). |
 
 Trạng thái merge đối chiếu Git local tại `c84f0bfaeffa848de4e1df77e093d6dd2c111ad6`;
 CI Ubuntu/Windows PASS là thông tin đã được chủ dự án xác nhận khi duyệt cập nhật này, không phải lần chạy
