@@ -4032,6 +4032,7 @@ button.dashboard-card:hover {
 }
 
 /* P2: đổi disabled không nội suy nền giữa hai màu chữ khác nhau. */
+.adaptive-visualizer .primary-button,
 .adaptive-visualizer .control-button {
   transition-property: transform;
 }
