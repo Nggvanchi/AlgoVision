@@ -23,13 +23,13 @@ for (const id of ['sorting', 'search', 'bst', 'hash-table', 'graph']) {
     withStyle(window => {
       const root = window.document.querySelector('#' + id + '-section')
       assert.ok(root.matches('.adaptive-visualizer'), 'đúng phạm vi Adaptive Visualizer')
-      const buttons = [...root.querySelectorAll('.control-button')]
+      const buttons = [...root.querySelectorAll('.primary-button, .control-button')]
       assert.ok(buttons.length > 0, 'phải kiểm control thật trong template')
       for (const button of buttons) {
         for (const disabled of [false, true, false]) {
           button.disabled = disabled
           const style = window.getComputedStyle(button)
-          assert.equal(style.transitionProperty, 'transform', 'Adaptive control không được animate background khi đổi disabled')
+          assert.equal(style.transitionProperty, 'transform', `${button.id}: Adaptive control không được animate background khi đổi disabled`)
         }
       }
     })
