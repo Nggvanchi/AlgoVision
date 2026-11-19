@@ -643,3 +643,68 @@ test('chú giải Sắp xếp nằm ngay dưới #array-bars và trước #inser
     assert.equal(legend.nextElementSibling?.id, 'insertion-key')
   })
 })
+
+
+test('kiến thức Bubble mô tả bất biến, ví dụ và giới hạn của lõi so với trace', async () => {
+  await withSortingDom(({ document }) => {
+    clickSortingCard(document, 'bubble')
+    const normalizeText = (text) => text.replace(/\s+/gu, ' ').trim()
+    const description = normalizeText(document.querySelector('#learning-description').textContent)
+    const advantages = normalizeText(document.querySelector('#learning-advantages').textContent)
+    const disadvantages = normalizeText(document.querySelector('#learning-disadvantages').textContent)
+
+    assert.match(description, /số hữu hạn/iu, 'Nêu miền dữ liệu hữu hạn')
+    assert.match(description, /so sánh nhất quán/iu, 'Nêu giả định quan hệ so sánh')
+    assert.match(description, /hậu tố[^.;]*đúng vị trí/iu, 'Nêu bất biến hậu tố ở cuối lượt')
+    assert.match(description, /mọi phần tử tiền tố\s*(?:≤|<=|không lớn hơn)\s*mọi phần tử hậu tố/iu, 'Nêu quan hệ giữa hai phần')
+    assert.match(description, /(?:ban đầu|khởi tạo)[^.;]*rỗng/iu, 'Nêu khởi tạo bất biến')
+    assert.match(description, /minh họa|ví dụ/iu, 'Ví dụ phải có nhãn')
+    const exampleArrays = [...description.matchAll(/\[[\d,\s]+\]/gu)]
+      .map(([array]) => JSON.parse(array))
+    assert.deepEqual(exampleArrays, [[5, 2, 4, 1], [2, 4, 1, 5], [2, 1, 4, 5], [1, 2, 4, 5]], 'Ví dụ phải giữ đúng dữ liệu và thứ tự các lượt')
+    const passes = generateBubbleSortSteps([5, 2, 4, 1])
+      .filter((step) => step.pseudocodeLine === 7 || step.pseudocodeLine === 8)
+      .map((step) => step.array)
+    assert.deepEqual(passes, [[2, 4, 1, 5], [2, 1, 4, 5], [1, 2, 4, 5]])
+    assert.match(advantages, /swapped/iu, 'Giữ giải thích cờ dừng sớm')
+    assert.match(advantages, /không (?:swap|đổi chỗ)/iu, 'Nêu lượt không đổi chỗ')
+    assert.match(advantages, /dừng sớm/iu, 'Nêu hành vi kết thúc sớm')
+    assert.match(advantages, /n\s*(?:≥|>=)\s*2/iu, 'Giới hạn phân tích ở n từ 2')
+    assert.match(advantages, /tốt nhất[^.;]*O\(n\)/iu, 'Gắn O(n) với trường hợp tốt nhất')
+    assert.match(advantages, /xấu nhất[^.;]*O\(n²\)/iu, 'Gắn O(n²) với trường hợp xấu nhất')
+    assert.match(advantages, /(?:swap|đổi chỗ) (?:cặp )?kề/iu, 'Ổn định dựa trên swap kề')
+    assert.match(advantages, /chỉ khi\s*>(?!=)/iu, 'Điều kiện swap phải nghiêm ngặt')
+    assert.match(advantages, /ổn định[^.;]*lõi|lõi[^.;]*ổn định/iu, 'Giới hạn stability ở lõi')
+    assert.match(advantages, /chưa[^.;]*kiểm[^.;]*định danh/iu, 'Không nhận đã kiểm identity sản phẩm')
+    assert.match(disadvantages, /O\(1\)[^.;]*lõi|lõi[^.;]*O\(1\)/iu, 'Gắn O(1) phụ với lõi')
+    assert.match(disadvantages, /(?:copy|sao chép)[^.;]*O\(n\)/iu, 'Nêu bộ nhớ copy O(n)')
+    assert.match(disadvantages, /S\s+(?:snapshot|trạng thái|bước)/iu, 'Nêu số snapshot được lưu')
+    assert.match(disadvantages, /O\(n\s*[·*×]\s*S\)/iu, 'Giữ cận bộ nhớ toàn trace')
+    assert.match(disadvantages, /average.case[^.;]*chưa[^.;]*nghiệm thu học thuật/iu, 'Không nâng trạng thái average-case')
+  })
+})
+
+test('nội dung Bubble không rò sang Selection/Insertion và giữ nguyên complexity cards', async () => {
+  await withSortingDom(({ document }) => {
+    const readKnowledge = () => ['#learning-description', '#learning-advantages', '#learning-disadvantages']
+      .map((selector) => document.querySelector(selector).textContent.replace(/\s+/gu, ' ').trim())
+    const readComplexities = () => [...document.querySelectorAll('#sorting-section .complexity-card strong')]
+      .map((element) => element.textContent)
+    const expected = {
+      bubble: ['O(n)', 'O(n²)', 'O(n²)', 'O(1)'],
+      selection: ['O(n²)', 'O(n²)', 'O(n²)', 'O(1)'],
+      insertion: ['O(n)', 'O(n²)', 'O(n²)', 'O(1)'],
+    }
+    for (const algorithm of ['selection', 'insertion']) {
+      clickSortingCard(document, algorithm)
+      const original = readKnowledge()
+      assert.doesNotMatch(original.join(' '), /average.case[^.;]*chưa[^.;]*nghiệm thu học thuật/iu)
+      assert.doesNotMatch(original.join(' '), /(?:minh họa|ví dụ)\s*:/iu)
+      clickSortingCard(document, 'bubble')
+      assert.deepEqual(readComplexities(), expected.bubble)
+      clickSortingCard(document, algorithm)
+      assert.deepEqual(readKnowledge(), original, 'Đổi lại thuật toán phải khôi phục đúng kiến thức riêng')
+      assert.deepEqual(readComplexities(), expected[algorithm])
+    }
+  })
+})

@@ -86,12 +86,12 @@ export function initSorting(options = {}) {
       worst: 'O(n²)',
       space: 'O(1)',
       learningDescription:
-        'So sánh hai phần tử liền kề và đổi chỗ nếu chúng sai thứ tự. Sau mỗi lượt, phần tử lớn nhất chưa được sắp xếp sẽ được đưa về cuối mảng.',
+        'Mảng số hữu hạn, so sánh nhất quán. Duyệt cặp kề từ trái sang phải, swap khi trái > phải. Bất biến cuối lượt: hậu tố đã đúng vị trí, mọi phần tử tiền tố ≤ mọi phần tử hậu tố; ban đầu hậu tố rỗng, mỗi lượt thêm một phần tử lớn nhất. Minh họa: [5,2,4,1] → [2,4,1,5] → [2,1,4,5] → [1,2,4,5].',
       pseudocode: bubbleSortPseudocode,
       advantages:
-        'Dễ hiểu, dễ triển khai và ổn định vì chỉ đổi chỗ khi A[j] > A[j + 1]. Nhờ cờ swapped, thuật toán dừng sớm khi một lượt không có lần đổi chỗ nào, nên chỉ cần O(n) với mảng đã sắp xếp.',
+        'Cờ swapped đặt lại mỗi lượt; không swap thì đoạn còn lại không giảm, dừng sớm. Với n ≥ 2: tốt nhất O(n) khi đã sắp xếp, xấu nhất O(n²) theo số so sánh. Swap kề chỉ khi > hỗ trợ ổn định lõi; chưa kiểm định danh phần tử.',
       disadvantages:
-        'Có thể cần nhiều phép so sánh và đổi chỗ khi dữ liệu lớn. Độ phức tạp trung bình và xấu nhất là O(n²).',
+        'O(1) phụ chỉ cho lõi; generator copy O(n), lưu S snapshot cần O(n·S), không phải runtime. Average-case chưa nghiệm thu học thuật theo phân phối cụ thể.',
     },
 
     selection: {
