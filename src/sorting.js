@@ -103,12 +103,12 @@ export function initSorting(options = {}) {
       worst: 'O(n²)',
       space: 'O(1)',
       learningDescription:
-        'Chia mảng thành phần đã sắp xếp và chưa sắp xếp. Mỗi lượt tìm phần tử nhỏ nhất trong phần chưa sắp xếp rồi đổi chỗ với phần tử đầu tiên của phần đó.',
+        'Tiền tố tăng dần, đúng vị trí, không lớn hơn hậu tố; ban đầu rỗng. Mỗi lượt minIndex = i, cập nhật khi gặp số nhỏ hơn; swap nếu minIndex ≠ i. Minh họa: [4,3,2,1] → [1,3,2,4] → [1,2,3,4] → [1,2,3,4].',
       pseudocode: selectionSortPseudocode,
       advantages:
-        'Dễ triển khai và thực hiện tối đa n - 1 lần đổi chỗ trong cách cài đặt thông thường.',
+        'n ≥ 2: n(n−1)/2 so sánh, tốt nhất và xấu nhất Θ(n²); swaps ≤ n−1.',
       disadvantages:
-        'Vẫn cần O(n²) phép so sánh ngay cả khi mảng đã được sắp xếp. Cách cài đặt thông thường không phải thuật toán sắp xếp ổn định.',
+        'Lõi O(1) phụ; copy O(n), S snapshot: trace O(n·S). Swap không kề có thể phá ổn định; chưa kiểm định danh sản phẩm. Average-case chưa nghiệm thu học thuật.',
     },
 
     insertion: {
