@@ -698,13 +698,152 @@ test('nội dung Bubble không rò sang Selection/Insertion và giữ nguyên co
     for (const algorithm of ['selection', 'insertion']) {
       clickSortingCard(document, algorithm)
       const original = readKnowledge()
-      assert.doesNotMatch(original.join(' '), /average.case[^.;]*chưa[^.;]*nghiệm thu học thuật/iu)
-      assert.doesNotMatch(original.join(' '), /(?:minh họa|ví dụ)\s*:/iu)
+      assert.doesNotMatch(original.join(' '), /swapped/iu, 'Không rò cờ dừng sớm riêng của Bubble')
+      assert.doesNotMatch(original.join(' '), /\[5,\s*2,\s*4,\s*1\]/u, 'Không rò ví dụ riêng của Bubble')
       clickSortingCard(document, 'bubble')
       assert.deepEqual(readComplexities(), expected.bubble)
       clickSortingCard(document, algorithm)
       assert.deepEqual(readKnowledge(), original, 'Đổi lại thuật toán phải khôi phục đúng kiến thức riêng')
       assert.deepEqual(readComplexities(), expected[algorithm])
+    }
+  })
+})
+
+
+// Gắn nhóm tên trường hợp với biểu thức chi phí kế tiếp, không khóa thứ tự/câu văn.
+function assertSelectionComparisonComplexities(text) {
+  const costs = new Map([['tốt nhất', []], ['xấu nhất', []]])
+  let pending = []
+  for (const [token] of text.normalize('NFC').matchAll(/tốt\s+nhất|xấu\s+nhất|(?:Θ|O|Ω)\s*\([^)]*\)/giu)) {
+    const normalized = token.toLowerCase().replace(/\s+/gu, ' ').trim()
+    if (costs.has(normalized)) {
+      pending.push(normalized)
+    } else {
+      for (const name of pending) costs.get(name).push(normalized.replace(/\s/gu, ''))
+      pending = []
+    }
+  }
+  assert.equal(pending.length, 0, 'Mọi trường hợp phải có biểu thức chi phí')
+  for (const [name, expressions] of costs) {
+    assert.ok(expressions.length > 0, 'Thiếu chi phí ' + name)
+    assert.ok(expressions.every((cost) => /^θ\(n(?:²|\^2)\)$/u.test(cost)), name + ' phải là Θ(n²) theo comparisons')
+  }
+}
+
+test('assertion complexity Selection chấp nhận nhóm/riêng, đảo thứ tự và whitespace', () => {
+  for (const text of [
+    'tốt nhất và xấu nhất Θ(n²)',
+    'xấu nhất và tốt nhất đều Θ(n²)',
+    'tốt nhất: Θ(n²); xấu nhất: Θ(n²)',
+    'xấu nhất Θ(n²). Tốt nhất cũng Θ(n²)',
+    'Tốt  nhất\n và xấu\tnhất: Θ( n ^ 2 )',
+  ]) assertSelectionComparisonComplexities(text)
+})
+
+test('assertion complexity Selection bác bỏ cận sai hoặc thiếu cho từng trường hợp', () => {
+  for (const text of [
+    'tốt nhất Θ(n), xấu nhất Θ(n²)',
+    'xấu nhất Θ(n²), tốt nhất Θ(n)',
+    'tốt nhất Θ(n²), xấu nhất Θ(n)',
+    'tốt nhất và xấu nhất O(n²)',
+    'tốt nhất O(n), xấu nhất Θ(n²)',
+    'tốt nhất Θ(n²)',
+  ]) assert.throws(() => assertSelectionComparisonComplexities(text), assert.AssertionError)
+})
+
+test('kiến thức Selection nêu tiền tố, minIndex, chi phí và giới hạn stability', async () => {
+  await withSortingDom(({ document }) => {
+    clickSortingCard(document, 'selection')
+    const text = (id) => document.querySelector(id).textContent.replace(/\s+/gu, ' ').trim()
+    const description = text('#learning-description')
+    const advantages = text('#learning-advantages')
+    const disadvantages = text('#learning-disadvantages')
+    assert.match(description, /tiền tố[^.;]*đúng vị trí/iu, 'Nêu phần đã hoàn tất')
+    assert.match(description, /tiền tố[^.;]*tăng dần/iu, 'Tiền tố phải có thứ tự')
+    assert.match(description, /không lớn hơn hậu tố|≤\s*(?:mọi phần tử )?hậu tố/iu, 'Nêu quan hệ giữa hai phần')
+    assert.match(description, /(?:ban đầu|khởi tạo)[^.;]*rỗng/iu)
+    assert.match(description, /minIndex\s*=\s*i/iu, 'Khởi tạo vị trí nhỏ nhất mỗi lượt')
+    assert.match(description, /cập nhật[^.;]*nhỏ hơn/iu, 'Cập nhật khi gặp giá trị nhỏ hơn')
+    assert.match(description, /(?:swap|đổi chỗ)[^.;]*minIndex\s*(?:≠|!=)\s*i/iu, 'Không swap khi minIndex vẫn là i')
+    assert.match(description, /minh họa|ví dụ/iu)
+    const arrays = [...description.matchAll(/\[[\d,\s]+\]/gu)].map(([a]) => JSON.parse(a))
+    assert.deepEqual(arrays, [[4, 3, 2, 1], [1, 3, 2, 4], [1, 2, 3, 4], [1, 2, 3, 4]], 'Ví dụ gồm đầu vào và đúng ba lượt')
+    const compact = advantages.replace(/\s/gu, '')
+    assert.match(compact, /n\(n[−-]1\)\/2/iu, 'Giữ số so sánh chính xác')
+    assert.match(compact, /swaps(?:≤|<=)n[−-]1/iu, 'Giữ cận số swap')
+    assert.match(compact, /n(?:≥|>=)2/iu)
+    assertSelectionComparisonComplexities(advantages)
+    assert.match(disadvantages, /lõi[^.;]*O\(1\)|O\(1\)[^.;]*lõi/iu)
+    assert.match(disadvantages, /(?:copy|sao chép)[^.;]*O\(n\)/iu)
+    assert.match(disadvantages, /S\s+snapshot/iu)
+    assert.match(disadvantages, /trace[^.;]*O\(n\s*[·*×]\s*S\)/iu)
+    assert.match(disadvantages, /(?:swap|đổi chỗ) không kề/iu)
+    assert.match(disadvantages, /có thể[^.;]*phá[^.;]*ổn định/iu)
+    assert.match(disadvantages, /chưa[^.;]*kiểm[^.;]*định danh/iu)
+    assert.match(disadvantages, /average.case[^.;]*chưa[^.;]*nghiệm thu học thuật/iu)
+  })
+})
+
+test('Selection: oracle từng lượt, comparisons và swaps khớp ví dụ, kể cả lượt không swap', () => {
+  const steps = generateSelectionSortSteps([4, 3, 2, 1])
+  const passes = steps.filter((s) => !s.finished && s.sortedIndices.length > 0 && s.comparing.length === 0)
+  assert.deepEqual(passes.map((s) => s.array), [[1, 3, 2, 4], [1, 2, 3, 4], [1, 2, 3, 4]])
+  assert.deepEqual(passes.map((s) => s.comparisons), [3, 5, 6])
+  assert.deepEqual(passes.map((s) => s.swaps), [1, 2, 2])
+  assert.deepEqual(passes.map((s) => s.pseudocodeLine), [7, 7, 6])
+  for (const [input, comparisons, swaps] of [[[], 0, 0], [[7], 0, 0], [[1, 2, 3, 4], 6, 0], [[2, 2, 1], 3, 1]]) {
+    const result = generateSelectionSortSteps(input)
+    assert.deepEqual(result.at(-1).array, [...input].sort((a, b) => a - b))
+    assert.equal(result.at(-1).comparisons, comparisons)
+    assert.equal(result.at(-1).swaps, swaps)
+    assert.equal(result.at(-1).finished, true)
+    if (input.length < 2) assert.equal(result.length, 2, 'Mảng 0/1 phần tử chỉ có đầu/cuối')
+  }
+})
+
+test('Selection: controller giữ counters, minIndex, prefix và pseudocode khớp snapshot', async (t) => {
+  await withSortingDom(({ document, window }) => {
+    clickSortingCard(document, 'selection')
+    // Dữ liệu kiểm thử co giãn từ ví dụ; bốn phần tử là fixture, UI thật chỉ cho chọn 8–24.
+    fixSortingArray(t, window, document, [40, 30, 20, 10])
+    const steps = generateSelectionSortSteps([40, 30, 20, 10])
+    assert.ok(steps.some((s) => s.pseudocodeLine === 5), 'Có nhánh cập nhật minIndex')
+    assert.ok(steps.some((s) => s.pseudocodeLine === 6), 'Có nhánh không swap')
+    for (const [index, step] of steps.entries()) {
+      if (index > 0) clickStep(document)
+      assert.deepEqual(barValues(document).map(Number), step.array)
+      assert.equal(Number(document.querySelector('#comparison-count').textContent), step.comparisons)
+      assert.equal(Number(document.querySelector('#swap-count').textContent), step.swaps)
+      assert.deepEqual(getActivePseudocodeLines(document), step.pseudocodeLine === null ? [] : [{ line: step.pseudocodeLine, ariaCurrent: 'step' }])
+      const bars = [...document.querySelectorAll('#array-bars .array-bar')]
+      assert.deepEqual(bars.filter((b) => b.classList.contains('is-comparing')).map((b) => Number(b.dataset.index)), step.comparing)
+      assert.deepEqual(bars.filter((b) => b.classList.contains('is-swapped')).map((b) => Number(b.dataset.index)), step.swapped)
+      assert.deepEqual(bars.filter((b) => b.classList.contains('is-sorted')).map((b) => Number(b.dataset.index)), step.sortedIndices.filter((i) => !step.comparing.includes(i) && !step.swapped.includes(i)))
+    }
+    assert.equal(document.querySelector('#step-sort').disabled, true)
+    assert.equal(document.querySelector('#run-sort').textContent, 'Chạy lại')
+    document.querySelector('#reset-sort').click()
+    assert.deepEqual(barValues(document), ['40', '30', '20', '10'])
+    assert.equal(Number(document.querySelector('#comparison-count').textContent), 0)
+    assert.deepEqual(getActivePseudocodeLines(document), [])
+  })
+})
+
+test('kiến thức Selection không rò sang Bubble/Insertion, cards và nội dung cũ giữ nguyên', async () => {
+  await withSortingDom(({ document }) => {
+    const read = () => ['#learning-description', '#learning-advantages', '#learning-disadvantages'].map((s) => document.querySelector(s).textContent)
+    const cards = () => [...document.querySelectorAll('#sorting-section .complexity-card strong')].map((e) => e.textContent)
+    const expected = { bubble: ['O(n)', 'O(n²)', 'O(n²)', 'O(1)'], selection: ['O(n²)', 'O(n²)', 'O(n²)', 'O(1)'], insertion: ['O(n)', 'O(n²)', 'O(n²)', 'O(1)'] }
+    for (const algorithm of ['bubble', 'insertion']) {
+      clickSortingCard(document, algorithm)
+      const original = read()
+      clickSortingCard(document, 'selection')
+      assert.deepEqual(cards(), expected.selection)
+      assert.match(read().join(' '), /minIndex/iu)
+      clickSortingCard(document, algorithm)
+      assert.deepEqual(read(), original)
+      assert.deepEqual(cards(), expected[algorithm])
+      assert.doesNotMatch(read().join(' '), /minIndex|\[4,\s*3,\s*2,\s*1\]/iu)
     }
   })
 })
