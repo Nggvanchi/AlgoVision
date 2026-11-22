@@ -71,6 +71,20 @@ Acceptance P1: chỉ hai file được duyệt thay đổi; nguồn mới có ID
 
 Review OP-16 theo luồng nội bộ trong [catalog, mục 10.3](uit-sources.md#103-ranh-giới-tham-khảo-và-tái-sử-dụng): **Codex** đối chiếu code/test, lập luận, nguồn và evidence đúng SHA, phân loại từng nhận định → **ChatGPT** phản biện lượt hai, đối chiếu bằng chứng truy cập hợp lệ, nêu thiếu sót/bất đồng → **Owner** phê duyệt cuối cùng theo phạm vi và bằng chứng. Nhận định chưa được owner nghiệm thu giữ **PENDING_REVIEW**; không coi phản biện này là chứng nhận học thuật độc lập. Không bắt buộc reviewer/giảng viên bên ngoài hoặc biên bản hình thức; không miễn academic/rights gate. Review quyền theo từng hành vi sử dụng; owner approval không cấp quyền nội dung bên thứ ba. Chưa kết luận CC BY-NC-SA tương thích với AlgoVision, quyền tái phân phối hoặc sử dụng nội dung trong AI; giữ RIGHTS_NOT_VERIFIED khi thiếu bằng chứng, gồm quyền dùng OpenStax trong AI. Chỉ đề nghị **READY_FOR_OWNER_P1_REVIEW** về bản thảo có gap công khai; không tự mở P2, OP-17…20 hoặc EDU-3–4.
 
+## G. Chứng minh bổ sung EDU-1D
+
+**REVIEW_PENDING — chứng minh nội bộ từ implementation, chưa nghiệm thu học thuật.** Baseline đối chiếu: `b29e4c221c6887eb8eeb9ab9fc5872eac46c79d0`; generator không đổi so với I. Các trạng thái NOT VERIFIED ở mục E/F là trạng thái nghiệm thu, không được nâng bởi phần bổ sung này.
+
+Gọi I₀ là số cặp vị trí p<q có A[p]>A[q] trong input. Giữ giả định mục B. Trong [generator tại baseline](https://github.com/Nggvanchi/AlgoVision/blob/b29e4c221c6887eb8eeb9ab9fc5872eac46c79d0/src/algorithms/bubbleSort.js#L42), mỗi swap kề chỉ xảy ra khi trái lớn hơn phải (dòng 59–65). Swap loại đúng một nghịch thế giữa hai phần tử đó; tổng quan hệ nghịch thế với mọi phần tử khác không đổi. Do kết quả cuối có thứ tự, số nghịch thế cuối bằng 0, nên tổng swaps W=I₀.
+
+Early exit không phá đẳng thức: một lượt không swap chứng minh đoạn còn xét không giảm; kết hợp bất biến hậu tố ở mục D, toàn mảng có thứ tự, không còn nghịch thế bị bỏ lại. Mỗi swap cần một comparison, còn các vòng lặp thu hẹp cho C≤n(n−1)/2; vì vậy W≤C≤n(n−1)/2 với n≥1.
+
+**Mô hình trung bình có điều kiện:** n≥2, input là hoán vị ngẫu nhiên đều của n giá trị phân biệt. Với mỗi cặp vị trí p<q, biến chỉ báo nghịch thế có kỳ vọng 1/2. Theo tính tuyến tính của kỳ vọng, E[I₀]=n(n−1)/4; không cần giả định các biến chỉ báo độc lập. Từ E[W]=E[I₀]≤E[C]≤n(n−1)/2 suy ra E[C]=Θ(n²). Trong mô hình đơn vị chi phí của lõi, thao tác vòng lặp/kiểm cờ/swap có tổng chi phí O(C+n), nên expected cost lõi là Θ(n²). Early exit giữ lợi ích best-case nhưng không phá cận kỳ vọng này.
+
+Với duplicates, W=I₀ vẫn đúng cho nghịch thế nghiêm ngặt, nhưng công thức kỳ vọng trên không tự áp dụng; không kết luận Θ(n²) cho mọi phân phối. Khi n=0/1: I₀=C=W=P=0, không chạy lượt ngoài và S=2. Công thức S=C+W+P+2 ở mục C giữ nguyên. Bộ nhớ phụ lõi O(1), copy input O(n), snapshot O(n) và trace O(n·S) với n≥1 là các phạm vi riêng; n=0 vẫn có overhead của hai step. Expected cost lõi không phải runtime generator, thời gian sao chép hoặc số byte bộ nhớ.
+
+Chứng minh này không lấy phân tích trung bình từ Runestone/OpenStax, không sao chép biểu đạt giáo trình và không thay A-EDU/G-EDU. Cần phản biện nội bộ và owner nghiệm thu riêng; giữ EDU-1 PARTIAL, academic PASS 0/40 và RIGHTS_NOT_VERIFIED.
+
 [G]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/src/algorithms/bubbleSort.js#L20
 [C]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/src/sorting.js#L79
 [R]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/src/sorting.js#L197

@@ -229,6 +229,26 @@ Evidence chung [F026], [F039], [F040], [F041], [F042]: đồ thị đơn, ID kh�
 - Hậu kiểm: ID/coverage đúng, 10 dòng pilot nguyên trạng, source_id khớp catalog, URL/path/SHA và Markdown hợp lệ, UTF-8 không BOM/LF/whitespace; kiểm trực tiếp nội dung/hash untracked, git diff --check, status/diff/HEAD/index và hash mọi file có sẵn ngoài mapping/172 skill. Không chạy test/build/browser/CI hoặc Git ghi.
 - **READY_FOR_OWNER_EDU1C_REVIEW**: dừng chờ owner nghiệm thu; chưa đóng EDU-1, chưa triển khai EDU-2–4. Nguồn học thuật/quyền dùng còn thiếu không bị approval triển khai docs-only miễn trừ.
 
+## 7. Chứng minh bổ sung EDU-1D
+
+**REVIEW_PENDING — chỉ bổ sung lập luận, không sửa 80 mapping ID hoặc nghiệm thu OP.** Baseline code đối chiếu là `b29e4c221c6887eb8eeb9ab9fc5872eac46c79d0`; ba generator Sorting giữ nguyên blob so với I. Giữ toàn bộ lịch sử audit, source_status và rights_status. Các chứng minh [Selection](op17-source-evidence.md#7-chứng-minh-bổ-sung-edu-1d) và [Bubble](edu-2-cost-and-bubble-draft.md#g-chứng-minh-bổ-sung-edu-1d) được trình bày riêng, không nhân bản ở đây.
+
+### 7.1 OP-18: key, shifts và nghịch thế
+
+Giả định mảng số hữu hạn, so sánh nhất quán và thao tác phần tử chi phí hằng. Gọi I₀ là số nghịch thế nghiêm ngặt của input. [Insertion tại baseline](https://github.com/Nggvanchi/AlgoVision/blob/b29e4c221c6887eb8eeb9ab9fc5872eac46c79d0/src/algorithms/insertionSort.js#L39) giữ key riêng, dời A[j] khi A[j]>key và chèn key lại (dòng 39–83).
+
+Ở đầu mỗi lượt, tiền tố đã có thứ tự. Số phần tử tiền tố lớn hơn key chính là số nghịch thế giữa key và các phần tử đứng trước nó. Mỗi shift cho key vượt qua đúng một phần tử lớn hơn trong mô hình logic giữ key riêng; khi chèn lại, đúng các nghịch thế đó đã bị loại và tiền tố mới có thứ tự. Mỗi cặp nghịch thế ban đầu được xử lý một lần tại lượt của phần tử bên phải, nên tổng shifts H=I₀. Không áp phép đếm này cho array snapshot giữa lượt: ô bị dời tạo bản sao tạm, còn key nằm riêng trong step.
+
+Với n≥1, mỗi shift đi kèm một comparison và mỗi lượt có tối đa một comparison không dẫn đến shift, kết thúc bởi A[j]≤key. Khi j<0, kiểm biên không tăng counter comparisons. Do đó I₀≤C≤I₀+n−1. Generator không tăng swaps cho shift. Các assertions tại [tests/complexity.test.js:33–37](https://github.com/Nggvanchi/AlgoVision/blob/b29e4c221c6887eb8eeb9ab9fc5872eac46c79d0/tests/complexity.test.js#L33) và [tests/sorting.test.js:260–278](https://github.com/Nggvanchi/AlgoVision/blob/b29e4c221c6887eb8eeb9ab9fc5872eac46c79d0/tests/sorting.test.js#L260) chỉ là evidence hiện diện, không phải lần chạy PASS mới.
+
+### 7.2 Mô hình kỳ vọng và giới hạn
+
+Với n≥2 và chỉ dưới mô hình hoán vị ngẫu nhiên đều của n giá trị phân biệt, dùng E[I₀]=n(n−1)/4 từ [chứng minh chỉ báo trong Bubble](edu-2-cost-and-bubble-draft.md#g-chứng-minh-bổ-sung-edu-1d). Suy ra E[H]=n(n−1)/4 và n(n−1)/4≤E[C]≤n(n−1)/4+n−1. Lõi có tổng công việc Θ(n+C+H), nên expected cost Θ(n²); đây không phải runtime generator hoặc kết luận cho mọi phân phối.
+
+Với duplicates, H=I₀ và cận C vẫn đúng, nhưng không tự dùng kỳ vọng dành cho giá trị phân biệt; chỉ dời phần tử lớn hơn key hỗ trợ stability lõi, không phải kiểm chứng định danh sản phẩm. Với n=0/1: C=H=swaps=0, hai snapshot đầu/cuối; cận I₀≤C≤I₀+n−1 ở trên chỉ dùng cho n≥1. Core O(1) phụ khác copy input O(n), snapshot O(n) và trace O(n·S) với n≥1; mảng rỗng vẫn có overhead step. Không coi snapshot giữa lượt là hoán vị hoàn chỉnh hoặc bằng chứng tiền tố đang hiển thị đã hoàn tất.
+
+Đây là diễn giải độc lập từ implementation, chưa phải xác minh nguồn học thuật hoặc quyền tái sử dụng. Giữ EDU-1 PARTIAL, academic PASS 0/40, RIGHTS_NOT_VERIFIED và mọi NOT VERIFIED lịch sử; cần review/owner acceptance theo A-EDU/G-EDU. Không mở triển khai OP-18.
+
 [F001]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/src/structures/array.js
 [F002]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/tests/array.test.js
 [F003]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/src/structures/stack.js
