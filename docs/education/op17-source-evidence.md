@@ -75,3 +75,13 @@ Source rights của OP-17 chưa được nghiệm thu đầy đủ; giữ RIGHTS
 - Technical closeout, commit tài liệu, push/PR và kế hoạch OP-18 là các phê duyệt riêng.
 - Không nhập catalog/mapping/scope C1/Bubble; không có dependency tương đối tới các file chưa tồn tại.
 - Dừng tại OWNER DOC PATCH REVIEW; chưa stage/commit/push/merge hoặc mở giai đoạn tiếp theo.
+
+## 7. Chứng minh bổ sung EDU-1D
+
+**REVIEW_PENDING — lập luận nội bộ, không phải academic acceptance.** Tại [generator baseline b29e4c221c6887eb8eeb9ab9fc5872eac46c79d0](https://github.com/Nggvanchi/AlgoVision/blob/b29e4c221c6887eb8eeb9ab9fc5872eac46c79d0/src/algorithms/selectionSort.js#L37), vòng ngoài i=0…n−2 và vòng trong j=i+1…n−1 cho C=Σ(i=0…n−2)(n−i−1)=n(n−1)/2, với n≥1. Công thức không phụ thuộc thứ tự hoặc số giá trị trùng. Với n=0, vòng lặp rỗng và C=0; n=1 cũng có C=0.
+
+Với n≥2 trong mô hình phần tử hữu hạn, so sánh nhất quán và thao tác phần tử chi phí hằng, best/worst Θ(n²) theo comparisons. Vì C cố định trên mọi input hợp lệ cùng n, E[C]=n(n−1)/2 với mọi phân phối trên các input đó; không cần giả định hoán vị đều. Lõi chỉ thêm công việc O(C+n), nên best/worst/average của lõi đều Θ(n²) trong mô hình này.
+
+Actual swaps W chỉ tăng khi minIndex≠i (dòng 73–77), nên 0≤W≤n−1 với n≥1; mảng đã không giảm có W=0. Không suy số swaps cố định hoặc Θ(n) best-case từ công thức comparisons. Giữ phân biệt Toronto có self-swap, MIT chọn max về cuối và bảng OpenDSA theo biến thể nguồn như mục 3.
+
+Core O(1) bộ nhớ phụ không bao gồm copy O(n), snapshot O(n) hoặc trace O(n·S) với n≥1. Chứng minh cost lõi không phải phân tích runtime generator. Các kết luận average-case chưa nghiệm thu trong hồ sơ lịch sử vẫn giữ nguyên; nguồn/quyền dùng chưa nghiệm thu đầy đủ, RIGHTS_NOT_VERIFIED và academic PASS 0/40. Cần phản biện nội bộ/owner acceptance, không dùng phần này tự đóng MAP-017-S/A-EDU/G-EDU.
