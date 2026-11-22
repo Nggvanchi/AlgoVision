@@ -197,3 +197,36 @@ Owner cho phép đúng catalog này và [bản thảo chi phí/Bubble](edu-2-cos
   2. **ChatGPT:** phản biện lượt hai, đối chiếu bằng chứng có thể truy cập hợp lệ, phát hiện thiếu sót và nêu bất đồng; không gọi đây là chứng nhận học thuật độc lập.
   3. **Owner:** phê duyệt cuối cùng theo từng phạm vi và bằng chứng.
   Không bắt buộc reviewer/giảng viên bên ngoài hoặc biên bản hình thức. Quy trình không miễn academic/rights gate; owner approval không cấp quyền nội dung bên thứ ba. Chỉ thêm hồ sơ nguồn; không tự nâng nguồn UIT, 80 mapping ID hoặc academic PASS 0/40, không mở P2/OP-17…20/EDU-3–4.
+
+## 11. Policy B và quyền theo hành vi — EDU-1F
+
+Bổ sung ngày 22/11/2026; giữ nguyên 8 source ID, metadata, evidence và trạng thái lịch sử. **EDU-1 PARTIAL; academic PASS 0/40; RIGHTS_NOT_VERIFIED.** Đây là policy nguồn và cách phân tuyến acceptance, không phải nghiệm thu học thuật hoặc cấp quyền nội dung.
+
+### 11.1 Hai lớp evidence
+
+1. **UIT — định danh/phạm vi:** nguồn 001–003 hỗ trợ định danh/ngữ cảnh/đầu mối; 004 là IT003_PRIMARY_CANDIDATE PARTIAL, chưa xác minh tính hiện hành; 005 chưa truy cập đủ; 006 là UIT_SUPPLEMENTARY, chỉ VERIFIED xuất xứ/chủ đề đã đọc. Không dùng tên miền hoặc đề mục để suy mã giả, Big-O, tính đúng hay độ phủ 40 OP.
+2. **Claim chi tiết:** dùng nguồn học thuật độc lập có tác giả/đơn vị, URL, edition/revision hoặc giới hạn phiên bản, ngày truy cập, locator và nội dung thực sự hỗ trợ đúng biến thể/giả định. Chứng minh tự biên soạn từ implementation phải nêu SHA:line, tiền điều kiện, mô hình chi phí, lập luận và giới hạn; kèm phản biện nội bộ/owner acceptance. Phân biệt chứng minh riêng AlgoVision với kiến thức tổng quát; không buộc giáo trình mô tả counters/snapshot riêng của sản phẩm. Không coi một lập luận nội bộ là bằng chứng đã xác minh nội dung nguồn bên ngoài.
+
+Không bắt buộc một tài liệu UIT chứng minh toàn bộ OP. Giữ phản biện Codex → ChatGPT → Owner; không gọi đây là chứng nhận học thuật độc lập hoặc tự miễn A-EDU/G-EDU. Không tìm lại IT003/OpenDSA đã được quyết định dừng.
+
+### 11.2 Catalog và nguồn dẫn bổ trợ
+
+Catalog vẫn có đúng **8 source ID: 6 UIT + 2 EXT**. Runestone chỉ hỗ trợ phạm vi đã xác minh; OpenStax chỉ metadata/link theo giới hạn hiện có. Toronto, MIT và OpenDSA được dẫn tại [hồ sơ OP-17, mục 4](op17-source-evidence.md#4-nguồn-khả-năng-truy-xuất-và-quyền), không tự trở thành source ID mới, nguồn UIT hoặc catalog entry đã nghiệm thu. Tái sử dụng evidence đúng locator/giới hạn; chưa xác minh revision, applicability hoặc quyền thì giữ nguyên trạng thái đó.
+
+### 11.3 Quyền theo hành vi sử dụng thực tế
+
+| Hành vi | Evidence/điều kiện phải ghi | Giới hạn hiện hành |
+|---|---|---|
+| Metadata/link/dẫn nguồn | Định danh, URL, locator và vai trò tham khảo | Có link/metadata không cấp quyền sao chép tài liệu đích. |
+| Tự diễn giải/chứng minh | Provenance từ code/lập luận; review biểu đạt độc lập, phân biệt với dịch/chuyển thể | Không đồng nhất quyền đối với tài liệu bên thứ ba với bản giải thích độc lập AlgoVision; không tự gán giấy phép hoặc xác nhận độc lập tuyệt đối. |
+| Trích dẫn | Đoạn/tài nguyên cụ thể, phạm vi, attribution và căn cứ áp dụng | Chưa có evidence đủ thì RIGHTS_NOT_VERIFIED; không thêm trích dẫn dài để lấp gap. |
+| Chuyển thể | Tài nguyên gốc, phần thay đổi, giấy phép áp dụng và điều kiện attribution/NC/SA nếu có | Notice chung không chứng minh tương thích với cách dùng AlgoVision. |
+| Sao chép | Nội dung/byte/hình/code cụ thể và căn cứ được phép | Không đưa giáo trình hoặc tài nguyên nguồn chưa được phép vào repo/sản phẩm. |
+| Tái phân phối/công bố | Nội dung thực sự được phát hành, phạm vi giấy phép/quyền và nghĩa vụ đi kèm | Công bố hồ sơ kiểm kê không cấp quyền phân phối tài liệu nguồn. |
+| AI | Tách đọc/ingestion/training, tài nguyên và dịch vụ/quy trình cụ thể | Không suy quyền AI từ mua sách, khả năng đọc hoặc CC notice; giữ giới hạn OpenStax. |
+
+Bảng trên là quy tắc evidence, không nâng quyền của bất kỳ nguồn nào. Giữ RIGHTS_NOT_VERIFIED cho hành vi thiếu căn cứ; cũng không diễn giải NOT VERIFIED thành kết luận bị cấm. Owner approval không thay giấy phép bên thứ ba. Chỉ dùng nội dung có provenance và quyền phù hợp với hành vi dự kiến; claim dựa trên nguồn chưa xác minh không được tự nghiệm thu vì đã merge.
+
+### 11.4 Gate hồ sơ và gate nội dung
+
+EDU-1 chỉ có thể được owner đóng riêng sau khi danh mục/mapping, policy và [routing gap 40 OP](knowledge-mapping.md#8-disposition-40-op--edu-1f) được nghiệm thu. Mọi claim học thuật và quyền liên quan nội dung bắt buộc còn thiếu được giao EDU-2–4 với acceptance rõ; chưa đạt vẫn chặn release. Nguồn đang giữ làm metadata/đầu mối không được dùng như evidence nội dung VERIFIED. Không nâng source_status, rights_status, academic PASS hoặc tự mở giai đoạn.

@@ -191,6 +191,18 @@ và vẫn cần duyệt kế hoạch riêng. Lộ trình không cam kết lịch
 | EDU-3 | Chưa xác minh, không gán số chương | Array, Stack, Queue, Linked List, BST, Hash Table | ADT, thao tác, bất biến, trường hợp biên, Big-O | Chưa mapping/biên soạn | Chưa xác minh nguồn UIT; bổ sung URL + phiên bản + mục/trang ở EDU-1 |
 | EDU-4 | Chưa xác minh, không gán số chương | Graph, BFS, DFS | Biểu diễn, duyệt, thứ tự thăm, Big-O | Chưa mapping/biên soạn | Chưa xác minh nguồn UIT; bổ sung URL + phiên bản + mục/trang ở EDU-1 |
 
+#### EDU-1F — Tiêu chí hiện hành theo policy B
+
+Bổ sung ngày 22/11/2026; giữ phần EDU-1 ở trên làm lịch sử. Policy B dưới đây điều chỉnh tiêu chí nguồn/mapping, không phải quyết định đóng gate. **EDU-1 vẫn PARTIAL — MAPPING COMPLETE / ACADEMIC PENDING; academic PASS 0/40; RIGHTS_NOT_VERIFIED.**
+
+- **Hai lớp evidence:** UIT xác minh định danh học phần/phạm vi/chủ đề đã đọc; claim chi tiết dùng nguồn học thuật độc lập phù hợp hoặc chứng minh tự biên soạn từ implementation. Không bắt buộc một tài liệu UIT chứng minh toàn bộ 40 OP, không gắn nguồn ngoài thành UIT. Xem [policy và quyền theo hành vi](education/uit-sources.md#11-policy-b-và-quyền-theo-hành-vi--edu-1f).
+- **Nguồn và claim:** ghi tác giả/đơn vị, URL, edition/revision hoặc giới hạn chưa xác minh, ngày truy cập và locator thật. Nguồn chỉ nêu chủ đề không chứng minh mã giả/Big-O. Chứng minh độc lập cần SHA:line, tiền điều kiện, mô hình chi phí, giới hạn, phản biện Codex → ChatGPT → quyết định Owner; không thay nguồn truy xuất được bằng suy đoán.
+- **Gate hồ sơ EDU-1:** đủ 8 source ID, 80 mapping ID/40 OP; vai trò và giới hạn từng nguồn rõ; quyền được phân loại theo hành vi thực tế; mọi gap có claim/OP, giai đoạn chịu trách nhiệm và acceptance. Owner phải nghiệm thu hồ sơ/policy và quyết định đóng EDU-1 riêng. NOT VERIFIED được giữ như gap có routing, không chuyển thành PASS hoặc tự loại khỏi release.
+- **Gate học thuật EDU-2–4:** nghiệm thu từng claim thực tế dùng trong nội dung, nguồn/chứng minh phù hợp, Big-O/mã giả khớp biến thể và quyền cho nội dung bên thứ ba được sử dụng. Trước release, mọi claim bắt buộc phải đạt gate tương ứng hoặc có quyết định scope riêng của owner; không được bỏ qua chỉ vì đã đóng gate hồ sơ.
+- **Phân tuyến:** [disposition 40 OP](education/knowledge-mapping.md#8-disposition-40-op--edu-1f) có 2 READY (OP-16/17), 38 DEFER. READY chỉ là sẵn sàng trình hồ sơ/claim; DEFER là giao việc cho EDU-2/3/4, không miễn acceptance hay loại khỏi v1.0.0.
+- **Dependencies giữ nguyên:** C1 → EDU-1 → EDU-2 → EDU-3 → EDU-4 → C2 → C3 → C4 → C5; triển khai từng giai đoạn cần owner duyệt riêng. Ngoại lệ OP-16/17 không tự mở OP-18. G-RELEASE, QA và ngân sách không đổi.
+- **Cách đọc tiêu chí lịch sử:** yêu cầu nguồn tại EDU-1/EDU-2/EDU-4 được áp dụng theo hai lớp trên. Thay điều kiện phải giải quyết hoặc loại mọi dòng NOT VERIFIED ngay tại EDU-1 bằng hồ sơ gap/routing được owner duyệt; việc nghiệm thu học thuật/quyền của nội dung release vẫn bắt buộc ở giai đoạn đích.
+
 ### EDU-2 — Nền tảng, Sorting và Searching
 
 - **Mục tiêu/scope:** theo mapping đã duyệt ở EDU-1, diễn giải kiến thức nền tảng, ba thuật toán
