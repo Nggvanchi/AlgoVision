@@ -1,6 +1,8 @@
 # EDU-1A — Xác minh nguồn UIT
 
-Ngày đối soát: 18/11/2026. **EDU-1A PARTIAL — AWAITING_SOURCE_CONFIRMATION.** Owner đã duyệt dừng tìm kiếm lặp lại IT003; cần owner xác nhận nguồn IT003 phù hợp trước EDU-1B. Chưa mapping 9 module/40 thao tác, chưa biên soạn EDU-2–4. Quyết định hiện hành ở mục 9; evidence các lượt trước giữ nguyên.
+Trạng thái hiện hành: xem [closeout EDU-1G](#12-closeout-hiện-hành--edu-1g); chỉ nghiệm thu hồ sơ nguồn/mapping.
+
+**Lịch sử EDU-1A:** Ngày đối soát: 18/11/2026. **EDU-1A PARTIAL — AWAITING_SOURCE_CONFIRMATION.** Owner đã duyệt dừng tìm kiếm lặp lại IT003; cần owner xác nhận nguồn IT003 phù hợp trước EDU-1B. Chưa mapping 9 module/40 thao tác, chưa biên soạn EDU-2–4. Quyết định hiện hành ở mục 9; evidence các lượt trước giữ nguyên.
 
 EDU-2 P1 ngày 18/11/2026 bổ sung **2 INDEPENDENT_REFERENCE** ở mục 10: catalog tổng 8 ID (6 UIT giữ nguyên + 2 EXT). Các trạng thái/mốc EDU-1A ở trên là lịch sử; không dùng phần bổ sung này để đóng EDU-1 hoặc nâng academic PASS.
 
@@ -229,4 +231,14 @@ Bảng trên là quy tắc evidence, không nâng quyền của bất kỳ ngu�
 
 ### 11.4 Gate hồ sơ và gate nội dung
 
-EDU-1 chỉ có thể được owner đóng riêng sau khi danh mục/mapping, policy và [routing gap 40 OP](knowledge-mapping.md#8-disposition-40-op--edu-1f) được nghiệm thu. Mọi claim học thuật và quyền liên quan nội dung bắt buộc còn thiếu được giao EDU-2–4 với acceptance rõ; chưa đạt vẫn chặn release. Nguồn đang giữ làm metadata/đầu mối không được dùng như evidence nội dung VERIFIED. Không nâng source_status, rights_status, academic PASS hoặc tự mở giai đoạn.
+**Lịch sử điều kiện EDU-1F:** EDU-1 chỉ có thể được owner đóng riêng sau khi danh mục/mapping, policy và [routing gap 40 OP](knowledge-mapping.md#8-disposition-40-op--edu-1f) được nghiệm thu. Mọi claim học thuật và quyền liên quan nội dung bắt buộc còn thiếu được giao EDU-2–4 với acceptance rõ; chưa đạt vẫn chặn release. Nguồn đang giữ làm metadata/đầu mối không được dùng như evidence nội dung VERIFIED. Không nâng source_status, rights_status, academic PASS hoặc tự mở giai đoạn.
+
+## 12. Closeout hiện hành — EDU-1G
+
+**EDU-1 Source & Mapping — OWNER ACCEPTED / CLOSED**, quyết định owner ngày 22/11/2026.
+
+Bằng chứng: [PR #67](https://github.com/Nggvanchi/AlgoVision/pull/67), merge SHA `7369060373396a6e73c446a66be47b9c0245317d`; [CI sau merge 45031433630](https://github.com/Nggvanchi/AlgoVision/actions/runs/45031433630) Ubuntu/Windows **SUCCESS**, [Vercel SUCCESS](https://vercel.com/nggvanchi-4548/algo-vision/4P8m4HveH4g3oJJtD9B9VzFy2z1t), đã đối chiếu đúng merge SHA.
+
+Owner nghiệm thu policy B, rights matrix theo hành vi, catalog **8 source ID** và giới hạn từng nguồn, cùng [routing/acceptance 40 OP](knowledge-mapping.md#8-disposition-40-op--edu-1f). Giữ nguyên metadata, evidence, mọi source_status và **RIGHTS_NOT_VERIFIED**; đây không phải cấp phép nội dung bên thứ ba hoặc xác nhận quyền AI.
+
+Chỉ đóng gate hồ sơ nguồn/mapping. **Academic PASS 0/40**; EDU-2–4 phải nghiệm thu claim và quyền theo hành vi sử dụng thực tế. 40 OP/80 mapping ID, 2 READY/38 DEFER (5/27/8 OP đến EDU-2/3/4) không đổi; mỗi gap còn acceptance tại giai đoạn đích, không miễn G-EDU/G-RELEASE hoặc đổi scope/dependency. Các ghi chú PARTIAL/chưa đóng trước mục này là lịch sử; không tự mở OP-18/EDU-2–4.

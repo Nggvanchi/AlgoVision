@@ -1,6 +1,8 @@
 # EDU-1 — Mapping kiến thức v1.0.0
 
-Trạng thái hiện hành: **READY_FOR_OWNER_EDU1C_REVIEW**, coverage 40/40 OP; xem mục 6. Chưa nghiệm thu học thuật hoặc đóng EDU-1.
+Trạng thái hiện hành: xem [closeout EDU-1G](#9-closeout-hiện-hành--edu-1g); chỉ nghiệm thu hồ sơ nguồn/mapping.
+
+Lịch sử EDU-1C: **READY_FOR_OWNER_EDU1C_REVIEW**, coverage 40/40 OP; xem mục 6. Chưa nghiệm thu học thuật hoặc đóng EDU-1.
 
 Mốc lịch sử EDU-1B, 18/11/2026 — **READY_FOR_OWNER_PILOT_REVIEW** về hồ sơ pilot; chưa nghiệm thu học thuật hoặc đóng EDU-1. Phạm vi chỉ 5 OP của [scope C1](../release/v1.0.0-scope.md). Owner cho phép dùng đề cương IT003 tạm thời trong pilot; không có nghĩa đã chọn nguồn chuẩn hiện hành. Chưa triển khai EDU-1C hoặc EDU-2–4.
 
@@ -253,7 +255,7 @@ Với duplicates, H=I₀ và cận C vẫn đúng, nhưng không tự dùng kỳ
 
 Bổ sung ngày 22/11/2026 theo [policy B](uit-sources.md#11-policy-b-và-quyền-theo-hành-vi--edu-1f) và [G-EDU](../release/v1.0.0-scope.md#bổ-sung-g-edu-theo-edu-1f--22112026). Đây là routing hiện hành tách khỏi 80 hàng mapping lịch sử, không tạo mapping ID/source ID hoặc thay source_status/rights_status.
 
-**EDU-1 PARTIAL; academic PASS 0/40; RIGHTS_NOT_VERIFIED.** I là evidence implementation/source-test tại SHA mục 1, không phải runtime PASS. EDU-1D là chứng minh nội bộ ở mục 7 và hai hồ sơ được liên kết, chưa academic acceptance. SER là evidence Bubble early exit đã được owner nghiệm thu đúng phạm vi, không phải nguồn xác minh toàn OP.
+**Lịch sử EDU-1F — EDU-1 PARTIAL; academic PASS 0/40; RIGHTS_NOT_VERIFIED.** I là evidence implementation/source-test tại SHA mục 1, không phải runtime PASS. EDU-1D là chứng minh nội bộ ở mục 7 và hai hồ sơ được liên kết, chưa academic acceptance. SER là evidence Bubble early exit đã được owner nghiệm thu đúng phạm vi, không phải nguồn xác minh toàn OP.
 
 - READY_FOR_OWNER_REVIEW chỉ trình hồ sơ/claim của OP-16/17; không đồng nghĩa academic PASS, quyền VERIFIED hoặc được phép triển khai tiếp.
 - DEFER_TO_EDU_2_3_4 giao việc đến giai đoạn ghi trong bảng; không loại OP/claim khỏi v1.0.0 và không miễn dependency/release gate.
@@ -304,7 +306,17 @@ Bổ sung ngày 22/11/2026 theo [policy B](uit-sources.md#11-policy-b-và-quyề
 
 Tổng đúng **40 OP: 2 READY (OP-16/17), 38 DEFER**, trong đó EDU-2 nhận 5 OP, EDU-3 nhận 27 OP, EDU-4 nhận 8 OP. Không có OP mất nơi xử lý; không suy rằng không còn blocker học thuật/quyền. Giữ 40 PRESENT / 40 NOT VERIFIED của 80 mapping ID; không dùng disposition thay thống kê đó.
 
-Để owner đóng gate hồ sơ EDU-1: kiểm đủ danh mục, vai trò/locator/giới hạn nguồn, policy quyền theo hành vi và routing/acceptance mọi gap. Academic acceptance từng claim thuộc EDU-2–4 và vẫn bắt buộc trước release; G-RELEASE và 24 C4 không đổi. Policy không giải quyết thay nguồn chưa truy cập được, quyền chưa rõ, chứng minh chưa được nghiệm thu hoặc runtime/identity chưa kiểm. Không mở OP-18/EDU-2–4 hoặc tự ghi EDU-1 CLOSED.
+**Lịch sử điều kiện EDU-1F:** Để owner đóng gate hồ sơ EDU-1: kiểm đủ danh mục, vai trò/locator/giới hạn nguồn, policy quyền theo hành vi và routing/acceptance mọi gap. Academic acceptance từng claim thuộc EDU-2–4 và vẫn bắt buộc trước release; G-RELEASE và 24 C4 không đổi. Policy không giải quyết thay nguồn chưa truy cập được, quyền chưa rõ, chứng minh chưa được nghiệm thu hoặc runtime/identity chưa kiểm. Không mở OP-18/EDU-2–4 hoặc tự ghi EDU-1 CLOSED.
+
+## 9. Closeout hiện hành — EDU-1G
+
+**EDU-1 Source & Mapping — OWNER ACCEPTED / CLOSED**, quyết định owner ngày 22/11/2026.
+
+Bằng chứng: [PR #67](https://github.com/Nggvanchi/AlgoVision/pull/67), merge SHA `7369060373396a6e73c446a66be47b9c0245317d`; [CI sau merge 45031433630](https://github.com/Nggvanchi/AlgoVision/actions/runs/45031433630) Ubuntu/Windows **SUCCESS**, [Vercel SUCCESS](https://vercel.com/nggvanchi-4548/algo-vision/4P8m4HveH4g3oJJtD9B9VzFy2z1t), đã đối chiếu đúng merge SHA.
+
+Owner nghiệm thu **40 OP/80 mapping ID**, policy B, rights matrix theo hành vi và catalog 8 source ID với giới hạn nguồn. Giữ nguyên 80 hàng lịch sử và disposition mục 8: **2 READY (OP-16/17)/38 DEFER**, EDU-2/3/4 nhận **5/27/8 OP**; mỗi gap giữ nơi xử lý và acceptance đã ghi.
+
+**Academic PASS 0/40; RIGHTS_NOT_VERIFIED** và mọi source_status chưa xác minh giữ nguyên. CLOSED chỉ là gate hồ sơ nguồn/mapping; EDU-2–4 vẫn phải nghiệm thu claim và quyền cho nội dung thực tế. Không dùng PRESENT/READY hoặc closeout để suy academic PASS; DEFER không miễn G-EDU/G-RELEASE. Scope/dependency không đổi; không tự mở OP-18/EDU-2–4. Các ghi chú PARTIAL/chưa đóng EDU-1 trước mục này là lịch sử; xem [closeout roadmap](../roadmap.md#edu-1g--closeout-hiện-hành-nguồn-và-mapping).
 
 [F001]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/src/structures/array.js
 [F002]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/tests/array.test.js
