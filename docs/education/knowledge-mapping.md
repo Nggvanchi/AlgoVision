@@ -249,6 +249,63 @@ Với duplicates, H=I₀ và cận C vẫn đúng, nhưng không tự dùng kỳ
 
 Đây là diễn giải độc lập từ implementation, chưa phải xác minh nguồn học thuật hoặc quyền tái sử dụng. Giữ EDU-1 PARTIAL, academic PASS 0/40, RIGHTS_NOT_VERIFIED và mọi NOT VERIFIED lịch sử; cần review/owner acceptance theo A-EDU/G-EDU. Không mở triển khai OP-18.
 
+## 8. Disposition 40 OP — EDU-1F
+
+Bổ sung ngày 22/11/2026 theo [policy B](uit-sources.md#11-policy-b-và-quyền-theo-hành-vi--edu-1f) và [G-EDU](../release/v1.0.0-scope.md#bổ-sung-g-edu-theo-edu-1f--22112026). Đây là routing hiện hành tách khỏi 80 hàng mapping lịch sử, không tạo mapping ID/source ID hoặc thay source_status/rights_status.
+
+**EDU-1 PARTIAL; academic PASS 0/40; RIGHTS_NOT_VERIFIED.** I là evidence implementation/source-test tại SHA mục 1, không phải runtime PASS. EDU-1D là chứng minh nội bộ ở mục 7 và hai hồ sơ được liên kết, chưa academic acceptance. SER là evidence Bubble early exit đã được owner nghiệm thu đúng phạm vi, không phải nguồn xác minh toàn OP.
+
+- READY_FOR_OWNER_REVIEW chỉ trình hồ sơ/claim của OP-16/17; không đồng nghĩa academic PASS, quyền VERIFIED hoặc được phép triển khai tiếp.
+- DEFER_TO_EDU_2_3_4 giao việc đến giai đoạn ghi trong bảng; không loại OP/claim khỏi v1.0.0 và không miễn dependency/release gate.
+- **Áp dụng cho từng hàng:** source/claim gap và quyền sử dụng bên thứ ba vẫn chưa nghiệm thu. Acceptance cần nguồn/locator phù hợp hoặc chứng minh độc lập theo policy B, căn cứ quyền đúng hành vi nếu dùng nội dung nguồn, review Codex → ChatGPT → Owner, cùng điều kiện riêng của hàng. Chỉ được đóng claim khi có evidence đủ; thiếu vẫn chặn nội dung release tương ứng. Test presence không phải test PASS.
+
+| OP | Module/thao tác | Evidence hiện có và gap | Trạng thái | Giai đoạn xử lý | Acceptance riêng, ngoài điều kiện chung |
+|---|---|---|---|---|---|
+| OP-01 | Array — Thêm cuối | I; nguồn ADT/cost copy chưa đủ | DEFER_TO_EDU_2_3_4 | EDU-3 | Đối chiếu hợp đồng append, input bất biến, cost toàn API. |
+| OP-02 | Array — Chèn theo index | I; nguồn ADT/cost splice chưa đủ | DEFER_TO_EDU_2_3_4 | EDU-3 | Review index hợp lệ, nhánh lỗi, copy/dời và Big-O. |
+| OP-03 | Array — Xóa theo index | I; nguồn ADT/kết quả chưa đủ | DEFER_TO_EDU_2_3_4 | EDU-3 | Review removedValue, input bất biến, lỗi và copy/dời. |
+| OP-04 | Array — Tìm giá trị | I; first-match/average thiếu nguồn | DEFER_TO_EDU_2_3_4 | EDU-3 | Xác nhận trả khớp đầu hoặc -1; average cần mô hình riêng. |
+| OP-05 | Stack — Push | I; ADT khác validation/copy | DEFER_TO_EDU_2_3_4 | EDU-3 | Đối chiếu LIFO và cost toàn API, không gán O(1) cho mọi bước. |
+| OP-06 | Stack — Pop | I; nguồn/hợp đồng rỗng và cost | DEFER_TO_EDU_2_3_4 | EDU-3 | Review LIFO, lỗi rỗng, giá trị trả về và copy. |
+| OP-07 | Stack — Peek | I; đọc TOP khác cost validation | DEFER_TO_EDU_2_3_4 | EDU-3 | Phân biệt đọc O(1) với validation toàn stack. |
+| OP-08 | Queue — Enqueue | I; nguồn FIFO/copy chưa đủ | DEFER_TO_EDU_2_3_4 | EDU-3 | Review FIFO, input bất biến và cost API thật. |
+| OP-09 | Queue — Dequeue | I; nguồn FIFO/slice chưa đủ | DEFER_TO_EDU_2_3_4 | EDU-3 | Review rỗng, phần đầu, copy/dời; không giả định ring buffer. |
+| OP-10 | Queue — Front | I; đọc đầu khác cost validation | DEFER_TO_EDU_2_3_4 | EDU-3 | Phân biệt đọc O(1) với validation toàn queue. |
+| OP-11 | Linked List — Thêm cuối | I; chủ đề list chưa chứng minh API | DEFER_TO_EDU_2_3_4 | EDU-3 | Review liên kết/size, duyệt và toArray. |
+| OP-12 | Linked List — Thêm đầu | I; nối O(1) khác toàn API | DEFER_TO_EDU_2_3_4 | EDU-3 | Review head/size và cost toArray, không bắt thêm generator. |
+| OP-13 | Linked List — Chèn theo index | I; thiếu nguồn nhánh/cost | DEFER_TO_EDU_2_3_4 | EDU-3 | Review đầu/giữa/cuối, index lỗi và kết quả. |
+| OP-14 | Linked List — Xóa theo index | I; thiếu nguồn nhánh/cost | DEFER_TO_EDU_2_3_4 | EDU-3 | Review head/liên kết/size, lỗi và removedValue. |
+| OP-15 | Linked List — Tìm giá trị | I; first-match/average thiếu nguồn | DEFER_TO_EDU_2_3_4 | EDU-3 | Review dừng hữu hạn, khớp đầu/-1 và mô hình chi phí. |
+| OP-16 | Sorting — Bubble Sort | I + SER + EDU-1D; source/rights còn gap | READY_FOR_OWNER_REVIEW | EDU-2 | Review invariant, early exit, W=I₀, mô hình kỳ vọng và memory. |
+| OP-17 | Sorting — Selection Sort | I + hồ sơ OP-17 + EDU-1D; revision/rights còn gap | READY_FOR_OWNER_REVIEW | EDU-2 | Review C cố định, actual/self-swap, stability và core/trace. |
+| OP-18 | Sorting — Insertion Sort | I + EDU-1D; nguồn shift/key và product acceptance thiếu | DEFER_TO_EDU_2_3_4 | EDU-2 | Review key/shift, H=I₀, cận C, stability và snapshot; scope triển khai cần duyệt riêng. |
+| OP-19 | Searching — Linear Search | I; nguồn first-match/average thiếu | DEFER_TO_EDU_2_3_4 | EDU-2 | Review tiền điều kiện, kết quả, dừng và mô hình trung bình nếu dùng. |
+| OP-20 | Searching — Binary Search | I; nguồn sorted-input/biên thiếu | DEFER_TO_EDU_2_3_4 | EDU-2 | Review thu hẹp biên, trùng, không gồm cost sắp xếp vào query. |
+| OP-21 | BST — Insert | I; nguồn/quy ước h/trace thiếu | DEFER_TO_EDU_2_3_4 | EDU-3 | Review insert/duplicate, ID, path cost và snapshot. |
+| OP-22 | BST — Search | I; nguồn/path/counters thiếu | DEFER_TO_EDU_2_3_4 | EDU-3 | Review found/null, counters theo nút và giới hạn h. |
+| OP-23 | BST — Delete | I; nguồn successor/ID thiếu | DEFER_TO_EDU_2_3_4 | EDU-3 | Review lá/một con/hai con, successor và tham chiếu không treo. |
+| OP-24 | BST — Inorder | I; nguồn traversal/memory thiếu | DEFER_TO_EDU_2_3_4 | EDU-3 | Review LNR, kết quả tăng với BST hợp lệ, stack/output/trace. |
+| OP-25 | BST — Preorder | I; nguồn traversal/memory thiếu | DEFER_TO_EDU_2_3_4 | EDU-3 | Review NLR, null/rỗng, output và stack/trace. |
+| OP-26 | BST — Postorder | I; nguồn traversal/memory thiếu | DEFER_TO_EDU_2_3_4 | EDU-3 | Review LRN, null/rỗng, output và stack/trace. |
+| OP-27 | BST — Min | I; nguồn/path cost thiếu | DEFER_TO_EDU_2_3_4 | EDU-3 | Review đi trái, rỗng null; comparisons=0 không chứng minh O(1). |
+| OP-28 | BST — Max | I; nguồn/path cost thiếu | DEFER_TO_EDU_2_3_4 | EDU-3 | Review đi phải, rỗng null; không giả định cây cân bằng. |
+| OP-29 | BST — Height | I; nguồn quy ước height thiếu | DEFER_TO_EDU_2_3_4 | EDU-3 | Giữ height theo cạnh, rỗng -1; review O(n), stack và snapshot. |
+| OP-30 | Hash Table — Insert | I; nguồn strategy/kỳ vọng thiếu | DEFER_TO_EDU_2_3_4 | EDU-3 | Review chaining/probing, duplicate/full, tombstone và giả định hash. |
+| OP-31 | Hash Table — Search | I; nguồn probes/cost thiếu | DEFER_TO_EDU_2_3_4 | EDU-3 | Review empty/tombstone, tối đa m probes và comparisons khác probes. |
+| OP-32 | Hash Table — Delete | I; nguồn strategy/tombstone thiếu | DEFER_TO_EDU_2_3_4 | EDU-3 | Review gỡ chaining, tombstone probing và ID; không tự thêm rehash. |
+| OP-33 | Graph — Thêm đỉnh | I; UIT 006 chỉ chủ đề | DEFER_TO_EDU_2_3_4 | EDU-4 | Review clone, cấp ID/slot; thao tác trực tiếp khác query generator. |
+| OP-34 | Graph — Xóa đỉnh | I; UIT 006 chỉ chủ đề | DEFER_TO_EDU_2_3_4 | EDU-4 | Review cạnh vào/ra, giữ ID khác và cost clone/quét. |
+| OP-35 | Graph — Thêm cạnh | I; UIT 006 chỉ chủ đề | DEFER_TO_EDU_2_3_4 | EDU-4 | Review đỉnh hợp lệ, khuyên/trùng, hướng/vô hướng và cost. |
+| OP-36 | Graph — Xóa cạnh | I; UIT 006 chỉ chủ đề | DEFER_TO_EDU_2_3_4 | EDU-4 | Review cạnh vắng/hai chiều, input bất biến và cost. |
+| OP-37 | Graph — Kiểm tra kề | I; nguồn chi tiết list/matrix thiếu | DEFER_TO_EDU_2_3_4 | EDU-4 | Review ID/kết quả, reads list/matrix khác tổng cost. |
+| OP-38 | Graph — Đỉnh kề và bậc | I; nguồn quy ước degree thiếu | DEFER_TO_EDU_2_3_4 | EDU-4 | Review kề ra/bậc ra, output và reads theo representation. |
+| OP-39 | Graph — BFS từ s | I; UIT 006 nêu BFS, thiếu claim chi tiết | DEFER_TO_EDU_2_3_4 | EDU-4 | Review FIFO/mark-enqueue/dist/parent, reachable, reads/trace. |
+| OP-40 | Graph — DFS từ s | I; UIT 006 nêu DFS, thiếu claim chi tiết | DEFER_TO_EDU_2_3_4 | EDU-4 | Review stack khung, visited/parent/mốc vào-ra, reachable và reads/trace. |
+
+Tổng đúng **40 OP: 2 READY (OP-16/17), 38 DEFER**, trong đó EDU-2 nhận 5 OP, EDU-3 nhận 27 OP, EDU-4 nhận 8 OP. Không có OP mất nơi xử lý; không suy rằng không còn blocker học thuật/quyền. Giữ 40 PRESENT / 40 NOT VERIFIED của 80 mapping ID; không dùng disposition thay thống kê đó.
+
+Để owner đóng gate hồ sơ EDU-1: kiểm đủ danh mục, vai trò/locator/giới hạn nguồn, policy quyền theo hành vi và routing/acceptance mọi gap. Academic acceptance từng claim thuộc EDU-2–4 và vẫn bắt buộc trước release; G-RELEASE và 24 C4 không đổi. Policy không giải quyết thay nguồn chưa truy cập được, quyền chưa rõ, chứng minh chưa được nghiệm thu hoặc runtime/identity chưa kiểm. Không mở OP-18/EDU-2–4 hoặc tự ghi EDU-1 CLOSED.
+
 [F001]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/src/structures/array.js
 [F002]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/tests/array.test.js
 [F003]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/src/structures/stack.js
