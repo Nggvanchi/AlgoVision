@@ -85,6 +85,19 @@ test CSS hoặc 137 case R7 thành browser QA PASS cho Light Minimal v2.
 ## Chuẩn hóa v1.0.0
 
 Thứ tự bắt buộc: **UI v2-3 → C1 → EDU-1 → EDU-2 → EDU-3 → EDU-4 → C2 → C3 → C4 → C5**.
+
+### Trạng thái owner hiện hành — cập nhật D1, 22/11/2026
+
+- **C1: CLOSED — OWNER APPROVED, 18/11/2026.** [Scope C1](release/v1.0.0-scope.md) giữ quyết định 180/180 ID; hồ sơ Git đang đồng bộ trong D1, không phải chốt release v1.0.0.
+- **EDU-1: PARTIAL — MAPPING COMPLETE / ACADEMIC PENDING; academic PASS 0/40.** Catalog/mapping còn là WIP ở checkout cũ, không được nhập trong D1.
+- **OP-16/OP-17: technical MERGED**, lần lượt qua [PR #62](https://github.com/Nggvanchi/AlgoVision/pull/62) và [PR #63](https://github.com/Nggvanchi/AlgoVision/pull/63). [Hồ sơ OP-17](education/op17-source-evidence.md) không phải A-EDU PASS; source/rights chưa nghiệm thu đầy đủ, average-case chưa nghiệm thu học thuật.
+- [QA closeout](qa/ui-v2-3-closeout-2026-11-18.md) và [JSON](qa/ui-v2-3-closeout-2026-11-18.json) là historical evidence tại `89cdc6187f0464276b8e4882d75061f13bda5129`; D1 chỉ đồng bộ hồ sơ, không kiểm lại artifacts/backup/manifest ngoài repo.
+- Giữ dependency **C1 → EDU-1 → EDU-2** và toàn bộ gate. Ngoại lệ triển khai OP-16/17 không tự mở D2/OP-18 hoặc miễn academic/rights gate.
+
+### Mốc kế hoạch và trạng thái lịch sử — 14/11/2026
+
+Các trạng thái chưa bắt đầu/đang triển khai dưới đây được giữ làm lịch sử; trạng thái owner hiện hành ở mục trên.
+
 Kế hoạch chuẩn hóa tài liệu được duyệt ngày 2026-11-14; các giai đoạn triển khai dưới đây chưa bắt đầu
 và vẫn cần duyệt kế hoạch riêng. Lộ trình không cam kết lịch phát hành khi gate còn thiếu bằng chứng.
 
