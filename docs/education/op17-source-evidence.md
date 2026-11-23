@@ -1,5 +1,7 @@
 # OP-17 — Hồ sơ evidence Selection Sort
 
+> **Đối chiếu hiện hành EDU-2A-P1 (23/11/2026):** xem [mục 8](#8-edu-2a-p1). Mục 1–7 giữ nguyên là hồ sơ lịch sử; academic PASS **0/40**, quyền **RIGHTS_NOT_VERIFIED** và review claim chưa đóng.
+
 Ngày lập hồ sơ: 22/11/2026. Phạm vi: nội dung Learning Panel và regression OP-17.
 Trạng thái: OWNER DOC PATCH REVIEW; không phải quyết định đóng technical hoặc academic gate.
 
@@ -85,3 +87,48 @@ Với n≥2 trong mô hình phần tử hữu hạn, so sánh nhất quán và t
 Actual swaps W chỉ tăng khi minIndex≠i (dòng 73–77), nên 0≤W≤n−1 với n≥1; mảng đã không giảm có W=0. Không suy số swaps cố định hoặc Θ(n) best-case từ công thức comparisons. Giữ phân biệt Toronto có self-swap, MIT chọn max về cuối và bảng OpenDSA theo biến thể nguồn như mục 3.
 
 Core O(1) bộ nhớ phụ không bao gồm copy O(n), snapshot O(n) hoặc trace O(n·S) với n≥1. Chứng minh cost lõi không phải phân tích runtime generator. Các kết luận average-case chưa nghiệm thu trong hồ sơ lịch sử vẫn giữ nguyên; nguồn/quyền dùng chưa nghiệm thu đầy đủ, RIGHTS_NOT_VERIFIED và academic PASS 0/40. Cần phản biện nội bộ/owner acceptance, không dùng phần này tự đóng MAP-017-S/A-EDU/G-EDU.
+
+## 8. EDU-2A-P1
+
+Đối chiếu ngày 23/11/2026, **STATIC_SUPPORTED / REVIEW_PENDING**, không nghiệm thu claim học thuật. Base `B = ee92d767a640f3338ac56cd798e58e614b956306`. Mục 1–7 giữ nguyên là hồ sơ lịch sử gắn technical SHA; các con số test/build/browser tại mục 5 không phải kết quả của P1.
+
+### Nối technical baseline với B
+
+So Git blob trực tiếp tại B, technical commit `2bddf29c36aa13f62da0c587c864a346d6c19816` và `b29e4c221c6887eb8eeb9ab9fc5872eac46c79d0`:
+
+| File | Blob chung tại ba mốc |
+|---|---|
+| `src/algorithms/selectionSort.js` | `3bccb58edd0e30b0fef409544404c49bfdcc8238` |
+| `src/sorting.js` | `b99bda6de7114b5ab71e307903567269ea48e90a` |
+| `tests/sorting-controller.test.js` | `5e5fe6f6978bd50a70276859cb94015041f91f88` |
+
+Vì các file này cùng blob, locator kỹ thuật và oracle tại mục 2–3 còn đối chiếu được tại B; điều này không tái chạy hoặc kéo dài hiệu lực runtime QA/CI từ SHA cũ. Mapping nay đã được commit tại B; ghi chú “WIP untracked/không có trong baseline” ở mục 1 chỉ mô tả thời điểm lập hồ sơ, không mô tả B.
+
+### Claim hiện hành
+
+Tiền điều kiện chung: mảng số hữu hạn, so sánh nhất quán, thao tác phần tử chi phí hằng; generator không tự validation đầy đủ. Ký hiệu B17 dưới đây chỉ là nhãn link evidence, không thêm source ID.
+
+| Claim | Chứng minh/locator và SHA:line tại B | Test evidence tại B | Giới hạn / trạng thái review |
+|---|---|---|---|
+| Tiền tố đã có thứ tự và đúng vị trí, không lớn hơn hậu tố; chọn min về đầu | [Generator B:37–101][B17-G]; khởi tạo tiền tố rỗng, mỗi lượt đưa min của hậu tố vào i; kế thừa mục 2 | [Controller regression B:754–784][B17-TC], [oracle B:787–801][B17-ORACLE] | Chỉ kết luận phần hoàn tất tại ranh giới lượt; không dùng nguồn chọn max về cuối như cùng một trace. STATIC_SUPPORTED / REVIEW_PENDING. |
+| C=n(n−1)/2 cho n≥1; n=0 có C=0 | [Hai vòng for B:37–41][B17-G]; tổng và lập luận giữ tại mục 7 | [complexity B:26–30][B17-T], oracle B:787–801 | C cố định theo n; best/average/worst Θ(n²) của lõi với n≥2 theo mục 7, không phải runtime generator. DRAFT_DERIVATION / REVIEW_PENDING; average chưa nghiệm thu. |
+| Actual swaps W có 0≤W≤n−1 với n≥1 | [B:73–88][B17-SWAP] chỉ swap/tăng W nếu minIndex≠i; mỗi lượt nhiều nhất một lần; n=0 có W=0 | complexity B:26–30; oracle [4,3,2,1] tại B:787–801 cho C tích lũy 3/5/6, W 1/2/2 | Mảng không giảm có W=0, không phải n−1 swap. Self-swap của nguồn khác không được cộng vào counter này. STATIC_SUPPORTED / REVIEW_PENDING. |
+| Không ổn định với swap không kề | [B:54–77][B17-MIN]; Minh họa logic tự suy: [2ₐ,2ᵦ,1] → [1,2ᵦ,2ₐ] sau lượt đầu | B:754–784 khóa mô tả và giới hạn; B:794 kiểm số [2,2,1] | Nhãn a/b chỉ dùng trong lập luận, không phải input/API hoặc identity được UI lưu; chưa test identity sản phẩm. DRAFT_DERIVATION / REVIEW_PENDING. |
+| Core O(1), working copy O(n), snapshot O(n), trace O(n·S) với n≥1 | [B:19–34][B17-COPY], [snapshot và bước cuối B:91–119][B17-END]; dùng mô hình chi phí [Bubble mục C](edu-2-cost-and-bubble-draft.md#c-bộ-nhớ-phụ-generator-snapshot-và-trace) | B:754–784 chỉ khóa nội dung; chưa đo heap/byte | S là số snapshot thực tế của Selection, không dùng công thức S riêng Bubble; n=0/1 vẫn hai step. DRAFT_DERIVATION / REVIEW_PENDING. |
+
+Giữ nguyên khác biệt nguồn tại mục 3–4: Toronto có self-swap, MIT chọn max về cuối, OpenDSA có mô hình swap khác. Những locator/quyền đã ghi là evidence lịch sử, không phải truy xuất mới hoặc nâng applicability/source_status trong P1.
+
+### Gate và quyền hiện hành
+
+EDU-1 Source & Mapping đã [OWNER ACCEPTED / CLOSED](knowledge-mapping.md#9-closeout-hiện-hành--edu-1g); các câu PARTIAL ở mục 6–7 là lịch sử. **Academic PASS 0/40; RIGHTS_NOT_VERIFIED; MAP-017-S vẫn NOT VERIFIED.** READY chỉ là sẵn sàng review hồ sơ. Có lập luận C cố định không tự cho phép đổi trạng thái nghiệm thu average hoặc chuỗi sản phẩm.
+
+Không thêm nguồn/ID, không chép/dịch/chuyển thể tài liệu bên thứ ba và không thay [policy quyền theo hành vi](uit-sources.md#113-quyền-theo-hành-vi-sử-dụng-thực-tế). Test/build/browser/CI **NOT RUN**; chỉ đọc code/test đúng B. Xem [hồ sơ Insertion](op18-source-evidence.md) và [liên kết mapping hiện hành](knowledge-mapping.md#10-edu-2a-p1). Phản biện tiếp theo Codex → ChatGPT → Owner; không tự đóng A-EDU/G-EDU hoặc chuyển P2.
+
+[B17-G]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/src/algorithms/selectionSort.js#L37
+[B17-TC]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/tests/sorting-controller.test.js#L754
+[B17-ORACLE]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/tests/sorting-controller.test.js#L787
+[B17-T]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/tests/complexity.test.js#L26
+[B17-SWAP]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/src/algorithms/selectionSort.js#L73
+[B17-MIN]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/src/algorithms/selectionSort.js#L54
+[B17-COPY]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/src/algorithms/selectionSort.js#L19
+[B17-END]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/src/algorithms/selectionSort.js#L91

@@ -1,5 +1,7 @@
 # EDU-1 — Mapping kiến thức v1.0.0
 
+> **EDU-2A-P1 (23/11/2026):** [mục 10](#10-edu-2a-p1) liên kết hồ sơ OP-16–18 tại baseline hiện hành; giữ nguyên 40 OP/80 mapping ID, các hàng lịch sử và mọi gate học thuật/quyền.
+
 Trạng thái hiện hành: xem [closeout EDU-1G](#9-closeout-hiện-hành--edu-1g); chỉ nghiệm thu hồ sơ nguồn/mapping.
 
 Lịch sử EDU-1C: **READY_FOR_OWNER_EDU1C_REVIEW**, coverage 40/40 OP; xem mục 6. Chưa nghiệm thu học thuật hoặc đóng EDU-1.
@@ -363,3 +365,17 @@ Owner nghiệm thu **40 OP/80 mapping ID**, policy B, rights matrix theo hành v
 [F043]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/tests/bst-complexity.test.js
 [F044]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/tests/hash-table-complexity.test.js
 [F045]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/tests/hash-table-probing-complexity.test.js
+
+## 10. EDU-2A-P1
+
+Đối chiếu ngày 23/11/2026 tại `B = ee92d767a640f3338ac56cd798e58e614b956306`. Đây là **liên kết hồ sơ claim/provenance hiện hành, REVIEW_PENDING**, không thay 80 hàng mapping hoặc quyết định disposition ở mục 8–9.
+
+| Phạm vi | Hồ sơ hiện hành | Evidence và giới hạn | Routing giữ nguyên |
+|---|---|---|---|
+| Nền tảng chi phí và Bubble | [Bubble mục H](edu-2-cost-and-bubble-draft.md#h-edu-2a-p1) | Blob generator nối I/b29e4c2 với B; đối chiếu source/test và chi phí core/copy/trace. Chứng minh lịch sử không được tính là claim mới/PASS. | OP-16: READY_FOR_OWNER_REVIEW, EDU-2; chưa academic acceptance. |
+| Selection | [Selection mục 8](op17-source-evidence.md#8-edu-2a-p1) | Technical source/test cùng blob tại B; C cố định, actual/self-swap, phản ví dụ stability logic và giới hạn identity. | OP-17: READY_FOR_OWNER_REVIEW, EDU-2; chưa academic acceptance. |
+| Insertion | [Hồ sơ OP-18](op18-source-evidence.md) | Key/shift, invariant, H=I₀/cận C, average có điều kiện, oracle [3,1,2] dò tay và memory; không có test mới hoặc thay sản phẩm. | OP-18: DEFER_TO_EDU_2_3_4, EDU-2; P2 cần duyệt riêng. |
+
+Giữ **40 OP / 80 mapping ID**, 2 READY / 38 DEFER, **academic PASS 0/40**, RIGHTS_NOT_VERIFIED và mọi source_status/hàng lịch sử. Không thêm source ID hoặc diễn giải READY thành PASS. EDU-1 Source & Mapping đã CLOSED theo mục 9; các ghi chú PARTIAL trước mục 9 là lịch sử, còn academic/rights gate vẫn mở.
+
+Hồ sơ chỉ đọc source/test đúng SHA và lập luận độc lập theo [policy B](uit-sources.md#11-policy-b-và-quyền-theo-hành-vi--edu-1f); test/build/browser/CI **NOT RUN**. Luồng tiếp theo Codex → ChatGPT phản biện → Owner; không tự đóng A-EDU/G-EDU, thay scope release hoặc chuyển sang P2.

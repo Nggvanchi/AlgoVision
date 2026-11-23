@@ -1,5 +1,7 @@
 # EDU-2 P1 — Nền tảng chi phí và Bubble Sort OP-16
 
+> **Đối chiếu hiện hành EDU-2A-P1 (23/11/2026):** xem [mục H](#h-edu-2a-p1). Các ghi nhận trước mục H giữ nguyên làm lịch sử; academic PASS **0/40**, quyền **RIGHTS_NOT_VERIFIED** và review claim chưa đóng.
+
 18/11/2026 — **DRAFT — AWAITING_OWNER_P1_REVIEW**. Bản thảo docs-only, chưa nghiệm thu học thuật; academic PASS toàn dự án vẫn **0/40**. Ngoại lệ dependency EDU-1 chỉ áp dụng bản thảo này, không đóng EDU-1 hoặc mở P2.
 
 ## A. Phạm vi, baseline và giới hạn nguồn
@@ -92,3 +94,42 @@ Chứng minh này không lấy phân tích trung bình từ Runestone/OpenStax, 
 [TS]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/tests/sorting.test.js#L320
 [TI]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/tests/sorting.test.js#L398
 [TR]: https://github.com/Nggvanchi/AlgoVision/blob/89cdc6187f0464276b8e4882d75061f13bda5129/tests/sorting.test.js#L58
+
+## H. EDU-2A-P1
+
+Đối chiếu ngày 23/11/2026, **STATIC_SUPPORTED / REVIEW_PENDING**. Base `B = ee92d767a640f3338ac56cd798e58e614b956306`. Phần A–G và các link tại I/b29e4c2 giữ nguyên làm lịch sử; không thay lịch sử bằng số liệu hoặc trạng thái mới.
+
+**Provenance hiện hành.** Đọc trực tiếp source/test tại B và so Git blob: `src/algorithms/bubbleSort.js` có blob `f249a44969957a9cc811264f40dc01792e672fb2`, giống I và `b29e4c221c6887eb8eeb9ab9fc5872eac46c79d0`. Hai file `tests/sorting.test.js`, `tests/complexity.test.js` cũng giữ nguyên blob so với I. Riêng controller và regression đã có nội dung OP-16 mới: [Learning Panel B:79–94][B16-C], [regression B:648–709][B16-TC]; không dùng controller tại I thay cho nội dung tại B. Các nhãn link B16 chỉ định vị evidence, không phải source ID mới.
+
+### Đối chiếu claim tại B
+
+Mọi hàng giữ tiền điều kiện mục B: mảng số hữu hạn, so sánh nhất quán, thao tác phần tử chi phí hằng; đây không phải lời hứa validation của generator. Test evidence dưới đây là nội dung đã đọc, **không phải lần chạy PASS**.
+
+| Claim | Chứng minh/locator và SHA:line tại B | Test evidence tại B | Giới hạn / trạng thái review |
+|---|---|---|---|
+| Cặp kề, swap khi `>`, cờ mỗi lượt, early exit | [Generator B:42–97][B16-G]; nhánh không swap kết hợp bất biến hậu tố ở mục D | [sorting B:320–353][B16-TS], [sorting B:398–406][B16-TI] | Bất biến ở ranh giới lượt; không đòi mọi dòng mã giả đều phát step. STATIC_SUPPORTED / REVIEW_PENDING. |
+| Comparisons C khác actual swaps W và số snapshot S | [B:45–76][B16-G]: chỉ C tăng khi xét cặp, W tăng khi swap; S=C+W+P+2 theo mục C, P là lượt ngoài đã kết thúc | [sorting B:109–114][B16-COUNT], [complexity B:20–23][B16-T] | Không đếm kiểm cờ/biên/copy/DOM vào C; test hiện có không chứng minh tổng quát công thức S. STATIC_SUPPORTED / REVIEW_PENDING. |
+| Best Θ(n), worst Θ(n²) của lõi với n≥2 | Dò vòng lặp B:42–97 theo mục E; best C=n−1, W=0; dãy giảm nghiêm ngặt có C=W=n(n−1)/2 | [complexity B:20–23][B16-T] | Θ là cận chặt suy từ số thao tác lõi, không phải benchmark generator. DRAFT_DERIVATION / REVIEW_PENDING. |
+| W=I₀ và average-case có điều kiện | [Nhánh swap B:59–65][B16-SWAP]; kế thừa nguyên chứng minh mục G vì generator cùng blob | B:109–114 kiểm một input; chưa có assertion tổng quát W=I₀ hoặc expectation | Hoán vị ngẫu nhiên đều của n giá trị phân biệt, n≥2; không áp kỳ vọng đó cho mọi phân phối/duplicates. DRAFT_DERIVATION / REVIEW_PENDING; nghiệm thu average vẫn NOT VERIFIED. |
+| Stability của lõi | Swap kề nghiêm ngặt tại B:59–65: hai phần tử bằng nhau không vượt qua nhau; mục D/G giữ lập luận | Regression B:648–684 chỉ khóa lời giải thích và giới hạn | Không có test identity sản phẩm; số trùng không đủ chứng minh identity. DRAFT_DERIVATION / REVIEW_PENDING. |
+| Core/copy/snapshot/trace và edge cases | [B:20–40][B16-COPY], [B:99–114][B16-END]; kế thừa mục C: core O(1), working copy O(n), snapshot O(n), trace O(n·S) với n≥1; n=0/1 có S=2 | [sorting B:25–105][B16-CASES], regression B:648–684 | Không gồm chuỗi message, byte/heap/DOM hoặc thời gian thực; chưa deepFreeze/benchmark mới. DRAFT_DERIVATION / REVIEW_PENDING. |
+
+### Trạng thái hiện hành và quyền
+
+[EDU-1G](knowledge-mapping.md#9-closeout-hiện-hành--edu-1g) đã đóng gate hồ sơ nguồn/mapping. Các câu “EDU-1 PARTIAL” ở A–G là lịch sử; **academic PASS vẫn 0/40, RIGHTS_NOT_VERIFIED giữ nguyên**. Có chứng minh average tại G không đồng nghĩa average đã nghiệm thu; các hàng NOT VERIFIED lịch sử không bị sửa.
+
+P1 chỉ bổ sung provenance và diễn giải độc lập từ code AlgoVision. Không truy xuất thêm học liệu, sao chép/dịch/chuyển thể nội dung bên thứ ba hoặc mở rộng quyền AI; nguồn/quyền theo từng hành vi tiếp tục theo [policy B](uit-sources.md#11-policy-b-và-quyền-theo-hành-vi--edu-1f). Không thêm source ID, nâng source_status hoặc thay complexity cards. Xem [hồ sơ Selection](op17-source-evidence.md#8-edu-2a-p1), [hồ sơ Insertion](op18-source-evidence.md) và [liên kết mapping hiện hành](knowledge-mapping.md#10-edu-2a-p1); không nhân bản chứng minh G trong các hồ sơ đó.
+
+Test/build/browser/CI: **NOT RUN**. Claim phải qua Codex → ChatGPT phản biện → Owner quyết định; chưa tự nghiệm thu A-EDU/G-EDU hoặc chuyển sang P2.
+
+[B16-C]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/src/sorting.js#L79
+[B16-TC]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/tests/sorting-controller.test.js#L648
+[B16-G]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/src/algorithms/bubbleSort.js#L42
+[B16-TS]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/tests/sorting.test.js#L320
+[B16-TI]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/tests/sorting.test.js#L398
+[B16-COUNT]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/tests/sorting.test.js#L109
+[B16-T]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/tests/complexity.test.js#L20
+[B16-SWAP]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/src/algorithms/bubbleSort.js#L59
+[B16-COPY]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/src/algorithms/bubbleSort.js#L20
+[B16-END]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/src/algorithms/bubbleSort.js#L99
+[B16-CASES]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/tests/sorting.test.js#L25
