@@ -120,12 +120,12 @@ export function initSorting(options = {}) {
       worst: 'O(n²)',
       space: 'O(1)',
       learningDescription:
-        'Duy trì một đoạn đầu mảng đã được sắp xếp. Lấy phần tử tiếp theo, dịch các phần tử lớn hơn sang phải rồi chèn phần tử đó vào vị trí phù hợp.',
+        'Với số hữu hạn, so sánh nhất quán: đầu mỗi lượt, tiền tố đã không giảm. Giữ riêng key, chỉ dời phần tử > key sang phải rồi chèn key. Snapshot giữa lượt có thể chứa bản sao tạm. Minh họa: [3,1,2] → [1,3,2] → [1,2,3].',
       pseudocode: insertionSortPseudocode,
       advantages:
-        'Hiệu quả với mảng nhỏ hoặc gần như đã được sắp xếp. Trong cách cài đặt thông thường, thuật toán có tính ổn định.',
+        'Lõi, n≥2: tốt nhất Θ(n) khi đã không giảm, xấu nhất Θ(n²); trung bình Θ(n²) với hoán vị ngẫu nhiên đều các giá trị phân biệt. Chỉ dời khi > key giữ ổn định lõi; chưa kiểm định danh.',
       disadvantages:
-        'Trong trường hợp trung bình và xấu nhất, thời gian thực hiện là O(n²) do phải dịch chuyển nhiều phần tử.',
+        'I₀: số nghịch thế ban đầu; H: shifts, C: comparisons, W: swaps. n≥1: H=I₀, W=0, I₀≤C≤I₀+n−1. Lõi O(1) phụ; copy O(n), S snapshot: trace O(n·S). Các claim chưa nghiệm thu học thuật.',
     },
   }
 
