@@ -847,3 +847,98 @@ test('kiến thức Selection không rò sang Bubble/Insertion, cards và nội 
     }
   })
 })
+
+test('P2 Insertion: kiến thức nêu key, invariant, counters và giới hạn học thuật', async () => {
+  await withSortingDom(({ document }) => {
+    clickSortingCard(document, 'insertion')
+    const read = (id) => document.querySelector(id).textContent.replace(/\s+/gu, ' ').trim()
+    const description = read('#learning-description')
+    const advantages = read('#learning-advantages')
+    const disadvantages = read('#learning-disadvantages')
+    assert.match(description, /số hữu hạn/iu, 'Nêu tiền điều kiện số hữu hạn')
+    assert.match(description, /so sánh nhất quán/iu)
+    assert.match(description, /đầu mỗi lượt[^.;]*tiền tố[^.;]*không giảm/iu, 'Giới hạn invariant ở ranh giới lượt')
+    assert.match(description, /giữ riêng key/iu)
+    assert.match(description, /chỉ dời phần tử > key/iu, 'Dời theo so sánh nghiêm ngặt')
+    assert.match(description, /snapshot[^.;]*bản sao tạm/iu)
+    const arrays = [...description.matchAll(/\[[\d,\s]+\]/gu)].map(([a]) => JSON.parse(a))
+    assert.deepEqual(arrays, [[3, 1, 2], [1, 3, 2], [1, 2, 3]], 'Minh họa đúng ranh giới hai lượt')
+    assert.match(advantages, /lõi[^.;]*n≥2/iu)
+    assert.match(advantages, /tốt nhất Θ\(n\) khi đã không giảm/iu)
+    assert.match(advantages, /xấu nhất Θ\(n²\)/iu)
+    assert.match(advantages, /trung bình Θ\(n²\)[^.;]*hoán vị ngẫu nhiên đều[^.;]*giá trị phân biệt/iu, 'Average cần mô hình cụ thể')
+    assert.match(advantages, /chỉ dời khi > key[^.;]*ổn định lõi/iu)
+    assert.match(advantages, /chưa kiểm định danh/iu, 'Không suy identity từ test số')
+    assert.match(disadvantages, /I₀: số nghịch thế ban đầu/iu)
+    assert.match(disadvantages, /H: shifts, C: comparisons, W: swaps/u)
+    assert.match(disadvantages, /n≥1: H=I₀, W=0, I₀≤C≤I₀\+n−1/u, 'Counters khác số snapshot')
+    assert.match(disadvantages, /lõi O\(1\) phụ; copy O\(n\), S snapshot: trace O\(n·S\)/iu)
+    assert.match(disadvantages, /chưa nghiệm thu học thuật/iu)
+  })
+})
+
+test('P2 Insertion: oracle [3,1,2] và counters ở các biên theo số dò tay', () => {
+  const input = [3, 1, 2]
+  const steps = generateInsertionSortSteps(input)
+  // Oracle từ hồ sơ OP-18, không lấy expected từ generator đang kiểm.
+  const expected = [
+    { array: [3, 1, 2], key: null, comparisons: 0, shifts: 0, swaps: 0, pseudocodeLine: null, finished: false },
+    { array: [3, 1, 2], key: 1, comparisons: 1, shifts: 0, swaps: 0, pseudocodeLine: 4, finished: false },
+    { array: [3, 3, 2], key: 1, comparisons: 1, shifts: 1, swaps: 0, pseudocodeLine: 5, finished: false },
+    { array: [1, 3, 2], key: 1, comparisons: 1, shifts: 1, swaps: 0, pseudocodeLine: 7, finished: false },
+    { array: [1, 3, 2], key: 2, comparisons: 2, shifts: 1, swaps: 0, pseudocodeLine: 4, finished: false },
+    { array: [1, 3, 3], key: 2, comparisons: 2, shifts: 2, swaps: 0, pseudocodeLine: 5, finished: false },
+    { array: [1, 3, 3], key: 2, comparisons: 3, shifts: 2, swaps: 0, pseudocodeLine: 4, finished: false },
+    { array: [1, 2, 3], key: 2, comparisons: 3, shifts: 2, swaps: 0, pseudocodeLine: 7, finished: false },
+    { array: [1, 2, 3], key: null, comparisons: 3, shifts: 2, swaps: 0, pseudocodeLine: null, finished: true },
+  ]
+  assert.equal(steps.length, 9, 'Ví dụ phải có đúng 9 snapshot')
+  assert.deepEqual(steps.map(({ array, key, comparisons, shifts, swaps, pseudocodeLine, finished }) =>
+    ({ array, key, comparisons, shifts, swaps, pseudocodeLine, finished: finished === true })), expected)
+  assert.deepEqual(input, [3, 1, 2], 'Oracle không sửa input')
+  // I₀, C, H, S dò độc lập; trùng giá trị không phải phép thử stability identity.
+  for (const [values, inversions, comparisons, shifts, count] of [
+    [[], 0, 0, 0, 2],
+    [[7], 0, 0, 0, 2],
+    [[1, 2, 3], 0, 2, 0, 6],
+    [[3, 2, 1], 3, 3, 3, 10],
+    [[2, 2, 1], 2, 3, 2, 9],
+  ]) {
+    const result = generateInsertionSortSteps(values)
+    const last = result.at(-1)
+    assert.equal(result.length, count, 'Số snapshot khớp số dò tay')
+    assert.deepEqual([last.comparisons, last.shifts, last.swaps], [comparisons, shifts, 0])
+    assert.equal(last.shifts, inversions, 'H=I₀ trên input dò tay')
+    if (values.length >= 1) {
+      assert.ok(last.comparisons >= inversions && last.comparisons <= inversions + values.length - 1, 'C nằm trong cận có điều kiện n≥1')
+    }
+    assert.equal(result.filter((step) => step.finished === true).length, 1, 'Chỉ có một bước finished')
+    assert.equal(last.finished, true, 'finished thuộc bước cuối')
+  }
+})
+
+test('P2 Insertion: kiến thức không rò sang Bubble/Selection và không đổi cards', async () => {
+  await withSortingDom(({ document }) => {
+    const read = () => ['#learning-description', '#learning-advantages', '#learning-disadvantages']
+      .map((id) => document.querySelector(id).textContent)
+    const cards = () => [...document.querySelectorAll('#sorting-section .complexity-card strong')].map((el) => el.textContent)
+    const expectedCards = { bubble: ['O(n)', 'O(n²)', 'O(n²)', 'O(1)'], selection: ['O(n²)', 'O(n²)', 'O(n²)', 'O(1)'], insertion: ['O(n)', 'O(n²)', 'O(n²)', 'O(1)'] }
+    const prior = {}
+    for (const algorithm of ['bubble', 'selection']) {
+      clickSortingCard(document, algorithm)
+      prior[algorithm] = read()
+    }
+    clickSortingCard(document, 'insertion')
+    const insertion = read()
+    assert.match(insertion.join(' '), /H=I₀/u)
+    for (const algorithm of ['bubble', 'selection']) {
+      clickSortingCard(document, algorithm)
+      assert.deepEqual(read(), prior[algorithm], 'Nội dung thuật toán khác được giữ nguyên')
+      assert.deepEqual(cards(), expectedCards[algorithm])
+      assert.doesNotMatch(read().join(' '), /\[3,1,2\]|H=I₀/u)
+      clickSortingCard(document, 'insertion')
+      assert.deepEqual(read(), insertion, 'Trở về Insertion giữ đúng ba trường')
+      assert.deepEqual(cards(), expectedCards.insertion)
+    }
+  })
+})
