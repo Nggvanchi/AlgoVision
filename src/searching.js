@@ -16,11 +16,11 @@ const searchAlgorithmInfo = {
     space: 'O(1)',
     pseudocode: linearSearchPseudocode,
     learningDescription:
-      'Duyệt lần lượt từ A[0] đến A[n - 1] và so sánh từng phần tử với giá trị cần tìm. Thuật toán dừng ngay ở phần tử khớp đầu tiên nên kết quả là vị trí xuất hiện đầu tiên; xét hết mảng mà không khớp thì trả về -1.',
+      'Duyệt mảng số hữu hạn từ trái sang phải, so sánh bằng === với giá trị cần tìm đã chốt. Kết quả là chỉ số xuất hiện đầu tiên (từ 0), hoặc -1 nếu không thấy. UI hiển thị vị trí từ 1.',
     advantages:
-      'Không cần mảng đã sắp xếp và rất dễ cài đặt. Tốt nhất chỉ cần 1 phép so sánh khi giá trị nằm ở đầu mảng. Khi có phần tử trùng, luôn trả về vị trí xuất hiện đầu tiên.',
+      'Không cần mảng đã sắp xếp. Với n phần tử, khớp tại chỉ số k cần C=k+1 phép so sánh. Khi n≥1, tốt nhất Θ(1). Lõi dùng O(1) bộ nhớ phụ.',
     disadvantages:
-      'Trường hợp trung bình và xấu nhất phải so sánh tới n phần tử, nên chậm với mảng lớn.',
+      'Xấu nhất cần n phép so sánh, Θ(n) khi n≥1. Tìm thành công với n≥1 giá trị phân biệt, chọn đều giá trị cần tìm: E[C]=(n+1)/2, trung bình Θ(n). Dữ liệu cố định của S bước tốn O(S) đơn vị nhớ, không tính chuỗi thông báo, DOM và bản sao mảng ở UI.',
   },
   binary: {
     name: 'Binary Search',

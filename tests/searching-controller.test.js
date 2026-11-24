@@ -1289,6 +1289,18 @@ function getSearchPseudocodeLines(document) {
   )
 }
 
+const expectedLinearLearning = {
+  description: "Duyệt mảng số hữu hạn từ trái sang phải, so sánh bằng === với giá trị cần tìm đã chốt. Kết quả là chỉ số xuất hiện đầu tiên (từ 0), hoặc -1 nếu không thấy. UI hiển thị vị trí từ 1.",
+  advantages: "Không cần mảng đã sắp xếp. Với n phần tử, khớp tại chỉ số k cần C=k+1 phép so sánh. Khi n≥1, tốt nhất Θ(1). Lõi dùng O(1) bộ nhớ phụ.",
+  disadvantages: "Xấu nhất cần n phép so sánh, Θ(n) khi n≥1. Tìm thành công với n≥1 giá trị phân biệt, chọn đều giá trị cần tìm: E[C]=(n+1)/2, trung bình Θ(n). Dữ liệu cố định của S bước tốn O(S) đơn vị nhớ, không tính chuỗi thông báo, DOM và bản sao mảng ở UI."
+}
+
+function getSearchLearning(document) {
+  return Object.fromEntries(['description', 'advantages', 'disadvantages'].map(
+    (name) => [name, document.querySelector(`#search-learning-${name}`).textContent],
+  ))
+}
+
 test('Learning Panel Searching hiển thị lý thuyết và Big-O của Linear Search', async () => {
   const { linearSearchPseudocode } = await import('../src/algorithms/linearSearch.js')
   const { window, document, cleanup } = await setupSearching()
@@ -1302,6 +1314,11 @@ test('Learning Panel Searching hiển thị lý thuyết và Big-O của Linear 
     assert.match(document.querySelector('#search-learning-description').textContent, /xuất hiện đầu tiên/)
     assert.match(document.querySelector('#search-learning-advantages').textContent, /không cần mảng đã sắp xếp/i)
     assert.notEqual(document.querySelector('#search-learning-disadvantages').textContent, '')
+    const learning = getSearchLearning(document)
+    assert.match(learning.disadvantages, /chọn đều giá trị cần tìm/, 'Average cần giả định chọn đều giá trị cần tìm')
+    assert.match(learning.disadvantages, /Dữ liệu cố định của S bước tốn O\(S\) đơn vị nhớ/, 'Trace cần O(S) theo mô hình dữ liệu bước cố định')
+    assert.deepEqual(learning, expectedLinearLearning, 'Linear phải hiển thị đúng ba chuỗi đã duyệt')
+
   } finally {
     cleanup()
   }
@@ -1327,14 +1344,29 @@ test('Learning Panel Searching hiển thị lý thuyết và Big-O của Binary 
 })
 
 test('đổi lại Linear Search thì Learning Panel quay về nội dung Linear', async () => {
+  const { linearSearchPseudocode } = await import('../src/algorithms/linearSearch.js')
+  const { binarySearchPseudocode } = await import('../src/algorithms/binarySearch.js')
   const { window, document, cleanup } = await setupSearching()
 
   try {
     selectSearchAlgorithm(document, 'binary')
+    const binaryLearning = getSearchLearning(document)
+    const binaryCards = getSearchComplexity(document)
+    const binaryLines = getSearchPseudocodeLines(document)
     selectSearchAlgorithm(document, 'linear')
 
     assert.equal(document.querySelector('#search-complexity-title').textContent, 'LINEAR SEARCH')
     assert.equal(getSearchPseudocodeLines(document).length, 4)
+    assert.deepEqual(getSearchLearning(document), expectedLinearLearning, 'Linear không giữ nội dung Binary')
+    assert.deepEqual(getSearchComplexity(document), ['O(1)', 'O(n)', 'O(n)', 'O(1)'])
+    assert.deepEqual(getSearchPseudocodeLines(document), linearSearchPseudocode)
+
+    selectSearchAlgorithm(document, 'binary')
+    assert.equal(document.querySelector('#search-complexity-title').textContent, 'BINARY SEARCH')
+    assert.deepEqual(getSearchLearning(document), binaryLearning, 'Binary không bị rò nội dung Linear')
+    assert.deepEqual(getSearchComplexity(document), binaryCards)
+    assert.deepEqual(getSearchPseudocodeLines(document), binaryLines)
+    assert.deepEqual(getSearchPseudocodeLines(document), binarySearchPseudocode)
   } finally {
     cleanup()
   }

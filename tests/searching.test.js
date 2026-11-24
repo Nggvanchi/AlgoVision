@@ -1,5 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { deepFreeze } from './helpers/deep-freeze.js'
 
 // Namespace import: thiếu một export chỉ ra undefined và làm đỏ đúng test liên quan,
 // thay vì làm cả file không nạp được.
@@ -356,4 +357,55 @@ test('Linear Search: bước so sánh phần tử cuối nêu đã xét hết m�
   steps.slice(1, -2).forEach((step) => {
     assert.match(step.message, /Chuyển sang phần tử tiếp theo\.$/)
   })
+})
+
+test('OP19-B: oracle full trace Linear Search trên mảng chưa sắp xếp và có trùng', () => {
+  // Expected dò tay từ OP19-A; thứ tự cột không suy từ output generator.
+  // index, currentIndex, currentValue, foundIndex, target, comparisons, finished, pseudocodeLine.
+  const cases = [
+    {
+      numbers: [3, 1, 2], target: 2, foundIndex: 2, comparisons: 3, snapshots: 4,
+      expected: [
+        [0, null, null, -1, 2, 0, false, null],
+        [1, 0, 3, -1, 2, 1, false, 2],
+        [2, 1, 1, -1, 2, 2, false, 2],
+        [2, 2, 2, 2, 2, 3, true, 3],
+      ],
+    },
+    {
+      numbers: [3, 1, 2], target: 9, foundIndex: -1, comparisons: 3, snapshots: 5,
+      expected: [
+        [0, null, null, -1, 9, 0, false, null],
+        [1, 0, 3, -1, 9, 1, false, 2],
+        [2, 1, 1, -1, 9, 2, false, 2],
+        [3, 2, 2, -1, 9, 3, false, 2],
+        [3, null, null, -1, 9, 3, true, 4],
+      ],
+    },
+    {
+      numbers: [5, 2, 2, 1], target: 2, foundIndex: 1, comparisons: 2, snapshots: 3,
+      expected: [
+        [0, null, null, -1, 2, 0, false, null],
+        [1, 0, 5, -1, 2, 1, false, 2],
+        [1, 1, 2, 1, 2, 2, true, 3],
+      ],
+    },
+  ]
+
+  for (const fixture of cases) {
+    const numbers = deepFreeze([...fixture.numbers])
+    const label = `[${fixture.numbers}]/${fixture.target}`
+    const steps = generateLinearSearchSteps(numbers, fixture.target)
+
+    assert.equal(steps.length, fixture.snapshots, `Oracle số bước ${label}`)
+    assert.equal(steps.at(-1).foundIndex, fixture.foundIndex, `Oracle khớp đầu tiên ${label}`)
+    assert.equal(steps.at(-1).comparisons, fixture.comparisons, `Oracle so sánh ${label}`)
+    assert.deepEqual(
+      steps.map(({ index, currentIndex, currentValue, foundIndex, target, comparisons, finished, pseudocodeLine }) =>
+        [index, currentIndex, currentValue, foundIndex, target, comparisons, finished, pseudocodeLine]),
+      fixture.expected,
+      `Oracle full trace ${label}`,
+    )
+    assert.deepEqual(numbers, fixture.numbers, `Input không bị mutation ${label}`)
+  }
 })
