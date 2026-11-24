@@ -385,3 +385,9 @@ Hồ sơ chỉ đọc source/test đúng SHA và lập luận độc lập theo 
 24/11/2026 — [Hồ sơ claim/provenance OP-19](op19-source-evidence.md), pin `B = eeb9f1a338790243187d189a40e49a3d46ffac89`: first-match, target/index, counters và số bước, oracle độc lập, mô hình average và core/trace. **REVIEW_PENDING**; test evidence chỉ đọc source, không phải runtime PASS.
 
 Chỉ bổ sung liên kết; giữ nguyên MAP-019-I/S, 40 OP/80 mapping ID, routing/lịch sử và source_status. **Academic PASS 0/40; RIGHTS_NOT_VERIFIED**; OP-19 vẫn DEFER_TO_EDU_2_3_4 → EDU-2, A-EDU/G-EDU và các gate release còn mở.
+
+## 12. OP20-A — Hồ sơ Binary Search
+
+[Hồ sơ claim/provenance OP-20](op20-source-evidence.md), pin `B = ae90928ca630260086efcd18066bcfc92a96ff5e`: tiền điều kiện sorted, invariant, duplicates, counters/trace, oracle độc lập, average có điều kiện và core/trace. **REVIEW_PENDING**; test evidence chỉ đọc source, không phải runtime PASS.
+
+Chỉ bổ sung liên kết; giữ nguyên MAP-020-I/S, 40 OP/80 mapping ID, routing/lịch sử và source_status. **Academic PASS 0/40; RIGHTS_NOT_VERIFIED**; OP-20 vẫn DEFER_TO_EDU_2_3_4 → EDU-2, A-EDU/G-EDU và mọi gate release còn mở.
