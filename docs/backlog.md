@@ -4,7 +4,16 @@ Việc còn tồn tại hoặc cần xác minh; việc đã được xếp giai 
 Thêm mục khi phát hiện; chỉ đóng mục sau nghiệm thu, giữ các ghi chú lịch sử cần truy vết.
 Lộ trình giai đoạn: [roadmap](roadmap.md#chuẩn-hóa-v100).
 
+## OP20 — EDU-2 technical closeout (25/11/2026)
+
+- **EDU-2: 5/5 OP (OP-16–20) TECHNICAL CLOSED, vẫn IN_PROGRESS / PARTIAL, chưa CLOSED.** [Checkpoint OP20](roadmap.md#op20--checkpoint-hiện-hành-25112026) nối hồ sơ và giới hạn; OP20-A/B qua [#74](https://github.com/Nggvanchi/AlgoVision/pull/74)/[#75](https://github.com/Nggvanchi/AlgoVision/pull/75), merge B lần lượt `708f0f3f689701d28815fd9e45dc4657b90a8204`/`109e3be1d0dfa2f08a4fab2fdd6cb746efc7443a`.
+- Local B1 tại HEAD `2660d5d25d363588e819c51c818eb4016ce4a093`: 1809 tests PASS, JS/CSS raw 153753/58010 B (headroom 247/490 B), mutation/control 3/3; Chrome bốn viewport, 305 lượt assertion PASS. [CI hậu merge 45451640840](https://github.com/Nggvanchi/AlgoVision/actions/runs/45451640840) Ubuntu/Windows test/build/encoding SUCCESS trên đúng merge SHA; đây là evidence khác local QA, không phải lần chạy mới của D1.
+- Còn mở: claim/rights acceptance, academic PASS **0/40**, **RIGHTS_NOT_VERIFIED**, A-EDU/G-EDU và mọi release gate. QA chỉ Chrome localhost; screen reader, cross-browser, thiết bị thật, C4/production và các giới hạn runtime isolation/process cleanup vẫn giữ nguyên. Không suy 5/5 technical thành EDU-2 exit gate hoặc quyền mở EDU-3.
+- [UI v3 sau C5](#ui-v3--backlog-sau-c5) chỉ PLANNED/NOT STARTED. Không triển khai trong EDU-2–4; chỉ research read-only nếu được duyệt riêng.
+
 ## EDU-R — EDU-2 còn mở (24/11/2026)
+
+> Checkpoint EDU-R dưới đây giữ làm lịch sử; trạng thái mới xem [checkpoint OP20](#op20--edu-2-technical-closeout-25112026).
 
 - **EDU-2: IN_PROGRESS / PARTIAL, chưa CLOSED.** Xem [checkpoint kỹ thuật và QA](roadmap.md#edu-r--checkpoint-hiện-hành-24112026): OP-16/17 technical MERGED; OP-18 P2 và OP19-A/B TECHNICAL CLOSED; hồ sơ OP-16–18 qua #69 không phải academic PASS.
 - **Việc tiếp theo đề xuất:** OP-20 Binary Search, chỉ readiness/plan sau phê duyệt riêng; chưa triển khai. Các claim/quyền bắt buộc còn thiếu vẫn cần xử lý để đạt exit gate EDU-2.
@@ -239,3 +248,18 @@ Ghi chú hoãn dưới đây thuộc chuỗi Redesign tại thời điểm ghi n
   byte font, layout-shift, lỗi console. Phase 1 giữ script ngoài repo; số đo trước/sau nằm ở mô tả PR.
 - Hash tên file JS của bundle Vite đổi mỗi khi CSS đổi dù JS không đổi byte nào (đo 2026-11-06: `index-DdswGc2A.js` → `BDM0k7yO` → `BbRAiLa6` → `BgwmUazq`, luôn 145.265 B); các lần build lặp trên cùng một commit cho cùng tên file.
   Ghi nhận là hành vi của công cụ build (nghi hash tính cả đồ thị phụ thuộc CSS), không làm gì thêm. Để biết JS có đổi hay không thì so byte và `git diff --name-only`, đừng so tên file.
+
+## UI v3 — Backlog sau C5
+
+**PLANNED / NOT STARTED — DEFERRED UNTIL C5 CLOSED.** Theo [roadmap UI3-0…10](roadmap.md#ui-v3--modern-academic-workspace); không thay chuỗi dependency v1.0.0 hoặc gate hiện hành.
+
+- UI3-0: kiểm tra UI/UX Pro Max, provenance, license, Codex/Windows; audit giao diện theo baseline thực tế.
+- UI3-1: wireframes Desktop/Tablet/Mobile, tokens, typography, controls và semantic states.
+- UI3-2–7: redesign từng nhóm màn hình theo scope/exit gate roadmap; giữ hợp đồng DOM/controller, thuật toán và nội dung học thuật.
+- UI3-8: responsive, WCAG 2.2 AA, keyboard, focus, screen reader, zoom 200%, browser/thiết bị thật.
+- UI3-9: rà CSS/JS/test/docs/assets dư phát sinh từ redesign; chỉ cleanup khi có evidence và approval riêng.
+- UI3-10: full QA, bundle, hiệu năng, CI và production smoke.
+
+Công cụ ứng viên và nơi xử lý được tập trung tại [phân tuyến tools](roadmap.md#phân-tuyến-công-cụ-ứng-viên): source C2, test C3, QA C4, tài liệu GH, thiết kế/phần dư UI3. Ưu tiên audit cách ly và tái sử dụng công cụ hiện hữu; không tích hợp trùng hoặc mặc định cài toàn bộ. UI/UX Pro Max chỉ design/review, không production dependency.
+
+Không mở UI v3, cài skill/dependency, sửa source hoặc thay scope/gate khi chưa có plan và owner approval riêng. Trong EDU-2–4 chỉ research read-only nếu được duyệt riêng. Giữ ngân sách JS/CSS, bất biến thuật toán, khả năng bắt lỗi và chính sách không theo dõi tiến độ học tập cá nhân; phiên bản release do owner quyết định.
