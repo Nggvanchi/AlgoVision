@@ -32,11 +32,11 @@ const searchAlgorithmInfo = {
     space: 'O(1)',
     pseudocode: binarySearchPseudocode,
     learningDescription:
-      'Chỉ áp dụng cho mảng đã sắp xếp tăng dần. Mỗi bước so sánh A[mid] với giá trị cần tìm rồi bỏ nửa không thể chứa nó, nên phạm vi [left, right] giảm một nửa. Khi left > right, phạm vi rỗng và kết luận không tìm thấy.',
+      'Mảng số hữu hạn đã sắp xếp không giảm; giá trị cần tìm được chốt. Khớp còn lại nằm trong [left, right]. Xét mid rồi thu hẹp biên; left > right là không thấy. Trả chỉ số từ 0 hoặc -1; UI đếm từ 1.',
     advantages:
-      'Rất nhanh với mảng lớn: tối đa ⌊log₂ n⌋ + 1 phép so sánh. Cài đặt bằng vòng lặp nên chỉ cần bộ nhớ phụ O(1).',
+      'Với n≥1, tối đa ⌊log₂ n⌋ + 1 lần xét mid; tốt nhất Θ(1), xấu nhất Θ(log n). Lõi dùng O(1) bộ nhớ phụ.',
     disadvantages:
-      'Bắt buộc mảng đã sắp xếp; chi phí sắp xếp trước (O(n log n)) không tính vào thuật toán. Khi có phần tử trùng, Binary Search có thể trả về bất kỳ vị trí nào khớp, không nhất thiết là vị trí đầu tiên.',
+      'Trùng có thể trả bất kỳ vị trí khớp. Tìm thành công với n≥1 giá trị phân biệt, chọn đều giá trị cần tìm: trung bình Θ(log n). Metadata cố định của S bước tốn O(S); không tính thông báo, DOM, copy/sort ở UI.',
   },
 }
 

@@ -409,3 +409,42 @@ test('OP19-B: oracle full trace Linear Search trên mảng chưa sắp xếp và
     assert.deepEqual(numbers, fixture.numbers, `Input không bị mutation ${label}`)
   }
 })
+
+test('OP20-B: oracle full trace độc lập O6/O7/O8', () => {
+  const fields = ['index', 'mid', 'left', 'right', 'comparisons', 'foundIndex',
+    'finished', 'target', 'currentIndex', 'currentValue', 'pseudocodeLine']
+  const cases = [
+    {
+      id: 'O6', numbers: [1, 3], target: 2,
+      expected: [
+        [0, -1, 0, 1, 0, -1, false, 2, null, null, null],
+        [0, 0, 1, 1, 1, -1, false, 2, 0, 1, 7],
+        [0, 1, 1, 0, 2, -1, false, 2, 1, 3, 9],
+        [0, 1, 1, 0, 2, -1, true, 2, null, null, 10],
+      ],
+    },
+    {
+      id: 'O7', numbers: [1, 2, 2, 2, 5], target: 2,
+      expected: [
+        [0, -1, 0, 4, 0, -1, false, 2, null, null, null],
+        [0, 2, 0, 4, 1, 2, true, 2, 2, 2, 5],
+      ],
+    },
+    {
+      id: 'O8', numbers: [1, 2, 3, 4, 5, 6, 7, 8], target: 5,
+      expected: [
+        [0, -1, 0, 7, 0, -1, false, 5, null, null, null],
+        [0, 3, 4, 7, 1, -1, false, 5, 3, 4, 7],
+        [0, 5, 4, 4, 2, -1, false, 5, 5, 6, 9],
+        [0, 4, 4, 4, 3, 4, true, 5, 4, 5, 5],
+      ],
+    },
+  ]
+  for (const { id, numbers, target, expected } of cases) {
+    const input = deepFreeze([...numbers])
+    const steps = generateBinarySearchSteps(input, target)
+    assert.deepEqual(steps.map((step) => fields.map((field) => step[field])),
+      expected, `${id}: trace Binary phải khớp oracle độc lập`)
+    assert.deepEqual(input, numbers, `${id}: input không bị thay đổi`)
+  }
+})
