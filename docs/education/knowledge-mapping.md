@@ -379,3 +379,9 @@ Owner nghiệm thu **40 OP/80 mapping ID**, policy B, rights matrix theo hành v
 Giữ **40 OP / 80 mapping ID**, 2 READY / 38 DEFER, **academic PASS 0/40**, RIGHTS_NOT_VERIFIED và mọi source_status/hàng lịch sử. Không thêm source ID hoặc diễn giải READY thành PASS. EDU-1 Source & Mapping đã CLOSED theo mục 9; các ghi chú PARTIAL trước mục 9 là lịch sử, còn academic/rights gate vẫn mở.
 
 Hồ sơ chỉ đọc source/test đúng SHA và lập luận độc lập theo [policy B](uit-sources.md#11-policy-b-và-quyền-theo-hành-vi--edu-1f); test/build/browser/CI **NOT RUN**. Luồng tiếp theo Codex → ChatGPT phản biện → Owner; không tự đóng A-EDU/G-EDU, thay scope release hoặc chuyển sang P2.
+
+## 11. OP19-A — Hồ sơ Linear Search
+
+24/11/2026 — [Hồ sơ claim/provenance OP-19](op19-source-evidence.md), pin `B = eeb9f1a338790243187d189a40e49a3d46ffac89`: first-match, target/index, counters và số bước, oracle độc lập, mô hình average và core/trace. **REVIEW_PENDING**; test evidence chỉ đọc source, không phải runtime PASS.
+
+Chỉ bổ sung liên kết; giữ nguyên MAP-019-I/S, 40 OP/80 mapping ID, routing/lịch sử và source_status. **Academic PASS 0/40; RIGHTS_NOT_VERIFIED**; OP-19 vẫn DEFER_TO_EDU_2_3_4 → EDU-2, A-EDU/G-EDU và các gate release còn mở.
