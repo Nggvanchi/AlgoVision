@@ -1295,6 +1295,12 @@ const expectedLinearLearning = {
   disadvantages: "Xấu nhất cần n phép so sánh, Θ(n) khi n≥1. Tìm thành công với n≥1 giá trị phân biệt, chọn đều giá trị cần tìm: E[C]=(n+1)/2, trung bình Θ(n). Dữ liệu cố định của S bước tốn O(S) đơn vị nhớ, không tính chuỗi thông báo, DOM và bản sao mảng ở UI."
 }
 
+const expectedBinaryLearning = {
+  "description": "Mảng số hữu hạn đã sắp xếp không giảm; giá trị cần tìm được chốt. Khớp còn lại nằm trong [left, right]. Xét mid rồi thu hẹp biên; left > right là không thấy. Trả chỉ số từ 0 hoặc -1; UI đếm từ 1.",
+  "advantages": "Với n≥1, tối đa ⌊log₂ n⌋ + 1 lần xét mid; tốt nhất Θ(1), xấu nhất Θ(log n). Lõi dùng O(1) bộ nhớ phụ.",
+  "disadvantages": "Trùng có thể trả bất kỳ vị trí khớp. Tìm thành công với n≥1 giá trị phân biệt, chọn đều giá trị cần tìm: trung bình Θ(log n). Metadata cố định của S bước tốn O(S); không tính thông báo, DOM, copy/sort ở UI."
+}
+
 function getSearchLearning(document) {
   return Object.fromEntries(['description', 'advantages', 'disadvantages'].map(
     (name) => [name, document.querySelector(`#search-learning-${name}`).textContent],
@@ -1338,6 +1344,10 @@ test('Learning Panel Searching hiển thị lý thuyết và Big-O của Binary 
     // Có phần tử trùng thì Binary Search có thể trả về bất kỳ vị trí khớp nào.
     assert.match(document.querySelector('#search-learning-disadvantages').textContent, /bất kỳ vị trí/)
     assert.match(document.querySelector('#search-learning-advantages').textContent, /⌊log₂ n⌋ \+ 1/)
+    const learning = getSearchLearning(document)
+    assert.match(learning.disadvantages, /chọn đều giá trị cần tìm/, 'Average Binary cần giả định chọn đều giá trị cần tìm')
+    assert.match(learning.disadvantages, /Metadata cố định của S bước tốn O\(S\)/, 'Trace Binary cần metadata O(S)')
+    assert.deepEqual(learning, expectedBinaryLearning, 'Binary phải hiển thị đúng ba chuỗi đã duyệt')
   } finally {
     cleanup()
   }
@@ -1351,6 +1361,7 @@ test('đổi lại Linear Search thì Learning Panel quay về nội dung Linear
   try {
     selectSearchAlgorithm(document, 'binary')
     const binaryLearning = getSearchLearning(document)
+    assert.deepEqual(binaryLearning, expectedBinaryLearning, 'Binary ban đầu phải đúng ba chuỗi đã duyệt')
     const binaryCards = getSearchComplexity(document)
     const binaryLines = getSearchPseudocodeLines(document)
     selectSearchAlgorithm(document, 'linear')
