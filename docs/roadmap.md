@@ -96,7 +96,25 @@ Thứ tự bắt buộc: **UI v2-3 → C1 → EDU-1 → EDU-2 → EDU-3 → EDU-
 - [QA closeout](qa/ui-v2-3-closeout-2026-11-18.md) và [JSON](qa/ui-v2-3-closeout-2026-11-18.json) là historical evidence tại `89cdc6187f0464276b8e4882d75061f13bda5129`; D1 chỉ đồng bộ hồ sơ, không kiểm lại artifacts/backup/manifest ngoài repo.
 - Giữ dependency **C1 → EDU-1 → EDU-2** và toàn bộ gate. Ngoại lệ triển khai OP-16/17 không tự mở D2/OP-18 hoặc miễn academic/rights gate.
 
+### OP20 — Checkpoint hiện hành, 25/11/2026
+
+**EDU-2: IN_PROGRESS / PARTIAL; 5/5 OP (OP-16–20) TECHNICAL CLOSED, chưa đóng EDU-2.** Technical closeout không phải nghiệm thu học thuật/quyền hoặc đạt exit gate. Baseline source của checkpoint: `109e3be1d0dfa2f08a4fab2fdd6cb746efc7443a`.
+
+| Phạm vi | Trạng thái kỹ thuật | Evidence |
+|---|---|---|
+| OP-16/17/18/19 | TECHNICAL CLOSED trong phạm vi đã nghiệm thu; giữ lịch sử PR và giới hạn claim | [Checkpoint EDU-R](#edu-r--checkpoint-hiện-hành-24112026); OP-16/17 qua #62/#63, OP-18 qua #70, OP19-A/B qua #71/#72 |
+| OP20-A | TECHNICAL CLOSED — hồ sơ bằng chứng Binary Search | [#74](https://github.com/Nggvanchi/AlgoVision/pull/74), merge `708f0f3f689701d28815fd9e45dc4657b90a8204`; [hồ sơ OP-20](education/op20-source-evidence.md) giữ REVIEW_PENDING cho claim, không phải academic PASS |
+| OP20-B | TECHNICAL CLOSED — nội dung Binary Learning Panel và regression | [#75](https://github.com/Nggvanchi/AlgoVision/pull/75), merge `109e3be1d0dfa2f08a4fab2fdd6cb746efc7443a`; HEAD QA `2660d5d25d363588e819c51c818eb4016ce4a093`, tree `dc1b227e5c570f2b678f071336878a62ff7ea75e` bằng merge tree |
+
+- **Local QA B1 đã ghi nhận, không chạy lại trong D1:** full 1809/1809 PASS, fail/skip/cancel/todo=0; targeted 90/90; mutation/control 3/3 gồm hai source mutations và một oracle negative control, phục hồi byte/hash. Raw JS **153753 B**, CSS **58010 B**, headroom **247 B/490 B** dưới trần **154000 B/58500 B**.
+- **Browser local B1:** Chrome 152.0.7977.83/Playwright 1.62.1, 360/768/1280/1440 ×900 CSS px, DPR=1; 4/4 viewport, 305 lượt assertion PASS, 16 PNG đã kiểm chữ ký/kích thước/hash. Copy, overflow/clipping, focus/keyboard, navigation, Linear/Binary, hit/miss và next/previous/reset đạt trong mẫu; console/network không lỗi. Đã đóng context/browser QA và Vite của lượt này, localhost ngừng phục vụ. Không suy thành kiểm toàn bộ Chrome process/profile.
+- **CI hậu merge riêng:** [run 45451640840](https://github.com/Nggvanchi/AlgoVision/actions/runs/45451640840) SUCCESS đúng merge SHA `109e3be1d0dfa2f08a4fab2fdd6cb746efc7443a`; Ubuntu/Windows PASS test/build/encoding. CI không thay browser local hoặc production smoke.
+- **Giới hạn giữ nguyên:** chỉ Chrome localhost/bốn viewport đã kiểm; screen reader thật, cross-browser, thiết bị thật và C4/production chưa được chứng minh bởi QA này. MCP screenshot root cause, runtime Chrome profile isolation và cleanup toàn bộ Chrome process/profile tiếp tục NOT VERIFIED.
+- **Gate giữ nguyên:** academic PASS **0/40**, **RIGHTS_NOT_VERIFIED**, A-EDU/G-EDU/G-RELEASE, source_status, 40 OP/80 mapping ID, routing, dependencies và scope release. EDU-2 còn cần nghiệm thu claim/quyền; không tự mở EDU-3. [UI v3](#ui-v3--modern-academic-workspace) chỉ PLANNED/NOT STARTED sau C5 CLOSED; mọi PR cần approval riêng.
+
 ### EDU-R — Checkpoint hiện hành, 24/11/2026
+
+> Checkpoint EDU-R giữ làm lịch sử; trạng thái mới xem [checkpoint OP20](#op20--checkpoint-hiện-hành-25112026).
 
 **EDU-2: IN_PROGRESS / PARTIAL — chưa CLOSED.** Baseline kỹ thuật: `8b85f8ba96aaa9158a7115816119211cd2bd8ae9`. EDU-1 Source & Mapping giữ closeout EDU-1G đã ghi nhận; không nâng gate claim/quyền.
 
@@ -246,7 +264,7 @@ Bằng chứng: [PR #67](https://github.com/Nggvanchi/AlgoVision/pull/67), merge
   khi có thay đổi sản phẩm; bản thảo docs-only theo gate docs.
 - **Rủi ro/exit gate:** định nghĩa bộ nhớ/phép so sánh có thể khác giáo trình; ghi rõ mô hình đang đo.
   Nghiệm thu học thuật và mapping của nhóm này, không còn nội dung release thiếu nguồn.
-  **Trạng thái hiện hành: IN_PROGRESS / PARTIAL; chưa CLOSED.** Xem [checkpoint EDU-R](#edu-r--checkpoint-hiện-hành-24112026); các acceptance/exit gate trên giữ nguyên.
+  **Trạng thái hiện hành: IN_PROGRESS / PARTIAL; 5/5 OP TECHNICAL CLOSED, chưa đóng EDU-2.** Xem [checkpoint OP20](#op20--checkpoint-hiện-hành-25112026); các acceptance/exit gate trên giữ nguyên.
 
 ### EDU-3 — Cấu trúc dữ liệu
 
@@ -346,3 +364,41 @@ Bằng chứng: [PR #67](https://github.com/Nggvanchi/AlgoVision/pull/67), merge
 - **Rủi ro/exit gate:** tham chiếu động hoặc URL ngoài repo có thể không thấy trong tìm kiếm tĩnh;
   thiếu bằng chứng thì giữ lại. Đóng gate theo từng cleanup đã được duyệt và nghiệm thu,
   không lấy release làm quyền dọn hàng loạt. **Trạng thái: CHƯA BẮT ĐẦU; cần phê duyệt riêng.**
+
+## UI v3 — Modern Academic Workspace
+
+**Trạng thái: PLANNED / NOT STARTED — DEFERRED UNTIL C5 CLOSED.** Đây là roadmap đã duyệt, không phải phê duyệt triển khai, cài công cụ hoặc mở UI3-0.
+
+**Dependency:** C5 CLOSED → UI3-0 → UI3-1 → UI3-2 → UI3-3 → UI3-4 → UI3-5 → UI3-6 → UI3-7 → UI3-8 → UI3-9 → UI3-10.
+
+Giữ nguyên chuỗi **UI v2-3 → C1 → EDU-1 → EDU-2 → EDU-3 → EDU-4 → C2 → C3 → C4 → C5**. Trong EDU-2–4, chỉ nghiên cứu UI/UX read-only khi được duyệt riêng; không thay source hoặc gián đoạn gate.
+
+| ID | Phạm vi | Deliverables / exit gate |
+|---|---|---|
+| UI3-0 | Audit UI/UX và skill | Baseline, findings, compatibility và scope được duyệt |
+| UI3-1 | Design System | Tokens, wireframes Desktop/Tablet/Mobile, hợp đồng thiết kế được duyệt |
+| UI3-2 | Application Shell | Navigation, drawer, keyboard/focus đúng |
+| UI3-3 | Dashboard/Library | Bố cục, filter và điều hướng đúng |
+| UI3-4 | Sorting/Searching | Workspace chuẩn, giữ generator và hành vi |
+| UI3-5 | Linear Data Structures | Array/Stack/Queue/Linked List đúng hợp đồng |
+| UI3-6 | Advanced Data Structures | BST/Hash/Graph giữ ID, snapshot và cue |
+| UI3-7 | Learning Experience | Panel nhất quán, giữ nội dung học thuật |
+| UI3-8 | Responsive/Accessibility | Ma trận browser, thiết bị, WCAG được nghiệm thu |
+| UI3-9 | Source Optimization | Bằng chứng phần dư phát sinh từ UI v3 và benchmark trước/sau |
+| UI3-10 | QA/Release | Regression, CI, production smoke, owner acceptance |
+
+UI/UX Pro Max chỉ hỗ trợ design/review, **không phải production dependency**. UI3-0 kiểm provenance/license và compatibility Codex/Windows trước khi sử dụng; không cài skill trong D1. Giữ kiến trúc hiện hành, bất biến thuật toán, nội dung học thuật, ngân sách raw JS ≤154000 B/CSS ≤58500 B và khả năng bắt lỗi.
+
+### Phân tuyến công cụ ứng viên
+
+| Tuyến | Công cụ / mục đích dự kiến | Giới hạn |
+|---|---|---|
+| C2 — source | Knip, jscpd (src), Dependency Cruiser, ESLint/SonarJS, Stylelint, Rollup Visualizer | Chỉ audit/benchmark và sửa vấn đề có evidence sau approval; unused/clone/complexity là findings cần xác minh, không quyền xóa hoặc auto-fix |
+| C3 — test | jscpd (tests), fast-check, StrykerJS | Rà trùng và khả năng bắt lỗi; không giảm tests/nới assertions; không tích hợp lại chức năng mutation đã đủ bằng chứng |
+| C4 — QA | Playwright, axe-core, Lighthouse CI | Browser/a11y/performance evidence; không thay screen reader, cross-browser/thiết bị thật hoặc production smoke bắt buộc |
+| GH — tài liệu | Best-README-Template, Shields.io, Markdownlint, Lychee | Template/badge/link/lint tài liệu theo scope được duyệt; badge không thay kết quả workflow thực tế |
+| UI3 — thiết kế và phần dư | UI/UX Pro Max, Mermaid; tái sử dụng công cụ C2/C3/C4 khi cần | UI3-9 chỉ xử lý phần dư do redesign UI v3, không lặp audit/cleanup tổng quát đã phân tuyến |
+
+Ưu tiên audit cách ly, công cụ hiện hữu và evidence đúng SHA/hash. Danh sách là ứng viên, **không mặc định tích hợp toàn bộ**, không thêm dependency vào runtime và không đổi CI/config trong D1. Phạm vi tools source/test/QA được giao C2/C3/C4, tài liệu giao GH; mỗi lần tích hợp cần chứng minh khoảng trống, compatibility/chi phí và approval riêng.
+
+Mọi PR cần plan và owner approval riêng. Không theo dõi tiến độ học tập cá nhân, không dùng dữ liệu giả, không tự nâng academic/rights/release gates. Phiên bản release tiếp theo do owner quyết định. C5 CLOSED chỉ là dependency, không tự cấp quyền bắt đầu UI3.
