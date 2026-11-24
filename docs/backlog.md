@@ -4,6 +4,13 @@ Việc còn tồn tại hoặc cần xác minh; việc đã được xếp giai 
 Thêm mục khi phát hiện; chỉ đóng mục sau nghiệm thu, giữ các ghi chú lịch sử cần truy vết.
 Lộ trình giai đoạn: [roadmap](roadmap.md#chuẩn-hóa-v100).
 
+## EDU-R — EDU-2 còn mở (24/11/2026)
+
+- **EDU-2: IN_PROGRESS / PARTIAL, chưa CLOSED.** Xem [checkpoint kỹ thuật và QA](roadmap.md#edu-r--checkpoint-hiện-hành-24112026): OP-16/17 technical MERGED; OP-18 P2 và OP19-A/B TECHNICAL CLOSED; hồ sơ OP-16–18 qua #69 không phải academic PASS.
+- **Việc tiếp theo đề xuất:** OP-20 Binary Search, chỉ readiness/plan sau phê duyệt riêng; chưa triển khai. Các claim/quyền bắt buộc còn thiếu vẫn cần xử lý để đạt exit gate EDU-2.
+- Baseline local đã ghi nhận: 1808/1808 tests, JS 153782 B, CSS 58010 B; headroom JS 218 B/CSS 490 B. Local QA trên diff OP19-B khác CI hậu merge trên `8b85f8ba96aaa9158a7115816119211cd2bd8ae9`; evidence và giới hạn ở checkpoint.
+- Giữ academic PASS **0/40**, **RIGHTS_NOT_VERIFIED**, mapping/source_status/routing, scope, dependency và mọi gate học thuật/release. Chrome localhost PASS không đóng screen reader, cross-browser hoặc C4/production.
+
 ## UI v2-3d.2a — cập nhật QA (2026-11-15)
 
 - P2 contrast enabled: patch CSS scope năm Adaptive; frame regression ba lượt/browser
@@ -30,6 +37,8 @@ Lộ trình giai đoạn: [roadmap](roadmap.md#chuẩn-hóa-v100).
   được ứng dụng; [hợp đồng và chẩn đoán](design/v2-learning-panel.md), số đo mới ở [baseline](development-baseline.md).
 
 ## Phân việc cho v1.0.0 (2026-11-14)
+
+Bảng phân việc dưới đây được giữ làm lịch sử kế hoạch; trạng thái EDU-2 hiện hành ở checkpoint EDU-R phía trên, không thay scope hoặc acceptance của bảng.
 
 Thứ tự: UI v2-3 → C1 → EDU-1–4 → C2 (source) → C3 (test) → C4 (release v1.0.0) → C5 (cleanup).
 Đây là phân việc dự kiến, không phải bằng chứng hoàn thành hay quyền triển khai giai đoạn chưa được duyệt.
@@ -155,6 +164,8 @@ mọi số đo bên dưới là lịch sử nếu chưa được tái đo trên 
 - Quay lại từ một màn chi tiết đưa focus về `body` (nút "Quay lại" bị ẩn cùng màn chi tiết); nên chuyển focus về thẻ vừa mở. Hành vi có sẵn, chưa đổi ở R5a; xét ở R7.
 
 ## Nội dung học thuật (hoãn, KHÔNG làm trong chuỗi Redesign hiện tại)
+
+Ghi chú hoãn dưới đây thuộc chuỗi Redesign tại thời điểm ghi nhận; trạng thái EDU-2 hiện hành xem [checkpoint EDU-R](roadmap.md#edu-r--checkpoint-hiện-hành-24112026). Không tự đóng các mục D3/D7/D8/D9/D10 hoặc mở rộng scope của chúng.
 - D3 chưa quyết: chờ đề cương môn học.
 - D7: nguyên tắc trần bundle cho chunk nội dung (nội dung dài tách chunk, tải khi cần, trần riêng ngoài trần JS/CSS của shell).
 - D8: nội dung học thuật dài đặt trong panel của Visualizer (không tạo trang đọc riêng).

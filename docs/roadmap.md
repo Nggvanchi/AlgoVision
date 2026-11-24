@@ -88,11 +88,31 @@ Thứ tự bắt buộc: **UI v2-3 → C1 → EDU-1 → EDU-2 → EDU-3 → EDU-
 
 ### Trạng thái owner hiện hành — cập nhật D1, 22/11/2026
 
+> Snapshot D1 dưới đây được giữ làm lịch sử; trạng thái EDU-2 hiện hành xem [checkpoint EDU-R](#edu-r--checkpoint-hiện-hành-24112026).
+
 - **C1: CLOSED — OWNER APPROVED, 18/11/2026.** [Scope C1](release/v1.0.0-scope.md) giữ quyết định 180/180 ID; hồ sơ Git đang đồng bộ trong D1, không phải chốt release v1.0.0.
 - **EDU-1: PARTIAL — MAPPING COMPLETE / ACADEMIC PENDING; academic PASS 0/40.** Catalog/mapping còn là WIP ở checkout cũ, không được nhập trong D1.
 - **OP-16/OP-17: technical MERGED**, lần lượt qua [PR #62](https://github.com/Nggvanchi/AlgoVision/pull/62) và [PR #63](https://github.com/Nggvanchi/AlgoVision/pull/63). [Hồ sơ OP-17](education/op17-source-evidence.md) không phải A-EDU PASS; source/rights chưa nghiệm thu đầy đủ, average-case chưa nghiệm thu học thuật.
 - [QA closeout](qa/ui-v2-3-closeout-2026-11-18.md) và [JSON](qa/ui-v2-3-closeout-2026-11-18.json) là historical evidence tại `89cdc6187f0464276b8e4882d75061f13bda5129`; D1 chỉ đồng bộ hồ sơ, không kiểm lại artifacts/backup/manifest ngoài repo.
 - Giữ dependency **C1 → EDU-1 → EDU-2** và toàn bộ gate. Ngoại lệ triển khai OP-16/17 không tự mở D2/OP-18 hoặc miễn academic/rights gate.
+
+### EDU-R — Checkpoint hiện hành, 24/11/2026
+
+**EDU-2: IN_PROGRESS / PARTIAL — chưa CLOSED.** Baseline kỹ thuật: `8b85f8ba96aaa9158a7115816119211cd2bd8ae9`. EDU-1 Source & Mapping giữ closeout EDU-1G đã ghi nhận; không nâng gate claim/quyền.
+
+| OP | Trạng thái kỹ thuật | PR và merge SHA |
+|---|---|---|
+| OP-16 Bubble | Technical MERGED; hồ sơ claim còn gate học thuật/quyền | [#62](https://github.com/Nggvanchi/AlgoVision/pull/62), `95a3ff40fc9d6143fcef82d91fef986d859792ec` |
+| OP-17 Selection | Technical MERGED; hồ sơ claim còn gate học thuật/quyền | [#63](https://github.com/Nggvanchi/AlgoVision/pull/63), `f5fdbbe73141c116a77fde8957078fe65c5f4ddf` |
+| OP-18 Insertion | EDU-2A-P2 TECHNICAL CLOSED | [#70](https://github.com/Nggvanchi/AlgoVision/pull/70), `eeb9f1a338790243187d189a40e49a3d46ffac89` |
+| OP-19 Linear Search | OP19-A/B TECHNICAL CLOSED | [#71](https://github.com/Nggvanchi/AlgoVision/pull/71), `213b183bd3187d082412676d05ca1362359443ba`; [#72](https://github.com/Nggvanchi/AlgoVision/pull/72), `8b85f8ba96aaa9158a7115816119211cd2bd8ae9` |
+
+Hồ sơ claim/provenance OP-16–18 đã merge qua [#69](https://github.com/Nggvanchi/AlgoVision/pull/69), `f232cbbd08cd1761817aa92bbf95ce9946852862`; [mapping](education/knowledge-mapping.md) và các hồ sơ pin SHA giữ nguyên trạng thái/lịch sử, không dùng technical closeout thay academic acceptance.
+
+- **Local QA đã ghi nhận cho diff OP19-B, sau đó commit thành `a4958df2a66bab3b9e0d10cc7c422f96d3473ed8`:** 1808/1808 tests PASS, fail/skip/cancel/todo=0; raw JS 153782 B, CSS 58010 B; headroom 218 B/490 B so với trần 154000 B/58500 B. Chrome localhost 360/768/1280/1440 ×900, DPR=1: 4/4 viewport, 293 lượt assertion PASS. Đây là evidence đã có, không phải lần chạy mới của EDU-R.
+- **CI hậu merge:** [run 45337979192](https://github.com/Nggvanchi/AlgoVision/actions/runs/45337979192) SUCCESS trên baseline `8b85f8ba96aaa9158a7115816119211cd2bd8ae9`; Ubuntu/Windows đều PASS test/build/encoding. Merge tree bằng HEAD tree. CI không thay browser QA local hoặc production smoke.
+- **Tiếp theo đề xuất:** OP-20 Binary Search — readiness/plan riêng về tiền điều kiện sorted, thu hẹp biên, duplicates, comparisons/trace và nội dung Learning Panel; chưa khởi động hoặc được phép triển khai.
+- **Gate giữ nguyên:** academic PASS **0/40**, **RIGHTS_NOT_VERIFIED**, source_status, 40 OP/80 mapping ID, routing, scope release và dependency. EDU-2 chưa đạt exit gate; A-EDU/G-EDU/G-RELEASE, screen reader, cross-browser và C4/production vẫn còn mở. Các bảng/ghi chú cũ là evidence theo thời điểm, không bị thay bằng số liệu này.
 
 ### Mốc kế hoạch và trạng thái lịch sử — 14/11/2026
 
@@ -226,7 +246,7 @@ Bằng chứng: [PR #67](https://github.com/Nggvanchi/AlgoVision/pull/67), merge
   khi có thay đổi sản phẩm; bản thảo docs-only theo gate docs.
 - **Rủi ro/exit gate:** định nghĩa bộ nhớ/phép so sánh có thể khác giáo trình; ghi rõ mô hình đang đo.
   Nghiệm thu học thuật và mapping của nhóm này, không còn nội dung release thiếu nguồn.
-  **Trạng thái: CHƯA BẮT ĐẦU.**
+  **Trạng thái hiện hành: IN_PROGRESS / PARTIAL; chưa CLOSED.** Xem [checkpoint EDU-R](#edu-r--checkpoint-hiện-hành-24112026); các acceptance/exit gate trên giữ nguyên.
 
 ### EDU-3 — Cấu trúc dữ liệu
 
