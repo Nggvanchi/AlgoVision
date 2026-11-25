@@ -1,5 +1,14 @@
 # Backlog AlgoVision
 
+## EDU2-F — Closeout và việc còn lại, 25/11/2026
+
+- **EDU-2 CLOSED theo owner acceptance**, 5/5 OP (OP-16–20); academic acceptance toàn dự án **5/40**. Owner closeout đã được duyệt; patch docs EDU2-F **chưa commit/PR/merge**. [Checkpoint hiện hành](roadmap.md#edu2-f--closeout-hiện-hành-25112026) thay trạng thái hiện hành, không thay các checkpoint lịch sử bên dưới.
+- [PR #78](https://github.com/Nggvanchi/AlgoVision/pull/78), merge `71c840b8b417fed4a752fd43749e76db8a4ae53d`, tree `ff0c79c3a4e085f6b89dfd84416e4ff9c1eeabcf`; [CI hậu merge 45637065693](https://github.com/Nggvanchi/AlgoVision/actions/runs/45637065693) đúng SHA: Ubuntu/Windows test/build/encoding SUCCESS, 1810/1810 mỗi OS, không skip.
+- **Reuse, không phải chạy mới:** QA AC3b theo runtime blob/hash — local 1810/1810, JS/CSS **153845/58016 B**, Chrome Sorting **12/12** tại bốn viewport; Searching/Compare 8 cases/568 assertions. Giữ evidence gốc và phân biệt CI hậu merge với QA localhost; số liệu #77 ở checkpoint cũ là lịch sử.
+- **C2/C3 còn bắt buộc:** Insertion step-limit ở C2, negative/mutation ở C3 trước release; không miễn G-STRUCT. G-EDU/G-STRUCT/G-RELEASE và C4 còn mở, gồm screen reader, cross-browser và production gates.
+- **Giới hạn giữ nguyên:** EX-03 historical NOT VERIFIED; EX-04 chỉ chấp nhận baseline config hiện tại, historical drift NOT VERIFIED; ARTIFACT_PERSISTENCE_NOT_VERIFIED, runtime isolation và cleanup toàn bộ Chrome process/profile NOT VERIFIED. Quyền bên thứ ba RIGHTS_NOT_VERIFIED; quyền công bố owner xác nhận chỉ cho nội dung AlgoVision tự biên soạn thực tế.
+- **EDU-3 READY FOR PLANNING, NOT STARTED**; chưa triển khai. Giữ 8 source ID, 40 OP/80 mapping ID, source_status, routing lịch sử 2 READY/38 DEFER, dependencies và scope release.
+
 ## EDU2-AC3b — Acceptance sync (25/11/2026)
 
 - **EDU-2: IN_PROGRESS/PARTIAL, chưa CLOSED.** Năm OP-16–20 đã TECHNICAL CLOSED; owner chấp nhận claims trong phạm vi AC2a/AC3a và căn cứ công bố nội dung tự biên soạn thực tế. Academic acceptance hiện hành **5/40**, không nâng 35 OP còn lại. Bản sync này **chưa commit/publish/merge**; closeout chính thức cần review riêng.
@@ -56,7 +65,7 @@ Lộ trình giai đoạn: [roadmap](roadmap.md#chuẩn-hóa-v100).
 
 ## Phân việc cho v1.0.0 (2026-11-14)
 
-Bảng phân việc dưới đây được giữ làm lịch sử kế hoạch; trạng thái EDU-2 hiện hành ở checkpoint EDU-R phía trên, không thay scope hoặc acceptance của bảng.
+Bảng phân việc dưới đây được giữ làm lịch sử kế hoạch; trạng thái EDU-2 hiện hành ở [checkpoint EDU2-F](roadmap.md#edu2-f--closeout-hiện-hành-25112026), không thay scope hoặc acceptance của bảng.
 
 Thứ tự: UI v2-3 → C1 → EDU-1–4 → C2 (source) → C3 (test) → C4 (release v1.0.0) → C5 (cleanup).
 Đây là phân việc dự kiến, không phải bằng chứng hoàn thành hay quyền triển khai giai đoạn chưa được duyệt.
@@ -183,7 +192,7 @@ mọi số đo bên dưới là lịch sử nếu chưa được tái đo trên 
 
 ## Nội dung học thuật (hoãn, KHÔNG làm trong chuỗi Redesign hiện tại)
 
-Ghi chú hoãn dưới đây thuộc chuỗi Redesign tại thời điểm ghi nhận; trạng thái EDU-2 hiện hành xem [checkpoint EDU-R](roadmap.md#edu-r--checkpoint-hiện-hành-24112026). Không tự đóng các mục D3/D7/D8/D9/D10 hoặc mở rộng scope của chúng.
+Ghi chú hoãn dưới đây thuộc chuỗi Redesign tại thời điểm ghi nhận; trạng thái EDU-2 hiện hành xem [checkpoint EDU2-F](roadmap.md#edu2-f--closeout-hiện-hành-25112026). Không tự đóng các mục D3/D7/D8/D9/D10 hoặc mở rộng scope của chúng.
 - D3 chưa quyết: chờ đề cương môn học.
 - D7: nguyên tắc trần bundle cho chunk nội dung (nội dung dài tách chunk, tải khi cần, trần riêng ngoài trần JS/CSS của shell).
 - D8: nội dung học thuật dài đặt trong panel của Visualizer (không tạo trang đọc riêng).
