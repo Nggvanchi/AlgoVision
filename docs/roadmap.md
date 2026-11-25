@@ -1,5 +1,14 @@
 # Lộ trình AlgoVision
 
+## EDU2-AC3b — Acceptance sync (25/11/2026)
+
+- **EDU-2: IN_PROGRESS/PARTIAL, chưa CLOSED.** Năm OP-16–20 đã TECHNICAL CLOSED; owner chấp nhận claims trong phạm vi AC2a/AC3a và căn cứ công bố nội dung tự biên soạn thực tế. Academic acceptance hiện hành **5/40**, không nâng 35 OP còn lại. Bản sync này **chưa commit/publish/merge**; closeout chính thức cần review riêng.
+- [Mapping và G5 bridge](education/knowledge-mapping.md#13-edu2-ac3b--acceptance-hiện-hành-op-1620) nối hồ sơ OP-16–20, technical PR và [#77](https://github.com/Nggvanchi/AlgoVision/pull/77), BASE `e558deed7b8daba179520367722db9edeec5e757`. Giữ 8 source ID, 40 OP/80 mapping ID, routing lịch sử 2 READY/38 DEFER, source_status và lịch sử; các checkpoint 0/40/REVIEW_PENDING bên dưới là trạng thái tại thời điểm cũ.
+- Quyền chỉ áp dụng nội dung AlgoVision tự biên soạn đã được owner xác nhận; tài liệu bên thứ ba vẫn **RIGHTS_NOT_VERIFIED** theo Policy B. Không suy quyền từ MIT, technical PASS hoặc owner approval; không ingestion mới.
+- Insertion step-limit **DEFER C2**, negative/mutation **C3**, bắt buộc trước release, không miễn **G-STRUCT**. G-EDU/G-STRUCT/G-RELEASE toàn dự án, C4/production và screen reader/cross-browser còn mở; chưa mở EDU-3/UI v3.
+- Evidence lịch sử #77: 1810/1810 tests, mutation/control 5/5, raw JS/CSS 153834/58016 B; [CI hậu merge 45549814244](https://github.com/Nggvanchi/AlgoVision/actions/runs/45549814244) Ubuntu/Windows test/build/encoding trên BASE. Không nhận đây là lần đo AC3b; kết quả AC3b và browser Sorting phải có evidence mới, Searching/Compare chỉ reuse theo hash/phạm vi nguyên byte.
+- **EX-03 historical NOT VERIFIED** giữ nguyên. EX-04 chấp nhận baseline config hiện tại; historical config drift, runtime Chrome profile isolation và cleanup toàn bộ process/profile vẫn NOT VERIFIED. Không thay dependency/scope/exit gate.
+
 Giữ các bảng dưới đây làm lịch sử. Lộ trình tiếp theo và gate v1.0.0 nằm ở mục
 [Chuẩn hóa v1.0.0](#chuẩn-hóa-v100). Chỉ bắt đầu giai đoạn mới khi người dùng duyệt kế hoạch;
 mỗi PR một branch, một mục tiêu nhỏ (quy trình: skill `module-workflow`). Một giai đoạn có thể tách
