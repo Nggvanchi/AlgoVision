@@ -1904,10 +1904,10 @@ button.structure-card:hover {
 
 #comparison-array .search-cell {
   display: flex;
-  flex: 1 0 0;
+  flex: 1 0 48px;
   align-items: center;
   justify-content: center;
-  min-width: 0;
+  min-width: 48px;
   min-height: 56px;
   padding: 8px 4px;
   box-sizing: border-box;

@@ -681,6 +681,7 @@ test('kiến thức Bubble mô tả bất biến, ví dụ và giới hạn củ
     assert.match(disadvantages, /S\s+(?:snapshot|trạng thái|bước)/iu, 'Nêu số snapshot được lưu')
     assert.match(disadvantages, /O\(n\s*[·*×]\s*S\)/iu, 'Giữ cận bộ nhớ toàn trace')
     assert.match(disadvantages, /average.case[^.;]*chưa[^.;]*nghiệm thu học thuật/iu, 'Không nâng trạng thái average-case')
+    assert.match(disadvantages, /n≥2, hoán vị ngẫu nhiên đều các giá trị phân biệt: trung bình Θ\(n²\)/u, 'AC2: Bubble average phải có mô hình hoán vị đều')
   })
 })
 
@@ -695,6 +696,7 @@ test('nội dung Bubble không rò sang Selection/Insertion và giữ nguyên co
       selection: ['O(n²)', 'O(n²)', 'O(n²)', 'O(1)'],
       insertion: ['O(n)', 'O(n²)', 'O(n²)', 'O(1)'],
     }
+    assert.deepEqual([...document.querySelectorAll('#sorting-section .complexity-card p')].map((el) => el.textContent), ["Chi phí lõi thấp nhất; không tính sinh và lưu trace.","Với n≥2: Bubble/Insertion xét hoán vị ngẫu nhiên đều các giá trị phân biệt; Selection xét mọi phân phối hợp lệ.","Chi phí lõi cao nhất; không tính sinh và lưu trace.","Chỉ tính lõi; không gồm copy mảng, trace và DOM."], 'AC2: card Sorting phải phân biệt lõi với trace')
     for (const algorithm of ['selection', 'insertion']) {
       clickSortingCard(document, algorithm)
       const original = readKnowledge()
@@ -781,6 +783,7 @@ test('kiến thức Selection nêu tiền tố, minIndex, chi phí và giới h�
     assert.match(disadvantages, /có thể[^.;]*phá[^.;]*ổn định/iu)
     assert.match(disadvantages, /chưa[^.;]*kiểm[^.;]*định danh/iu)
     assert.match(disadvantages, /average.case[^.;]*chưa[^.;]*nghiệm thu học thuật/iu)
+    assert.match(disadvantages, /n≥2, C cố định: trung bình Θ\(n²\) với mọi phân phối hợp lệ/u, 'AC2: Selection average phải nêu mọi phân phối hợp lệ')
   })
 })
 

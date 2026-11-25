@@ -1316,6 +1316,7 @@ test('Learning Panel Searching hiển thị lý thuyết và Big-O của Linear 
 
     assert.equal(document.querySelector('#search-complexity-title').textContent, 'LINEAR SEARCH')
     assert.deepEqual(getSearchComplexity(document), ['O(1)', 'O(n)', 'O(n)', 'O(1)'])
+    assert.deepEqual([...document.querySelectorAll('#search-complexity-panel .complexity-card p')].map((el) => el.textContent), ["Phần tử được xét đầu tiên chính là giá trị cần tìm.","Tìm thành công với n≥1 giá trị phân biệt; chọn đều giá trị cần tìm.","Cận chi phí lõi lớn nhất; không phải mọi lần không tìm thấy đều đạt cận này.","Chỉ tính lõi; không gồm copy/sort, trace và DOM."], 'AC2: card Searching phải nêu mô hình average và cận worst')
     assert.deepEqual(getSearchPseudocodeLines(document), linearSearchPseudocode)
     assert.match(document.querySelector('#search-learning-description').textContent, /xuất hiện đầu tiên/)
     assert.match(document.querySelector('#search-learning-advantages').textContent, /không cần mảng đã sắp xếp/i)
@@ -1339,6 +1340,7 @@ test('Learning Panel Searching hiển thị lý thuyết và Big-O của Binary 
 
     assert.equal(document.querySelector('#search-complexity-title').textContent, 'BINARY SEARCH')
     assert.deepEqual(getSearchComplexity(document), ['O(1)', 'O(log n)', 'O(log n)', 'O(1)'])
+    assert.deepEqual([...document.querySelectorAll('#search-complexity-panel .complexity-card p')].map((el) => el.textContent), ["Phần tử được xét đầu tiên chính là giá trị cần tìm.","Tìm thành công với n≥1 giá trị phân biệt; chọn đều giá trị cần tìm.","Cận chi phí lõi lớn nhất; không phải mọi lần không tìm thấy đều đạt cận này.","Chỉ tính lõi; không gồm copy/sort, trace và DOM."], 'AC2: card Searching phải nêu mô hình average và cận worst')
     assert.deepEqual(getSearchPseudocodeLines(document), binarySearchPseudocode)
     assert.match(document.querySelector('#search-learning-description').textContent, /đã sắp xếp/)
     // Có phần tử trùng thì Binary Search có thể trả về bất kỳ vị trí khớp nào.
@@ -1701,5 +1703,84 @@ test('Tìm kiếm không thấy mục tiêu: bước cuối không còn marker n
     } finally {
       app.cleanup()
     }
+  }
+})
+
+const EXPECTED_COMPARE_NOTE = "Chỉ đếm số lần xét phần tử; không tính thời gian, copy hay sắp xếp. Linear dùng mảng hiện tại; Binary dùng bản đã sắp xếp. Khi đang chọn Binary, mảng hiện tại cũng đã được sắp xếp."
+
+test('AC2 Compare: chín oracle literal, reopen và không đổi dữ liệu', async () => {
+  const cases = [
+    { input: [3, 1, 2], target: 3, algorithm: 'linear', current: [3, 1, 2], sorted: [1, 2, 3],
+      counts: ['1', '2'], positions: ['Vị trí 1 trong mảng gốc', 'Vị trí 3 trong mảng đã sắp xếp'],
+      conclusion: 'Linear Search sử dụng ít phép so sánh hơn trong lần thử này.' },
+    { input: [3, 1, 2], target: 2, algorithm: 'linear', current: [3, 1, 2], sorted: [1, 2, 3],
+      counts: ['3', '1'], positions: ['Vị trí 3 trong mảng gốc', 'Vị trí 2 trong mảng đã sắp xếp'],
+      conclusion: 'Binary Search sử dụng ít phép so sánh hơn trong lần thử này.' },
+    { input: [5, 2, 2, 1], target: 2, algorithm: 'linear', current: [5, 2, 2, 1], sorted: [1, 2, 2, 5],
+      counts: ['2', '1'], positions: ['Vị trí 2 trong mảng gốc', 'Vị trí 2 trong mảng đã sắp xếp'],
+      conclusion: 'Binary Search sử dụng ít phép so sánh hơn trong lần thử này.' },
+    { input: [2, 5, 2, 2, 1], target: 2, algorithm: 'linear', current: [2, 5, 2, 2, 1], sorted: [1, 2, 2, 2, 5],
+      counts: ['1', '1'], positions: ['Vị trí 1 trong mảng gốc', 'Vị trí 3 trong mảng đã sắp xếp'],
+      conclusion: 'Hai thuật toán sử dụng số phép so sánh bằng nhau trong lần thử này.' },
+    { input: [3, 1, 2], target: 9, algorithm: 'linear', current: [3, 1, 2], sorted: [1, 2, 3],
+      counts: ['3', '2'], positions: ['Không tìm thấy', 'Không tìm thấy'],
+      conclusion: 'Cả hai thuật toán đều không tìm thấy giá trị cần tìm.' },
+    { input: [], target: 7, algorithm: 'linear', current: [], sorted: [],
+      counts: ['0', '0'], positions: ['Không tìm thấy', 'Không tìm thấy'],
+      conclusion: 'Cả hai thuật toán đều không tìm thấy giá trị cần tìm.' },
+    { input: [7], target: 7, algorithm: 'linear', current: [7], sorted: [7],
+      counts: ['1', '1'], positions: ['Vị trí 1 trong mảng gốc', 'Vị trí 1 trong mảng đã sắp xếp'],
+      conclusion: 'Hai thuật toán sử dụng số phép so sánh bằng nhau trong lần thử này.' },
+    { input: [7], target: 9, algorithm: 'linear', current: [7], sorted: [7],
+      counts: ['1', '1'], positions: ['Không tìm thấy', 'Không tìm thấy'],
+      conclusion: 'Cả hai thuật toán đều không tìm thấy giá trị cần tìm.' },
+    { input: [3, 1, 2], target: 3, algorithm: 'binary', current: [1, 2, 3], sorted: [1, 2, 3],
+      counts: ['3', '2'], positions: ['Vị trí 3 trong mảng gốc', 'Vị trí 3 trong mảng đã sắp xếp'],
+      conclusion: 'Binary Search sử dụng ít phép so sánh hơn trong lần thử này.' },
+  ]
+  for (const fixture of cases) {
+    const original = [...fixture.input]
+    const app = await setupSearching({ initialNumbers: fixture.input })
+    try {
+      const { document, window } = app
+      const algorithm = document.querySelector('#search-algorithm')
+      algorithm.value = fixture.algorithm
+      algorithm.dispatchEvent(new window.Event('change', { bubbles: true }))
+      const target = document.querySelector('#search-target')
+      target.value = String(fixture.target)
+      target.dispatchEvent(new window.Event('change', { bubbles: true }))
+      const panel = document.querySelector('#search-comparison')
+      const button = document.querySelector('#search-compare')
+      const readNumbers = () => [...document.querySelectorAll('#search-array .search-cell')].map((el) => Number(el.textContent))
+      const readResult = () => ({
+        counts: ['#linear-comparisons', '#binary-comparisons'].map((id) => document.querySelector(id).textContent),
+        positions: ['#linear-position', '#binary-position'].map((id) => document.querySelector(id).textContent),
+        conclusion: document.querySelector('#comparison-conclusion').textContent,
+        sorted: [...document.querySelectorAll('#comparison-array .search-cell')].map((el) => Number(el.textContent)),
+      })
+      assert.equal(document.querySelector('[data-compare-cost-note]')?.textContent ?? '', EXPECTED_COMPARE_NOTE,
+        'AC2: ghi chú Compare phải loại chi phí sort')
+      assert.deepEqual(readNumbers(), fixture.current, 'AC2: mảng hiện tại đúng chế độ')
+      assert.equal(panel.hidden, true)
+      assert.equal(button.getAttribute('aria-expanded'), 'false')
+      button.click()
+      assert.equal(panel.hidden, false)
+      assert.equal(button.getAttribute('aria-expanded'), 'true')
+      assert.deepEqual(readResult().counts, fixture.counts, 'AC2: Compare counts khớp oracle literal')
+      assert.deepEqual(readResult().positions, fixture.positions, 'AC2: Compare positions khớp oracle literal')
+      assert.equal(readResult().conclusion, fixture.conclusion, 'AC2: Compare kết luận đúng lần thử')
+      assert.deepEqual(readResult().sorted, fixture.sorted, 'AC2: mảng Compare đã sắp xếp')
+      const firstResult = readResult()
+      assert.deepEqual(readNumbers(), fixture.current, 'AC2: Compare không đổi mảng hiện tại')
+      button.click()
+      assert.equal(panel.hidden, true)
+      assert.equal(button.getAttribute('aria-expanded'), 'false')
+      button.click()
+      assert.equal(panel.hidden, false)
+      assert.equal(button.getAttribute('aria-expanded'), 'true')
+      assert.deepEqual(readResult(), firstResult, 'AC2: reopen giữ đúng kết quả')
+      assert.deepEqual(readNumbers(), fixture.current, 'AC2: reopen không đổi dữ liệu')
+      assert.deepEqual(fixture.input, original, 'AC2: không sửa input caller')
+    } finally { app.cleanup() }
   }
 })

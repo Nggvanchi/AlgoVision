@@ -91,7 +91,7 @@ export function initSorting(options = {}) {
       advantages:
         'Cờ swapped đặt lại mỗi lượt; không swap thì đoạn còn lại không giảm, dừng sớm. Với n ≥ 2: tốt nhất O(n) khi đã sắp xếp, xấu nhất O(n²) theo số so sánh. Swap kề chỉ khi > hỗ trợ ổn định lõi; chưa kiểm định danh phần tử.',
       disadvantages:
-        'O(1) phụ chỉ cho lõi; generator copy O(n), lưu S snapshot cần O(n·S), không phải runtime. Average-case chưa nghiệm thu học thuật theo phân phối cụ thể.',
+        'Lõi O(1) phụ; copy O(n), S snapshot: trace O(n·S). n≥2, hoán vị ngẫu nhiên đều các giá trị phân biệt: trung bình Θ(n²). Average-case chưa nghiệm thu học thuật.',
     },
 
     selection: {
@@ -108,7 +108,7 @@ export function initSorting(options = {}) {
       advantages:
         'n ≥ 2: n(n−1)/2 so sánh, tốt nhất và xấu nhất Θ(n²); swaps ≤ n−1.',
       disadvantages:
-        'Lõi O(1) phụ; copy O(n), S snapshot: trace O(n·S). Swap không kề có thể phá ổn định; chưa kiểm định danh sản phẩm. Average-case chưa nghiệm thu học thuật.',
+        'Lõi O(1) phụ; copy O(n), S snapshot: trace O(n·S). Swap không kề có thể phá ổn định; chưa kiểm định danh. n≥2, C cố định: trung bình Θ(n²) với mọi phân phối hợp lệ. Average-case chưa nghiệm thu học thuật.',
     },
 
     insertion: {
