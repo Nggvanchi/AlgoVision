@@ -431,3 +431,7 @@ Giữ nguyên **8 source ID, 40 OP/80 mapping ID**, routing lịch sử **2 READ
 - **Quyền và catalog:** owner xác nhận căn cứ công bố nội dung tự biên soạn thực tế của năm OP theo [Policy B §11](uit-sources.md#11-policy-b-và-quyền-theo-hành-vi--edu-1f). Không cấp quyền đối với tài liệu nguồn bên thứ ba: **RIGHTS_NOT_VERIFIED** và mọi source_status giữ nguyên. Giữ đúng **8 source ID, 40 OP/80 mapping ID**, routing lịch sử **2 READY/38 DEFER**; không sửa các hàng lịch sử/mapping/disposition hoặc thêm ingestion/citation.
 - **Residual/gate:** EX-03 historical NOT VERIFIED; EX-04 chỉ chấp nhận baseline config hiện tại, historical drift NOT VERIFIED; **ARTIFACT_PERSISTENCE_NOT_VERIFIED**, runtime Chrome profile isolation và cleanup toàn bộ process/profile **NOT VERIFIED**. Insertion step-limit **C2**, negative/mutation **C3** bắt buộc trước release; **G-EDU/G-STRUCT/G-RELEASE và C4 còn mở**. Owner closeout EDU-2 không miễn các gate toàn dự án.
 - **Bước tiếp theo:** EDU-3 **READY FOR PLANNING, NOT STARTED**. Các checkpoint trước mục này, kể cả chữ hiện hành/chưa đóng/chưa merge tại AC3b, là lịch sử tại thời điểm ghi; giữ nguyên nội dung và provenance của chúng.
+
+## 15. EDU-3A1 — Liên kết hồ sơ OP-01–15
+
+[Hồ sơ bằng chứng Array, Stack, Queue và Linked List](edu3a-linear-source-evidence.md) — contract, proof/oracle độc lập và locator pin BASE `0d8d8ce906c64c72dd3d42030bfd6dc2f13a90d7`; STATIC_SUPPORTED, REVIEW_PENDING, RIGHTS_NOT_VERIFIED; academic acceptance giữ 5/40, không thay status/routing/catalog hoặc các hàng lịch sử.
