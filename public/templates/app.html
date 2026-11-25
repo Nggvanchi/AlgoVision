@@ -681,25 +681,25 @@
             <div class="complexity-card">
                 <span>Trường hợp tốt nhất</span>
                 <strong>O(n)</strong>
-                <p>Số bước ít nhất trong điều kiện thuận lợi.</p>
+                <p>Chi phí lõi thấp nhất; không tính sinh và lưu trace.</p>
             </div>
 
             <div class="complexity-card">
                 <span>Trường hợp trung bình</span>
                 <strong>O(n²)</strong>
-                <p>Độ phức tạp dự kiến với dữ liệu thông thường.</p>
+                <p>Với n≥2: Bubble/Insertion xét hoán vị ngẫu nhiên đều các giá trị phân biệt; Selection xét mọi phân phối hợp lệ.</p>
             </div>
 
             <div class="complexity-card">
                 <span>Trường hợp xấu nhất</span>
                 <strong>O(n²)</strong>
-                <p>Số bước có thể cần trong điều kiện bất lợi.</p>
+                <p>Chi phí lõi cao nhất; không tính sinh và lưu trace.</p>
             </div>
 
             <div class="complexity-card">
                 <span>Bộ nhớ phụ của thuật toán</span>
                 <strong>O(1)</strong>
-                <p>Không tính bộ nhớ dùng để lưu lịch sử mô phỏng.</p>
+                <p>Chỉ tính lõi; không gồm copy mảng, trace và DOM.</p>
             </div>
         </div>
         </div>
@@ -802,6 +802,7 @@
 
         <div id="search-comparison" class="search-comparison" hidden>
         <h3>Kết quả so sánh</h3>
+        <p data-compare-cost-note>Chỉ đếm số lần xét phần tử; không tính thời gian, copy hay sắp xếp. Linear dùng mảng hiện tại; Binary dùng bản đã sắp xếp. Khi đang chọn Binary, mảng hiện tại cũng đã được sắp xếp.</p>
         <div id="comparison-array" role="group" aria-label="Mảng đã sắp xếp dùng để so sánh hai thuật toán" tabindex="0"></div>
 
         <div class="comparison-grid">
@@ -947,19 +948,19 @@
             <div class="complexity-card">
                 <span>Trường hợp trung bình</span>
                 <strong id="search-complexity-average">O(n)</strong>
-                <p>Độ phức tạp dự kiến với dữ liệu thông thường.</p>
+                <p>Tìm thành công với n≥1 giá trị phân biệt; chọn đều giá trị cần tìm.</p>
             </div>
 
             <div class="complexity-card">
                 <span>Trường hợp xấu nhất</span>
                 <strong id="search-complexity-worst">O(n)</strong>
-                <p>Không tìm thấy, hoặc tìm thấy ở lần so sánh cuối cùng.</p>
+                <p>Cận chi phí lõi lớn nhất; không phải mọi lần không tìm thấy đều đạt cận này.</p>
             </div>
 
             <div class="complexity-card">
                 <span>Bộ nhớ phụ của thuật toán</span>
                 <strong id="search-complexity-space">O(1)</strong>
-                <p>Không tính bộ nhớ dùng để lưu lịch sử mô phỏng.</p>
+                <p>Chỉ tính lõi; không gồm copy/sort, trace và DOM.</p>
             </div>
         </div>
         </div>
