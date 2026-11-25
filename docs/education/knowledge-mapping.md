@@ -1,5 +1,7 @@
 # EDU-1 — Mapping kiến thức v1.0.0
 
+> Trạng thái acceptance hiện hành: [EDU2-AC3b](#13-edu2-ac3b--acceptance-hiện-hành-op-1620). Các mốc 0/40 và REVIEW_PENDING phía dưới là lịch sử, không bị sửa/xóa.
+
 > **EDU-2A-P1 (23/11/2026):** [mục 10](#10-edu-2a-p1) liên kết hồ sơ OP-16–18 tại baseline hiện hành; giữ nguyên 40 OP/80 mapping ID, các hàng lịch sử và mọi gate học thuật/quyền.
 
 Trạng thái hiện hành: xem [closeout EDU-1G](#9-closeout-hiện-hành--edu-1g); chỉ nghiệm thu hồ sơ nguồn/mapping.
@@ -391,3 +393,23 @@ Chỉ bổ sung liên kết; giữ nguyên MAP-019-I/S, 40 OP/80 mapping ID, rou
 [Hồ sơ claim/provenance OP-20](op20-source-evidence.md), pin `B = ae90928ca630260086efcd18066bcfc92a96ff5e`: tiền điều kiện sorted, invariant, duplicates, counters/trace, oracle độc lập, average có điều kiện và core/trace. **REVIEW_PENDING**; test evidence chỉ đọc source, không phải runtime PASS.
 
 Chỉ bổ sung liên kết; giữ nguyên MAP-020-I/S, 40 OP/80 mapping ID, routing/lịch sử và source_status. **Academic PASS 0/40; RIGHTS_NOT_VERIFIED**; OP-20 vẫn DEFER_TO_EDU_2_3_4 → EDU-2, A-EDU/G-EDU và mọi gate release còn mở.
+
+## 13. EDU2-AC3b — Acceptance hiện hành OP-16–20
+
+Quyết định owner trong EDU2-AC3b chấp nhận claims OP-16–20 theo AC2a/AC3a và xác nhận có căn cứ quyền công bố **nội dung tự biên soạn thực tế** của năm OP. Đây là acceptance của owner trong phạm vi nêu dưới đây, không phải chứng nhận học thuật bên ngoài. Bản đồng bộ AC3b hiện chưa commit/publish/merge; chưa phải closeout EDU-2. Các trạng thái REVIEW_PENDING, academic PASS 0/40 và ghi chú quyền trong phần trước được giữ làm lịch sử tại SHA của chúng.
+
+Theo [Policy B §11](uit-sources.md#11-policy-b-và-quyền-theo-hành-vi--edu-1f), UIT-SRC-004 chỉ định danh/phạm vi chủ đề. Lập luận, oracle và diễn đạt độc lập không phải sao chép/dịch giáo trình. Acceptance quyền của nội dung AlgoVision không mở rộng sang tài liệu bên thứ ba: **RIGHTS_NOT_VERIFIED** và source_status giữ nguyên; không suy quyền từ MIT, owner approval hoặc technical PASS. Không ingestion mới, không tìm lại IT003/OpenDSA.
+
+Giữ EX-03 historical NOT VERIFIED; EX-04 chỉ chấp nhận baseline cấu hình hiện tại, không chứng minh historical config drift hoặc runtime isolation. Insertion step-limit thuộc C2, negative/mutation thuộc C3 và bắt buộc trước release; G-STRUCT không được miễn. EDU-2 vẫn IN_PROGRESS/PARTIAL; G-EDU, G-STRUCT và G-RELEASE toàn dự án còn mở.
+
+Academic acceptance được owner duyệt: **5/40 OP (OP-16–20)**; 35 OP còn lại chưa được nâng acceptance. Đây là trạng thái acceptance hiện hành đang đồng bộ trên branch AC3b, **chưa commit/publish/merge**, không tự đóng A-EDU/G-EDU hoặc EDU-2.
+
+| OP | Hồ sơ acceptance/G5 hiện hành | Technical bridge | Quyền nội dung thực tế |
+|---|---|---|---|
+| OP-16 | [Bubble](edu-2-cost-and-bubble-draft.md#i-edu2-ac3b--acceptance-và-g5-bridge) | [#62](https://github.com/Nggvanchi/AlgoVision/pull/62) → [#77](https://github.com/Nggvanchi/AlgoVision/pull/77) | Owner xác nhận căn cứ công bố nội dung tự biên soạn; bên thứ ba RIGHTS_NOT_VERIFIED. |
+| OP-17 | [Selection](op17-source-evidence.md#9-edu2-ac3b--acceptance-và-g5-bridge) | [#63](https://github.com/Nggvanchi/AlgoVision/pull/63) → [#77](https://github.com/Nggvanchi/AlgoVision/pull/77) | Owner xác nhận căn cứ công bố nội dung tự biên soạn; bên thứ ba RIGHTS_NOT_VERIFIED. |
+| OP-18 | [Insertion](op18-source-evidence.md#9-edu2-ac3b--acceptance-và-g5-bridge) | [#70](https://github.com/Nggvanchi/AlgoVision/pull/70) → [#77](https://github.com/Nggvanchi/AlgoVision/pull/77) | Owner xác nhận căn cứ công bố nội dung tự biên soạn; bên thứ ba RIGHTS_NOT_VERIFIED. |
+| OP-19 | [Linear Search](op19-source-evidence.md#8-edu2-ac3b--acceptance-và-g5-bridge) | [#72](https://github.com/Nggvanchi/AlgoVision/pull/72) → [#77](https://github.com/Nggvanchi/AlgoVision/pull/77) | Owner xác nhận căn cứ công bố nội dung tự biên soạn; bên thứ ba RIGHTS_NOT_VERIFIED. |
+| OP-20 | [Binary Search](op20-source-evidence.md#7-edu2-ac3b--acceptance-và-g5-bridge) | [#75](https://github.com/Nggvanchi/AlgoVision/pull/75) → [#77](https://github.com/Nggvanchi/AlgoVision/pull/77) | Owner xác nhận căn cứ công bố nội dung tự biên soạn; bên thứ ba RIGHTS_NOT_VERIFIED. |
+
+Giữ nguyên **8 source ID, 40 OP/80 mapping ID**, routing lịch sử **2 READY/38 DEFER**, source_status và mọi hàng mapping/disposition. Acceptance hiện hành được nối bằng checkpoint này, không viết lại lịch sử. Các proof/oracle/locator tại BASE `e558deed7b8daba179520367722db9edeec5e757` nằm ở từng hồ sơ; Policy B và catalog không thay đổi.

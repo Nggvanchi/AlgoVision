@@ -1,5 +1,7 @@
 # OP-17 — Hồ sơ evidence Selection Sort
 
+> Trạng thái hiện hành: xem [EDU2-AC3b — Acceptance và G5 bridge](#9-edu2-ac3b--acceptance-và-g5-bridge). Các phần trước checkpoint đó giữ nguyên như hồ sơ lịch sử.
+
 > **Đối chiếu hiện hành EDU-2A-P1 (23/11/2026):** xem [mục 8](#8-edu-2a-p1). Mục 1–7 giữ nguyên là hồ sơ lịch sử; academic PASS **0/40**, quyền **RIGHTS_NOT_VERIFIED** và review claim chưa đóng.
 
 Ngày lập hồ sơ: 22/11/2026. Phạm vi: nội dung Learning Panel và regression OP-17.
@@ -132,3 +134,25 @@ Không thêm nguồn/ID, không chép/dịch/chuyển thể tài liệu bên th�
 [B17-MIN]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/src/algorithms/selectionSort.js#L54
 [B17-COPY]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/src/algorithms/selectionSort.js#L19
 [B17-END]: https://github.com/Nggvanchi/AlgoVision/blob/ee92d767a640f3338ac56cd798e58e614b956306/src/algorithms/selectionSort.js#L91
+
+## 9. EDU2-AC3b — Acceptance và G5 bridge
+
+Quyết định owner trong EDU2-AC3b chấp nhận claims OP-16–20 theo AC2a/AC3a và xác nhận có căn cứ quyền công bố **nội dung tự biên soạn thực tế** của năm OP. Đây là acceptance của owner trong phạm vi nêu dưới đây, không phải chứng nhận học thuật bên ngoài. Bản đồng bộ AC3b hiện chưa commit/publish/merge; chưa phải closeout EDU-2. Các trạng thái REVIEW_PENDING, academic PASS 0/40 và ghi chú quyền trong phần trước được giữ làm lịch sử tại SHA của chúng.
+
+Theo [Policy B §11](uit-sources.md#11-policy-b-và-quyền-theo-hành-vi--edu-1f), UIT-SRC-004 chỉ định danh/phạm vi chủ đề. Lập luận, oracle và diễn đạt độc lập không phải sao chép/dịch giáo trình. Acceptance quyền của nội dung AlgoVision không mở rộng sang tài liệu bên thứ ba: **RIGHTS_NOT_VERIFIED** và source_status giữ nguyên; không suy quyền từ MIT, owner approval hoặc technical PASS. Không ingestion mới, không tìm lại IT003/OpenDSA.
+
+Giữ EX-03 historical NOT VERIFIED; EX-04 chỉ chấp nhận baseline cấu hình hiện tại, không chứng minh historical config drift hoặc runtime isolation. Insertion step-limit thuộc C2, negative/mutation thuộc C3 và bắt buộc trước release; G-STRUCT không được miễn. EDU-2 vẫn IN_PROGRESS/PARTIAL; G-EDU, G-STRUCT và G-RELEASE toàn dự án còn mở.
+
+| Claim hiện hành — OP-17 Selection | Evidence và disposition |
+|---|---|
+| Prefix đã sắp xếp tại ranh giới lượt; chọn min trong suffix. C=n(n−1)/2 cố định theo n, nên average Θ(n²) với n≥2 dưới mọi phân phối đầu vào hợp lệ có cùng độ dài. W chỉ đếm actual swaps: 0≤W≤max(n−1,0), không đếm self-swap. | OWNER_ACCEPTED trong phạm vi AC2a/AC3a; chứng minh và oracle độc lập ở các mục gốc phía trên, không tính lại như claim mới. |
+| Lõi dùng O(1) bộ nhớ phụ; working copy O(n), mỗi snapshot O(n), trace O(n·S) với n≥1, tách chi phí thông báo/DOM/UI; empty có overhead hằng số. | Mô hình chi phí trừu tượng; không phải benchmark hay đo byte heap. |
+| Lõi không ổn định: phản ví dụ logic [2a,2b,1] → [1,2b,2a]; không phải test identity qua API số. | Giới hạn bắt buộc giữ khi trình bày/test. |
+
+G5 nối technical [#63](https://github.com/Nggvanchi/AlgoVision/pull/63), merge `f5fdbbe73141c116a77fde8957078fe65c5f4ddf`, với content/Compare [#77](https://github.com/Nggvanchi/AlgoVision/pull/77), merge baseline `e558deed7b8daba179520367722db9edeec5e757`. Hồ sơ OP-16–18 qua [#69](https://github.com/Nggvanchi/AlgoVision/pull/69); không thay thế lịch sử provenance trong hồ sơ.
+
+- Generator tại baseline: [selectionSort.js:37](https://github.com/Nggvanchi/AlgoVision/blob/e558deed7b8daba179520367722db9edeec5e757/src/algorithms/selectionSort.js#L37-L101).
+- Learning Panel/test tại baseline: [sorting-controller.test.js:756](https://github.com/Nggvanchi/AlgoVision/blob/e558deed7b8daba179520367722db9edeec5e757/tests/sorting-controller.test.js#L756-L821); nội dung [sorting.js:79](https://github.com/Nggvanchi/AlgoVision/blob/e558deed7b8daba179520367722db9edeec5e757/src/sorting.js#L79-L129). Các locator pin BASE mô tả bản đã merge, không giả nhận wording AC3b chưa merge có SHA mới.
+- Evidence cũ của #77: 1810/1810 tests, mutation/control 5/5; [CI hậu merge 45549814244](https://github.com/Nggvanchi/AlgoVision/actions/runs/45549814244) Ubuntu/Windows test/build/encoding trên BASE. Đây là bằng chứng lịch sử, không phải kết quả chạy AC3b; QA hiện tại phải báo riêng theo hash. Searching/Compare chỉ tái sử dụng khi source/template/CSS/test liên quan nguyên byte.
+
+Academic acceptance: **OP-17 OWNER_ACCEPTED**; tổng phạm vi OP-16–20 là **5/40**, không nâng 35 OP khác hoặc quyền tài liệu bên thứ ba. Cập nhật wording trạng thái Sorting ở AC3b chỉ phản ánh quyết định này, giữ nguyên mọi claim/giả định.

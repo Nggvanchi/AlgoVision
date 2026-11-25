@@ -91,7 +91,7 @@ export function initSorting(options = {}) {
       advantages:
         'Cờ swapped đặt lại mỗi lượt; không swap thì đoạn còn lại không giảm, dừng sớm. Với n ≥ 2: tốt nhất O(n) khi đã sắp xếp, xấu nhất O(n²) theo số so sánh. Swap kề chỉ khi > hỗ trợ ổn định lõi; chưa kiểm định danh phần tử.',
       disadvantages:
-        'Lõi O(1) phụ; copy O(n), S snapshot: trace O(n·S). n≥2, hoán vị ngẫu nhiên đều các giá trị phân biệt: trung bình Θ(n²). Average-case chưa nghiệm thu học thuật.',
+        'Lõi O(1) phụ; copy O(n), S snapshot: trace O(n·S). n≥2, hoán vị ngẫu nhiên đều các giá trị phân biệt: trung bình Θ(n²). Các claim này đã được owner nghiệm thu.',
     },
 
     selection: {
@@ -108,7 +108,7 @@ export function initSorting(options = {}) {
       advantages:
         'n ≥ 2: n(n−1)/2 so sánh, tốt nhất và xấu nhất Θ(n²); swaps ≤ n−1.',
       disadvantages:
-        'Lõi O(1) phụ; copy O(n), S snapshot: trace O(n·S). Swap không kề có thể phá ổn định; chưa kiểm định danh. n≥2, C cố định: trung bình Θ(n²) với mọi phân phối hợp lệ. Average-case chưa nghiệm thu học thuật.',
+        'Lõi O(1) phụ; copy O(n), S snapshot: trace O(n·S). Swap không kề có thể phá ổn định; chưa kiểm định danh. n≥2, C cố định: trung bình Θ(n²) với mọi phân phối hợp lệ. Các claim này đã được owner nghiệm thu.',
     },
 
     insertion: {
@@ -125,7 +125,7 @@ export function initSorting(options = {}) {
       advantages:
         'Lõi, n≥2: tốt nhất Θ(n) khi đã không giảm, xấu nhất Θ(n²); trung bình Θ(n²) với hoán vị ngẫu nhiên đều các giá trị phân biệt. Chỉ dời khi > key giữ ổn định lõi; chưa kiểm định danh.',
       disadvantages:
-        'I₀: số nghịch thế ban đầu; H: shifts, C: comparisons, W: swaps. n≥1: H=I₀, W=0, I₀≤C≤I₀+n−1. Lõi O(1) phụ; copy O(n), S snapshot: trace O(n·S). Các claim chưa nghiệm thu học thuật.',
+        'I₀: số nghịch thế ban đầu; H: shifts, C: comparisons, W: swaps. n≥1: H=I₀, W=0, I₀≤C≤I₀+n−1. Lõi O(1) phụ; copy O(n), S snapshot: trace O(n·S). Các claim này đã được owner nghiệm thu.',
     },
   }
 
