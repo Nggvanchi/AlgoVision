@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 
 import test from 'node:test'
 import assert from 'node:assert/strict'
@@ -171,5 +172,29 @@ test('thông báo khi Dequeue Queue rỗng', () => {
     )
   } finally {
     window.happyDOM.close()
+  }
+})
+
+test('EDU3A2 queue: copy từ template thật đúng phạm vi API', async () => {
+  const window = new Window()
+  try {
+    window.document.body.innerHTML = readFileSync(new URL('../public/templates/app.html', import.meta.url), 'utf8')
+    const section = window.document.querySelector('#queue-section')
+    assert.ok(section, 'module section tồn tại')
+    const paragraphs = Array.from(section.querySelectorAll('p'), node => node.textContent.trim())
+    for (const expected of [
+  "FRONT ở đầu, REAR ở cuối. Enqueue/Dequeue tạo mảng mới; toàn API O(n) do kiểm dữ liệu/copy, chưa tính DOM.",
+  "Lấy FRONT theo FIFO; Queue rỗng báo lỗi.",
+  "Đọc FRONT O(1), không xóa; Queue rỗng báo lỗi."
+]) {
+      assert.ok(paragraphs.includes(expected), 'EDU3A2 queue copy: ' + expected)
+    }
+    for (const other of window.document.querySelectorAll('section[id]')) {
+      if (other !== section) {
+        assert.equal(other.textContent.includes("FRONT ở đầu, REAR ở cuối. Enqueue/Dequeue tạo mảng mới; toàn API O(n) do kiểm dữ liệu/copy, chưa tính DOM."), false, 'copy không rò sang module khác')
+      }
+    }
+  } finally {
+    await window.happyDOM.close()
   }
 })

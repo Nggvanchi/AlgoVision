@@ -125,3 +125,25 @@ test('xóa index sai trên mảng không rỗng giữ thông báo "ngoài phạm
 test('chèn index > 0 trên mảng rỗng vẫn ghi "ngoài phạm vi" (không đổi ngoài ca xóa)', () => {
   assert.throws(() => insertArrayElement([], 1, 10), (error) => error instanceof RangeError && /Index nằm ngoài phạm vi cho phép/.test(error.message))
 })
+
+test('EDU3A2 Array: oracle độc lập và cách ly mảng kết quả', () => {
+  const input = Object.freeze([3, 1])
+  const inserted = insertArrayElement(input, 1, 2)
+  assert.deepEqual(inserted, [3, 2, 1])
+  inserted[0] = 99
+  assert.deepEqual(input, [3, 1])
+  const original = Object.freeze([3, 2, 1])
+  const removed = removeArrayElement(original, 1)
+  assert.equal(removed.removedValue, 2)
+  assert.deepEqual(removed.numbers, [3, 1])
+  removed.numbers[0] = 99
+  assert.deepEqual(original, [3, 2, 1])
+  const duplicates = Object.freeze([5, 2, 2, 1])
+  for (const [target, expected] of [[2, 1], [9, -1]]) {
+    assert.equal(findArrayElement(duplicates, target), expected)
+  }
+  assert.equal(findArrayElement([], 2), -1)
+  assert.deepEqual(duplicates, [5, 2, 2, 1])
+  assert.throws(() => insertArrayElement(input, 3, 2), RangeError)
+  assert.deepEqual(input, [3, 1])
+})

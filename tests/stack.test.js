@@ -70,3 +70,18 @@ test('Từ chối giá trị không hữu hạn', () => {
     TypeError,
   )
 })
+
+test('EDU3A2 Stack: LIFO, bản sao và validation khi Peek', () => {
+  const original = Object.freeze([3, 1, 2])
+  const result = popStackElement(original)
+  assert.deepEqual(result.stack, [3, 1])
+  assert.equal(result.poppedValue, 2)
+  assert.equal(popStackElement(result.stack).poppedValue, 1)
+  result.stack[0] = 99
+  assert.deepEqual(original, [3, 1, 2])
+  assert.deepEqual(popStackElement([7]), { stack: [], poppedValue: 7 })
+  assert.equal(peekStackElement(original), 2)
+  const invalid = Object.freeze([3, Infinity])
+  assert.throws(() => peekStackElement(invalid), TypeError)
+  assert.deepEqual(invalid, [3, Infinity])
+})

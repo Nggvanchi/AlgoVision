@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 
 import test from 'node:test'
 import assert from 'node:assert/strict'
@@ -218,5 +219,31 @@ test('xóa khi danh sách đã rỗng hiện lỗi "đang rỗng"; xóa vị tr�
     assert.deepEqual(controller.getValues(), [])
   } finally {
     window.happyDOM.close()
+  }
+})
+
+test('EDU3A2 linked-list: copy từ template thật đúng phạm vi API', async () => {
+  const window = new Window()
+  try {
+    window.document.body.innerHTML = readFileSync(new URL('../public/templates/app.html', import.meta.url), 'utf8')
+    const section = window.document.querySelector('#linked-list-section')
+    assert.ok(section, 'module section tồn tại')
+    const paragraphs = Array.from(section.querySelectorAll('p'), node => node.textContent.trim())
+    for (const expected of [
+  "HEAD trỏ nút đầu, next cuối là NULL; index từ 0. Thêm, chèn, xóa đổi list tại chỗ; trả mảng mới O(n), chưa tính DOM.",
+  "Nối đầu O(1), tìm cuối O(n); cả hai API trả toArray nên O(n).",
+  "Chèn số hữu hạn tại index nguyên 0..size; API O(n) gồm toArray.",
+  "Xóa index nguyên 0..size−1; trả giá trị đã xóa và mảng mới, O(n).",
+  "Duyệt next, so sánh ===; trả index khớp đầu hoặc −1, không đổi list. Tốt nhất O(1), xấu nhất O(n)."
+]) {
+      assert.ok(paragraphs.includes(expected), 'EDU3A2 linked-list copy: ' + expected)
+    }
+    for (const other of window.document.querySelectorAll('section[id]')) {
+      if (other !== section) {
+        assert.equal(other.textContent.includes("HEAD trỏ nút đầu, next cuối là NULL; index từ 0. Thêm, chèn, xóa đổi list tại chỗ; trả mảng mới O(n), chưa tính DOM."), false, 'copy không rò sang module khác')
+      }
+    }
+  } finally {
+    await window.happyDOM.close()
   }
 })
