@@ -1,6 +1,6 @@
 # EDU-1 — Mapping kiến thức v1.0.0
 
-> Trạng thái acceptance hiện hành: [EDU2-AC3b](#13-edu2-ac3b--acceptance-hiện-hành-op-1620). Các mốc 0/40 và REVIEW_PENDING phía dưới là lịch sử, không bị sửa/xóa.
+> Trạng thái closeout/acceptance hiện hành: [EDU2-F](#14-edu2-f--owner-closeout-25112026). Các checkpoint EDU2-AC3b, 0/40 và REVIEW_PENDING phía dưới được giữ nguyên như lịch sử; source_status/routing không được nâng theo closeout.
 
 > **EDU-2A-P1 (23/11/2026):** [mục 10](#10-edu-2a-p1) liên kết hồ sơ OP-16–18 tại baseline hiện hành; giữ nguyên 40 OP/80 mapping ID, các hàng lịch sử và mọi gate học thuật/quyền.
 
@@ -413,3 +413,21 @@ Academic acceptance được owner duyệt: **5/40 OP (OP-16–20)**; 35 OP còn
 | OP-20 | [Binary Search](op20-source-evidence.md#7-edu2-ac3b--acceptance-và-g5-bridge) | [#75](https://github.com/Nggvanchi/AlgoVision/pull/75) → [#77](https://github.com/Nggvanchi/AlgoVision/pull/77) | Owner xác nhận căn cứ công bố nội dung tự biên soạn; bên thứ ba RIGHTS_NOT_VERIFIED. |
 
 Giữ nguyên **8 source ID, 40 OP/80 mapping ID**, routing lịch sử **2 READY/38 DEFER**, source_status và mọi hàng mapping/disposition. Acceptance hiện hành được nối bằng checkpoint này, không viết lại lịch sử. Các proof/oracle/locator tại BASE `e558deed7b8daba179520367722db9edeec5e757` nằm ở từng hồ sơ; Policy B và catalog không thay đổi.
+
+## 14. EDU2-F — Owner closeout, 25/11/2026
+
+**EDU-2 CLOSED theo owner acceptance**, 5/5 OP (OP-16–20); academic acceptance toàn dự án **5/40**, không nâng 35 OP còn lại. Quyết định closeout đã được owner phê duyệt; bản đồng bộ docs EDU2-F **chưa commit/PR/merge**. [Roadmap hiện hành](../roadmap.md#edu2-f--closeout-hiện-hành-25112026) và [backlog](../backlog.md#edu2-f--closeout-và-việc-còn-lại-25112026) ghi các residual bắt buộc; không mở EDU-3 implementation hoặc miễn gate.
+
+| OP | Acceptance và G5 bridge được giữ nguyên |
+|---|---|
+| OP-16 Bubble | OWNER_ACCEPTED — [hồ sơ mục I](edu-2-cost-and-bubble-draft.md#i-edu2-ac3b--acceptance-và-g5-bridge) |
+| OP-17 Selection | OWNER_ACCEPTED — [hồ sơ mục 9](op17-source-evidence.md#9-edu2-ac3b--acceptance-và-g5-bridge) |
+| OP-18 Insertion | OWNER_ACCEPTED — [hồ sơ mục 9](op18-source-evidence.md#9-edu2-ac3b--acceptance-và-g5-bridge) |
+| OP-19 Linear | OWNER_ACCEPTED — [hồ sơ mục 8](op19-source-evidence.md#8-edu2-ac3b--acceptance-và-g5-bridge) |
+| OP-20 Binary | OWNER_ACCEPTED — [hồ sơ mục 7](op20-source-evidence.md#7-edu2-ac3b--acceptance-và-g5-bridge) |
+
+- **Pin hiện hành:** [PR #78](https://github.com/Nggvanchi/AlgoVision/pull/78), merge [`71c840b8b417fed4a752fd43749e76db8a4ae53d`](https://github.com/Nggvanchi/AlgoVision/commit/71c840b8b417fed4a752fd43749e76db8a4ae53d), tree `ff0c79c3a4e085f6b89dfd84416e4ff9c1eeabcf`; [CI hậu merge 45637065693](https://github.com/Nggvanchi/AlgoVision/actions/runs/45637065693), Ubuntu/Windows test/build/encoding SUCCESS, 1810/1810 không skip trên đúng SHA. [Sorting:79–129](https://github.com/Nggvanchi/AlgoVision/blob/71c840b8b417fed4a752fd43749e76db8a4ae53d/src/sorting.js#L79-L129) và [Searching:19–39](https://github.com/Nggvanchi/AlgoVision/blob/71c840b8b417fed4a752fd43749e76db8a4ae53d/src/searching.js#L19-L39) định vị nội dung runtime được giữ nguyên.
+- **Reuse theo hash:** AC3b-ex04-1795611082619 có local 1810/1810, JS/CSS **153845/58016 B**, TDD 3 RED/GREEN và negative control wording khôi phục hash, Chrome Sorting **12/12** tại 360/768/1280/1440×900 DPR≈1 (delta≤1e-6). Searching/Compare reuse 8 cases/568 assertions. Không coi số liệu lịch sử #77, CI PR, CI hậu merge và lần QA localhost là cùng một lần chạy; EDU2-F docs-only không tạo kết quả QA runtime mới.
+- **Quyền và catalog:** owner xác nhận căn cứ công bố nội dung tự biên soạn thực tế của năm OP theo [Policy B §11](uit-sources.md#11-policy-b-và-quyền-theo-hành-vi--edu-1f). Không cấp quyền đối với tài liệu nguồn bên thứ ba: **RIGHTS_NOT_VERIFIED** và mọi source_status giữ nguyên. Giữ đúng **8 source ID, 40 OP/80 mapping ID**, routing lịch sử **2 READY/38 DEFER**; không sửa các hàng lịch sử/mapping/disposition hoặc thêm ingestion/citation.
+- **Residual/gate:** EX-03 historical NOT VERIFIED; EX-04 chỉ chấp nhận baseline config hiện tại, historical drift NOT VERIFIED; **ARTIFACT_PERSISTENCE_NOT_VERIFIED**, runtime Chrome profile isolation và cleanup toàn bộ process/profile **NOT VERIFIED**. Insertion step-limit **C2**, negative/mutation **C3** bắt buộc trước release; **G-EDU/G-STRUCT/G-RELEASE và C4 còn mở**. Owner closeout EDU-2 không miễn các gate toàn dự án.
+- **Bước tiếp theo:** EDU-3 **READY FOR PLANNING, NOT STARTED**. Các checkpoint trước mục này, kể cả chữ hiện hành/chưa đóng/chưa merge tại AC3b, là lịch sử tại thời điểm ghi; giữ nguyên nội dung và provenance của chúng.

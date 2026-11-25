@@ -1,5 +1,17 @@
 # Lộ trình AlgoVision
 
+## EDU2-F — Closeout hiện hành, 25/11/2026
+
+**EDU-2 CLOSED theo owner acceptance:** hoàn tất 5/5 OP (OP-16–20), gồm nền tảng chi phí, Sorting, Searching và Compare trong phạm vi đã nghiệm thu; academic acceptance toàn dự án **5/40**, không nâng 35 OP còn lại. Đây là quyết định closeout owner đã phê duyệt; bản đồng bộ docs EDU2-F này **chưa commit/PR/merge**, không giả nhận đã publish patch hoặc có CI mới.
+
+- Baseline sản phẩm: [PR #78](https://github.com/Nggvanchi/AlgoVision/pull/78) đã MERGED, SHA [`71c840b8b417fed4a752fd43749e76db8a4ae53d`](https://github.com/Nggvanchi/AlgoVision/commit/71c840b8b417fed4a752fd43749e76db8a4ae53d), tree `ff0c79c3a4e085f6b89dfd84416e4ff9c1eeabcf`. [Mapping/acceptance và G5 bridge](education/knowledge-mapping.md#14-edu2-f--owner-closeout-25112026) nối hồ sơ OP-16–20; quyền công bố chỉ áp dụng nội dung AlgoVision tự biên soạn thực tế được owner xác nhận.
+- **Evidence hiện hành tại BASE:** [CI hậu merge 45637065693](https://github.com/Nggvanchi/AlgoVision/actions/runs/45637065693), event push/main đúng merge SHA, Ubuntu/Windows **1810/1810 PASS**, không skip; test/build/encoding SUCCESS. Đây là CI hậu merge, khác local QA và CI PR.
+- **Evidence tái sử dụng theo runtime blob/hash:** AC3b-ex04-1795611082619 — full local 1810/1810, JS/CSS raw **153845/58016 B** (headroom **155/484 B**); TDD 3 RED/GREEN và một negative control wording đã khôi phục byte/hash; Chrome Sorting **12/12** (3 thuật toán × 360/768/1280/1440×900 CSS px, DPR delta≤1e-6), ảnh inline đã review. Searching/Compare reuse 8 cases/568 assertions theo hash; không coi là lần chạy mới hoặc production QA. EDU2-F docs-only không lặp test/build/browser khi runtime nguyên byte.
+- **Lịch sử:** checkpoint AC3b, OP20, EDU-R và các mốc trước đó giữ nguyên; chữ “hiện hành”, PARTIAL, 0/40 hoặc chưa commit/merge trong các checkpoint đó mô tả thời điểm ghi nhận. Trạng thái mới đọc tại EDU2-F; không viết lại evidence cũ hoặc gán số liệu #77 cho lần đo #78.
+- **Giữ nguyên:** 8 source ID, 40 OP/80 mapping ID, source_status và routing lịch sử 2 READY/38 DEFER. Quyền tài liệu bên thứ ba **RIGHTS_NOT_VERIFIED**; owner closeout không cấp quyền bên thứ ba hoặc nâng source_status.
+- **Residual bắt buộc:** EX-03 historical NOT VERIFIED; EX-04 chỉ chấp nhận baseline config hiện tại, historical config drift vẫn NOT VERIFIED. **ARTIFACT_PERSISTENCE_NOT_VERIFIED**, runtime Chrome profile isolation và cleanup toàn bộ process/profile **NOT VERIFIED**. Insertion step-limit **C2**, negative/mutation **C3**, bắt buộc trước release, không miễn G-STRUCT.
+- **Tiếp theo:** EDU-3 **READY FOR PLANNING, NOT STARTED**; chưa triển khai hoặc tự mở scope. G-EDU/G-STRUCT/G-RELEASE và C4 còn mở; giữ dependency v1.0.0 và mọi gate screen reader/cross-browser/production.
+
 ## EDU2-AC3b — Acceptance sync (25/11/2026)
 
 - **EDU-2: IN_PROGRESS/PARTIAL, chưa CLOSED.** Năm OP-16–20 đã TECHNICAL CLOSED; owner chấp nhận claims trong phạm vi AC2a/AC3a và căn cứ công bố nội dung tự biên soạn thực tế. Academic acceptance hiện hành **5/40**, không nâng 35 OP còn lại. Bản sync này **chưa commit/publish/merge**; closeout chính thức cần review riêng.
@@ -273,7 +285,7 @@ Bằng chứng: [PR #67](https://github.com/Nggvanchi/AlgoVision/pull/67), merge
   khi có thay đổi sản phẩm; bản thảo docs-only theo gate docs.
 - **Rủi ro/exit gate:** định nghĩa bộ nhớ/phép so sánh có thể khác giáo trình; ghi rõ mô hình đang đo.
   Nghiệm thu học thuật và mapping của nhóm này, không còn nội dung release thiếu nguồn.
-  **Trạng thái hiện hành: IN_PROGRESS / PARTIAL; 5/5 OP TECHNICAL CLOSED, chưa đóng EDU-2.** Xem [checkpoint OP20](#op20--checkpoint-hiện-hành-25112026); các acceptance/exit gate trên giữ nguyên.
+  **Trạng thái hiện hành: CLOSED theo owner EDU2-F; 5/5 OP, academic acceptance toàn dự án 5/40.** Xem [checkpoint EDU2-F](#edu2-f--closeout-hiện-hành-25112026); giữ scope và các residual/gate đã phân tuyến, không miễn release gate.
 
 ### EDU-3 — Cấu trúc dữ liệu
 
@@ -287,7 +299,7 @@ Bằng chứng: [PR #67](https://github.com/Nggvanchi/AlgoVision/pull/67), merge
   regression nội dung, browser khi UI đổi, test/build/CI theo gate chung.
 - **Rủi ro/exit gate:** độ phức tạp ADT lý tưởng có thể khác cách cài đặt mảng/clone hiện tại;
   phân biệt rõ, không gán trung bình O(1) vô điều kiện. Mapping và nội dung nhóm được nghiệm thu.
-  **Trạng thái: CHƯA BẮT ĐẦU.**
+  **Trạng thái: READY FOR PLANNING, NOT STARTED.** Chỉ lập kế hoạch sau phê duyệt riêng; chưa triển khai.
 
 ### EDU-4 — Đồ thị và nghiệm thu giáo dục
 
