@@ -1,5 +1,7 @@
 # EDU-3A1 — Hồ sơ bằng chứng Array, Stack, Queue và Linked List
 
+> Trạng thái hiện hành: [acceptance và G5 bridge tại mục 8](#8-edu-3a--acceptance-và-g5-bridge). OP-01–15 OWNER_ACCEPTED, EDU-3A CLOSED, academic acceptance 20/40; mục 1–7 là hồ sơ A1 lịch sử. STATIC_SUPPORTED mô tả loại evidence, không thay source_status; quyền bên thứ ba vẫn RIGHTS_NOT_VERIFIED.
+
 ## 1. Phạm vi, baseline và trạng thái
 
 - BASE: `0d8d8ce906c64c72dd3d42030bfd6dc2f13a90d7`; TREE: `b5208e637aad61a7c083726f8cee6550fc622645`. Hồ sơ tự biên soạn từ implementation và review EDU3-P0 đã duyệt; không ingestion hoặc truy xuất lại học liệu bên thứ ba.
@@ -109,3 +111,62 @@ Deferred hardening: sparse arrays, Array existing-element validation, public hea
 Theo [Policy B §11](https://github.com/Nggvanchi/AlgoVision/blob/0d8d8ce906c64c72dd3d42030bfd6dc2f13a90d7/docs/education/uit-sources.md#L203-L234), UIT-SRC-004 chỉ định danh/phạm vi; Array/Stack/Queue chưa có locator nguồn ADT chi tiết, chủ đề Linked List không tự chứng minh từng contract/Big-O. Không truy xuất lại IT003/OpenDSA, không ingestion, sao chép, dịch hoặc chuyển thể giáo trình. Proof, oracle và biểu đạt trong hồ sơ này do tự biên soạn dựa trên code pin BASE; metadata/link không cấp quyền nội dung đích. Quyền nội dung AlgoVision và quyền tài liệu bên thứ ba phải đánh giá riêng theo hành vi; không suy từ MIT, technical PASS hoặc owner approval. **RIGHTS_NOT_VERIFIED** giữ nguyên đến evidence/acceptance phù hợp cho nội dung thực tế; quyết định quyền của OP-16–20 không tự áp dụng cho nhóm này.
 
 Giữ **STATIC_SUPPORTED**, trạng thái review **REVIEW_PENDING**, academic acceptance **5/40**, mọi source_status/routing và historical mapping. A1 chỉ thêm hồ sơ và liên kết, không tự đóng EDU-3 hoặc gate học thuật. Giữ EX-03 historical NOT VERIFIED; EX-04 chỉ chấp nhận baseline config hiện tại, historical drift NOT VERIFIED; ARTIFACT_PERSISTENCE_NOT_VERIFIED, runtime Chrome profile isolation và cleanup toàn bộ process/profile NOT VERIFIED. Insertion step-limit C2 và negative/mutation C3 bắt buộc trước release; G-EDU/G-STRUCT/G-RELEASE và C4 còn mở. Không triển khai A2/B/C từ hồ sơ docs-only này.
+
+## 8. EDU-3A — Acceptance và G5 bridge
+
+### 8.1. Quyết định owner và phạm vi
+
+Ngày 26/11/2026, owner chấp nhận claims **OP-01–15 OWNER_ACCEPTED** theo A1/A2 và phản biện đã duyệt, trong tiền điều kiện, invariant và mô hình chi phí ở mục 2–4; xác nhận có căn cứ quyền công bố **nội dung AlgoVision tự biên soạn thực tế** của 15 OP. **EDU-3A OWNER_ACCEPTED/CLOSED**; cùng OP-16–20, academic acceptance toàn dự án **20/40**. Đây không phải chứng nhận học thuật bên ngoài. Quyết định được ghi từ phê duyệt owner trong workflow, không tạo citation bên thứ ba cho quyết định này.
+
+Mục 1–7, gồm STATIC_SUPPORTED/REVIEW_PENDING/5/40 và gap A2 chưa triển khai, giữ nguyên làm lịch sử A1. STATIC_SUPPORTED tiếp tục chỉ loại bằng chứng tĩnh; trạng thái owner acceptance hiện hành nằm ở mục 8. Bản đồng bộ docs closeout **chưa commit/publish/merge**; không dùng việc chưa publish để phủ nhận quyết định owner, cũng không tuyên bố PR docs đã merge.
+
+### 8.2. Acceptance matrix và evidence tái sử dụng
+
+Mỗi hàng dưới đây là **OWNER_ACCEPTED** trong contract/mô hình đã ghi, không mở rộng sang sparse array, cấu trúc list bị sửa phá invariant, lỗi tài nguyên hoặc các hardening deferred ở mục 6. Proof/oracle là nội dung độc lập mục 4–5; không suy 28 hàng oracle thành 28 test runtime mới.
+
+| OP | Claim/chi phí được chấp nhận | Proof; oracle A1 | Product/regression bridge A2 |
+|---|---|---|---|
+| OP-01 Array append | Mảng kết quả riêng, prefix giữ nguyên; API O(n). | P1; A1. | Array A2. |
+| OP-02 Array insert | Index 0..n, copy trước chèn; API O(n). | P1; A2–A4. | Array A2. |
+| OP-03 Array remove | Index 0..n−1, trả removedValue/copy; API O(n). | P1; A5–A6. | Array A2. |
+| OP-04 Array find | ===, first-match 0-based/−1, không mutation; best O(1), worst O(n). | P2; A7–A9. | Array A2. |
+| OP-05 Stack push | TOP ở cuối, output riêng, LIFO; API O(n). | P1/P3; S1. | Stack A2. |
+| OP-06 Stack pop | Lấy TOP, copy, lỗi rỗng; API O(n). | P3; S2–S3. | Stack A2. |
+| OP-07 Stack peek | Đọc O(1), không xóa; toàn API O(n) vì validation. | P3; S4. | Stack A2. |
+| OP-08 Queue enqueue | Thêm REAR, output riêng, FIFO; API O(n). | P1/P3; Q1. | Queue A2. |
+| OP-09 Queue dequeue | Lấy FRONT, copy, lỗi rỗng; API O(n). | P3; Q2–Q3. | Queue A2. |
+| OP-10 Queue front | Đọc O(1), không xóa; toàn API O(n) vì validation. | P3; Q4. | Queue A2. |
+| OP-11 List append | Mutable, size+1, đuôi NULL; API O(n). | P4; L1. | Linked List A2. |
+| OP-12 List prepend | Mutable HEAD mới; nối core O(1), API O(n) vì toArray. | P4; L2. | Linked List A2. |
+| OP-13 List insert | Mutable, index 0..size, giữ suffix; API O(n). | P4; L3–L5. | Linked List A2. |
+| OP-14 List remove | Mutable, size−1, singleton thành HEAD=NULL; API O(n). | P4; L6–L8. | Linked List A2. |
+| OP-15 List find | First-match/−1, không mutation; best O(1), worst O(n). | P2/P4; L9–L11. | Linked List A2. |
+
+Cận find áp dụng n≥1; empty O(1). Giữ phân biệt ADT/core/API, validation, auxiliary/output/copy, constructor List O(n²) và không gồm DOM. Không thêm average-case, generator, pseudocode hoặc trace cho legacy module.
+
+Locator A1 ở mục 1–7 pin `0d8d8ce906c64c72dd3d42030bfd6dc2f13a90d7` vẫn là provenance ban đầu. Bridge A2 pin merge `cb9ea0cb8c1e9d78679b1bbe3617173922cc2671`:
+
+| Nhóm | Oracle/regression bổ sung | Nội dung từ template thật |
+|---|---|---|
+| Array A2 | [array.test.js:129](https://github.com/Nggvanchi/AlgoVision/blob/cb9ea0cb8c1e9d78679b1bbe3617173922cc2671/tests/array.test.js#L129) | [array-controller.test.js:192](https://github.com/Nggvanchi/AlgoVision/blob/cb9ea0cb8c1e9d78679b1bbe3617173922cc2671/tests/array-controller.test.js#L192) |
+| Stack A2 | [stack.test.js:74](https://github.com/Nggvanchi/AlgoVision/blob/cb9ea0cb8c1e9d78679b1bbe3617173922cc2671/tests/stack.test.js#L74) | [stack-controller.test.js:173](https://github.com/Nggvanchi/AlgoVision/blob/cb9ea0cb8c1e9d78679b1bbe3617173922cc2671/tests/stack-controller.test.js#L173) |
+| Queue A2 | [queue.test.js:100](https://github.com/Nggvanchi/AlgoVision/blob/cb9ea0cb8c1e9d78679b1bbe3617173922cc2671/tests/queue.test.js#L100) | [queue-controller.test.js:178](https://github.com/Nggvanchi/AlgoVision/blob/cb9ea0cb8c1e9d78679b1bbe3617173922cc2671/tests/queue-controller.test.js#L178) |
+| Linked List A2 | [linked-list.test.js:153](https://github.com/Nggvanchi/AlgoVision/blob/cb9ea0cb8c1e9d78679b1bbe3617173922cc2671/tests/linked-list.test.js#L153) | [linked-list-controller.test.js:225](https://github.com/Nggvanchi/AlgoVision/blob/cb9ea0cb8c1e9d78679b1bbe3617173922cc2671/tests/linked-list-controller.test.js#L225) |
+
+### 8.3. Technical G5 bridge và QA
+
+- A1 [PR #80](https://github.com/Nggvanchi/AlgoVision/pull/80), commit `5386dfa21306e0221472c98490c913eaafabc40b`, merge `3105b9c432926851360986ba7e532fd4606b5279`: hai docs +115/−0, 15 OP, 28 oracle. A1 docs-only không tạo runtime PASS.
+- A2 [PR #81](https://github.com/Nggvanchi/AlgoVision/pull/81), commit `d2efc6101305911d593b5f8ebae42a046c8fa6c7`, merge [`cb9ea0cb8c1e9d78679b1bbe3617173922cc2671`](https://github.com/Nggvanchi/AlgoVision/commit/cb9ea0cb8c1e9d78679b1bbe3617173922cc2671), tree `621a3fb57bb9994730923d1283a44ae07749ca3d`: chín file +203/−16, 244 file ngoài scope giữ nguyên blob; template chỉ đổi 16 text nodes, không đổi DOM/attributes/API. Thêm tám test, giữ assertions cũ.
+- Local A2: targeted **100/100**, copy assertions RED đúng lý do trước sửa → GREEN; wording mutation **4/4**, assertion negative control Array first-match expected 1→2 RED đúng assertion rồi restore byte/hash → GREEN, báo riêng với implementation mutation. Full **1818/1818**, 0 fail/skip/todo/cancelled; JS/CSS **153845/58016 B**, delta 0/0 so baseline A2, trong budget 154000/58500 B. Không chạy lại trong docs closeout nếu runtime blobs giữ nguyên.
+- [CI hậu merge 45778443813](https://github.com/Nggvanchi/AlgoVision/actions/runs/45778443813) trên đúng merge SHA: Ubuntu/Windows **1818/1818**, 0 fail/skip/todo/cancelled, build/encoding SUCCESS; [Vercel](https://vercel.com/nggvanchi-4548/algo-vision/ANgZFLBVY49rUMXY9x9WP9rMBstX) SUCCESS. Tách local QA, CI trên PR và CI hậu merge; không cộng các lần chạy thành số assertion/test unique.
+- Browser A2: Chrome 152, bốn module × 360/699/768/1280×900, DPR=1; functional **16/16**, **448/448 assertions PASS**. Visual **12/16 PASS, 4/16 FAIL** ở Linked List; **VIS-01 PRE_EXISTING** được owner chấp nhận có điều kiện cho A2, chưa sửa/đóng, bắt buộc xử lý trước release/C4. Không đổi visual FAIL thành PASS hoặc suy localhost thành production QA.
+- Evidence reuse: checkpoint `EDU3A2-1795624357722`, `recovery-1795624932927` và `runner-recovery-1795626161143` (combined manifest, visual review, 32 PNG before/after); `commit-pr-1795626791274` nối committed hashes/CI. Runner corrections có source contract làm căn cứ, phân biệt HARNESS_FAIL với PRODUCT_FAIL; preserve attempts gốc. Chỉ reuse khi hash/phạm vi tương ứng còn hợp lệ, không tính lại mutation/control hoặc assertion attempts.
+- Sai lệch đã ghi nhận: remote branch `codex/edu3a-linear-content` đã mất; title merge thực tế là `Merge pull request #81 from Nggvanchi/codex/edu3a-linear-content`, không phải title tiếng Việt dự kiến. Không phục hồi branch hoặc sửa lịch sử.
+
+### 8.4. Rights scope, lịch sử và residual gates
+
+Áp [Policy B §11](uit-sources.md#11-policy-b-và-quyền-theo-hành-vi--edu-1f): UIT-SRC-004 chỉ định danh/phạm vi. Owner xác nhận căn cứ công bố nội dung AlgoVision tự biên soạn thực tế; acceptance này không xác minh quyền sao chép/dịch/chuyển thể hoặc tái phân phối tài liệu bên thứ ba. **RIGHTS_NOT_VERIFIED** của bên thứ ba và source_status giữ nguyên; không suy quyền từ MIT, technical PASS hay owner approval. Không tìm lại IT003/OpenDSA hoặc ingestion mới.
+
+Giữ **8 source ID, 40 OP/80 mapping ID**, routing lịch sử **2 READY/38 DEFER**, mọi hàng mapping/disposition và lịch sử mục 1–7. [Mapping hiện hành mục 16](knowledge-mapping.md#16-edu-3a--owner-academic-closeout-26112026) chỉ nối acceptance, không đổi catalog/routing. Roadmap/backlog đồng bộ trong PR riêng; EDU-3A CLOSED không đóng EDU-3B/C hoặc toàn EDU-3.
+
+Giữ **EX-03/EX-04**, historical config drift **UNKNOWN**, exact diff/attribution/runtime overrides **NOT VERIFIED**; acceptance config/checkpoint chỉ theo phạm vi và nhóm owner đã duyệt, không blanket acceptance cho delta tương lai. Giữ **ARTIFACT_PERSISTENCE_NOT_VERIFIED** lịch sử, runtime Chrome profile isolation và cleanup toàn bộ process/profile **NOT VERIFIED**; 32 PNG A2 đã lưu là evidence riêng, không tự nâng exception lịch sử. Insertion step-limit **C2**, negative/mutation **C3** bắt buộc trước release; **G-EDU/G-STRUCT/G-RELEASE, C4**, screen reader/zoom/cross-browser/production và mọi release gate còn mở. VIS-01 vẫn là finding phải xử lý trước release.
