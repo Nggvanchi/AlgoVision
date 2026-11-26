@@ -461,3 +461,9 @@ Chỉ thêm liên kết; giữ 8 source ID, 40 OP/80 mapping ID, source_status/r
 - **Reuse QA B2:** targeted 108/108, full 1820/1820, mutations 3/3, assertion controls 2/2, raw JS/CSS **153472/58016 B**. Chrome localhost functional/visual **36/36**, **1528 assertions**, **72 PNG** đọc lại/hash/review. Chain/cleanup PASS chỉ lượt B2; giữ evidence BLOCKED trước recovery và exceptions lịch sử. Không suy localhost thành production QA hoặc nói mọi nhóm oracle đã chạy đầy đủ.
 - **Policy B/rights:** owner acceptance chỉ đúng claims và nội dung AlgoVision tự biên soạn thực tế đã duyệt. **RIGHTS_NOT_VERIFIED** bên thứ ba, 8 source ID, 40 OP/80 mapping ID, source_status và routing lịch sử **2 READY/38 DEFER** giữ nguyên; không ingestion mới hoặc sửa catalog/disposition.
 - **Residual/gate:** giữ VIS-01 trước C4/release, Insertion C2/C3, EX-03/EX-04, historical config drift UNKNOWN, attribution/IPC/runtime overrides NOT VERIFIED, PNG/runtime/cleanup exceptions lịch sử và hardening residual của BST. G-EDU/G-STRUCT/G-RELEASE, C4, screen reader/zoom/cross-browser/production còn mở. Không mở EDU-3C, đổi roadmap/backlog hoặc lặp test/build/browser local trong B3 khi runtime nguyên byte.
+
+## 19. EDU-3C1 — Liên kết hồ sơ Hash Table OP-30–32
+
+[Hồ sơ bằng chứng Hash Table OP-30–32](edu3c-hash-source-evidence.md) — 3 OP × chaining/linear probing, contract/invariant, proof độc lập, 13 nhóm literal oracle, C/P/S bounds và chi phí core/API/generator/trace; provenance SHA/blob/line pin BASE `262e0ceb46ad747510d496bbe7fd6136c1069c0d`, existing coverage, quyền và C2 gaps. **STATIC_SUPPORTED / REVIEW_PENDING**, derivation chờ nghiệm thu; không phải runtime PASS hoặc academic acceptance mới.
+
+Chỉ bổ sung liên kết; giữ 8 source ID, 40 OP/80 mapping ID, source_status/routing và lịch sử. Academic acceptance **29/40**, **RIGHTS_NOT_VERIFIED** và mọi residual/gate giữ nguyên; chưa triển khai C2 hoặc đóng EDU-3C.
