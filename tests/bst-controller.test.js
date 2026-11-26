@@ -9,6 +9,40 @@ import { buildTree } from '../src/structures/bst.js'
 import { bstInsertPseudocode } from '../src/algorithms/bstInsert.js'
 import { createFakeScheduler } from './helpers/fake-scheduler.js'
 
+const BST_LEARNING_COPY = {
+  "insert": {
+    "description": "Đi trái nếu x nhỏ hơn, đi phải nếu lớn hơn; gặp null thì chèn, gặp khóa bằng thì bỏ qua. Chèn mới ở độ sâu d có C=d; gặp khóa trùng ở độ sâu d có C=d+1."
+  },
+  "search": {
+    "advantages": "Khi cây cân bằng, đường tìm dài O(log n); BST hiện tại không tự cân bằng."
+  },
+  "delete": {
+    "description": "Tìm z rồi xử lý: lá thì gỡ; một con thì nối con lên; hai con thì chép giá trị nhỏ nhất cây con phải vào z, giữ ID z rồi gỡ ID successor. Bước chép tạm trùng giá trị; cây cuối mới khôi phục thứ tự nghiêm ngặt.",
+    "disadvantages": "Đi tìm successor không tăng C; O(h) chỉ tính đường đi, chưa gồm copy cây và trace."
+  },
+  "inorder": {
+    "advantages": "Với cây hợp lệ, xuất dãy tăng nghiêm ngặt bằng duyệt lõi O(n); output cần O(n)."
+  },
+  "preorder": {
+    "description": "Thăm gốc → trái → phải. Với BST khóa phân biệt, chèn lại dãy này khôi phục hình dạng và giá trị, không bảo đảm ID cũ.",
+    "disadvantages": "Dãy kết quả không bảo đảm tăng dần; đệ quy tốn ngăn xếp O(h+1)."
+  },
+  "height": {
+    "advantages": "Cho biết độ dài đường đi dài nhất; không phải tổng chi phí mô phỏng."
+  },
+  "postorder": {
+    "disadvantages": "Dãy kết quả không bảo đảm tăng dần; đệ quy tốn ngăn xếp O(h+1)."
+  }
+}
+const BST_TEMPLATE_COPY = [
+  "Cây nhị phân tìm kiếm: nhỏ hơn đi trái, lớn hơn đi phải; không tự cân bằng. Cây đã chốt không chứa khóa trùng; bước COPY khi xóa có thể tạm trùng giá trị.",
+  "Lần xét nút theo khóa (C)",
+  "Chi phí lõi",
+  "Khi cây cân bằng, h+1 = O(log(n+1)); cây hiện tại không tự cân bằng.",
+  "Bộ nhớ phụ lõi",
+  "n là số nút, h là chiều cao theo cạnh. Với n>0, O(h) đọc là O(h+1); cây rỗng O(1). Cards tính lõi, chưa gồm output, đếm nút, copy, trace hay DOM. C chỉ đếm lần xét khóa trong trace; bước đi successor, Min/Max, duyệt và Height không tăng C."
+]
+
 const template = await readFile(new URL('../public/templates/app.html', import.meta.url), 'utf8')
 
 function setupBst() {
@@ -451,6 +485,9 @@ test('Learning Panel: ý tưởng, ưu điểm, hạn chế đổi theo thao tá
       assert.ok(description.length > 0, operation)
       assert.ok(ui.text('#bst-learning-advantages').length > 0, operation)
       assert.ok(ui.text('#bst-learning-disadvantages').length > 0, operation)
+      for (const [field, expected] of Object.entries(BST_LEARNING_COPY[operation] ?? {})) {
+        assert.equal(ui.text('#bst-learning-' + field), expected, operation + ' copy ' + field)
+      }
       assert.match(ui.text('#bst-complexity-title'), new RegExp(bstView.bstOperations[operation].name, 'i'))
       seen.add(description)
     }
@@ -475,6 +512,43 @@ test('Learning Panel: mã giả hiển thị lấy cùng nguồn với generator
       const lines = [...ui.document.querySelectorAll('#bst-pseudocode .pseudocode-line')]
         .map((line) => line.textContent)
       assert.deepEqual(lines, info.pseudocode, operation)
+    }
+  } finally {
+    ui.cleanup()
+  }
+})
+
+
+test('BST template: chi phí lõi, counter literal và isolation 9 OP', () => {
+  const ui = setupBst()
+  try {
+    const normalize = text => text.trim().replace(/\s+/g, ' ')
+    const texts = [
+      ui.text('#bst-section > .section-heading p'),
+      ui.$('#bst-comparisons').parentElement.querySelector('span').textContent,
+      ui.text('#bst-complexity-panel .complexity-heading h4'),
+      ui.$('#bst-complexity-balanced').parentElement.querySelector('p').textContent,
+      ui.$('#bst-complexity-space').parentElement.querySelector('span').textContent,
+      ui.text('#bst-learning .learning-heading p'),
+    ]
+    assert.deepEqual(texts.map(normalize), BST_TEMPLATE_COPY, 'BST sáu text nodes đã duyệt')
+    const fixtures = [
+      ['insert', 45, '3'], ['search', 40, '3'], ['delete', 50, '1'],
+      ['inorder', undefined, '0'], ['preorder', undefined, '0'], ['postorder', undefined, '0'],
+      ['min', undefined, '0'], ['max', undefined, '0'], ['height', undefined, '0'],
+    ]
+    for (const [operation, value, comparisons] of fixtures) {
+      ui.$('#bst-preset-balanced').click()
+      ui.perform(operation, value)
+      ui.nextUntilDone()
+      assert.equal(ui.text('#bst-comparisons'), comparisons, operation + ' C dò tay')
+      const committed = [...ui.nodeValues()].sort((a, b) => a - b)
+      selectOperation(ui, 'height')
+      selectOperation(ui, operation)
+      assert.deepEqual([...ui.nodeValues()].sort((a, b) => a - b), committed, operation + ' đổi panel không đổi cây')
+      assert.equal(ui.text('#bst-learning-description'), bstView.bstOperations[operation].learning.description, operation + ' isolation')
+      assert.deepEqual([...ui.document.querySelectorAll('#bst-pseudocode .pseudocode-line')].map(line => line.textContent), bstView.bstOperations[operation].pseudocode, operation + ' mã giả isolation')
+      assert.equal(ui.text('#bst-complexity'), ['inorder', 'preorder', 'postorder', 'height'].includes(operation) ? 'O(n)' : 'O(h)', operation + ' card không đổi')
     }
   } finally {
     ui.cleanup()

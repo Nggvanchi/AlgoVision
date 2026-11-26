@@ -1,5 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { deepFreeze } from './helpers/deep-freeze.js'
+import { assertBstStepInvariants } from './helpers/bst-step-invariants.js'
 
 import { generateBstInsertSteps } from '../src/algorithms/bstInsert.js'
 import { generateBstSearchSteps } from '../src/algorithms/bstSearch.js'
@@ -105,4 +107,61 @@ test('Duyệt cây và Height luôn thăm đủ n nút (O(n)) dù cây cân bằ
 
     assert.equal(generateBstHeightSteps(tree).length - 1, n)
   }
+})
+
+// Expected dò tay từ hồ sơ OP-21–29, không dùng API/generator tạo expected.
+test('BST literal oracle: 9 OP, frozen input và bảo toàn bước cũ', () => {
+  const tree = deepFreeze({ rootId: 1, nextId: 6, nodes: {
+    1: { id: 1, value: 4, left: 2, right: 3 },
+    2: { id: 2, value: 2, left: null, right: null },
+    3: { id: 3, value: 6, left: 4, right: 5 },
+    4: { id: 4, value: 5, left: null, right: null },
+    5: { id: 5, value: 7, left: null, right: null },
+  } })
+  const input = JSON.stringify(tree)
+  const fixtures = [
+    { op: 'insert', value: 3, run: () => generateBstInsertSteps(tree, 3), c: 2, lines: [null, 6, 8, 6, 10], found: 6, result: 'inserted' },
+    { op: 'search', value: 5, run: () => generateBstSearchSteps(tree, 5), c: 3, lines: [null, 5, 4, 3], found: 4, result: 'found' },
+    { op: 'delete', value: 4, run: () => generateBstDeleteSteps(tree, 4), c: 1, lines: [null, 10, 11, 11, 12, 13], found: 1, result: 'deleted' },
+    { op: 'inorder', value: null, run: () => generateBstTraversalSteps(tree, 'inorder'), c: 0, lines: [null, 4, 4, 4, 4, 4], ids: [2, 1, 4, 3, 5], result: [2, 4, 5, 6, 7] },
+    { op: 'preorder', value: null, run: () => generateBstTraversalSteps(tree, 'preorder'), c: 0, lines: [null, 3, 3, 3, 3, 3], ids: [1, 2, 3, 4, 5], result: [4, 2, 6, 5, 7] },
+    { op: 'postorder', value: null, run: () => generateBstTraversalSteps(tree, 'postorder'), c: 0, lines: [null, 5, 5, 5, 5, 5], ids: [2, 4, 5, 3, 1], result: [2, 5, 7, 6, 4] },
+    { op: 'min', value: null, run: () => generateBstMinMaxSteps(tree, 'min'), c: 0, lines: [null, 2, 4, 5], found: 2, result: 2 },
+    { op: 'max', value: null, run: () => generateBstMinMaxSteps(tree, 'max'), c: 0, lines: [null, 2, 4, 4, 5], found: 5, result: 7 },
+    { op: 'height', value: null, run: () => generateBstHeightSteps(tree), c: 0, lines: [null, 3, 3, 3, 3, 3], ids: [2, 4, 5, 3, 1], result: 2 },
+  ]
+  const saved = []
+  for (const fixture of fixtures) {
+    const steps = fixture.run()
+    const last = steps.at(-1)
+    assertBstStepInvariants(steps)
+    assert.equal(last.comparisons, fixture.c, fixture.op + ' C literal')
+    assert.deepEqual(steps.map(step => step.pseudocodeLine), fixture.lines, fixture.op + ' mã giả/S')
+    assert.deepEqual(last.result, fixture.result, fixture.op + ' kết quả literal')
+    assert.ok(steps.every(step => step.operation === fixture.op && step.value === fixture.value), fixture.op + ' input chốt')
+    if (fixture.found !== undefined) assert.equal(last.foundId, fixture.found, fixture.op + ' ID literal')
+    if (fixture.ids) assert.deepEqual(steps.slice(1).map(step => step.currentId), fixture.ids, fixture.op + ' thứ tự ID')
+    if (Array.isArray(fixture.result)) assert.deepEqual(last.output, fixture.result, fixture.op + ' output')
+    if (fixture.op === 'insert') {
+      assert.equal(last.tree.nodes[2].right, 6)
+      assert.deepEqual(last.tree.nodes[6], { id: 6, value: 3, left: null, right: null })
+      assert.equal(last.tree.nextId, 7)
+    }
+    if (fixture.op === 'delete') {
+      const copied = steps.find(step => step.pseudocodeLine === 12)
+      assert.equal(copied.tree.nodes[1].value, 5, 'COPY giữ ID z')
+      assert.equal(copied.tree.nodes[4].value, 5, 'COPY tạm trùng khóa')
+      assert.equal(last.tree.rootId, 1)
+      assert.equal(last.tree.nodes[1].value, 5)
+      assert.equal(last.tree.nodes[3].left, null)
+      assert.ok(!Object.hasOwn(last.tree.nodes, 4), 'gỡ ID successor')
+      assert.equal(last.tree.nextId, 6)
+      assert.equal(last.successorId, null)
+    }
+    if (fixture.op === 'height') assert.deepEqual(last.heights, { 1: 2, 2: 0, 3: 1, 4: 0, 5: 0 })
+    assert.equal(JSON.stringify(tree), input, fixture.op + ' không mutation input')
+    saved.push({ steps: deepFreeze(steps), bytes: JSON.stringify(steps) })
+  }
+  generateBstInsertSteps(tree, 8)
+  for (const old of saved) assert.equal(JSON.stringify(old.steps), old.bytes, 'thao tác sau không sửa bước cũ')
 })

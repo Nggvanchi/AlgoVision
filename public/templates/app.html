@@ -1438,8 +1438,7 @@
         <h2>Binary Search Tree</h2>
         <h3 class="visually-hidden">Mô phỏng</h3>
         <p>
-            Cây nhị phân tìm kiếm: nhỏ hơn đi trái, lớn hơn đi phải.
-            Cây không tự cân bằng, không chứa giá trị trùng.
+            Cây nhị phân tìm kiếm: nhỏ hơn đi trái, lớn hơn đi phải; không tự cân bằng. Cây đã chốt không chứa khóa trùng; bước COPY khi xóa có thể tạm trùng giá trị.
         </p>
         </div>
         <span class="visualizer-tag" id="bst-complexity">O(h)</span>
@@ -1571,7 +1570,7 @@
             <strong id="bst-current-value">—</strong>
         </div>
         <div class="stat-card">
-            <span>Số lần so sánh</span>
+            <span>Lần xét nút theo khóa (C)</span>
             <strong id="bst-comparisons">0</strong>
         </div>
         <div class="stat-card">
@@ -1601,7 +1600,7 @@
         <div class="learning-pane" data-learning-pane="complexity" hidden>
         <div class="complexity-panel" id="bst-complexity-panel">
         <div class="complexity-heading">
-            <h4>Phân tích thao tác</h4>
+            <h4>Chi phí lõi</h4>
             <span id="bst-complexity-title">INSERT</span>
         </div>
 
@@ -1615,7 +1614,7 @@
             <div class="complexity-card">
                 <span>Cây cân bằng (h ≈ log₂ n)</span>
                 <strong id="bst-complexity-balanced">O(log n)</strong>
-                <p>Mỗi mức chứa gấp đôi số nút của mức trên nên đường từ gốc xuống chỉ dài khoảng log₂ n.</p>
+                <p>Khi cây cân bằng, h+1 = O(log(n+1)); cây hiện tại không tự cân bằng.</p>
             </div>
 
             <div class="complexity-card">
@@ -1625,7 +1624,7 @@
             </div>
 
             <div class="complexity-card">
-                <span>Bộ nhớ phụ</span>
+                <span>Bộ nhớ phụ lõi</span>
                 <strong id="bst-complexity-space">O(1)</strong>
                 <p id="bst-complexity-space-note"></p>
             </div>
@@ -1640,8 +1639,7 @@
                     <span class="section-eyebrow">GÓC KIẾN THỨC</span>
                     <h3>Tìm hiểu thao tác</h3>
                     <p>
-                        h là chiều cao cây (số cạnh). Chi phí của BST phụ thuộc vào h,
-                        nên hãy so sánh cây mẫu cân bằng với cây suy biến.
+                        n là số nút, h là chiều cao theo cạnh. Với n>0, O(h) đọc là O(h+1); cây rỗng O(1). Cards tính lõi, chưa gồm output, đếm nút, copy, trace hay DOM. C chỉ đếm lần xét khóa trong trace; bước đi successor, Min/Max, duyệt và Height không tăng C.
                     </p>
                 </div>
             </div>
