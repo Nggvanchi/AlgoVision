@@ -1,5 +1,17 @@
 # Lộ trình AlgoVision
 
+## Unified Roadmap — Checkpoint hiện hành, 26/11/2026
+
+**EDU-3A CLOSED; academic docs PUBLISHED/CLOSED qua [#82](https://github.com/Nggvanchi/AlgoVision/pull/82); academic acceptance toàn dự án 20/40 (OP-01–20). EDU-3 toàn giai đoạn vẫn IN_PROGRESS/PARTIAL.** Owner acceptance chỉ trong giả định/mô hình chi phí và phạm vi nội dung AlgoVision tự biên soạn đã duyệt; quyền tài liệu bên thứ ba vẫn RIGHTS_NOT_VERIFIED.
+
+- **BASE hiện hành:** merge [`1f8b2f42ccbd02d0c0ac046c016b1bb2c0d198e4`](https://github.com/Nggvanchi/AlgoVision/commit/1f8b2f42ccbd02d0c0ac046c016b1bb2c0d198e4), tree `33817815222e06c64fc0db5695f455de1f4ce233`. [CI hậu merge 45800129351](https://github.com/Nggvanchi/AlgoVision/actions/runs/45800129351): Ubuntu/Windows mỗi OS **1818/1818**, 0 fail/skip/todo/cancelled, build/encoding SUCCESS; Vercel SUCCESS. Đây là CI trên đúng merge SHA, không phải local QA mới của bản sync này.
+- **Acceptance/G5:** [mapping mục 16](education/knowledge-mapping.md#16-edu-3a--owner-academic-closeout-26112026), [hồ sơ EDU-3A mục 8](education/edu3a-linear-source-evidence.md#8-edu-3a--acceptance-và-g5-bridge), evidence #80/#81 và #82. Giữ 8 source ID, 40 OP/80 mapping ID, source_status và routing lịch sử 2 READY/38 DEFER.
+- **Reuse A2 theo hash:** local 1818/1818, JS/CSS raw **153845/58016 B**, headroom **155/484 B**; Chrome 152, bốn module × 360/699/768/1280×900 DPR=1, functional **16/16**, **448/448 assertions PASS**, visual **12/16 PASS, 4/16 FAIL**. VIS-01 PRE_EXISTING chưa sửa, bắt buộc xử lý trước C4/release. Không gộp local QA, CI PR và CI hậu merge; không suy Chrome localhost thành production QA.
+- **Trạng thái tiếp theo:** EDU-3B — BST OP-21–29 (**9 OP**), EDU-3C — Hash Table OP-30–32 (**3 OP**), EDU-4 — Graph OP-33–40 (**8 OP**) **NOT STARTED** về giai đoạn nội dung học thuật. Đây không phải quyền mở scope hoặc audit/triển khai các nhóm đó.
+- **Residual/gate:** giữ VIS-01, Insertion step-limit C2 và negative/mutation C3 bắt buộc trước release; EX-03/EX-04, historical config drift UNKNOWN, attribution/IPC/runtime overrides NOT VERIFIED, ARTIFACT_PERSISTENCE_NOT_VERIFIED lịch sử, runtime isolation/process cleanup NOT VERIFIED. G-EDU/G-STRUCT/G-RELEASE, C4, screen reader, zoom, cross-browser và production còn mở. Limited config acceptance chỉ cho workflow đã review; không mở rộng trust hoặc rebaseline.
+- **Cách đọc lịch sử:** các checkpoint phía dưới, kể cả chữ “hiện hành”, 0/40, 5/40, NOT STARTED hoặc “chưa commit/publish/merge”, mô tả thời điểm ghi. Không sửa lại lịch sử để nhận đã có evidence mới. #82 đã publish academic docs; **bản Unified Roadmap Sync này chưa commit/PR/merge**.
+- **Một nguồn kế hoạch:** roadmap này giữ dependency, scope, deliverable và exit gate; [backlog](backlog.md#residual-hiện-hành--unified-sync-26112026) chỉ giữ findings/residual/pending tasks và liên kết. Không tạo roadmap phụ.
+
 ## EDU2-F — Closeout hiện hành, 25/11/2026
 
 **EDU-2 CLOSED theo owner acceptance:** hoàn tất 5/5 OP (OP-16–20), gồm nền tảng chi phí, Sorting, Searching và Compare trong phạm vi đã nghiệm thu; academic acceptance toàn dự án **5/40**, không nâng 35 OP còn lại. Đây là quyết định closeout owner đã phê duyệt; bản đồng bộ docs EDU2-F này **chưa commit/PR/merge**, không giả nhận đã publish patch hoặc có CI mới.
@@ -105,7 +117,7 @@ test CSS hoặc 137 case R7 thành browser QA PASS cho Light Minimal v2.
 
 ## Chuẩn hóa v1.0.0
 
-Thứ tự bắt buộc: **UI v2-3 → C1 → EDU-1 → EDU-2 → EDU-3 → EDU-4 → C2 → C3 → C4 → C5**.
+Thứ tự bắt buộc: **UI v2-3 → C1 → EDU-1 → EDU-2 → EDU-3A/B/C → EDU-4 → C2 → C3 → C4 Release v1.0.0 → C5 → UI3-0…10 → GH → FC**. C5 chỉ xử lý residue sau v1.0.0; UI3-9/10 chỉ tối ưu/QA delta redesign; FC kiểm kê môi trường sau GH. Không thay scope/dependencies của release v1.0.0 hoặc mở phương án UI3 trước C2.
 
 ### Trạng thái owner hiện hành — cập nhật D1, 22/11/2026
 
@@ -285,7 +297,7 @@ Bằng chứng: [PR #67](https://github.com/Nggvanchi/AlgoVision/pull/67), merge
   khi có thay đổi sản phẩm; bản thảo docs-only theo gate docs.
 - **Rủi ro/exit gate:** định nghĩa bộ nhớ/phép so sánh có thể khác giáo trình; ghi rõ mô hình đang đo.
   Nghiệm thu học thuật và mapping của nhóm này, không còn nội dung release thiếu nguồn.
-  **Trạng thái hiện hành: CLOSED theo owner EDU2-F; 5/5 OP, academic acceptance toàn dự án 5/40.** Xem [checkpoint EDU2-F](#edu2-f--closeout-hiện-hành-25112026); giữ scope và các residual/gate đã phân tuyến, không miễn release gate.
+  **Trạng thái hiện hành: EDU-2 CLOSED, 5/5 OP; academic acceptance toàn dự án 20/40 sau EDU-3A.** Xem [checkpoint hiện hành](#unified-roadmap--checkpoint-hiện-hành-26112026) và [lịch sử EDU2-F](#edu2-f--closeout-hiện-hành-25112026); giữ scope và residual, không miễn release gate.
 
 ### EDU-3 — Cấu trúc dữ liệu
 
@@ -299,7 +311,7 @@ Bằng chứng: [PR #67](https://github.com/Nggvanchi/AlgoVision/pull/67), merge
   regression nội dung, browser khi UI đổi, test/build/CI theo gate chung.
 - **Rủi ro/exit gate:** độ phức tạp ADT lý tưởng có thể khác cách cài đặt mảng/clone hiện tại;
   phân biệt rõ, không gán trung bình O(1) vô điều kiện. Mapping và nội dung nhóm được nghiệm thu.
-  **Trạng thái: READY FOR PLANNING, NOT STARTED.** Chỉ lập kế hoạch sau phê duyệt riêng; chưa triển khai.
+  **Trạng thái: IN_PROGRESS/PARTIAL. EDU-3A CLOSED, OP-01–15 OWNER_ACCEPTED; EDU-3B (9 OP) và EDU-3C (3 OP) NOT STARTED.** [Checkpoint hiện hành](#unified-roadmap--checkpoint-hiện-hành-26112026) nối acceptance 20/40; mỗi nhóm tiếp theo cần plan/approval riêng. Không coi A CLOSED là toàn EDU-3 CLOSED.
 
 ### EDU-4 — Đồ thị và nghiệm thu giáo dục
 
@@ -388,6 +400,67 @@ Bằng chứng: [PR #67](https://github.com/Nggvanchi/AlgoVision/pull/67), merge
 
 ## UI v3 — Modern Academic Workspace
 
+**Modern Academic Design System & Motion — Modern, Light Minimal, Professional, Educational.** Giữ heading cũ để không phá anchors. **PLANNED / NOT STARTED — DEFERRED UNTIL C5 CLOSED.** Chỉ research read-only trong EDU-2–4 khi được duyệt riêng; approval roadmap không phải quyền mở UI3-0, trial, install hoặc thay release gates.
+
+**Dependency:** EDU-3A/B/C → EDU-4 → C2 → C3 → C4 Release v1.0.0 → C5 → UI3-0 → UI3-1 → UI3-2 → UI3-3 → UI3-4 → UI3-5 → UI3-6 → UI3-7 → UI3-8 → UI3-9 → UI3-10 → GH → FC.
+
+| ID | Scope / deliverables | Exit gate |
+|---|---|---|
+| UI3-0 | Audit UI/UX theo BASE; research/reference và trial cách ly có scope | Baseline/findings, license/provenance, scripts/hooks, Codex/Windows và compatibility được review; plan được owner duyệt |
+| UI3-1 | Tokens, typography, wireframes Desktop/Tablet/Mobile, motion contract | Semantic states, reduced motion, focus và hợp đồng thiết kế được duyệt |
+| UI3-2 | Shell/navigation/drawer/rail | Điều hướng, keyboard/focus, DOM/controller contracts giữ đúng |
+| UI3-3 | Dashboard/Library | Bố cục, filter/empty state, CTA và điều hướng có evidence |
+| UI3-4 | Sorting/Searching workspace | Giữ generator, pseudocode, scheduler, trace và nội dung học thuật |
+| UI3-5 | Linear: Array/Stack/Queue/Linked List | Giữ ADT/API, validation, copy/mutation và nội dung đã nghiệm thu |
+| UI3-6 | BST/Hash/Graph | Giữ ID, invariant, snapshot, timing và cue theo state |
+| UI3-7 | Learning Panel | Nội dung/controls nhất quán, giữ giả định và academic acceptance |
+| UI3-8 | Motion/responsive/accessibility | WCAG 2.2 AA là mục tiêu cần nghiệm thu; keyboard/focus, reduced motion, zoom 200%, screen reader, browser/thiết bị thật có evidence |
+| UI3-9 | Tối ưu delta CSS/JS/test/assets phát sinh từ redesign | Inventory/reference và benchmark trước–sau; không auto-delete hoặc lặp audit tổng quát C2/C3 |
+| UI3-10 | Regression/QA/release phần thay đổi sau redesign | Full regression/CI/bundle, browser/a11y và production smoke trên SHA phù hợp; owner nghiệm thu, không thay gate C4 v1.0.0 |
+
+**Native CSS/JS/Web Animations API first.** Không React/Tailwind/framework migration, decorative motion, đổi thuật toán/scheduler/ID/snapshot hoặc dùng motion làm sai trạng thái học. Giữ DOM/controller contracts, timing, reduced motion, accessibility, test count/khả năng bắt lỗi và raw JS ≤154000 B/CSS ≤58500 B. Native API cũng phải qua compatibility và QA; không coi reference React/Tailwind là quyền đưa chúng vào runtime.
+
+### Phân tuyến công cụ ứng viên
+
+**ADOPT** là định hướng tái sử dụng công cụ đã có/được xác minh; **TRIAL** cần thử cách ly; **REFERENCE ONLY** chỉ tham khảo; **DEFER** chưa tích hợp; **REJECT** không dùng trong kế hoạch tương lai. Mọi nhãn, kể cả ADOPT, **không cấp quyền install**, đổi config/CI/required checks hoặc thêm production dependencies. Ưu tiên existing tools, không tích hợp cả danh sách.
+
+| Tuyến | Phân loại | Upstream / công cụ | Giới hạn và gate |
+|---|---|---|---|
+| EDU | REFERENCE ONLY | [OpenDSA/OpenDSA](https://github.com/OpenDSA/OpenDSA), [trekhleb/javascript-algorithms](https://github.com/trekhleb/javascript-algorithms), [algorithm-visualizer/algorithm-visualizer](https://github.com/algorithm-visualizer/algorithm-visualizer) | Policy B; không ingestion/copy/dịch, không nâng rights, source_status hoặc academic acceptance |
+| C2 | TRIAL | [webpro-nl/knip](https://github.com/webpro-nl/knip), [kucherenko/jscpd](https://github.com/kucherenko/jscpd), [sverweij/dependency-cruiser](https://github.com/sverweij/dependency-cruiser), [eslint/eslint](https://github.com/eslint/eslint), [stylelint/stylelint](https://github.com/stylelint/stylelint), [btd/rollup-plugin-visualizer](https://github.com/btd/rollup-plugin-visualizer) | Audit/source baseline cách ly; kiểm Vite 8/Rolldown, Node/OS và module resolution trước trial |
+| C2 | DEFER | [SonarSource/SonarJS](https://github.com/SonarSource/SonarJS) | Tránh chồng ESLint/config; tính dependency và chi phí duy trì trước đề xuất lại |
+| C3 | ADOPT | [nodejs/node](https://github.com/nodejs/node): node:test/native coverage; skills hiện hữu `test-profile`, `mutation-test` | Đo profile/coverage và mutation strength; giữ test count, assertions và cách ly state |
+| C3 | TRIAL | [dubzzz/fast-check](https://github.com/dubzzz/fast-check); reuse [jscpd](https://github.com/kucherenko/jscpd) cho tests | Seed/oracle và chi phí phải tái lập; không cài bản jscpd thứ hai hoặc giảm tests |
+| C3 | DEFER | [stryker-mutator/stryker-js](https://github.com/stryker-mutator/stryker-js), [bcoe/c8](https://github.com/bcoe/c8) | Ưu tiên mutation-test/native coverage đã có; không tích hợp trùng |
+| C4 | ADOPT | [microsoft/playwright](https://github.com/microsoft/playwright), reuse harness | Evidence browser thật; không thay manual/screen reader/thiết bị thật/production QA |
+| C4 | TRIAL | [dequelabs/axe-core](https://github.com/dequelabs/axe-core), [GoogleChrome/lighthouse-ci](https://github.com/GoogleChrome/lighthouse-ci), [github/codeql-action](https://github.com/github/codeql-action), [rhysd/actionlint](https://github.com/rhysd/actionlint) | A11y/performance/security/workflow findings; không tự thêm required checks |
+| C4 | DEFER | [ossf/scorecard](https://github.com/ossf/scorecard) | Chỉ đề xuất lại nếu có gap và maintenance/permissions phù hợp |
+| UI3 | REFERENCE ONLY | [alexpate/awesome-design-systems](https://github.com/alexpate/awesome-design-systems), [imskyleen/animate-ui](https://github.com/imskyleen/animate-ui), [shadcn-ui/ui](https://github.com/shadcn-ui/ui), [argyleink/open-props](https://github.com/argyleink/open-props) | Tham khảo design/motion; không sao chép khi chưa review quyền hoặc kéo framework vào sản phẩm |
+| UI3 | TRIAL | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | Pin revision; license, scripts/hooks, executable chain và Codex/Windows review trước trial cách ly |
+| UI3 | DEFER | [juliangarnier/anime](https://github.com/juliangarnier/anime), [motiondivision/motion](https://github.com/motiondivision/motion) | Ưu tiên native CSS/JS/Web Animations API; dependency chỉ đề xuất khi native không đáp ứng gap đã chứng minh |
+| UI3 | REJECT | [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) — UI/UX Pro Max cho kế hoạch tương lai | Không uninstall skill hoặc xóa lịch sử; snapshot D1 bên dưới không còn là lựa chọn hiện hành |
+| GH | REFERENCE ONLY | [othneildrew/Best-README-Template](https://github.com/othneildrew/Best-README-Template), [octokatherine/readme.so](https://github.com/octokatherine/readme.so), [matiassingers/awesome-readme](https://github.com/matiassingers/awesome-readme) | Tham khảo tài liệu; review license/biểu đạt trước reuse |
+| GH | ADOPT | [mermaid-js/mermaid](https://github.com/mermaid-js/mermaid), [badges/shields](https://github.com/badges/shields) | Diagram/badges dựa trên dữ liệu thật; badge không thay evidence CI, không thêm runtime dependency |
+| GH | TRIAL | [DavidAnson/markdownlint-cli2](https://github.com/DavidAnson/markdownlint-cli2), [lycheeverse/lychee](https://github.com/lycheeverse/lychee) | Lint/link cách ly, tính false positives và network permissions; không auto-fix |
+
+**Gate trước reuse/trial:** pin revision/version; đọc license/NOTICE của đúng nội dung và dependencies, kiểm quyền theo hành vi, provenance, scripts/hooks/binaries, Node/OS/Codex-Windows, Vite/Rolldown khi liên quan, maintenance và overlap. Metadata/URL upstream không chứng minh license hoặc compatibility PASS. Ghi scope/output/cache ngoài repo, chi phí, acceptance, STOP/rollback và xin approval riêng. C2 phân loại findings **SAFE TO REMOVE / REFACTOR / KEEP / NEEDS REVIEW**; tên SAFE TO REMOVE không cấp quyền xóa. C3 không giảm test hoặc nới assertions/mutation strength; mọi chính sách giảm test cần owner duyệt riêng.
+
+UI3-9/10 chỉ xử lý delta redesign, reuse nền tảng C2/C3/C4; không thêm phase audit/optimization/QA trùng. Không theo dõi tiến độ cá nhân hoặc dùng dữ liệu giả. Mọi PR cần plan/approval riêng; phiên bản release sau redesign do owner quyết định.
+
+## GH — Hồ sơ công bố sau UI ổn định
+
+- **Dependency/scope:** sau UI3-10 và UI ổn định; hoàn thiện README, architecture diagram, screenshots thật gắn SHA/browser/viewport, badges và repository metadata. Roadmap là nguồn kế hoạch duy nhất, không tạo checklist roadmap cạnh tranh trong README/backlog.
+- **Exit gate:** nội dung/links/anchors/encoding đúng thực tế, diagram khớp kiến trúc, ảnh không giả lập PASS, license/provenance của phần reuse được review; owner nghiệm thu. Mọi mutation metadata GitHub, CI/config hoặc xuất bản cần approval riêng; không coi ADOPT là quyền thay repository settings.
+
+## FC — Kiểm kê và cleanup môi trường
+
+- **Dependency/scope:** sau GH; inventory branch/worktree/folders/cache/skills/config/artifacts, phân loại WIP/evidence và chuẩn bị backup/restore đã xác minh. Hướng đến folder `algovision` chính cùng evidence/backup riêng; chưa di chuyển/xóa bất kỳ tài nguyên nào.
+- **Ranh giới:** C5 chỉ xử lý residue sau release v1.0.0 theo từng approval; UI3-9 chỉ delta redesign; FC xử lý môi trường cuối chuỗi, không cleanup hàng loạt hoặc lặp các phase đó.
+- **Exit gate:** exact paths, owners, dependencies, WIP/evidence, backup/hash/restore plan, ảnh hưởng và approval **từng xóa/di chuyển**. Không suy quyền cleanup từ merge/release/roadmap; thiếu provenance hoặc rủi ro mất dữ liệu thì STOP.
+
+<details>
+<summary>Snapshot UI3 D1 — lịch sử, không phải kế hoạch/tool routing hiện hành</summary>
+
 **Trạng thái: PLANNED / NOT STARTED — DEFERRED UNTIL C5 CLOSED.** Đây là roadmap đã duyệt, không phải phê duyệt triển khai, cài công cụ hoặc mở UI3-0.
 
 **Dependency:** C5 CLOSED → UI3-0 → UI3-1 → UI3-2 → UI3-3 → UI3-4 → UI3-5 → UI3-6 → UI3-7 → UI3-8 → UI3-9 → UI3-10.
@@ -410,7 +483,7 @@ Giữ nguyên chuỗi **UI v2-3 → C1 → EDU-1 → EDU-2 → EDU-3 → EDU-4 �
 
 UI/UX Pro Max chỉ hỗ trợ design/review, **không phải production dependency**. UI3-0 kiểm provenance/license và compatibility Codex/Windows trước khi sử dụng; không cài skill trong D1. Giữ kiến trúc hiện hành, bất biến thuật toán, nội dung học thuật, ngân sách raw JS ≤154000 B/CSS ≤58500 B và khả năng bắt lỗi.
 
-### Phân tuyến công cụ ứng viên
+#### Phân tuyến công cụ D1 (lịch sử)
 
 | Tuyến | Công cụ / mục đích dự kiến | Giới hạn |
 |---|---|---|
@@ -423,3 +496,5 @@ UI/UX Pro Max chỉ hỗ trợ design/review, **không phải production depende
 Ưu tiên audit cách ly, công cụ hiện hữu và evidence đúng SHA/hash. Danh sách là ứng viên, **không mặc định tích hợp toàn bộ**, không thêm dependency vào runtime và không đổi CI/config trong D1. Phạm vi tools source/test/QA được giao C2/C3/C4, tài liệu giao GH; mỗi lần tích hợp cần chứng minh khoảng trống, compatibility/chi phí và approval riêng.
 
 Mọi PR cần plan và owner approval riêng. Không theo dõi tiến độ học tập cá nhân, không dùng dữ liệu giả, không tự nâng academic/rights/release gates. Phiên bản release tiếp theo do owner quyết định. C5 CLOSED chỉ là dependency, không tự cấp quyền bắt đầu UI3.
+
+</details>

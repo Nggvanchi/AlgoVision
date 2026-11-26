@@ -1,5 +1,16 @@
 # Backlog AlgoVision
 
+## Residual hiện hành — Unified Sync, 26/11/2026
+
+> EDU-3A CLOSED, academic docs PUBLISHED qua #82; acceptance 20/40. [Checkpoint/plan duy nhất](roadmap.md#unified-roadmap--checkpoint-hiện-hành-26112026) giữ evidence và dependency; EDU-3 toàn giai đoạn chưa CLOSED. Các checkpoint “chưa commit/merge”, 5/40 hoặc NOT STARTED phía dưới là lịch sử tại thời điểm ghi. Bản docs Unified Sync này chưa commit/PR/merge.
+
+- **VIS-01:** PRE_EXISTING, chưa sửa/đóng; [finding](#lỗi) bắt buộc xử lý trước C4/release. Functional A2 PASS không biến visual 4/16 FAIL thành PASS.
+- **Insertion:** step-limit ở C2, negative/mutation ở C3 bắt buộc trước release; không miễn G-STRUCT.
+- **Residual:** EX-03/EX-04; historical config drift UNKNOWN, attribution/IPC/runtime overrides NOT VERIFIED; ARTIFACT_PERSISTENCE_NOT_VERIFIED lịch sử, runtime isolation/process cleanup NOT VERIFIED. Limited config acceptance không mở trust; delta checkpoint chỉ theo đúng policy owner duyệt cho từng workflow.
+- **Rights/release:** RIGHTS_NOT_VERIFIED của bên thứ ba, source_status, 8 source ID, 40 OP/80 mapping ID và routing lịch sử giữ nguyên. Screen reader, zoom, cross-browser, production, G-EDU/G-STRUCT/G-RELEASE/C4 còn mở.
+- **Pending:** EDU-3B (9 OP), EDU-3C (3 OP), EDU-4 (8 OP) chưa triển khai giai đoạn nội dung; xem [scope/dependency](roadmap.md#edu-3--cấu-trúc-dữ-liệu). Không tự mở implementation.
+- **Tools/GH/FC:** chờ review license/compatibility/maintenance/overlap và approval theo [tool routing](roadmap.md#phân-tuyến-công-cụ-ứng-viên), [GH](roadmap.md#gh--hồ-sơ-công-bố-sau-ui-ổn-định), [FC](roadmap.md#fc--kiểm-kê-và-cleanup-môi-trường); không install, đổi required checks hoặc xóa/di chuyển từ backlog.
+
 ## EDU2-F — Closeout và việc còn lại, 25/11/2026
 
 - **EDU-2 CLOSED theo owner acceptance**, 5/5 OP (OP-16–20); academic acceptance toàn dự án **5/40**. Owner closeout đã được duyệt; patch docs EDU2-F **chưa commit/PR/merge**. [Checkpoint hiện hành](roadmap.md#edu2-f--closeout-hiện-hành-25112026) thay trạng thái hiện hành, không thay các checkpoint lịch sử bên dưới.
@@ -87,7 +98,9 @@ không thuộc v1.0.0. Chỉ dùng dữ liệu thật hoặc ghi “Minh họa�
 mọi số đo bên dưới là lịch sử nếu chưa được tái đo trên SHA đang nghiệm thu.
 
 ## Lỗi
-- (hiện không có mục nào)
+- **VIS-01 — PRE_EXISTING, OPEN:** Linked List dùng chữ lỗi đỏ trên nền/viền success xanh khi validation thất bại; visual A2 4/16 FAIL (Linked List), functional 16/16 và 448/448 assertions PASS. Owner chấp nhận có điều kiện cho A2; phải sửa và review visual/focus/validation trước C4/release, không sửa trong Unified Sync. Evidence `EDU3A2-1795624357722/runner-recovery-1795626161143/visual-review-final.json`; [academic evidence mục 8](education/edu3a-linear-source-evidence.md#8-edu-3a--acceptance-và-g5-bridge).
+
+> Lịch sử trước Unified Sync: “(hiện không có mục nào)”.
 
 ## Hiệu năng
 - `buildGraph` sao chép cả đồ thị sau mỗi lần thêm đỉnh/cạnh (O(n²)). Đo 2026-11-05: sao 300 đỉnh 39–73 ms, 1000 đỉnh 0,7–1,0 s,
@@ -269,6 +282,15 @@ Ghi chú hoãn dưới đây thuộc chuỗi Redesign tại thời điểm ghi n
 
 ## UI v3 — Backlog sau C5
 
+Chỉ theo dõi pending tasks; scope/deliverables/exit gates tại [roadmap UI3](roadmap.md#ui-v3--modern-academic-workspace), không tạo roadmap phụ. UI3 vẫn PLANNED/NOT STARTED sau C5; UI/UX Pro Max bị REJECT cho kế hoạch tương lai, không uninstall hoặc xóa lịch sử.
+
+- Chờ owner phê duyệt audit/trial cách ly UI3-0, review license/scripts/hooks/Codex-Windows, pin revision và scope.
+- Chờ nghiệm thu tokens/wireframes/motion contract trước product changes; giữ native-first, reduced motion, DOM/controller/algorithm state và budget.
+- Chờ evidence và approval cho delta optimization/QA sau redesign; reuse C2/C3/C4, không chạy audit trùng hoặc tự cleanup. [Tools](roadmap.md#phân-tuyến-công-cụ-ứng-viên), [GH](roadmap.md#gh--hồ-sơ-công-bố-sau-ui-ổn-định), [FC](roadmap.md#fc--kiểm-kê-và-cleanup-môi-trường) chỉ triển khai sau gate/approval riêng.
+
+<details>
+<summary>Snapshot backlog UI3 D1 — lịch sử, không phải roadmap hiện hành</summary>
+
 **PLANNED / NOT STARTED — DEFERRED UNTIL C5 CLOSED.** Theo [roadmap UI3-0…10](roadmap.md#ui-v3--modern-academic-workspace); không thay chuỗi dependency v1.0.0 hoặc gate hiện hành.
 
 - UI3-0: kiểm tra UI/UX Pro Max, provenance, license, Codex/Windows; audit giao diện theo baseline thực tế.
@@ -281,3 +303,5 @@ Ghi chú hoãn dưới đây thuộc chuỗi Redesign tại thời điểm ghi n
 Công cụ ứng viên và nơi xử lý được tập trung tại [phân tuyến tools](roadmap.md#phân-tuyến-công-cụ-ứng-viên): source C2, test C3, QA C4, tài liệu GH, thiết kế/phần dư UI3. Ưu tiên audit cách ly và tái sử dụng công cụ hiện hữu; không tích hợp trùng hoặc mặc định cài toàn bộ. UI/UX Pro Max chỉ design/review, không production dependency.
 
 Không mở UI v3, cài skill/dependency, sửa source hoặc thay scope/gate khi chưa có plan và owner approval riêng. Trong EDU-2–4 chỉ research read-only nếu được duyệt riêng. Giữ ngân sách JS/CSS, bất biến thuật toán, khả năng bắt lỗi và chính sách không theo dõi tiến độ học tập cá nhân; phiên bản release do owner quyết định.
+
+</details>
