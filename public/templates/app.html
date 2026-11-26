@@ -1683,7 +1683,7 @@
             được xử lý bằng chaining hoặc linear probing. Không chứa khóa trùng.
         </p>
         </div>
-        <span class="visualizer-tag" id="hash-table-complexity">O(1) trung bình</span>
+        <span class="visualizer-tag" id="hash-table-complexity">O(1 + α)</span>
     </div>
 
     <div class="visualizer-placeholder visualizer-workspace">
@@ -1859,7 +1859,7 @@
         <div class="learning-pane" data-learning-pane="complexity" hidden>
         <div class="complexity-panel" id="hash-table-complexity-panel">
         <div class="complexity-heading">
-            <h4>Phân tích thao tác</h4>
+            <h4>Chi phí lõi và bảng</h4>
             <span id="hash-table-complexity-title">INSERT · CHAINING</span>
         </div>
         <p class="bst-hint" id="hash-table-complexity-live"></p>
@@ -1872,7 +1872,7 @@
             </div>
 
             <div class="complexity-card">
-                <span>Phân tán tốt (trung bình)</span>
+                <span>Mô hình trung bình / đường dò</span>
                 <strong id="hash-table-complexity-average">O(1 + α)</strong>
                 <p id="hash-table-complexity-average-note"></p>
             </div>
@@ -1884,7 +1884,7 @@
             </div>
 
             <div class="complexity-card">
-                <span>Bộ nhớ</span>
+                <span>Bộ nhớ bảng</span>
                 <strong id="hash-table-complexity-space">O(m + n)</strong>
                 <p id="hash-table-complexity-space-note"></p>
             </div>
@@ -1899,9 +1899,8 @@
                     <span class="section-eyebrow">GÓC KIẾN THỨC</span>
                     <h3>Tìm hiểu thao tác</h3>
                     <p>
-                        n là số khóa, m là số ô, α = n/m là hệ số tải. So sánh bảng mẫu với preset
-                        va chạm nặng để thấy chi phí đi từ O(1) tới O(n). Bảng ở đây có m cố định:
-                        chưa minh họa rehash (tạo bảng lớn hơn rồi chèn lại mọi khóa khi α vượt ngưỡng).
+                        n là số khóa, m là số ô, α=n/m. Chaining tìm trong một chain; probing dò tối đa m ô.
+                        Chi phí lõi khác API copy bảng và trace. Bảng m cố định, chưa minh họa rehash.
                     </p>
                 </div>
             </div>

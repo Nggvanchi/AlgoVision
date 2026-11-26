@@ -50,27 +50,25 @@ export const strategyNames = {
 }
 
 // Big-O phải khớp generator (xem tests/hash-table-complexity.test.js, tests/hash-table-probing-complexity.test.js).
-// Chaining: mọi thao tác duyệt đúng một chain, chi phí = độ dài chain (trung bình α = n/m).
+// Chaining: phân biệt chi phí lõi theo chain với API copy và trace; average cần mô hình.
 const CHAINING_COMPLEXITY = {
   tag: 'O(1 + α)',
   best: 'O(1)',
   average: 'O(1 + α)',
   averageNote:
-    'Hàm băm phân tán đều thì mỗi chain dài trung bình α = n/m. Giữ α không vượt một hằng số (bằng rehash khi bảng đầy dần) thì chi phí là O(1).',
+    'Chi phí lõi kỳ vọng O(1+α) cần mô hình hash và truy vấn phù hợp; key mod m không bảo đảm phân tán đều. Bảng không tự rehash.',
   worst: 'O(n)',
   worstNote: 'Mọi khóa rơi vào cùng một ô: chain dài n, phải so sánh lần lượt như danh sách liên kết.',
   space: 'O(m + n)',
   spaceNote: 'm ô đầu chain cộng n phần tử.',
 }
 
-// Linear probing: probes = số ô đã dò. Công thức Knuth là số ô dò kỳ vọng.
-const KNUTH_FOUND = '½(1 + 1/(1 − α))'
-const KNUTH_NOT_FOUND = '½(1 + 1/(1 − α)²)'
+// Linear probing: P đếm mọi ô đã dò; cận deterministic P≤m, không suy average từ α.
 const PROBING_COMPLEXITY = {
-  tag: 'O(1) trung bình',
+  tag: 'O(m) xấu nhất',
   best: 'O(1)',
   averageNote:
-    'Số ô dò kỳ vọng theo Knuth, giả định hàm băm đều và chưa có xóa. Khi đã có tombstone, chi phí phụ thuộc số ô không trống, tức (n + tombstone)/m, chứ không chỉ α. α càng gần 1 thì chi phí tăng vọt.',
+    'Cần mô hình phân phối để tính trung bình. Cùng α vẫn có cụm va chạm khác nhau; (n+tombstone)/m không dự đoán số ô dò.',
   worst: 'O(m)',
   worstNote: 'Cụm va chạm dài hoặc nhiều tombstone buộc phải dò cả bảng; tombstone cũng phải dò dù n nhỏ.',
   space: 'O(m)',
@@ -86,17 +84,17 @@ const complexityFor = {
   probing: {
     insert: {
       ...PROBING_COMPLEXITY,
-      average: `≈ ${KNUTH_NOT_FOUND} ô`,
+      average: 'Phụ thuộc phân bố/cụm; P≤m',
       bestNote: 'Ô hash(key) đang trống: 1 lần dò.',
     },
     search: {
       ...PROBING_COMPLEXITY,
-      average: `Thấy ≈ ${KNUTH_FOUND} ô, không thấy ≈ ${KNUTH_NOT_FOUND} ô`,
+      average: 'Hit/miss phụ thuộc cụm; P≤m',
       bestNote: 'Ô hash(key) chứa đúng khóa hoặc đang trống: 1 lần dò.',
     },
     delete: {
       ...PROBING_COMPLEXITY,
-      average: `≈ ${KNUTH_FOUND} ô (như tìm thấy)`,
+      average: 'Hit/miss phụ thuộc cụm; P≤m',
       bestNote: 'Ô hash(key) chứa đúng khóa: 1 lần dò.',
     },
   },
@@ -106,36 +104,36 @@ const learningFor = {
   chaining: {
     insert: {
       description:
-        'Tính i = key mod m rồi duyệt chain của ô i để kiểm tra trùng. Không có khóa bằng key thì nối key vào cuối chain. Số phép so sánh bằng độ dài chain của ô i.',
+        'Duyệt chain tại h(key). Khóa mới so hết ℓ phần tử rồi nối cuối; khóa trùng ở vị trí p (từ 0) dừng với C=p+1.',
       advantages: 'Bảng không bao giờ "đầy": chain dài thêm được, α có thể vượt 1.',
       disadvantages:
-        'Vì phải kiểm tra trùng nên tốn cả chain; chỉ khi không cần kiểm tra trùng mới chèn đầu chain trong O(1). Chain dài khi hàm băm phân tán kém.',
+        'Khóa mới phải kiểm hết chain. API chèn thành công còn copy bảng O(m+n); counter không đo copy và trace.',
     },
     search: {
       description:
         'Tính i = key mod m, rồi so key với từng phần tử trong chain của ô i. Hết chain mà không thấy thì kết luận không có, không cần xét ô khác.',
       advantages: 'Chỉ xét một ô; khóa ở ô khác không ảnh hưởng tới chi phí.',
-      disadvantages: 'Mọi khóa cùng một ô thì tìm kiếm thành tuần tự O(n); duyệt chain cũng kém thân thiện với bộ nhớ đệm.',
+      disadvantages: 'Chain có thể dài n, tìm kiếm lõi O(n). Trace copy các prefix đường tìm; không có chi phí O(1) vô điều kiện.',
     },
     delete: {
       description:
-        'Tìm phần tử mang key trong chain của ô i rồi gỡ nó khỏi chain. Các phần tử khác giữ nguyên vị trí.',
+        'Tìm rồi gỡ đúng ID khỏi chain. ID/key còn lại giữ nguyên; phần tử phía sau có thể đổi vị trí trong mảng chain.',
       advantages: 'Xóa thật sự, không để lại dấu vết: tìm kiếm sau đó không bị chậm đi.',
-      disadvantages: 'Vẫn phải tìm trước khi xóa nên chi phí bằng chi phí tìm kiếm.',
+      disadvantages: 'Lõi tìm trong một chain; API xóa còn quét/copy bảng O(m+n). Không đồng nhất chi phí với số so sánh.',
     },
   },
   probing: {
     insert: {
       description:
         'Dò lần lượt ô (i + j) mod m. Gặp tombstone thì ghi nhớ ô đầu tiên làm vị trí chèn nhưng vẫn dò tiếp để kiểm tra trùng; gặp ô trống thì dừng. Chỉ báo "bảng đầy" khi đã dò đủ m ô, không có ô trống, không có tombstone và khóa chưa tồn tại.',
-      advantages: 'Mọi khóa nằm ngay trong mảng, không cần cấp phát nút; dò ô liền kề thân thiện với bộ nhớ đệm.',
+      advantages: 'Lõi dò các ô liên tiếp. API chèn thành công vẫn copy m ô; không có rehash tự động.',
       disadvantages:
         'Va chạm tạo thành cụm (primary clustering): khóa mới rơi vào cụm làm cụm dài thêm. Tối đa m khóa.',
     },
     search: {
       description:
         'Dò từ ô key mod m sang phải (vòng lại đầu bảng). Ô trống nghĩa là key chưa từng được đặt xa hơn nên dừng; tombstone thì bỏ qua và dò tiếp; dò đủ m ô thì dừng.',
-      advantages: 'Bảng thưa thì thường chỉ cần một vài lần dò.',
+      advantages: 'Lõi dừng khi gặp khóa, ô trống hoặc đã dò đủ m ô.',
       disadvantages: 'Bảng gần đầy hoặc nhiều tombstone thì phải dò rất xa, xấu nhất là cả m ô.',
     },
     delete: {
@@ -143,7 +141,7 @@ const learningFor = {
         'Tìm ô chứa key rồi thay bằng tombstone, không đặt về trống. Nếu đặt về trống, chuỗi dò của các khóa từng bị đẩy qua ô này sẽ bị cắt: tìm kiếm dừng ở ô trống và báo nhầm "không tìm thấy".',
       advantages: 'Giữ đúng mọi chuỗi dò mà không phải di chuyển khóa khác.',
       disadvantages:
-        'Tombstone vẫn chiếm chỗ trên đường dò nên tìm kiếm chậm dần; cần dọn bằng cách rehash (chưa minh họa ở đây).',
+        'Tombstone có thể kéo dài đường dò; dùng lại tombstone có thể giảm số dấu xóa. Chưa minh họa rehash.',
     },
   },
 }
