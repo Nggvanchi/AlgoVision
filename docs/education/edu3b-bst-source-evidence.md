@@ -1,5 +1,7 @@
 # EDU-3B1 — Hồ sơ bằng chứng BST OP-21–29
 
+> Trạng thái hiện hành: [mục 11 — Owner acceptance và G5 bridge](#11-edu-3b--owner-acceptance-và-g5-bridge-26112026): OP-21–29 OWNER_ACCEPTED, EDU-3B CLOSED, toàn dự án 29/40; EDU-3 vẫn PARTIAL. Mục 1–10 giữ lịch sử B1; docs sync B3 chưa commit/publish/merge.
+
 ## 1. Phạm vi, baseline và trạng thái
 
 - BASE: `eb285745b22ebe83a4f1194e2f9322e755b21369`; TREE: `f8f91f2313366f4012287386aa1e7f6a4528742f`. Chỉ BST OP-21–29; không mở Hash/Graph, C2 hoặc thay generator/UI. Reuse C1/P0 và phương pháp EDU-3A, không suy acceptance nhóm trước sang BST.
@@ -180,3 +182,55 @@ Bảng là locator kỹ thuật, **không thêm source ID học thuật/catalog*
 Giữ **STATIC_SUPPORTED/REVIEW_PENDING**, **RIGHTS_NOT_VERIFIED**, source_status, 8 source ID, 40 OP/80 mapping ID và routing lịch sử; không nâng academic acceptance hoặc tự đóng EDU-3B. Không suy quyền bên thứ ba từ MIT, technical PASS hoặc owner approval; mỗi hành vi metadata/link, diễn giải, trích dẫn, chuyển thể, sao chép/công bố/AI cần evidence đúng scope.
 
 Giữ VIS-01 PRE_EXISTING trước C4/release, Insertion step-limit C2 và negative/mutation C3 bắt buộc; EX-03/EX-04, historical config drift UNKNOWN, attribution/IPC/runtime overrides NOT VERIFIED, ARTIFACT_PERSISTENCE_NOT_VERIFIED lịch sử, runtime profile isolation/process cleanup NOT VERIFIED. Limited config/checkpoint acceptance chỉ đúng workflow/nhóm được owner duyệt, không rebaseline hoặc mở trust. G-EDU/G-STRUCT/G-RELEASE, C4, screen reader/zoom/cross-browser/production và mọi release gate còn mở. B1 docs-only không chạy test/build/browser, install, stage/commit/push/merge hoặc mở B2/Hash/Graph.
+
+## 11. EDU-3B — Owner acceptance và G5 bridge, 26/11/2026
+
+**EDU-3B OWNER_ACCEPTED/CLOSED** theo quyết định owner: **9/9 OP-21–29 OWNER_ACCEPTED** trong contract, giả định và mô hình chi phí đã phản biện. Cộng 20 OP đã nghiệm thu, academic acceptance toàn dự án là **29/40**; EDU-3 toàn giai đoạn vẫn **PARTIAL**, không mở EDU-3C. ChatGPT academic review 9/9 PASS trong scope đã được owner ghi nhận; không phải chứng nhận học thuật bên ngoài. Owner xác nhận có căn cứ công bố **nội dung BST AlgoVision tự biên soạn thực tế**, không cấp quyền tài liệu bên thứ ba.
+
+Đây là closeout được owner duyệt, còn bản đồng bộ docs B3 **chưa commit/publish/merge**. Các mục 1–10 là hồ sơ B1 tại thời điểm ghi, gồm STATIC_SUPPORTED/REVIEW_PENDING, DRAFT_DERIVATION, 20/40 và kế hoạch B2; giữ nguyên lịch sử, không diễn giải đó là trạng thái acceptance hiện hành. Không nâng source_status hoặc rights của catalog.
+
+### 11.1 Ma trận nghiệm thu 9 OP và phạm vi proof
+
+Các hàng đều **OWNER_ACCEPTED** theo scope trên. P1–P6 và O1–O13 là nhãn nội bộ của mục 4–5; chi phí dưới đây không gồm message/DOM/UI và không giả định cây luôn cân bằng.
+
+| OP | Claim/invariant và chi phí được nghiệm thu | Proof/oracle; bridge runtime |
+|---|---|---|
+| OP-21 Insert | Giữ khoảng khóa tổ tiên; mới cấp ID/nextId, duplicate giữ cây. Chèn mới C=D, duplicate tại d có C=d+1. Core O(h+1), phụ O(1); API mới Θ(n), generator Θ(n+k²). | P1/P5; O1/O10/O11. Test bảng T: Insert3 ID6,C2,S5; browser có chèn mới/duplicate và committedTree. |
+| OP-22 Search | Target cố định, chỉ đi subtree có thể chứa target; foundId/null, không mutation. Core best Θ(1), worst O(h+1)≤O(n), phụ O(1); generator Θ(n+k²). | P1; O2/O10/O11. Test T Search5 ID4,C3,S4; existing hit/miss và browser hit/miss. |
+| OP-23 Delete | Ba ca; hai con giữ ID z, gỡ ID successor, nối successor.right. COPY tạm trùng khóa; strict order cam kết input/cây cuối. Core O(h+1), phụ O(1); generator hit cận trên O(n+(h+1)²); miss xem 11.2. | P2/P5; O3/O10/O11/O12. Test T Delete4 C1,S6,ID1 value5/gỡID4; existing tests và browser COPY/data-id, successor có con phải. |
+| OP-24 Inorder | Trái→gốc→phải, mỗi node một visit; valid strict BST cho output tăng nghiêm ngặt. Core Θ(n), stack O(h+1), output Θ(n); generator/retained trace Θ(n²). | P3; O4/O10. Test T [2,4,5,6,7],C0,S6; browser khóa output/counters/pseudocode. |
+| OP-25 Preorder | Gốc→trái→phải; không bảo đảm sorted. Reinsert khóa phân biệt khôi phục shape/value, không bảo đảm IDs. Core Θ(n), stack O(h+1), output Θ(n); trace Θ(n²). | P3/P6; O5/O10/O13. Test T [4,2,6,5,7]; wording/regression/browser. Rebuild-ID và counterexample O13 là proof/oracle tĩnh, không gán runtime PASS mới. |
+| OP-26 Postorder | Trái→phải→gốc, hậu duệ trước cha; không bảo đảm sorted. Core Θ(n), stack O(h+1), output Θ(n); trace Θ(n²). | P3; O6/O10/O13. Test T [2,5,7,6,4]; browser output literal; O13 left-chain tăng dần là expected tĩnh. |
+| OP-27 Min | Đi hết trái, empty null; C=0 không đồng nghĩa toàn generator O(1). Core O(h+1), best Θ(1), phụ/output O(1); generator Θ(n+k²). | P1; O7/O10/O11. Test T result2/ID2,C0,S4; browser result20/S5 và empty. |
+| OP-28 Max | Đối xứng Min theo phải; không giả định balanced. Core O(h+1), best Θ(1), phụ/output O(1); generator Θ(n+k²). | P1; O8/O10/O11. Test T result7/ID5,C0,S5; browser result80/S5 và empty. |
+| OP-29 Height | Số cạnh: null−1, singleton0; hậu tự 1+max(hL,hR). Core Θ(n), stack O(h+1), output số O(1); generator/retained trace Θ(n²), annotation tính riêng. | P4/P5; O9/O10/O11. Test T result2/heights literal/C0/S6; browser height2/S8, empty−1. |
+
+Áp dụng mô hình mục 2: n trước thao tác, h theo cạnh, k số node trên đường, S gồm bước đầu; **empty Θ(1)**, cây không rỗng dùng **h+1**. Giả định tree hữu hạn/acyclic/strict ordering, không dangling ID hoặc caller mutation; lookup/field theo mô hình đơn vị. Không có chứng minh average-case O(log n); balanced chỉ là điều kiện hình dạng. Tách core/API/validation/copy/Object.keys/entries, output/recursion, prefix copies và input tree dùng chung. Snapshot bất biến theo contract, không defensive freeze; explicit guards của Insert/Search/Delete/Min-Max khác số bước Traversal/Height suy từ cấu trúc. Không nghiệm thu khả năng chịu mọi malformed input hoặc recursion/resource exhaustion.
+
+### 11.2 Clarification Delete miss — không có clone cây kết quả
+
+Với n>0 và miss sau k node, [limit/count và vòng tìm](https://github.com/Nggvanchi/AlgoVision/blob/3f89bb93d900d31dbf70f9815ec3b082fa8248c4/src/algorithms/bstDelete.js#L59-L108) tạo Object.keys Θ(n), các path-prefix copies tổng 1+…+k=Θ(k²), S=k+2, C=k. Vì vậy **generator time Θ(n+k²)**, **retained trace mới Θ(1+k²)** theo mô hình fields/reference đơn vị; input tree được chia sẻ, không tính lại Θ(n) vào phần trace mới. Không clone cây kết quả khi miss; empty Θ(1). **Core O(h+1)** với n>0 (miss cụ thể Θ(k)), phụ O(1). Công thức d/m ở mục 2 là cận hit; bổ sung trường hợp miss ở đây, không viết lại checkpoint B1 hoặc đồng nhất counter với chi phí copy/trace/message/DOM.
+
+### 11.3 Technical/product/QA bridge — reuse theo SHA và hash
+
+- **B1 [#84](https://github.com/Nggvanchi/AlgoVision/pull/84):** 9 OP, 6 proof, **13 nhóm expected oracle** tự dò tay; 23 provenance blobs/48 locators pin BASE B1. Merge [c8c4b8e01e73e68612cf93bf04efecdb183ec43d](https://github.com/Nggvanchi/AlgoVision/commit/c8c4b8e01e73e68612cf93bf04efecdb183ec43d), tree 0cf573f6b3abe6a8011220f5629f3f94eda10c21; [CI hậu merge 45811830621](https://github.com/Nggvanchi/AlgoVision/actions/runs/45811830621) 1818/1818 mỗi OS, build/encoding/Vercel SUCCESS. B1 không chạy oracle/test/build/browser local.
+- **B2 [#85](https://github.com/Nggvanchi/AlgoVision/pull/85):** commit 2446e44a0fe746c62efe556c31e700c1142d6fe0; merge [3f89bb93d900d31dbf70f9815ec3b082fa8248c4](https://github.com/Nggvanchi/AlgoVision/commit/3f89bb93d900d31dbf70f9815ec3b082fa8248c4), tree **c0795b5a8fb93cffa8e4fcb43b54c3c95121ddda**. Đúng 9 JS fields/6 template text regions/+2 tests; không đổi generator/API/flow/pseudocode/Big-O values/DOM/attributes/CSS. [CI hậu merge 45819093340](https://github.com/Nggvanchi/AlgoVision/actions/runs/45819093340) Ubuntu/Windows **1820/1820 mỗi OS**, fail/skip/todo/cancelled đều 0; build/encoding/Vercel SUCCESS trên đúng merge SHA.
+- **Assertions thực sự chạy:** targeted BST **108/108**, full **1820/1820**, wording mutations **3/3**, assertion negative controls **2/2**, exact byte/hash restore. [Test bảng 9 OP](https://github.com/Nggvanchi/AlgoVision/blob/3f89bb93d900d31dbf70f9815ec3b082fa8248c4/tests/bst-complexity.test.js#L113-L167) dùng literal T, frozen input, old-step preservation; [exact copy/isolation](https://github.com/Nggvanchi/AlgoVision/blob/3f89bb93d900d31dbf70f9815ec3b082fa8248c4/tests/bst-controller.test.js#L475-L508) và [template/counter](https://github.com/Nggvanchi/AlgoVision/blob/3f89bb93d900d31dbf70f9815ec3b082fa8248c4/tests/bst-controller.test.js#L522-L556). Không gọi 13 nhóm expected là 13 runtime case đã chạy đầy đủ; existing coverage ở mục 7 được tái sử dụng, không ghi đã chạy riêng mọi biến thể/O13 trong B2.
+- **Build local B2:** raw JS/CSS **153472/58016 B**, delta **−373/0 B**, HTML +138 B; trần **154000/58500 B**, encoding/diff PASS. Đây là evidence B2 đã kiểm, không phải build mới trong B3.
+- **Browser B2:** Chrome 152/Playwright 1.62.1, 9 OP × 360/699/768/1280×900 DPR=1: functional **36/36**, visual **36/36**, **1528/1528 assertions PASS**, **72 PNG** before/after đọc lại chữ ký/kích thước/hash và review. Input browser khác T được ghi literal riêng; không suy coverage toàn bộ 13 nhóm từ 36 records. Copy/cards/counters/pseudocode, hit/miss/duplicate/empty, successor/data-id, committedTree/reset/seek/previous, navigation/focus, overflow, console/network đã có evidence.
+- **Chain/cleanup chỉ lượt B2:** CIM exact QA PID/parent/start time/executable hash/actual args, temporary profile, đóng context/browser/server, PID kết thúc/profile tạm không còn/localhost ngừng phục vụ PASS. Giữ nguyên evidence BLOCKED CDP và lỗi runner ENOENT trước recovery; không biến chúng thành lỗi sản phẩm hoặc xóa khỏi lịch sử. Không nâng exceptions lịch sử runtime/cleanup/PNG hoặc suy localhost thành C4/production.
+
+Bốn blob product/test cập nhật tại merge B2 dưới đây nối catalog B1 với trạng thái hiện hành; các blob provenance khác và locator lịch sử giữ nguyên, không thêm source ID học thuật:
+
+| File tại BASE B3 | Blob SHA |
+|---|---|
+| [src/bst.js](https://github.com/Nggvanchi/AlgoVision/blob/3f89bb93d900d31dbf70f9815ec3b082fa8248c4/src/bst.js) | `32826be56e1fec1732f15d02d81e84fafbabc2d8` |
+| [public/templates/app.html](https://github.com/Nggvanchi/AlgoVision/blob/3f89bb93d900d31dbf70f9815ec3b082fa8248c4/public/templates/app.html) | `11073e958e436c6e6df56755f8e754869d8fbfdd` |
+| [tests/bst-controller.test.js](https://github.com/Nggvanchi/AlgoVision/blob/3f89bb93d900d31dbf70f9815ec3b082fa8248c4/tests/bst-controller.test.js) | `aa2f9745ed814ad986fc3ed94b390e9d7c4ecc6c` |
+| [tests/bst-complexity.test.js](https://github.com/Nggvanchi/AlgoVision/blob/3f89bb93d900d31dbf70f9815ec3b082fa8248c4/tests/bst-complexity.test.js) | `fb6a5c5550999fc1c664375cb32a7806539b9841` |
+
+### 11.4 Policy B, rights và residual
+
+[Policy B §11](uit-sources.md#11-policy-b-và-quyền-theo-hành-vi--edu-1f) tách UIT định danh/phạm vi khỏi claim evidence. Owner nghiệm thu claims và xác nhận căn cứ công bố nội dung BST AlgoVision tự biên soạn thực tế theo scope trên; không suy quyền tài liệu bên thứ ba từ MIT, review hoặc merge. Giữ **RIGHTS_NOT_VERIFIED** cho bên thứ ba/hành vi thiếu evidence, **8 source ID, 40 OP/80 mapping ID**, source_status và routing lịch sử **2 READY/38 DEFER**. Không ingestion/copy/dịch/chuyển thể học liệu mới, không nâng catalog hoặc tự xác minh nội dung nguồn ngoài.
+
+Giữ VIS-01 PRE_EXISTING trước C4/release; Insertion step-limit C2, negative/mutation C3 bắt buộc; EX-03/EX-04, historical config drift UNKNOWN, checkpoint attribution/IPC/runtime overrides NOT VERIFIED, ARTIFACT_PERSISTENCE_NOT_VERIFIED lịch sử, runtime profile isolation/process cleanup NOT VERIFIED lịch sử. Current B2 chain/cleanup PASS không xóa giới hạn đó. Malformed/cyclic input, safe integers/ID exhaustion, caller mutation, recursion/resource limits và guard hardening vẫn là residual cần disposition, không tự miễn G-STRUCT. **G-EDU/G-STRUCT/G-RELEASE, C4**, screen reader/zoom/cross-browser/production và mọi release gate còn mở. EDU-3B CLOSED không đóng toàn EDU-3 hoặc mở EDU-3C; B3 docs-only không lặp QA runtime.
