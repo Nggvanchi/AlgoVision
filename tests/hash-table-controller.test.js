@@ -513,7 +513,7 @@ test('Learning Panel chaining: tốt nhất O(1), phân tán tốt O(1 + α), va
   }
 })
 
-test('Learning Panel probing: công thức Knuth kèm giả định, xấu nhất O(m), bộ nhớ O(m), nhắc tombstone', () => {
+test('Learning Panel probing: cận deterministic, mô hình trung bình, bộ nhớ O(m), nhắc tombstone', () => {
   const ui = setupHashTable()
 
   try {
@@ -524,20 +524,20 @@ test('Learning Panel probing: công thức Knuth kèm giả định, xấu nhấ
     let texts = complexityTexts(ui)
     assert.equal(texts.title, 'SEARCH · LINEAR PROBING')
     assert.equal(texts.best, 'O(1)')
-    assert.match(texts.average, /½\(1 \+ 1\/\(1 − α\)\)/, 'tìm thấy')
-    assert.match(texts.average, /½\(1 \+ 1\/\(1 − α\)²\)/, 'không tìm thấy')
+    assert.equal(texts.average, 'Hit/miss phụ thuộc cụm; P≤m', 'đường dò search')
+    assert.equal(texts.tag, 'O(m) xấu nhất', 'tag là cận worst, không unconditional average')
     assert.equal(texts.worst, 'O(m)')
     assert.equal(ui.text('#hash-table-complexity-space'), 'O(m)')
-    assert.match(texts.averageNote, /Knuth/)
-    assert.match(texts.averageNote, /hàm băm đều/)
-    assert.match(texts.averageNote, /chưa có xóa/)
-    assert.match(texts.averageNote, /\(n \+ tombstone\)\/m/)
+    assert.match(texts.averageNote, /Cần mô hình phân phối/)
+    assert.match(texts.averageNote, /Cùng α vẫn có cụm va chạm khác nhau/)
+    assert.match(texts.averageNote, /không dự đoán số ô dò/)
+    assert.match(texts.averageNote, /\(n\+tombstone\)\/m không dự đoán/)
     assert.match(texts.worstNote, /tombstone/)
 
     ui.change('#hash-table-operation', 'insert')
     texts = complexityTexts(ui)
     assert.equal(texts.title, 'INSERT · LINEAR PROBING')
-    assert.match(texts.average, /½\(1 \+ 1\/\(1 − α\)²\)/)
+    assert.equal(texts.average, 'Phụ thuộc phân bố/cụm; P≤m')
   } finally {
     ui.cleanup()
   }
@@ -596,6 +596,74 @@ test('Learning Panel: ý tưởng, ưu điểm, hạn chế đổi theo chiến 
     ui.change('#hash-table-operation', 'delete')
     assert.match(ui.text('#hash-table-learning-description'), /tombstone/)
     assert.match(ui.text('#hash-table-learning'), /chưa minh họa rehash/)
+  } finally {
+    ui.cleanup()
+  }
+})
+
+const hashCostCopy = {
+  "CHAINING_COMPLEXITY.averageNote": "Chi phí lõi kỳ vọng O(1+α) cần mô hình hash và truy vấn phù hợp; key mod m không bảo đảm phân tán đều. Bảng không tự rehash.",
+  "PROBING_COMPLEXITY.tag": "O(m) xấu nhất",
+  "PROBING_COMPLEXITY.averageNote": "Cần mô hình phân phối để tính trung bình. Cùng α vẫn có cụm va chạm khác nhau; (n+tombstone)/m không dự đoán số ô dò.",
+  "complexityFor.probing.insert.average": "Phụ thuộc phân bố/cụm; P≤m",
+  "complexityFor.probing.search.average": "Hit/miss phụ thuộc cụm; P≤m",
+  "complexityFor.probing.delete.average": "Hit/miss phụ thuộc cụm; P≤m",
+  "learningFor.chaining.insert.description": "Duyệt chain tại h(key). Khóa mới so hết ℓ phần tử rồi nối cuối; khóa trùng ở vị trí p (từ 0) dừng với C=p+1.",
+  "learningFor.chaining.insert.disadvantages": "Khóa mới phải kiểm hết chain. API chèn thành công còn copy bảng O(m+n); counter không đo copy và trace.",
+  "learningFor.chaining.search.disadvantages": "Chain có thể dài n, tìm kiếm lõi O(n). Trace copy các prefix đường tìm; không có chi phí O(1) vô điều kiện.",
+  "learningFor.chaining.delete.description": "Tìm rồi gỡ đúng ID khỏi chain. ID/key còn lại giữ nguyên; phần tử phía sau có thể đổi vị trí trong mảng chain.",
+  "learningFor.chaining.delete.disadvantages": "Lõi tìm trong một chain; API xóa còn quét/copy bảng O(m+n). Không đồng nhất chi phí với số so sánh.",
+  "learningFor.probing.insert.advantages": "Lõi dò các ô liên tiếp. API chèn thành công vẫn copy m ô; không có rehash tự động.",
+  "learningFor.probing.search.advantages": "Lõi dừng khi gặp khóa, ô trống hoặc đã dò đủ m ô.",
+  "learningFor.probing.delete.disadvantages": "Tombstone có thể kéo dài đường dò; dùng lại tombstone có thể giảm số dấu xóa. Chưa minh họa rehash."
+}
+
+test('Hash Learning Panel: exact cost copy, template scope và isolation chiến lược/thao tác', () => {
+  const ui = setupHashTable()
+  try {
+    ui.open()
+    const section = ui.$('#hash-table-section')
+    assert.equal(section.querySelector('.complexity-heading h4').textContent.trim(), 'Chi phí lõi và bảng', 'heading cost scope')
+    const labels = [...section.querySelectorAll('.complexity-card > span')].map((node) => node.textContent.trim())
+    assert.ok(labels.includes('Mô hình trung bình / đường dò'), 'label average không hứa O(1)')
+    assert.ok(labels.includes('Bộ nhớ bảng'), 'space là representation của bảng')
+    assert.equal(section.querySelector('#hash-table-learning .learning-heading p').textContent.trim().replace(/\s+/g, ' '), 'n là số khóa, m là số ô, α=n/m. Chaining tìm trong một chain; probing dò tối đa m ô. Chi phí lõi khác API copy bảng và trace. Bảng m cố định, chưa minh họa rehash.', 'intro phân biệt core/API/trace')
+    const templateWindow = new Window()
+    try {
+      templateWindow.document.body.innerHTML = template
+      assert.equal(templateWindow.document.querySelector('#hash-table-complexity').textContent.trim(), 'O(1 + α)', 'template tag đúng strategy mặc định')
+    } finally {
+      templateWindow.happyDOM.close()
+    }
+    for (const strategy of ['chaining', 'probing', 'chaining']) {
+      ui.change('#hash-table-strategy', strategy)
+      for (const operation of ['insert', 'search', 'delete']) {
+        ui.change('#hash-table-operation', operation)
+        const texts = complexityTexts(ui)
+        const prefix = strategy === 'chaining' ? 'CHAINING_COMPLEXITY' : 'PROBING_COMPLEXITY'
+        assert.equal(texts.averageNote, hashCostCopy[prefix + '.averageNote'], strategy + ': mô hình average')
+        assert.equal(texts.tag, strategy === 'chaining' ? 'O(1 + α)' : hashCostCopy['PROBING_COMPLEXITY.tag'], strategy + ': tag isolation')
+        assert.equal(texts.best, 'O(1)', 'giữ best core')
+        assert.equal(texts.worst, strategy === 'chaining' ? 'O(n)' : 'O(m)', 'giữ worst core')
+        assert.equal(texts.space, strategy === 'chaining' ? 'O(m + n)' : 'O(m)', 'giữ table memory')
+        if (strategy === 'probing') assert.equal(texts.average, hashCostCopy['complexityFor.probing.' + operation + '.average'], operation + ': deterministic probing')
+        for (const [field, expected] of Object.entries(hashCostCopy)) {
+          const path = 'learningFor.' + strategy + '.' + operation + '.'
+          if (field.startsWith(path)) {
+            const name = field.slice(path.length)
+            assert.equal(ui.text('#hash-table-learning-' + name), expected, field + ': exact copy')
+          }
+        }
+      }
+    }
+    assert.equal(ui.$('#hash-table-key').getAttribute('max'), '99', 'không đổi validation key')
+    ui.change('#hash-table-capacity', 5)
+    ui.$('#hash-table-preset-collision').click()
+    assert.equal(ui.text('#hash-table-entry-count'), '15', 'chaining UI max15 vẫn hỗ trợ α>1')
+    ui.perform('insert', 3)
+    ui.nextUntilDone()
+    assert.equal(ui.text('#hash-table-entry-count'), '15', 'duplicate ở max15 không thêm key')
+    assert.equal(ui.text('#hash-table-result'), '3 đã tồn tại', 'duplicate được nhận diện trước max15')
   } finally {
     ui.cleanup()
   }
