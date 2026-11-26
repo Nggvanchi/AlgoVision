@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 
 import test from 'node:test'
 import assert from 'node:assert/strict'
@@ -185,5 +186,31 @@ test('xóa khi mảng đã rỗng hiện lỗi "đang rỗng"; xóa index sai kh
     assert.deepEqual(controller.getNumbers(), [])
   } finally {
     window.happyDOM.close()
+  }
+})
+
+test('EDU3A2 array: copy từ template thật đúng phạm vi API', async () => {
+  const window = new Window()
+  try {
+    window.document.body.innerHTML = readFileSync(new URL('../public/templates/app.html', import.meta.url), 'utf8')
+    const section = window.document.querySelector('#array-section')
+    assert.ok(section, 'module section tồn tại')
+    const paragraphs = Array.from(section.querySelectorAll('p'), node => node.textContent.trim())
+    for (const expected of [
+  "Index từ 0. Thêm, chèn, xóa tạo mảng mới O(n). Tìm: tốt nhất O(1), xấu nhất O(n); chưa tính DOM.",
+  "Thêm số hữu hạn vào cuối; giữ nguyên mảng đầu vào.",
+  "Dùng giá trị ở ô Giá trị; chèn tại index nguyên từ 0 đến n.",
+  "Xóa index nguyên từ 0 đến n−1; mảng rỗng báo lỗi.",
+  "So sánh ===; trả index khớp đầu hoặc −1, không cần sắp xếp."
+]) {
+      assert.ok(paragraphs.includes(expected), 'EDU3A2 array copy: ' + expected)
+    }
+    for (const other of window.document.querySelectorAll('section[id]')) {
+      if (other !== section) {
+        assert.equal(other.textContent.includes("Index từ 0. Thêm, chèn, xóa tạo mảng mới O(n). Tìm: tốt nhất O(1), xấu nhất O(n); chưa tính DOM."), false, 'copy không rò sang module khác')
+      }
+    }
+  } finally {
+    await window.happyDOM.close()
   }
 })

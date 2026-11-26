@@ -96,3 +96,18 @@ test('Dequeue phần tử cuối cùng tạo Queue rỗng', () => {
   assert.deepEqual(result.queue, [])
   assert.equal(result.dequeuedValue, 10)
 })
+
+test('EDU3A2 Queue: FIFO, bản sao và validation khi Front', () => {
+  const original = Object.freeze([3, 1, 2])
+  const result = dequeueQueue(original)
+  assert.equal(result.dequeuedValue, 3)
+  assert.deepEqual(result.queue, [1, 2])
+  assert.equal(dequeueQueue(result.queue).dequeuedValue, 1)
+  result.queue[0] = 99
+  const enqueued = enqueueQueue(original, 4)
+  assert.deepEqual(enqueued, [3, 1, 2, 4])
+  enqueued[0] = 99
+  assert.deepEqual(original, [3, 1, 2])
+  assert.equal(frontQueue(original), 3)
+  assert.throws(() => frontQueue(Object.freeze([3, Infinity])), TypeError)
+})
