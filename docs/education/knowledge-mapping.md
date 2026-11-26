@@ -1,6 +1,6 @@
 # EDU-1 — Mapping kiến thức v1.0.0
 
-> Trạng thái closeout/acceptance hiện hành: [EDU2-F](#14-edu2-f--owner-closeout-25112026). Các checkpoint EDU2-AC3b, 0/40 và REVIEW_PENDING phía dưới được giữ nguyên như lịch sử; source_status/routing không được nâng theo closeout.
+> Trạng thái closeout/acceptance hiện hành: [EDU-3A](#16-edu-3a--owner-academic-closeout-26112026), academic acceptance 20/40. Các checkpoint trước mục 16, gồm EDU2-F 5/40, 0/40 và REVIEW_PENDING, được giữ nguyên như lịch sử; source_status/routing không được nâng theo closeout.
 
 > **EDU-2A-P1 (23/11/2026):** [mục 10](#10-edu-2a-p1) liên kết hồ sơ OP-16–18 tại baseline hiện hành; giữ nguyên 40 OP/80 mapping ID, các hàng lịch sử và mọi gate học thuật/quyền.
 
@@ -435,3 +435,13 @@ Giữ nguyên **8 source ID, 40 OP/80 mapping ID**, routing lịch sử **2 READ
 ## 15. EDU-3A1 — Liên kết hồ sơ OP-01–15
 
 [Hồ sơ bằng chứng Array, Stack, Queue và Linked List](edu3a-linear-source-evidence.md) — contract, proof/oracle độc lập và locator pin BASE `0d8d8ce906c64c72dd3d42030bfd6dc2f13a90d7`; STATIC_SUPPORTED, REVIEW_PENDING, RIGHTS_NOT_VERIFIED; academic acceptance giữ 5/40, không thay status/routing/catalog hoặc các hàng lịch sử.
+
+## 16. EDU-3A — Owner academic closeout, 26/11/2026
+
+**EDU-3A OWNER_ACCEPTED/CLOSED** theo quyết định owner: claims **OP-01–15 OWNER_ACCEPTED** trong tiền điều kiện và mô hình chi phí của [hồ sơ mục 8](edu3a-linear-source-evidence.md#8-edu-3a--acceptance-và-g5-bridge). Cộng OP-16–20 đã nghiệm thu tại mục 14, academic acceptance toàn dự án là **20/40**. Đây là acceptance của owner, không phải chứng nhận bên ngoài. Closeout đã được duyệt; bản đồng bộ academic docs này **chưa commit/publish/merge**. Các mục 1–15 giữ nguyên lịch sử tại thời điểm ghi.
+
+- **G5 bridge:** [#80](https://github.com/Nggvanchi/AlgoVision/pull/80) bổ sung proof, 28 oracle và locator pin A1; [#81](https://github.com/Nggvanchi/AlgoVision/pull/81) hoàn thiện nội dung bốn module và regression. Merge hiện hành [`cb9ea0cb8c1e9d78679b1bbe3617173922cc2671`](https://github.com/Nggvanchi/AlgoVision/commit/cb9ea0cb8c1e9d78679b1bbe3617173922cc2671), tree `621a3fb57bb9994730923d1283a44ae07749ca3d`; [CI hậu merge 45778443813](https://github.com/Nggvanchi/AlgoVision/actions/runs/45778443813) Ubuntu/Windows **1818/1818**, 0 fail/skip/todo/cancelled, build/encoding SUCCESS; Vercel SUCCESS. Đây là evidence hậu merge đã kiểm, không phải lần chạy mới trong docs closeout.
+- **Reuse A2:** targeted 100/100, mutation wording 4/4 và assertion negative control PASS; local full 1818/1818; JS/CSS **153845/58016 B**. Chrome 152 tại 360/699/768/1280×900, DPR=1: functional **16/16**, **448/448 assertions PASS**; visual **12/16 PASS, 4/16 FAIL**. VIS-01 là PRE_EXISTING có điều kiện, chưa sửa/đóng, phải xử lý trước release/C4. Không suy QA localhost thành production hoặc toàn bộ visual PASS.
+- **Policy B và quyền:** owner xác nhận có căn cứ công bố **nội dung AlgoVision tự biên soạn thực tế** của 15 OP, tách biệt quyền tài liệu bên thứ ba. [Policy B §11](uit-sources.md#11-policy-b-và-quyền-theo-hành-vi--edu-1f), **RIGHTS_NOT_VERIFIED**, 8 source ID, 40 OP/80 mapping ID, source_status và routing lịch sử **2 READY/38 DEFER** giữ nguyên; không thêm ingestion hoặc sửa các hàng mapping/disposition.
+- **Sai lệch vận hành được ghi nhận:** remote branch `codex/edu3a-linear-content` đã mất; merge #81 dùng title mặc định. Không phục hồi branch hoặc sửa lịch sử. [Hồ sơ mục 8](edu3a-linear-source-evidence.md#8-edu-3a--acceptance-và-g5-bridge) ghi chi tiết technical/academic/rights và residual; roadmap/backlog sẽ đồng bộ trong PR riêng.
+- **Residual/gate:** giữ EX-03/EX-04, historical config drift UNKNOWN, attribution và runtime overrides NOT VERIFIED; checkpoint delta chỉ được chấp nhận theo đúng nhóm owner đã duyệt. **ARTIFACT_PERSISTENCE_NOT_VERIFIED** lịch sử, runtime profile isolation và cleanup toàn bộ Chrome process/profile NOT VERIFIED; PNG A2 đã lưu không xóa giới hạn lịch sử. Insertion step-limit **C2**, negative/mutation **C3** bắt buộc trước release. **G-EDU/G-STRUCT/G-RELEASE, C4**, screen reader, zoom, cross-browser và production vẫn mở. EDU-3A CLOSED không đóng toàn bộ EDU-3, không triển khai EDU-3B/C hoặc miễn gate.
