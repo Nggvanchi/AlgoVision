@@ -59,22 +59,22 @@ const TRAVERSAL_LEARNING = {
     description:
       'Thăm cây con trái, rồi tới nút, rồi cây con phải. Với BST, Inorder luôn cho dãy giá trị tăng dần.',
     advantages:
-      'Lấy được dãy đã sắp xếp từ cây trong O(n); cũng là cách kiểm tra một cây có đúng là BST hay không.',
+      'Với cây hợp lệ, xuất dãy tăng nghiêm ngặt bằng duyệt lõi O(n); output cần O(n).',
     disadvantages:
       'Cài bằng đệ quy nên tốn ngăn xếp O(h); cây suy biến rất sâu có thể làm tràn ngăn xếp với dữ liệu lớn.',
   },
   preorder: {
     description:
-      'Thăm nút trước, rồi cây con trái, rồi cây con phải. Chèn lại các giá trị theo thứ tự Preorder vào một cây rỗng sẽ dựng lại đúng hình dạng cây ban đầu.',
+      'Thăm gốc → trái → phải. Với BST khóa phân biệt, chèn lại dãy này khôi phục hình dạng và giá trị, không bảo đảm ID cũ.',
     advantages: 'Phù hợp để sao chép hoặc lưu lại cấu trúc cây.',
-    disadvantages: 'Dãy kết quả không tăng dần; đệ quy tốn ngăn xếp O(h).',
+    disadvantages: 'Dãy kết quả không bảo đảm tăng dần; đệ quy tốn ngăn xếp O(h+1).',
   },
   postorder: {
     description:
       'Thăm cây con trái, cây con phải, rồi mới tới nút. Nút cha luôn được xử lý sau tất cả các con của nó.',
     advantages:
       'Phù hợp khi phải xử lý con trước cha: giải phóng cả cây, tính chiều cao hay kích thước của từng cây con.',
-    disadvantages: 'Dãy kết quả không tăng dần; đệ quy tốn ngăn xếp O(h).',
+    disadvantages: 'Dãy kết quả không bảo đảm tăng dần; đệ quy tốn ngăn xếp O(h+1).',
   },
 }
 
@@ -120,7 +120,7 @@ export const bstOperations = {
     complexity: { ...PATH_COMPLEXITY, bestNote: 'Cây rỗng, gốc trùng x, hoặc nhánh cần đi của gốc đang trống.' },
     learning: {
       description:
-        'Bắt đầu từ gốc, so sánh x với nút đang xét: nhỏ hơn thì sang trái, lớn hơn thì sang phải, tới khi gặp chỗ trống thì gắn nút mới vào đó. Gặp giá trị bằng x thì dừng vì cây không chứa giá trị trùng. Số phép so sánh bằng số nút từ gốc tới cha của nút mới.',
+        'Đi trái nếu x nhỏ hơn, đi phải nếu lớn hơn; gặp null thì chèn, gặp khóa bằng thì bỏ qua. Chèn mới ở độ sâu d có C=d; gặp khóa trùng ở độ sâu d có C=d+1.',
       advantages:
         'Không phải dịch chuyển phần tử như chèn vào mảng đã sắp xếp; cây luôn giữ thứ tự nên Inorder cho dãy tăng dần.',
       disadvantages:
@@ -140,7 +140,7 @@ export const bstOperations = {
       description:
         'Mỗi lần so sánh loại bỏ cả một cây con: bằng thì tìm thấy, nhỏ hơn đi trái, lớn hơn đi phải. Đi tới chỗ trống (null) nghĩa là cây không có x.',
       advantages:
-        'Cây cân bằng chỉ cần khoảng log₂ n phép so sánh như Binary Search, nhưng vẫn chèn và xóa nhanh, khác với mảng đã sắp xếp.',
+        'Khi cây cân bằng, đường tìm dài O(log n); BST hiện tại không tự cân bằng.',
       disadvantages: 'Trên cây suy biến, tìm kiếm trở thành duyệt tuần tự O(n).',
     },
     pseudocode: bstSearchPseudocode,
@@ -155,10 +155,10 @@ export const bstOperations = {
     complexity: { ...PATH_COMPLEXITY, bestNote: 'x nằm ở gốc và gốc có tối đa một con.' },
     learning: {
       description:
-        'Tìm nút z chứa x rồi xử lý ba trường hợp. Lá: gỡ z đi. Một con: nối con đó lên thay chỗ z. Hai con: tìm successor (nút nhỏ nhất của cây con phải), chép giá trị successor vào z, rồi gỡ successor; nút này không có con trái nên rơi vào trường hợp lá hoặc một con.',
+        'Tìm z rồi xử lý: lá thì gỡ; một con thì nối con lên; hai con thì chép giá trị nhỏ nhất cây con phải vào z, giữ ID z rồi gỡ ID successor. Bước chép tạm trùng giá trị; cây cuối mới khôi phục thứ tự nghiêm ngặt.',
       advantages: 'Giữ đúng tính chất BST mà chỉ thay đổi cấu trúc quanh một đường từ gốc xuống.',
       disadvantages:
-        'Trường hợp hai con phải đi thêm một đoạn xuống cây con phải để tìm successor; tổng chi phí vẫn O(h), nhưng xóa nhiều lần có thể làm cây lệch dần.',
+        'Đi tìm successor không tăng C; O(h) chỉ tính đường đi, chưa gồm copy cây và trace.',
     },
     pseudocode: bstDeletePseudocode,
     generate: generateBstDeleteSteps,
@@ -178,7 +178,7 @@ export const bstOperations = {
     learning: {
       description:
         'Chiều cao là số cạnh trên đường dài nhất từ gốc xuống lá. Quy ước: cây rỗng là −1, cây một nút là 0. Tính theo hậu tự: biết chiều cao hai con thì chiều cao nút = 1 + max(trái, phải).',
-      advantages: 'Cho biết ngay chi phí O(h) của Search, Insert và Delete trên cây hiện tại.',
+      advantages: 'Cho biết độ dài đường đi dài nhất; không phải tổng chi phí mô phỏng.',
       disadvantages:
         'Phải thăm mọi nút nên tốn O(n); nếu cần dùng thường xuyên thì nên lưu sẵn chiều cao trong mỗi nút (như cây AVL).',
     },
