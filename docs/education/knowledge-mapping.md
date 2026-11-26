@@ -1,6 +1,6 @@
 # EDU-1 — Mapping kiến thức v1.0.0
 
-> Trạng thái closeout/acceptance hiện hành: [EDU-3A](#16-edu-3a--owner-academic-closeout-26112026), academic acceptance 20/40. Các checkpoint trước mục 16, gồm EDU2-F 5/40, 0/40 và REVIEW_PENDING, được giữ nguyên như lịch sử; source_status/routing không được nâng theo closeout.
+> Trạng thái closeout/acceptance hiện hành: [EDU-3B](#18-edu-3b--owner-academic-closeout-26112026), academic acceptance 29/40; EDU-3 toàn giai đoạn vẫn PARTIAL. Mục 1–17, gồm EDU-3A 20/40, EDU2-F 5/40, 0/40 và REVIEW_PENDING, giữ nguyên như lịch sử; source_status/routing không được nâng theo closeout.
 
 > **EDU-2A-P1 (23/11/2026):** [mục 10](#10-edu-2a-p1) liên kết hồ sơ OP-16–18 tại baseline hiện hành; giữ nguyên 40 OP/80 mapping ID, các hàng lịch sử và mọi gate học thuật/quyền.
 
@@ -451,3 +451,13 @@ Giữ nguyên **8 source ID, 40 OP/80 mapping ID**, routing lịch sử **2 READ
 [Hồ sơ bằng chứng BST OP-21–29](edu3b-bst-source-evidence.md) — contract/invariant, proof và literal oracle độc lập, cost model core/API/generator/trace, locator SHA/blob/line pin BASE `eb285745b22ebe83a4f1194e2f9322e755b21369`, existing test evidence và UI/rights gaps. **STATIC_SUPPORTED / REVIEW_PENDING**; derivation chờ review, không phải runtime PASS hoặc academic acceptance mới.
 
 Chỉ thêm liên kết; giữ 8 source ID, 40 OP/80 mapping ID, source_status/routing và lịch sử. Academic acceptance toàn dự án **20/40**, **RIGHTS_NOT_VERIFIED** và mọi residual/gate giữ nguyên; không triển khai B2/Hash/Graph hoặc tự đóng EDU-3B.
+
+## 18. EDU-3B — Owner academic closeout, 26/11/2026
+
+**EDU-3B OWNER_ACCEPTED/CLOSED; OP-21–29 OWNER_ACCEPTED** theo quyết định owner, trong contract/giả định/mô hình chi phí của [hồ sơ BST mục 11](edu3b-bst-source-evidence.md#11-edu-3b--owner-acceptance-và-g5-bridge-26112026). Cộng 20 OP đã nghiệm thu, academic acceptance toàn dự án **29/40**; EDU-3 toàn giai đoạn vẫn **PARTIAL**. Owner xác nhận có căn cứ công bố nội dung BST AlgoVision tự biên soạn thực tế; không cấp quyền tài liệu bên thứ ba. Closeout đã được owner duyệt; bản đồng bộ docs B3 này **chưa commit/publish/merge**. Các checkpoint trước giữ trạng thái lúc ghi, không sửa lịch sử.
+
+- **G5 bridge:** [#84](https://github.com/Nggvanchi/AlgoVision/pull/84) bổ sung hồ sơ 9 OP/6 proof/13 nhóm expected oracle; [#85](https://github.com/Nggvanchi/AlgoVision/pull/85) cập nhật 9 JS fields/6 template text regions/+2 tests. Merge B2 [3f89bb93d900d31dbf70f9815ec3b082fa8248c4](https://github.com/Nggvanchi/AlgoVision/commit/3f89bb93d900d31dbf70f9815ec3b082fa8248c4), tree **c0795b5a8fb93cffa8e4fcb43b54c3c95121ddda**; [CI hậu merge 45819093340](https://github.com/Nggvanchi/AlgoVision/actions/runs/45819093340) **1820/1820 mỗi OS**, fail/skip/todo/cancelled 0, build/encoding/Vercel SUCCESS. [Matrix/proof/oracle/current blob bridge](edu3b-bst-source-evidence.md#111-ma-trận-nghiệm-thu-9-op-và-phạm-vi-proof) phân biệt static expected, assertions thực sự chạy và existing coverage.
+- **Clarification:** [Delete miss](edu3b-bst-source-evidence.md#112-clarification-delete-miss--không-có-clone-cây-kết-quả): generator Θ(n+k²), retained trace mới Θ(1+k²), core O(h+1) khi n>0; empty Θ(1), không clone cây kết quả khi miss.
+- **Reuse QA B2:** targeted 108/108, full 1820/1820, mutations 3/3, assertion controls 2/2, raw JS/CSS **153472/58016 B**. Chrome localhost functional/visual **36/36**, **1528 assertions**, **72 PNG** đọc lại/hash/review. Chain/cleanup PASS chỉ lượt B2; giữ evidence BLOCKED trước recovery và exceptions lịch sử. Không suy localhost thành production QA hoặc nói mọi nhóm oracle đã chạy đầy đủ.
+- **Policy B/rights:** owner acceptance chỉ đúng claims và nội dung AlgoVision tự biên soạn thực tế đã duyệt. **RIGHTS_NOT_VERIFIED** bên thứ ba, 8 source ID, 40 OP/80 mapping ID, source_status và routing lịch sử **2 READY/38 DEFER** giữ nguyên; không ingestion mới hoặc sửa catalog/disposition.
+- **Residual/gate:** giữ VIS-01 trước C4/release, Insertion C2/C3, EX-03/EX-04, historical config drift UNKNOWN, attribution/IPC/runtime overrides NOT VERIFIED, PNG/runtime/cleanup exceptions lịch sử và hardening residual của BST. G-EDU/G-STRUCT/G-RELEASE, C4, screen reader/zoom/cross-browser/production còn mở. Không mở EDU-3C, đổi roadmap/backlog hoặc lặp test/build/browser local trong B3 khi runtime nguyên byte.
