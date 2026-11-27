@@ -1,5 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { deepFreeze } from './helpers/deep-freeze.js'
 import { adjacencyListSize, buildGraph, listVertices, toAdjacencyMatrix } from '../src/structures/graph.js'
 import { generateGraphHasEdgeSteps } from '../src/algorithms/graphHasEdge.js'
 import { generateGraphNeighborsSteps } from '../src/algorithms/graphNeighbors.js'
@@ -290,4 +291,154 @@ test('DFS ma trận, đường thẳng 50 đỉnh: 50 lần gọi, reads 2500 = 
 
   assert.deepEqual([matrix.calls, matrix.reads, matrix.depth, matrix.steps], [50, 2500, 50, 2650])
   assert.deepEqual([list.reads, list.depth, list.steps], [98, 50, 248])
+})
+
+test('EDU4: oracle literal 10 rows, trace và owned snapshot isolation', () => {
+  // Fixture F dò tay trong hồ sơ P1; v5 cô lập. Số trong cursor là ID, không phải slot/nhãn.
+  const graph = deepFreeze({
+    directed: true, nextId: 6,
+    vertices: {
+      v1: { id: 'v1', slot: 0, label: 'A' }, v2: { id: 'v2', slot: 1, label: 'B' },
+      v3: { id: 'v3', slot: 2, label: 'C' }, v4: { id: 'v4', slot: 3, label: 'D' },
+      v5: { id: 'v5', slot: 4, label: 'E' },
+    },
+    adjacency: { v1: ['v2', 'v3'], v2: ['v4'], v3: ['v4'], v4: ['v2'], v5: [] },
+  })
+  const original = JSON.stringify(graph)
+  const z = [null, null, null, null, null]
+  const ids = (digits) => [...digits].map((digit) => `v${digit}`)
+  const map = (values) => Object.fromEntries(values.map((value, i) => [`v${i + 1}`, value]))
+  const parent = (values) => map(values.map((value) => value === null ? null : `v${value}`))
+  // Literal phases: visited, FIFO, dequeue order, dist, parent. Không suy expected từ generator.
+  const bfs = [
+    ['', '', '', z, z], ['1', '1', '', [0, null, null, null, null], z],
+    ['1', '', '1', [0, null, null, null, null], z],
+    ['12', '2', '1', [0, 1, null, null, null], [null, 1, null, null, null]],
+    ['123', '23', '1', [0, 1, 1, null, null], [null, 1, 1, null, null]],
+    ['123', '3', '12', [0, 1, 1, null, null], [null, 1, 1, null, null]],
+    ['1234', '34', '12', [0, 1, 1, 2, null], [null, 1, 1, 2, null]],
+    ['1234', '4', '123', [0, 1, 1, 2, null], [null, 1, 1, 2, null]],
+    ['1234', '', '1234', [0, 1, 1, 2, null], [null, 1, 1, 2, null]],
+  ]
+  // Literal phases: visited, explicit frames, finished, discovery, finish, parent.
+  const dfs = [
+    ['', '', '', z, z, z], ['1', '1', '', [1, null, null, null, null], z, z],
+    ['1', '1', '', [1, null, null, null, null], z, [null, 1, null, null, null]],
+    ['12', '12', '', [1, 2, null, null, null], z, [null, 1, null, null, null]],
+    ['12', '12', '', [1, 2, null, null, null], z, [null, 1, null, 2, null]],
+    ['124', '124', '', [1, 2, null, 3, null], z, [null, 1, null, 2, null]],
+    ['124', '12', '4', [1, 2, null, 3, null], [null, null, null, 4, null], [null, 1, null, 2, null]],
+    ['124', '1', '42', [1, 2, null, 3, null], [null, 5, null, 4, null], [null, 1, null, 2, null]],
+    ['124', '1', '42', [1, 2, null, 3, null], [null, 5, null, 4, null], [null, 1, 1, 2, null]],
+    ['1243', '13', '42', [1, 2, 6, 3, null], [null, 5, null, 4, null], [null, 1, 1, 2, null]],
+    ['1243', '1', '423', [1, 2, 6, 3, null], [null, 5, 7, 4, null], [null, 1, 1, 2, null]],
+    ['1243', '', '4231', [1, 2, 6, 3, null], [8, 5, 7, 4, null], [null, 1, 1, 2, null]],
+  ]
+  // Mỗi tuple = [line, reads, currentVertex, edgeTo, matrixColumn, phase/output].
+  const cases = [
+    { op: 'has-edge', rep: 'list', target: 'v3', result: true, trace: [
+      [null, 0, null, null, null, ''], [2, 1, 2, 2, null, ''], [2, 2, 3, 3, null, ''],
+    ] },
+    { op: 'has-edge', rep: 'list', target: 'v4', result: false, trace: [
+      [null, 0, null, null, null, ''], [2, 1, 2, 2, null, ''], [2, 2, 3, 3, null, ''], [3, 2, null, null, null, ''],
+    ] },
+    { op: 'has-edge', rep: 'matrix', target: 'v3', result: true, trace: [
+      [null, 0, null, null, null, ''], [1, 1, null, 3, 3, ''],
+    ] },
+    { op: 'has-edge', rep: 'matrix', target: 'v4', result: false, trace: [
+      [null, 0, null, null, null, ''], [1, 1, null, null, 4, ''],
+    ] },
+    { op: 'neighbors', rep: 'list', result: 2, trace: [
+      [null, 0, null, null, null, ''], [1, 0, null, null, null, ''],
+      [3, 1, 2, 2, null, '2'], [3, 2, 3, 3, null, '23'], [4, 2, null, null, null, '23'],
+    ] },
+    { op: 'neighbors', rep: 'matrix', result: 2, trace: [
+      [null, 0, null, null, null, ''], [1, 0, null, null, null, ''],
+      [3, 1, 1, null, 1, ''], [3, 2, 2, 2, 2, ''], [4, 2, 2, 2, 2, '2'],
+      [3, 3, 3, 3, 3, '2'], [4, 3, 3, 3, 3, '23'], [3, 4, 4, null, 4, '23'],
+      [3, 5, 5, null, 5, '23'], [5, 5, null, null, null, '23'],
+    ] },
+    { op: 'bfs', rep: 'list', result: { reachable: 4 }, trace: [
+      [null, 0, null, null, null, 0], [1, 0, null, null, null, 1], [3, 0, 1, null, null, 2],
+      [5, 1, 1, 2, null, 2], [6, 1, 1, 2, null, 3], [5, 2, 1, 3, null, 3], [6, 2, 1, 3, null, 4],
+      [3, 2, 2, null, null, 5], [5, 3, 2, 4, null, 5], [6, 3, 2, 4, null, 6],
+      [3, 3, 3, null, null, 7], [5, 4, 3, 4, null, 7], [3, 4, 4, null, null, 8],
+      [5, 5, 4, 2, null, 8], [7, 5, null, null, null, 8],
+    ] },
+    { op: 'bfs', rep: 'matrix', result: { reachable: 4 }, trace: [
+      [null, 0, null, null, null, 0], [1, 0, null, null, null, 1], [3, 0, 1, null, null, 2],
+      [5, 1, 1, null, 1, 2], [5, 2, 1, 2, 2, 2], [6, 2, 1, 2, 2, 3],
+      [5, 3, 1, 3, 3, 3], [6, 3, 1, 3, 3, 4], [5, 4, 1, null, 4, 4], [5, 5, 1, null, 5, 4],
+      [3, 5, 2, null, null, 5], [5, 6, 2, null, 1, 5], [5, 7, 2, null, 2, 5],
+      [5, 8, 2, null, 3, 5], [5, 9, 2, 4, 4, 5], [6, 9, 2, 4, 4, 6], [5, 10, 2, null, 5, 6],
+      [3, 10, 3, null, null, 7], [5, 11, 3, null, 1, 7], [5, 12, 3, null, 2, 7],
+      [5, 13, 3, null, 3, 7], [5, 14, 3, 4, 4, 7], [5, 15, 3, null, 5, 7],
+      [3, 15, 4, null, null, 8], [5, 16, 4, null, 1, 8], [5, 17, 4, 2, 2, 8],
+      [5, 18, 4, null, 3, 8], [5, 19, 4, null, 4, 8], [5, 20, 4, null, 5, 8], [7, 20, null, null, null, 8],
+    ] },
+    { op: 'dfs', rep: 'list', result: { reachable: 4, maxStackDepth: 3 }, trace: [
+      [null, 0, null, null, null, 0], [2, 0, 1, null, null, 1], [4, 1, 1, 2, null, 1],
+      [5, 1, 1, 2, null, 2], [2, 1, 2, null, null, 3], [4, 2, 2, 4, null, 3],
+      [5, 2, 2, 4, null, 4], [2, 2, 4, null, null, 5], [4, 3, 4, 2, null, 5],
+      [6, 3, 2, null, null, 6], [6, 3, 1, null, null, 7], [4, 4, 1, 3, null, 7],
+      [5, 4, 1, 3, null, 8], [2, 4, 3, null, null, 9], [4, 5, 3, 4, null, 9],
+      [6, 5, 1, null, null, 10], [6, 5, null, null, null, 11],
+    ] },
+    { op: 'dfs', rep: 'matrix', result: { reachable: 4, maxStackDepth: 3 }, trace: [
+      [null, 0, null, null, null, 0], [2, 0, 1, null, null, 1], [4, 1, 1, null, 1, 1],
+      [4, 2, 1, 2, 2, 1], [5, 2, 1, 2, 2, 2], [2, 2, 2, null, null, 3],
+      [4, 3, 2, null, 1, 3], [4, 4, 2, null, 2, 3], [4, 5, 2, null, 3, 3],
+      [4, 6, 2, 4, 4, 3], [5, 6, 2, 4, 4, 4], [2, 6, 4, null, null, 5],
+      [4, 7, 4, null, 1, 5], [4, 8, 4, 2, 2, 5], [4, 9, 4, null, 3, 5],
+      [4, 10, 4, null, 4, 5], [4, 11, 4, null, 5, 5], [6, 11, 2, null, null, 6],
+      [4, 12, 2, null, 5, 6], [6, 12, 1, null, null, 7], [4, 13, 1, 3, 3, 7],
+      [5, 13, 1, 3, 3, 8], [2, 13, 3, null, null, 9], [4, 14, 3, null, 1, 9],
+      [4, 15, 3, null, 2, 9], [4, 16, 3, null, 3, 9], [4, 17, 3, 4, 4, 9],
+      [4, 18, 3, null, 5, 9], [6, 18, 1, null, null, 10], [4, 19, 1, null, 4, 10],
+      [4, 20, 1, null, 5, 10], [6, 20, null, null, null, 11],
+    ] },
+  ]
+  assert.equal(cases.length, 10)
+  const generate = { 'has-edge': generateGraphHasEdgeSteps, neighbors: generateGraphNeighborsSteps, bfs: generateGraphBfsSteps, dfs: generateGraphDfsSteps }
+  for (const row of cases) {
+    const steps = row.op === 'has-edge' ? generate[row.op](graph, 'v1', row.target, row.rep) : generate[row.op](graph, 'v1', row.rep)
+    const context = `${row.op}/${row.rep}/${row.target ?? 'v1'}`
+    assert.equal(steps.length, row.trace.length, context)
+    row.trace.forEach(([line, reads, vertex, edgeTo, column, phase], index) => {
+      const step = steps[index], done = index === row.trace.length - 1
+      assert.deepEqual([step.operation, step.representation, step.sourceId, step.targetId], [row.op, row.rep, 'v1', row.target ?? null], context)
+      assert.deepEqual([step.pseudocodeLine, step.reads, step.currentVertexId], [line, reads, vertex === null ? null : `v${vertex}`], `${context} bước ${index}`)
+      const edgeFrom = row.op === 'has-edge' || row.op === 'neighbors' ? 'v1' : `v${vertex}`
+      assert.deepEqual(step.currentEdge, edgeTo === null ? null : { from: edgeFrom, to: `v${edgeTo}` }, context)
+      assert.deepEqual(step.matrixCell, column === null ? null : { rowId: row.op === 'bfs' || row.op === 'dfs' ? `v${vertex}` : 'v1', colId: `v${column}` }, context)
+      assert.deepEqual([step.finished, step.result], [done, done ? row.result : null], context)
+      assert.equal(typeof step.message, 'string')
+      assert.ok(step.message.length > 0)
+      assert.deepEqual(step.graph, graph)
+      assert.deepEqual(step.outputIds, row.op === 'neighbors' ? ids(phase) : [])
+      if (row.op === 'bfs') {
+        const [visited, queue, order, distance, parents] = bfs[phase]
+        assert.deepEqual([step.visitedIds, step.frontierIds, step.orderIds], [ids(visited), ids(queue), ids(order)])
+        assert.deepEqual(step.distance, map(distance), `${context} dist bước ${index}`)
+        assert.deepEqual(step.parentIds, parent(parents))
+      } else if (row.op === 'dfs') {
+        const [visited, stack, finished, discovery, finish, parents] = dfs[phase]
+        assert.deepEqual([step.visitedIds, step.callStackIds, step.finishedIds], [ids(visited), ids(stack), ids(finished)])
+        assert.deepEqual([step.discovery, step.finish, step.parentIds], [map(discovery), map(finish), parent(parents)])
+      }
+    })
+    // Owned snapshots tách riêng; không ép cursor currentEdge/matrixCell khác identity giữa check/enqueue/call.
+    const owned = ['graph', 'outputIds', ...(row.op === 'bfs' ? ['visitedIds', 'frontierIds', 'orderIds', 'distance', 'parentIds'] : row.op === 'dfs' ? ['visitedIds', 'callStackIds', 'finishedIds', 'discovery', 'finish', 'parentIds'] : [])]
+    for (const field of owned) assert.equal(new Set(steps.map((step) => step[field])).size, steps.length, `${context} owned ${field}`)
+    const earlier = JSON.stringify(steps.slice(0, -1))
+    steps.at(-1).graph.vertices.v1.label = 'Bản sao độc lập'
+    steps.at(-1).outputIds.push('v5')
+    assert.equal(JSON.stringify(steps.slice(0, -1)), earlier, 'sửa snapshot cuối không làm đổi bước cũ')
+    assert.equal(JSON.stringify(graph), original, 'input đóng băng giữ nguyên')
+    deepFreeze(steps)
+    const preserved = JSON.stringify(steps)
+    if (row.op === 'has-edge') generate[row.op](graph, 'v1', row.target, row.rep)
+    else generate[row.op](graph, 'v1', row.rep)
+    assert.equal(JSON.stringify(steps), preserved, 'lần sinh sau không sửa trace cũ')
+  }
 })

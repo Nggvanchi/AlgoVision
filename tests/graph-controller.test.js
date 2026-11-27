@@ -708,7 +708,7 @@ test('Bảng Big-O: danh sách kề so với ma trận kề; dòng BFS và DFS t
 
     assert.deepEqual(cells('space'), ['Θ(V + E)', 'Θ(V²)'])
     assert.deepEqual(cells('has-edge'), ['O(deg(u)), tốt nhất O(1)', 'O(1)'])
-    assert.deepEqual(cells('neighbors'), ['Θ(deg(u))', 'Θ(V)'])
+    assert.deepEqual(cells('neighbors'), ['Θ(1 + deg(u))', 'Θ(V)'])
     assert.equal(row('traverse') === null, true)
     assert.deepEqual(cells('bfs'), ['O(V + E): R lần dequeue + tổng bậc (ra) của R đỉnh', 'O(V²): R·V ô, tối đa V²'])
     assert.equal(row('bfs').querySelector('th').textContent.trim(), 'BFS từ s')
@@ -722,7 +722,7 @@ test('Bảng Big-O: danh sách kề so với ma trận kề; dòng BFS và DFS t
     assert.ok(row('neighbors').classList.contains('is-active'))
     assert.equal(row('has-edge').querySelector('.graph-row-badge').textContent, '')
 
-    assert.match(ui.text('#graph-edit-cost'), /không tính chi phí sao chép snapshot/)
+    assert.match(ui.text('#graph-edit-cost'), /API hiện tại luôn clone graph, cả khi từ chối/)
   })
 })
 
@@ -756,7 +756,10 @@ const bfsSampleSteps = (representation) => {
   return bfsModule.generateGraphBfsSteps(graph, 'v1', representation)
 }
 const svgLabels = (ui, selector) => [...ui.document.querySelectorAll(`#graph-svg ${selector}`)].map((node) => node.dataset.label)
-const badgeText = (ui, label) => ui.vertexByLabel(label).querySelector('.graph-vertex-badge')?.textContent ?? null
+const badgeText = (ui, label) => {
+  const id = ui.vertexByLabel(label).dataset.id
+  return ui.$('#graph-section .graph-bfs-panel:not([hidden]) [data-id="' + id + '"] [data-graph-badge]')?.textContent ?? null
+}
 const listItems = (ui, selector) => [...ui.document.querySelectorAll(selector)].map((node) => node.textContent.trim())
 const bfsTableRows = (ui) => [...ui.document.querySelectorAll('#graph-bfs-table tbody tr')]
   .map((row) => [...row.children].map((cell) => cell.textContent))
@@ -1405,5 +1408,161 @@ test('Learning Panel BFS/DFS vừa bấm Thực hiện (bước 0): ghi "chưa b
       'DFS từ A chưa bắt đầu (danh sách kề): 0 lần gọi, đã đọc 0 phần tử, ngăn xếp gọi chưa có khung nào.')
     ui.$('#graph-next').click()
     assert.match(ui.text('#graph-dfs-cost'), /^DFS từ A đang chạy \(danh sách kề\): đã 1 lần gọi/)
+  })
+})
+
+
+test('EDU4: exact copy/model, panel và query isolation list/matrix', () => {
+  const expected = {
+  "has-edge.matrix.description": "Minh họa đọc M[u][v]: 1 là có cạnh u → v; vô hướng đối xứng.",
+  "has-edge.matrix.advantages": "Một ô đọc trong mô hình ma trận có sẵn; không phải toàn bộ chi phí generator.",
+  "has-edge.matrix.disadvantages": "Ma trận cần V² ô. Ứng dụng lưu danh sách kề; dựng bảng, tra cứu và snapshot tính riêng.",
+  "neighbors.list.advantages": "Đọc deg(u) phần tử; cả khởi tạo/kết luận là Θ(1 + deg(u)) theo mô hình danh sách.",
+  "neighbors.matrix.advantages": "Với ma trận có sẵn, quét cột u tính bậc vào trong Θ(V); thao tác này chỉ trả bậc ra.",
+  "bfs.list.advantages": "Mô hình BFS chuẩn: O(V + E) khi visited và hàng đợi thao tác O(1); dist đếm số cạnh ngắn nhất từ s.",
+  "bfs.matrix.advantages": "Mô hình ma trận có sẵn: đọc R·V ô. Generator hiện tại vẫn tra danh sách kề.",
+  "dfs.list.advantages": "Mô hình DFS chuẩn: O(V + E) với visited O(1); mốc vào/ra lồng nhau cho quan hệ tổ tiên.",
+  "dfs.matrix.advantages": "Mô hình ma trận có sẵn: đọc R·V ô. Generator hiện tại vẫn tra danh sách kề."
+}
+  const costNote = "Mô hình bỏ copy: thêm đỉnh O(1 + V); thêm/xóa cạnh O(1 + deg(u) + deg(v)), có hướng O(1 + deg(u)); xóa đỉnh O(1 + V + E). API hiện tại luôn clone graph, cả khi từ chối: O(1 + V + E), output độc lập. reads chỉ đếm phần tử/ô minh họa; Big-O của bảng và BFS/DFS áp dụng biểu diễn có sẵn với visited/hàng đợi O(1), bộ nhớ phụ O(V) không gồm graph/trace. Thực tế dùng danh sách kề, Array.includes/shift và sort; mỗi bước clone graph nên trace giữ O(S·(1 + V + E)). Dựng ma trận, thông báo và DOM tính riêng."
+  const caption = 'Mô hình truy vấn (deg(u) ≤ V − 1), chưa tính sinh bước'
+  const normal = (text) => text.replace(/\s+/g, ' ').trim()
+  const cards = {
+    'has-edge': ['O(deg(u)), tốt nhất O(1)', 'O(1)'], neighbors: ['Θ(1 + deg(u))', 'Θ(V)'],
+    bfs: ['O(V + E): R lần dequeue + tổng bậc (ra) của R đỉnh', 'O(V²): R·V ô, tối đa V²'],
+    dfs: ['O(V + E): R lần gọi + tổng bậc (ra) của R đỉnh', 'O(V²): R·V ô, tối đa V²'],
+  }
+  for (const kind of ['undirected', 'directed']) withGraph((ui) => {
+    ui.open()
+    ui.change('#graph-kind', kind)
+    ui.$('#graph-preset-sample').click()
+    const originalLabels = ui.vertexLabels()
+    const originalEdges = ui.edgeCount()
+    const graphIds = () => [...ui.document.querySelectorAll('#graph-svg .graph-vertex')].map((node) => node.dataset.id)
+    const originalIds = graphIds()
+    assert.equal(normal(ui.text('#graph-complexity-table caption')), caption)
+    assert.equal(normal(ui.text('#graph-edit-cost')), costNote)
+    for (const operation of ['has-edge', 'neighbors', 'bfs', 'dfs', 'has-edge']) {
+      for (const representation of ['list', 'matrix']) {
+        ui.change('#graph-operation', operation)
+        ui.change('#graph-representation', representation)
+        const checkCopy = () => {
+          for (const [key, text] of Object.entries(expected)) {
+            const [op, rep, field] = key.split('.')
+            if (op === operation && rep === representation) {
+              assert.equal(graphView.graphLearning[op][rep][field], text, key)
+              assert.equal(ui.text('#graph-learning-' + field), text, key + ' hiển thị')
+            }
+          }
+          if (operation === 'bfs' && representation === 'list') {
+            assert.match(ui.text('#graph-learning-description'), /Đánh dấu lúc đưa vào hàng nên/)
+          }
+          assert.equal(normal(ui.text('#graph-edit-cost')), costNote)
+          assert.equal(normal(ui.text('#graph-complexity-table caption')), caption)
+          const row = ui.$('#graph-complexity-table tr[data-row="' + operation + '"]')
+          assert.ok(row.classList.contains('is-active'))
+          assert.deepEqual([...row.querySelectorAll('td')].map((cell) => cell.textContent.trim()), cards[operation])
+          assert.deepEqual([...ui.document.querySelectorAll('#graph-pseudocode .pseudocode-line')].map((line) => line.textContent), graphView.graphOperations[operation].pseudocode[representation])
+        }
+        checkCopy()
+        ui.query(operation, 'A', operation === 'has-edge' ? 'C' : null)
+        ui.nextUntilDone()
+        const expectedReads = representation === 'matrix'
+          ? { 'has-edge': 1, neighbors: 7, bfs: 28, dfs: 28 }
+          : { 'has-edge': 2, neighbors: 2, bfs: kind === 'directed' ? 5 : 8, dfs: kind === 'directed' ? 5 : 8 }
+        assert.equal(ui.text('#graph-reads'), String(expectedReads[operation]), kind + '/' + operation + '/' + representation)
+        checkCopy()
+        assert.notEqual(ui.text('#graph-result'), 'Chưa có')
+        ui.$('#graph-previous').click()
+        const slider = ui.$('#graph-section [data-step-slider]')
+        slider.value = '0'
+        slider.dispatchEvent(new ui.window.Event('change', { bubbles: true }))
+        assert.equal(ui.text('#graph-reads'), '0')
+        ui.$('#graph-reset').click()
+        assert.equal(ui.text('#graph-result'), 'Chưa có')
+        assert.deepEqual(ui.vertexLabels(), originalLabels)
+        assert.deepEqual(graphIds(), originalIds)
+        assert.equal(ui.edgeCount(), originalEdges)
+        checkCopy()
+      }
+    }
+  })
+})
+
+test('EDU4 legend: max8 mọi nguồn, exact badges, state, seek/reset và query isolation', () => {
+  withGraph((ui) => {
+    const ids = ['v1', 'v2', 'v3', 'v4', 'v5', 'v6', 'v7', 'v8']
+    const points = [[150, 35], [231.3, 68.7], [265, 150], [231.3, 231.3], [150, 265], [68.7, 231.3], [35, 150], [68.7, 68.7]]
+    for (let source = 0; source < 8; source++) for (const op of ['bfs', 'dfs']) for (const representation of ['list', 'matrix']) {
+      const others = ids.filter((id) => id !== ids[source])
+      const graph = buildGraph(true, 8, others.map((id) => [source, ids.indexOf(id)]))
+      const make = createGraphStepFactory(op, { representation, sourceId: ids[source] })
+      const parentIds = Object.fromEntries(ids.map((id) => [id, id === ids[source] ? null : ids[source]]))
+      const distance = Object.fromEntries(ids.map((id) => [id, id === ids[source] ? 0 : 1]))
+      const discovery = { [ids[source]]: 1 }, finish = { [ids[source]]: 16 }
+      others.forEach((id, index) => { discovery[id] = 2 + 2 * index; finish[id] = 3 + 2 * index })
+      const current = op === 'bfs' ? ids[source] : others[0]
+      const steps = [make({ graph }), make({ graph, currentVertexId: current,
+        visitedIds: [ids[source], others[0]], orderIds: [ids[source]], frontierIds: [others[0]],
+        distance: { [ids[source]]: 0, [others[0]]: 1 }, discovery: { [ids[source]]: 1, [others[0]]: 2 },
+        finish: {}, finishedIds: [], callStackIds: [ids[source], others[0]], parentIds,
+      }), make({ graph, visitedIds: [ids[source], ...others], frontierIds: [], orderIds: [ids[source], ...others],
+        distance, parentIds, discovery, finish, callStackIds: [], finishedIds: [...others, ids[source]],
+        reads: representation === 'list' ? 7 : 64, finished: true,
+        result: op === 'bfs' ? { reachable: 8 } : { reachable: 8, maxStackDepth: 2 },
+      })]
+      const original = JSON.stringify(steps)
+      ui.change('#graph-operation', 'neighbors')
+      ui.handle.loadSteps(steps)
+      const legend = ui.$('#graph-' + op + '-badges')
+      assert.ok(legend !== null, 'legend traversal tồn tại ngoài SVG')
+      assert.equal(legend.tagName, 'UL')
+      assert.equal(legend.getAttribute('aria-label'), 'Nhãn đỉnh ' + op.toUpperCase())
+      assert.equal(ui.$('#graph-' + op + '-panel').hidden, false, 'theo displayed step, không theo select')
+      const rows = () => [...legend.querySelectorAll('li')].map((item) => [item.dataset.id, item.querySelector('[data-graph-badge]').textContent])
+      const check = (expected) => {
+        assert.deepEqual(rows(), expected, 'legend exact text/ID theo bước')
+        assert.equal(ui.document.querySelectorAll('#graph-svg .graph-vertex-badge').length, 0, 'traversal không còn badge trong SVG')
+        assert.equal(ui.$('#graph-svg').getAttribute('viewBox'), '0 0 300 300')
+        assert.deepEqual([...ui.document.querySelectorAll('#graph-svg .graph-vertex-circle')].map((node) => [Number(node.getAttribute('cx')), Number(node.getAttribute('cy')), Number(node.getAttribute('r'))]), points.map(([x, y]) => [x, y, 18]), 'node geometry không đổi')
+        assert.equal(ui.document.querySelectorAll('#graph-svg .graph-edge[marker-end]').length, 7, 'giữ đủ arrowheads')
+      }
+      check([[ids[source], 's']])
+      ui.$('#graph-next').click()
+      const mid = ids.filter((id) => id === ids[source] || id === others[0]).map((id) => [id,
+        op === 'bfs' ? (id === ids[source] ? 's·0' : 'd=1') : (id === ids[source] ? 's·1/–' : '2/–')])
+      check(mid)
+      assert.deepEqual([...legend.querySelectorAll('[aria-current="true"]')].map((item) => item.dataset.id), [current])
+      assert.ok(ui.document.querySelector('#graph-svg .graph-vertex[data-id="' + current + '"]').classList.contains('is-current'), 'SVG current cue giữ nguyên')
+      if (op === 'bfs') assert.ok(ui.document.querySelector('#graph-svg .graph-vertex[data-id="' + others[0] + '"] .graph-vertex-queue-ring') !== null)
+      else assert.ok(ui.document.querySelector('#graph-svg .graph-vertex[data-id="' + others[0] + '"] .graph-vertex-stack-ring') !== null)
+      ui.$('#graph-next').click()
+      check(ids.map((id) => [id, op === 'bfs' ? (id === ids[source] ? 's·0' : 'd=1') : (id === ids[source] ? 's·1/16' : discovery[id] + '/' + finish[id])]))
+      assert.equal(legend.querySelectorAll('[aria-current]').length, 0, 'finished không còn aria-current')
+      assert.equal(ui.document.querySelectorAll('#graph-svg .graph-vertex-check').length, 8)
+      ui.$('#graph-previous').click()
+      check(mid)
+      const slider = ui.$('#graph-step-slider')
+      slider.value = '0'
+      slider.dispatchEvent(new ui.window.Event('change', { bubbles: true }))
+      check([[ids[source], 's']])
+      ui.$('#graph-next').click()
+      ui.$('#graph-reset').click()
+      check([[ids[source], 's']])
+      assert.equal(JSON.stringify(steps), original, 'legend/renderer không mutation steps')
+      ui.change('#graph-operation', 'has-edge')
+      assert.equal(ui.$('#graph-bfs-panel').hidden, true)
+      assert.equal(ui.$('#graph-dfs-panel').hidden, true)
+      assert.equal(ui.$('#graph-bfs-badges').children.length, 0, 'xóa legend BFS stale')
+      assert.equal(ui.$('#graph-dfs-badges').children.length, 0, 'xóa legend DFS stale')
+    }
+    const graph = buildGraph(true, 8, [[0, 2]])
+    ui.handle.loadSteps([createGraphStepFactory('has-edge', { representation: 'list', sourceId: 'v1', targetId: 'v3' })({ graph, finished: true, result: true })])
+    assert.deepEqual([...ui.document.querySelectorAll('#graph-svg .graph-vertex-badge')].map((badge) => [badge.textContent, Number(badge.getAttribute('x')), Number(badge.getAttribute('y'))]), [['u', 150, 7], ['v', 293, 150]], 'query u/v giữ vị trí gốc')
+    const invalid = createGraphStepFactory('bfs', { representation: 'list', sourceId: 'v99' })({ graph,
+      distance: { v1: 0, v99: 3 }, visitedIds: ['v1', 'v99'], frontierIds: ['v99'], orderIds: ['v99'], currentVertexId: 'v99' })
+    ui.handle.loadSteps([invalid])
+    assert.deepEqual([...ui.$('#graph-bfs-badges').children].map((item) => [item.dataset.id, item.querySelector('[data-graph-badge]').textContent]), [['v1', 'd=0']], 'lọc ID lạ, không giả badge source')
+    assert.equal(ui.$('#graph-bfs-badges').querySelectorAll('[aria-current]').length, 0)
   })
 })

@@ -2039,6 +2039,8 @@
         </div>
 
         <section class="graph-bfs-panel" id="graph-bfs-panel" aria-label="Trạng thái BFS" hidden>
+            <h4>Nhãn đỉnh BFS <span class="graph-panel-badge">s: nguồn; d: khoảng cách</span></h4>
+            <ul class="graph-bfs-order" id="graph-bfs-badges" aria-label="Nhãn đỉnh BFS"></ul>
             <h4>Hàng đợi Q <span class="graph-panel-badge">đầu bên trái</span></h4>
             <div class="graph-bfs-queue-frame" id="graph-bfs-queue-frame" role="group" aria-label="Hàng đợi Q của BFS" tabindex="0">
                 <ol class="graph-bfs-queue" id="graph-bfs-queue" aria-label="Hàng đợi"></ol>
@@ -2051,6 +2053,8 @@
         </section>
 
         <section class="graph-bfs-panel graph-dfs-panel" id="graph-dfs-panel" aria-label="Trạng thái DFS" hidden>
+            <h4>Nhãn đỉnh DFS <span class="graph-panel-badge">s: nguồn; vào/ra: mốc thời gian</span></h4>
+            <ul class="graph-bfs-order" id="graph-dfs-badges" aria-label="Nhãn đỉnh DFS"></ul>
             <div class="graph-dfs-layout">
                 <div class="graph-dfs-stack-column">
                     <h4>Ngăn xếp gọi <span class="graph-panel-badge">đỉnh ở trên</span></h4>
@@ -2192,7 +2196,7 @@
 
         <div class="graph-panel-frame" role="group" aria-label="Bảng chi phí thời gian và bộ nhớ theo cách biểu diễn" tabindex="0">
             <table class="graph-complexity-table" id="graph-complexity-table">
-                <caption>Chi phí thời gian và bộ nhớ theo cách biểu diễn (deg(u) ≤ V − 1)</caption>
+                <caption>Mô hình truy vấn (deg(u) ≤ V − 1), chưa tính sinh bước</caption>
                 <thead>
                     <tr>
                         <th scope="col">Thao tác</th>
@@ -2213,7 +2217,7 @@
                     </tr>
                     <tr data-row="neighbors">
                         <th scope="row">Đỉnh kề của u <span class="graph-row-badge"></span></th>
-                        <td>Θ(deg(u))</td>
+                        <td>Θ(1 + deg(u))</td>
                         <td>Θ(V)</td>
                     </tr>
                     <tr data-row="bfs">
@@ -2233,11 +2237,7 @@
         <p class="bst-hint" id="graph-dfs-cost" hidden></p>
 
         <p class="bst-hint" id="graph-edit-cost">
-            Sửa đồ thị trên danh sách kề (như cài đặt ở đây): thêm đỉnh O(V) vì tìm slot trống nhỏ nhất;
-            thêm cạnh O(deg(u) + deg(v)) vì kiểm tra cạnh trùng rồi chèn giữ thứ tự (có hướng: O(deg(u)));
-            xóa cạnh O(deg(u) + deg(v)) (có hướng: O(deg(u))); xóa đỉnh O(V + E) vì phải tìm cạnh đi vào
-            trong mọi danh sách. Các chi phí này là của cấu trúc dữ liệu, không tính chi phí sao chép snapshot
-            mà trình mô phỏng dùng để lưu từng bước.
+            Mô hình bỏ copy: thêm đỉnh O(1 + V); thêm/xóa cạnh O(1 + deg(u) + deg(v)), có hướng O(1 + deg(u)); xóa đỉnh O(1 + V + E). API hiện tại luôn clone graph, cả khi từ chối: O(1 + V + E), output độc lập. reads chỉ đếm phần tử/ô minh họa; Big-O của bảng và BFS/DFS áp dụng biểu diễn có sẵn với visited/hàng đợi O(1), bộ nhớ phụ O(V) không gồm graph/trace. Thực tế dùng danh sách kề, Array.includes/shift và sort; mỗi bước clone graph nên trace giữ O(S·(1 + V + E)). Dựng ma trận, thông báo và DOM tính riêng.
         </p>
         </div>
         </div>

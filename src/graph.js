@@ -138,20 +138,20 @@ export const graphLearning = {
       disadvantages: 'Trường hợp xấu nhất (v ở cuối hoặc không có) phải đọc cả deg(u) phần tử, tới V − 1 trong đồ thị dày.',
     },
     matrix: {
-      description: 'Đọc thẳng ô M[u][v]: bằng 1 thì có cạnh u → v (vô hướng thì cũng là v → u).',
-      advantages: 'Luôn đúng một lần đọc, không phụ thuộc bậc của u: O(1) cả trong đồ thị dày.',
-      disadvantages: 'Phải giữ đủ V² ô kể cả khi gần như không có cạnh nào.',
+      description: 'Minh họa đọc M[u][v]: 1 là có cạnh u → v; vô hướng đối xứng.',
+      advantages: 'Một ô đọc trong mô hình ma trận có sẵn; không phải toàn bộ chi phí generator.',
+      disadvantages: 'Ma trận cần V² ô. Ứng dụng lưu danh sách kề; dựng bảng, tra cứu và snapshot tính riêng.',
     },
   },
   neighbors: {
     list: {
       description: 'Đọc lần lượt mọi phần tử của Adj[u]; mỗi phần tử là một đỉnh kề, số phần tử là bậc (có hướng: bậc ra).',
-      advantages: 'Chi phí đúng bằng số đỉnh kề Θ(deg(u)): không tốn lần đọc nào cho cặp không kề.',
+      advantages: 'Đọc deg(u) phần tử; cả khởi tạo/kết luận là Θ(1 + deg(u)) theo mô hình danh sách.',
       disadvantages: 'Có hướng thì bậc vào không có sẵn: phải tìm u trong mọi danh sách khác, O(V + E).',
     },
     matrix: {
       description: 'Đọc cả hàng u của ma trận, ô bằng 1 nào thì cột đó là một đỉnh kề.',
-      advantages: 'Cột u cho ngay các cạnh đi vào u, nên bậc vào cũng chỉ tốn Θ(V).',
+      advantages: 'Với ma trận có sẵn, quét cột u tính bậc vào trong Θ(V); thao tác này chỉ trả bậc ra.',
       disadvantages: 'Luôn đọc đủ V ô, kể cả khi u là đỉnh cô lập (bậc 0).',
     },
   },
@@ -160,15 +160,14 @@ export const graphLearning = {
       description: 'Duyệt theo từng lớp bằng hàng đợi: lấy u ở đầu hàng, đọc từng w trong Adj[u]; w chưa được đánh dấu thì '
         + 'đánh dấu ngay, gán dist[w] = dist[u] + 1, parent[w] = u và đưa vào cuối hàng. Đánh dấu lúc đưa vào hàng nên '
         + 'mỗi đỉnh vào hàng đợi đúng một lần.',
-      advantages: 'Mỗi đỉnh tới được lấy ra một lần và chỉ đọc các cạnh thật sự đi ra từ nó (có hướng: bậc ra), '
-        + 'nên tổng chi phí O(V + E); dist là số cạnh của đường đi ngắn nhất từ s.',
+      advantages: 'Mô hình BFS chuẩn: O(V + E) khi visited và hàng đợi thao tác O(1); dist đếm số cạnh ngắn nhất từ s.',
       disadvantages: 'Chỉ đi tới các đỉnh tới được từ s: đỉnh ở thành phần khác giữ dist = — (cần chạy lại từ nguồn khác). '
         + 'Hàng đợi và mảng visited/dist/parent tốn thêm O(V) bộ nhớ.',
     },
     matrix: {
       description: 'Giống BFS trên danh sách kề, nhưng với mỗi u lấy khỏi hàng đợi phải đọc cả hàng u của ma trận '
         + '(V ô) để tìm các w có M[u][w] = 1.',
-      advantages: 'Cài đặt đơn giản, không cần danh sách kề; với đồ thị dày (E gần V²) chi phí tương đương danh sách kề.',
+      advantages: 'Mô hình ma trận có sẵn: đọc R·V ô. Generator hiện tại vẫn tra danh sách kề.',
       disadvantages: 'Mỗi lần lấy u ra luôn đọc đủ V ô, kể cả ô bằng 0: tổng R·V ô (R là số đỉnh tới được), tối đa V², '
         + 'tức O(V²) dù đồ thị rất thưa.',
     },
@@ -178,15 +177,14 @@ export const graphLearning = {
       description: 'Đi sâu trước: vào u thì đánh dấu và ghi mốc vào; đọc từng w trong Adj[u], gặp w chưa thăm thì gán '
         + 'parent[w] = u và gọi DFS(w) ngay (khung mới lên đỉnh ngăn xếp); đọc hết Adj[u] thì ghi mốc ra và quay lui. '
         + 'Minh họa dùng ngăn xếp tường minh nhưng thứ tự giống hệt bản đệ quy.',
-      advantages: 'Mỗi đỉnh tới được được gọi đúng một lần và chỉ đọc các cạnh thật sự đi ra từ nó (có hướng: bậc ra), '
-        + 'nên tổng chi phí O(V + E), cùng số lần đọc với BFS. Mốc vào/ra lồng nhau cho biết quan hệ tổ tiên – con cháu.',
+      advantages: 'Mô hình DFS chuẩn: O(V + E) với visited O(1); mốc vào/ra lồng nhau cho quan hệ tổ tiên.',
       disadvantages: 'Không cho đường đi ngắn nhất (Cây hay C5 đi sâu theo một nhánh trước). Ngăn xếp gọi sâu tới V khung '
         + 'khi đồ thị là một đường thẳng: bộ nhớ phụ O(V), và đệ quy thật có thể tràn ngăn xếp.',
     },
     matrix: {
       description: 'Giống DFS trên danh sách kề, nhưng ở mỗi đỉnh u phải dò cả hàng u của ma trận (V ô) để tìm các w có '
         + 'M[u][w] = 1; dò dở thì gọi DFS(w), quay lui rồi dò tiếp từ cột kế tiếp.',
-      advantages: 'Cài đặt đơn giản, không cần danh sách kề; đồ thị dày (E gần V²) thì chi phí tương đương danh sách kề.',
+      advantages: 'Mô hình ma trận có sẵn: đọc R·V ô. Generator hiện tại vẫn tra danh sách kề.',
       disadvantages: 'Mỗi đỉnh tới được luôn đọc đủ V ô, kể cả ô bằng 0: tổng R·V ô, tối đa V², tức O(V²) dù đồ thị rất thưa.',
     },
   },
@@ -379,7 +377,7 @@ function renderVertex(document, svg, step, vertex, point, marks) {
   }
 
   const badgeText = marks.badges.get(vertex.id)
-  if (badgeText) {
+  if (badgeText && !isTraversal(step.operation)) {
     const badge = badgePosition(point)
     appendText(document, group, {
       class: 'graph-vertex-badge', x: badge.x, y: badge.y, dy: '0.35em', 'text-anchor': 'middle',
@@ -549,6 +547,28 @@ export function renderAdjacencyMatrix(table, step) {
   table.appendChild(body)
 }
 
+// Nhãn traversal nằm ngoài SVG, dùng nguyên marks của bước đang hiển thị.
+function renderTraversalBadges(list, step, marks) {
+  if (!list) return
+  list.replaceChildren()
+  if (!marks) return
+  const document = list.ownerDocument
+  for (const [id, text] of marks.badges) {
+    const item = document.createElement('li')
+    item.className = 'graph-bfs-order-item'
+    item.dataset.id = id
+    if (id === step.currentVertexId) {
+      item.classList.add('is-current')
+      item.setAttribute('aria-current', 'true')
+    }
+    const badge = document.createElement('strong')
+    badge.dataset.graphBadge = ''
+    badge.textContent = text
+    item.append(labelOf(step.graph, id) + ': ', badge)
+    list.appendChild(item)
+  }
+}
+
 // Vẽ đồ thị của một bước. Id không có trong đồ thị của bước (đỉnh, cạnh, đỉnh đã ghi nhận) bị bỏ qua, không tô.
 export function renderGraph(svg, step) {
   const document = svg.ownerDocument
@@ -619,12 +639,14 @@ export function initGraph(document, options = {}) {
   const sourceLabel = $('label[for="graph-source"]')
   const bfs = {
     panel: $('#graph-bfs-panel'),
+    badges: $('#graph-bfs-badges'),
     queue: $('#graph-bfs-queue'),
     order: $('#graph-bfs-order'),
     table: $('#graph-bfs-table'),
   }
   const dfs = {
     panel: $('#graph-dfs-panel'),
+    badges: $('#graph-dfs-badges'),
     stack: $('#graph-dfs-stack'),
     order: $('#graph-dfs-order'),
     table: $('#graph-dfs-table'),
@@ -837,6 +859,7 @@ export function initGraph(document, options = {}) {
   function renderBfsPanel(step) {
     if (!bfs.panel) return
     const isBfs = step.operation === 'bfs'
+    renderTraversalBadges(bfs.badges, step, isBfs ? bfsVertexMarks(step) : null)
     bfs.panel.hidden = !isBfs
     if (!isBfs) return
 
@@ -849,6 +872,7 @@ export function initGraph(document, options = {}) {
   function renderDfsPanel(step) {
     if (!dfs.panel) return
     const isDfs = step.operation === 'dfs'
+    renderTraversalBadges(dfs.badges, step, isDfs ? dfsVertexMarks(step) : null)
     dfs.panel.hidden = !isDfs
     if (!isDfs) return
 
