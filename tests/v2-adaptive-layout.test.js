@@ -42,6 +42,43 @@ for (const [id, expected] of Object.entries(hashes)) {
         summary.textContent = ['Mã giả', 'Độ phức tạp', 'Kiến thức'][i]
         pane.prepend(summary)
       }
+      // EDU4: duyệt riêng hai legend tĩnh; không loại ID/focus ngoài allowlist khỏi fingerprint.
+      if (id === 'graph') {
+        for (const [op, note] of [['bfs', 's: nguồn; d: khoảng cách'], ['dfs', 's: nguồn; vào/ra: mốc thời gian']]) {
+          const legendId = 'graph-' + op + '-badges'
+          assert.equal(w.document.querySelectorAll('[id="' + legendId + '"]').length, 1, 'legend ID duy nhất toàn template')
+          const list = original.querySelector('#' + legendId)
+          assert.ok(list !== null)
+          const parent = original.querySelector('#graph-' + op + '-panel')
+          assert.ok(list.parentElement === parent, 'legend trực tiếp trong đúng traversal panel')
+          const heading = list.previousElementSibling
+          assert.ok(heading !== null)
+          assert.equal(heading.tagName, 'H4')
+          assert.equal(heading.attributes.length, 0)
+          assert.equal(heading.textContent.trim(), 'Nhãn đỉnh ' + op.toUpperCase() + ' ' + note)
+          assert.equal(heading.children.length, 1)
+          assert.equal(heading.firstElementChild.tagName, 'SPAN')
+          assert.deepEqual([...heading.firstElementChild.attributes].map(a => [a.name, a.value]), [['class', 'graph-panel-badge']])
+          assert.ok(parent.firstElementChild === heading && heading.nextElementSibling === list, 'heading/list đứng đầu panel đúng thứ tự')
+          const next = list.nextElementSibling
+          assert.ok(next !== null)
+          if (op === 'bfs') {
+            assert.equal(next.tagName, 'H4')
+            assert.equal(next.textContent.trim(), 'Hàng đợi Q đầu bên trái')
+          } else {
+            assert.equal(next.tagName, 'DIV')
+            assert.equal(next.className, 'graph-dfs-layout')
+          }
+          assert.equal(list.tagName, 'UL')
+          assert.deepEqual([...list.attributes].map(a => [a.name, a.value]), [
+            ['class', 'graph-bfs-order'], ['id', legendId], ['aria-label', 'Nhãn đỉnh ' + op.toUpperCase()],
+          ])
+          assert.equal(list.childNodes.length, 0, 'legend scaffold rỗng trước khi render')
+          const forbidden = 'button,input,select,textarea,a[href],summary,[tabindex],[contenteditable],[autofocus],[aria-live],[role="alert"],[role="status"]'
+          assert.ok(heading.querySelector(forbidden) === null && list.querySelector(forbidden) === null, 'legend không thêm focus/live element')
+          list.removeAttribute('id')
+        }
+      }
       const ids = [...original.querySelectorAll('[id]')].map(n => n.id)
       const focus = [...original.querySelectorAll('button,input,select,summary,[tabindex]')].map(n => [n.tagName, n.id, [...n.attributes].filter(a => a.name !== 'class').map(a => [a.name, a.value])])
       assert.equal(createHash('sha256').update(JSON.stringify({ ids, focus })).digest('hex'), expected, 'ID/thuộc tính/thứ tự focus phải giữ đúng base')
