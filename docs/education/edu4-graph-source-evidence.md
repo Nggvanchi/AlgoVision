@@ -194,3 +194,52 @@ Hồ sơ này là biểu đạt/proof/oracle tự biên soạn dựa code pin BA
 Giữ **VIS-01** trước C4/release, **Insertion step-limit C2/negative-mutation C3**, **EX-03/EX-04**, historical config drift UNKNOWN, exact byte diff/runtime overrides/attribution NOT VERIFIED, ARTIFACT_PERSISTENCE_NOT_VERIFIED và PNG/runtime/cleanup exceptions lịch sử; Graph safe arithmetic/ID/resource/caller-mutation và 8-slot render residual. Limited config acceptance chỉ Git/Node/editor P1, không browser/MCP/skills/Sites helper. Bounded checkpoint EDU4 chỉ exact namespace/pattern/OID/tree đã review và business integrity PASS, ghi từng delta; không blanket rebaseline.
 
 **G-EDU/G-STRUCT/G-RELEASE/C4**, screen reader/zoom/cross-browser/production và mọi release gate vẫn mở. Academic acceptance **32/40**; EDU4-P1 chỉ evidence/docs, chưa triển khai P2 hoặc đóng EDU-4. Không sửa roadmap/backlog/runtime/catalog trong P1.
+
+## 10. EDU4-P3 — Owner acceptance và G5 bridge, 27/11/2026
+
+**Trạng thái hiện hành:** OP-33–40 **8/8 OWNER_ACCEPTED** theo quyết định owner trong contract, giả định và mô hình chi phí tại mục2–6. Academic acceptance toàn dự án **40/40** (32 OP trước đó +8 Graph), không phải chứng nhận học thuật bên ngoài. Owner xác nhận có căn cứ công bố nội dung Graph AlgoVision tự biên soạn thực tế; không cấp quyền tài liệu bên thứ ba. Quyết định acceptance đã có hiệu lực; bản docs closeout P3 này **chưa stage/commit/publish/merge**. Các trạng thái STATIC_SUPPORTED/REVIEW_PENDING,32/40 và kế hoạch P2 phía trên là checkpoint lịch sử tại lúc ghi, được giữ nguyên.
+
+### 10.1 Ma trận acceptance và giới hạn
+
+| OP | Contract/invariant được owner nghiệm thu | Proof/oracle mục4–5 | Giới hạn chi phí/phạm vi |
+|---|---|---|---|
+| OP-33 | ID không cấp lại, slot trống nhỏ nhất; giữ input và IDs/slots cũ | P1/P3; O3/O6 | Core tìm slot Θ(1+V); API clone Θ(J); giả định ID/slot còn biểu diễn chính xác |
+| OP-34 | Bỏ vertex/cạnh vào-ra, không dangling IDs; miss vẫn clone | P2/P3; O5/O6 | Core O(J), API time/output Θ(J), J=1+V+A |
+| OP-35 | Reject missing→self-loop→duplicate; chèn đúng chiều và thứ tự slot | P2/P3; O4/O6 | Core theo độ dài list/shifting; API clone Θ(J), không abstract unlink/link O(1) |
+| OP-36 | Xóa đúng một/hai chiều, giữ thứ tự; miss không mutation input | P2/P3; O4/O5/O6 | Filter theo degree; API time/output Θ(J), kể cả miss |
+| OP-37 | List first-match/miss; matrix minh họa một ô, result boolean đúng | P4; O2/O7 | List reads k+1 hoặc d; matrix reads1 chỉ model, không toàn generator O(1) |
+| OP-38 | Output theo slot, directed chỉ out-neighbors/outdegree | P4; O2/O8 | List reads d, whole procedure Θ(1+d); matrix reads V; không trả indegree |
+| OP-39 | FIFO, mark-enqueue, dist ngắn nhất theo số cạnh, parent cố định | P5; O2/O9 | Chỉ component tới được; K=D/list hoặc RV/matrix, S=2R+K+2 |
+| OP-40 | Explicit frames/cursor, parent, discovery/finish và termination | P6; O2/O10 | Không shortest path; K=D/list hoặc RV/matrix, S=3R+K |
+
+Giữ định nghĩa A=E directed/2E undirected, R reachable, D tổng outdegree reachable, J=1+V+A và σ(V) tại mục2. Abstract BFS/DFS O(V+A)/O(V²) cần visited/FIFO O(1), không áp nguyên xi cho includes/shift/sort/clone. Actual generator và retained trace theo mục6; retained Θ(SJ), không Θ(S) fixed metadata. DFS matrix lặp sort theo K+R calls; matrix preparation có includes, không luôn Θ(V²). API/core, output/auxiliary, preparation, message/DOM/render tách riêng. Pure ADT không max8; UI/layout riêng max8/slots0..7. Invalid source/representation bị reject, không có traversal rỗng giả định.
+
+### 10.2 G5 bridge và provenance hiện hành
+
+- [#91](https://github.com/Nggvanchi/AlgoVision/pull/91) là hồ sơ P1, merge [165fa1a00311eff5017675a52c58017099c2851a](https://github.com/Nggvanchi/AlgoVision/commit/165fa1a00311eff5017675a52c58017099c2851a); giữ nguyên **32 historical blobs và90 locators** pin ee26d09eb442c00a5eb31ba14acf5caef2d2b04e ở mục7.1/các mục trước. Đã đối chiếu32/32 blob và phạm vi90/90 locator; không thay locator lịch sử bằng dòng hiện hành.
+- [#92](https://github.com/Nggvanchi/AlgoVision/pull/92) công bố content/legend/regression P2; merge/BASE hiện hành [af2f15a7dfbe3ca374f8c4d44833133ecd96e1e5](https://github.com/Nggvanchi/AlgoVision/commit/af2f15a7dfbe3ca374f8c4d44833133ecd96e1e5), TREE fc84104ffe83ebcae4744e76664a38ac807de639. Parents:165fa1a00311eff5017675a52c58017099c2851a và9a6781a62d33e89854410392e82e7d5f6ca503a5. Exact5-file diff +393/−22;251 outside-scope blobs/modes giữ nguyên.
+
+| Path hiện hành tại BASE P3 | Git blob | Mode |
+|---|---|---|
+| [src/graph.js](https://github.com/Nggvanchi/AlgoVision/blob/af2f15a7dfbe3ca374f8c4d44833133ecd96e1e5/src/graph.js#L551) | da8fc324fefc843ec23bd4f4ea66fffda8e6e9f0 | 100644 |
+| [public/templates/app.html](https://github.com/Nggvanchi/AlgoVision/blob/af2f15a7dfbe3ca374f8c4d44833133ecd96e1e5/public/templates/app.html#L2042) | 56b68d4be40cba301fbab05a61483734ab8c87df | 100644 |
+| [tests/graph-complexity.test.js](https://github.com/Nggvanchi/AlgoVision/blob/af2f15a7dfbe3ca374f8c4d44833133ecd96e1e5/tests/graph-complexity.test.js#L296-L444) | a6c20deb5ec618ab6e7ae4a0d10dec411563dae7 | 100644 |
+| [tests/graph-controller.test.js](https://github.com/Nggvanchi/AlgoVision/blob/af2f15a7dfbe3ca374f8c4d44833133ecd96e1e5/tests/graph-controller.test.js#L1492) | 06709424c7e25f8941b548656ae7d6ad97d68fdd | 100644 |
+| [tests/v2-adaptive-layout.test.js](https://github.com/Nggvanchi/AlgoVision/blob/af2f15a7dfbe3ca374f8c4d44833133ecd96e1e5/tests/v2-adaptive-layout.test.js#L45) | ceeab635bb56e058a21f1be192e319e44bd53a7c | 100644 |
+
+P1 có **10 expected oracle groups O1–O10**, không tuyên bố mọi field/group đều đã chạy. P2 table thực sự chạy **10 rows**: HasEdge hit/miss×2, Neighbors×2, BFS×2, DFS×2 trên fixture F, với trace literals độc lập và frozen input/old-step preservation; existing coverage mục7 bổ sung ADT, directed/undirected, singleton/isolated/validation/step-limit. Không đồng nhất ba lớp này. Owned graph/maps/arrays được copy; currentEdge/matrixCell có thể chia sẻ cursor objects giữa steps, không ép distinct identity hoặc defensive freeze.
+
+Legend BFS/DFS dùng marks/stable IDs của displayed step, exact badge text và aria-current; giữ query badges, SVG cues/edges/arrowheads. Regression max8/all sources, seek/previous/reset/transitions và DOM guard riêng hai legend IDs giữ fingerprint/ID/focus/order ngoài allowlist. Các geometry patches thất bại đã được thay bằng legend theo approval; giữ raw PRODUCT_FAIL/HARNESS_FAIL và recovery evidence.
+
+### 10.3 QA reuse và publication limits
+
+- [Postmerge push CI46011218275](https://github.com/Nggvanchi/AlgoVision/actions/runs/46011218275) trên đúng BASE P3: Ubuntu/Windows **1825/1825 mỗi OS**,0 fail/skip/todo/cancelled; test/build/encoding và Vercel SUCCESS. Deployment SUCCESS không phải production browser QA; exact raw CI bytes không suy từ log kB đã làm tròn.
+- Local evidence reuse theo exact hashes/tree: full1825/1825, targeted292/292, DOM guard10/10; academic mutations3/3 và controls2/2, legend mutation1/control1, DOM guard controls2/2; RED/GREEN và exact restore giữ evidence riêng. Không chạy lại test/build/browser trong P3.
+- Raw local JS/CSS **153440/58016 B**, headroom560/484 so trần154000/58500 B. Chrome152 localhost **64/64 unique functional và64/64 visual**,13432assertions,224PNG gốc đọc lại/hash/review;4 queries×2 directedness×2 representations×4 viewports360/699/768/1280×900,DPR1. OP33–36 gắn vào HasEdge cases; không cộng trùng attempts. Actual execution chain và cleanup PASS chỉ lượt QA đó, không nâng exception lịch sử.
+- Evidence reuse: EDU4-P2-1795777683205/visual-finalization-1795786358676/final-summary.json và visual-review.json; merge-1795787610561/merge-verification.json, postmerge-ci-verification.json và final-integrity.json. Giữ cả raw failures/blocked attempts, không coi file tồn tại là tự xác minh mọi quyền hoặc mọi QA ngoài phạm vi.
+
+### 10.4 Policy B, owner rights statement và residual
+
+Owner đã nghiệm thu8 OP trong contract/giả định/mô hình chi phí đã review và xác nhận căn cứ công bố **nội dung Graph AlgoVision tự biên soạn thực tế**. Provenance là code pin SHA, proof/oracle độc lập và phản biện/owner decision; không dùng approval hoặc MIT để suy quyền nguồn bên ngoài, không gọi nội bộ là external academic certification. [Policy B §11](uit-sources.md#11-policy-b-và-quyền-theo-hành-vi--edu-1f) áp dụng từng hành vi: metadata/link chỉ định vị; tự diễn giải/chứng minh tách với dịch/chuyển thể; trích dẫn/sao chép/tái phân phối/AI cần căn cứ riêng. Không thêm ingestion, học liệu, hình/code/trích dẫn bên thứ ba trong closeout. **UIT-SRC-006 chỉ topic locator**; **RIGHTS_NOT_VERIFIED** bên thứ ba và source_status giữ nguyên, không xác nhận độc lập tuyệt đối hoặc giấy phép chưa có evidence.
+
+Giữ8 source ID,40 OP/80 mapping ID, routing lịch sử2 READY/38 DEFER và mọi checkpoint. Owner acceptance40/40 không miễn G-EDU/G-STRUCT/G-RELEASE/C4, screen reader/zoom/cross-browser/production. Giữ VIS-01 trước C4/release, Insertion step-limit C2/negative-mutation C3, EX-03/EX-04, historical config drift UNKNOWN, exact byte diff/runtime overrides/attribution/IPC NOT VERIFIED, ARTIFACT_PERSISTENCE_NOT_VERIFIED và PNG/runtime/cleanup exceptions lịch sử; Graph arithmetic/ID/resource/caller-mutation/8-slot render residual. Limited config P3 chỉ docs/Git/Node/editor; bounded checkpoint chỉ reviewed namespace/pattern/OID/tree, business integrity PASS và từng delta được ghi, attribution NOT VERIFIED; không blanket rebaseline. Roadmap/backlog chưa đồng bộ trong P3; không tự mở C2 hoặc miễn release gates.
