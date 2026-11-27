@@ -284,8 +284,9 @@ Ghi chú hoãn dưới đây thuộc chuỗi Redesign tại thời điểm ghi n
 
 Chỉ theo dõi pending tasks; scope/deliverables/exit gates tại [roadmap UI3](roadmap.md#ui-v3--modern-academic-workspace), không tạo roadmap phụ. UI3 vẫn PLANNED/NOT STARTED sau C5; UI/UX Pro Max bị REJECT cho kế hoạch tương lai, không uninstall hoặc xóa lịch sử.
 
-- Chờ owner phê duyệt audit/trial cách ly UI3-0, review license/scripts/hooks/Codex-Windows, pin revision và scope.
-- Chờ nghiệm thu tokens/wireframes/motion contract trước product changes; giữ native-first, reduced motion, DOM/controller/algorithm state và budget.
+- Chờ approval UI3-0: audit Hallmark trước và A/B cách ly với Impeccable trên cùng Hash Table BASE/brief/dữ liệu/viewport; rubric, ≥85/100 và hard gates tại [roadmap UI3](roadmap.md#ui-v3--modern-academic-workspace). Pin revision/version, review license/NOTICE và execution chain trước trial.
+- Chờ owner nghiệm thu AlgoVision tokens/identity, wireframes/motion contract và scope/allowlist từng màn hình; chọn full/restyle/polish với mức can thiệp thấp nhất. Hallmark triển khai nếu trial PASS, Impeccable review độc lập, một writer; giữ native-first, reduced motion, DOM/controller/algorithm state và budget.
+- Compatibility, network/secrets/writes/cache và Hallmark theme/scaffold/capture/Together AI, Impeccable launcher/download/hooks/live chưa được nghiệm thu. Không install/execute từ tool routing hoặc bypass sandbox/approval; cần permission riêng.
 - Chờ evidence và approval cho delta optimization/QA sau redesign; reuse C2/C3/C4, không chạy audit trùng hoặc tự cleanup. [Tools](roadmap.md#phân-tuyến-công-cụ-ứng-viên), [GH](roadmap.md#gh--hồ-sơ-công-bố-sau-ui-ổn-định), [FC](roadmap.md#fc--kiểm-kê-và-cleanup-môi-trường) chỉ triển khai sau gate/approval riêng.
 
 <details>
