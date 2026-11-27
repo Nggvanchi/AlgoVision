@@ -406,8 +406,8 @@ Bằng chứng: [PR #67](https://github.com/Nggvanchi/AlgoVision/pull/67), merge
 
 | ID | Scope / deliverables | Exit gate |
 |---|---|---|
-| UI3-0 | Audit UI/UX theo BASE; research/reference và trial cách ly có scope | Baseline/findings, license/provenance, scripts/hooks, Codex/Windows và compatibility được review; plan được owner duyệt |
-| UI3-1 | Tokens, typography, wireframes Desktop/Tablet/Mobile, motion contract | Semantic states, reduced motion, focus và hợp đồng thiết kế được duyệt |
+| UI3-0 | Audit Hallmark trước; A/B Hash Table cùng BASE, brief, dữ liệu, viewport và rubric; trial cách ly có scope | Pin revision/version, review license/NOTICE và execution chain; ≥85/100 cùng toàn bộ hard gates PASS, owner duyệt kết quả |
+| UI3-1 | Khóa AlgoVision tokens/identity, typography, wireframes Desktop/Tablet/Mobile và motion contract | Semantic states, reduced motion, focus và hợp đồng thiết kế được owner duyệt |
 | UI3-2 | Shell/navigation/drawer/rail | Điều hướng, keyboard/focus, DOM/controller contracts giữ đúng |
 | UI3-3 | Dashboard/Library | Bố cục, filter/empty state, CTA và điều hướng có evidence |
 | UI3-4 | Sorting/Searching workspace | Giữ generator, pseudocode, scheduler, trace và nội dung học thuật |
@@ -419,6 +419,21 @@ Bằng chứng: [PR #67](https://github.com/Nggvanchi/AlgoVision/pull/67), merge
 | UI3-10 | Regression/QA/release phần thay đổi sau redesign | Full regression/CI/bundle, browser/a11y và production smoke trên SHA phù hợp; owner nghiệm thu, không thay gate C4 v1.0.0 |
 
 **Native CSS/JS/Web Animations API first.** Không React/Tailwind/framework migration, decorative motion, đổi thuật toán/scheduler/ID/snapshot hoặc dùng motion làm sai trạng thái học. Giữ DOM/controller contracts, timing, reduced motion, accessibility, test count/khả năng bắt lỗi và raw JS ≤154000 B/CSS ≤58500 B. Native API cũng phải qua compatibility và QA; không coi reference React/Tailwind là quyền đưa chúng vào runtime.
+
+**UI3-0 — trial Hallmark/Impeccable:** audit Hallmark trước; A/B trên cùng Hash Table BASE được owner chốt khi trial, cùng brief, dữ liệu thật, viewport và rubric. Pin revision/version của từng ứng viên; review license/NOTICE, dependencies, scripts/hooks/binaries, network/secrets, writes/cache, executable chain và Codex/Windows. Hallmark theme/scaffold/capture/Together AI và Impeccable launcher/download/hooks/live cần scope/permission riêng; không mặc định compatibility PASS. Không bypass sandbox/approval hoặc cho phép unauthorized downloads/hooks/network; đường chạy có thể bỏ sandbox/approval phải bị chặn, không thực thi để thử.
+
+| Rubric A/B | Điểm tối đa |
+|---|---|
+| UX | 25 |
+| Contracts | 25 |
+| Design | 20 |
+| Responsive/a11y | 15 |
+| Performance/maintenance | 10 |
+| Token/time | 5 |
+
+**Trial exit:** ≥85/100 và mọi hard gate PASS; điểm tổng không bù lỗi contract/a11y/security/budget. Evidence phải gồm code diff, ảnh thật, QA và chi phí token/time thực tế theo từng ứng viên; không dùng điểm tự báo hoặc output đẹp thay compatibility/runtime evidence. Hard gates giữ HTML/CSS/Vanilla JS/Vite, algorithms, academic content, DOM/events/navigation/a11y/test hooks và test strength, raw JS ≤154000 B/CSS ≤58500 B. Không random theme, áp landing-page rules máy móc, fake data hoặc production dependencies.
+
+**UI3-2–7 — triển khai từng màn hình:** owner duyệt wireframe, scope và allowlist riêng; chọn full/restyle/polish với mức can thiệp thấp nhất đáp ứng mục tiêu. Hallmark là primary redesign candidate, chỉ triển khai nếu trial PASS; Impeccable audit/critique/polish và review độc lập, không concurrent writers. Giữ reduced motion và kiến trúc hiện hành. UI3-8–10 giữ motion/a11y, delta optimization và regression/release; reuse nền tảng C2/C3/C4 cùng Playwright/axe-core/Lighthouse theo gate đã duyệt, không tạo phase mới hoặc QA trùng.
 
 ### Phân tuyến công cụ ứng viên
 
@@ -435,8 +450,9 @@ Bằng chứng: [PR #67](https://github.com/Nggvanchi/AlgoVision/pull/67), merge
 | C4 | ADOPT | [microsoft/playwright](https://github.com/microsoft/playwright), reuse harness | Evidence browser thật; không thay manual/screen reader/thiết bị thật/production QA |
 | C4 | TRIAL | [dequelabs/axe-core](https://github.com/dequelabs/axe-core), [GoogleChrome/lighthouse-ci](https://github.com/GoogleChrome/lighthouse-ci), [github/codeql-action](https://github.com/github/codeql-action), [rhysd/actionlint](https://github.com/rhysd/actionlint) | A11y/performance/security/workflow findings; không tự thêm required checks |
 | C4 | DEFER | [ossf/scorecard](https://github.com/ossf/scorecard) | Chỉ đề xuất lại nếu có gap và maintenance/permissions phù hợp |
-| UI3 | REFERENCE ONLY | [alexpate/awesome-design-systems](https://github.com/alexpate/awesome-design-systems), [imskyleen/animate-ui](https://github.com/imskyleen/animate-ui), [shadcn-ui/ui](https://github.com/shadcn-ui/ui), [argyleink/open-props](https://github.com/argyleink/open-props) | Tham khảo design/motion; không sao chép khi chưa review quyền hoặc kéo framework vào sản phẩm |
-| UI3 | TRIAL | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | Pin revision; license, scripts/hooks, executable chain và Codex/Windows review trước trial cách ly |
+| UI3 | REFERENCE ONLY | [alexpate/awesome-design-systems](https://github.com/alexpate/awesome-design-systems), [imskyleen/animate-ui](https://github.com/imskyleen/animate-ui), [shadcn-ui/ui](https://github.com/shadcn-ui/ui), [argyleink/open-props](https://github.com/argyleink/open-props) | Awesome Design Systems tham khảo design system; Animate UI/shadcn/ui/Open Props REFERENCE ONLY. Không sao chép khi chưa review quyền hoặc kéo framework vào sản phẩm |
+| UI3 | TRIAL | [Nutlope/hallmark](https://github.com/Nutlope/hallmark) | Primary redesign candidate; audit trước, pin revision/version và review license/NOTICE/execution chain; chỉ triển khai sau trial PASS và approval từng màn hình |
+| UI3 | TRIAL | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | Audit/critique/polish và independent review; pin revision, review launcher/download/hooks/live và Codex/Windows; không concurrent writers |
 | UI3 | DEFER | [juliangarnier/anime](https://github.com/juliangarnier/anime), [motiondivision/motion](https://github.com/motiondivision/motion) | Ưu tiên native CSS/JS/Web Animations API; dependency chỉ đề xuất khi native không đáp ứng gap đã chứng minh |
 | UI3 | REJECT | [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) — UI/UX Pro Max cho kế hoạch tương lai | Không uninstall skill hoặc xóa lịch sử; snapshot D1 bên dưới không còn là lựa chọn hiện hành |
 | GH | REFERENCE ONLY | [othneildrew/Best-README-Template](https://github.com/othneildrew/Best-README-Template), [octokatherine/readme.so](https://github.com/octokatherine/readme.so), [matiassingers/awesome-readme](https://github.com/matiassingers/awesome-readme) | Tham khảo tài liệu; review license/biểu đạt trước reuse |
