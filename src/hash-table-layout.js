@@ -1,6 +1,6 @@
 // Tính tọa độ vẽ bảng băm (thuần, không đụng DOM).
 // Mỗi ô của bảng là một hàng dọc: nhãn chỉ số [i] bên trái, ô đầu (bucket/cell) rộng CELL_WIDTH.
-// Chaining: phần tử thứ p của chain nằm bên phải ô đầu, cách nhau LINK_GAP để vẽ mũi tên.
+// Chaining: phần tử thứ p của chain nằm bên phải ô đầu, cách nhau LINK_GAP để vẽ đường nối.
 // Probing: phần tử nằm ngay trong ô của nó.
 // Phần tử được định vị theo id chứ không theo khóa, nên khóa trùng tạm thời cũng không chồng nhau.
 export const HASH_TABLE_LAYOUT = Object.freeze({
