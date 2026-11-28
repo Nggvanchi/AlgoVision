@@ -279,3 +279,118 @@ test('quy mô lớn: đường thẳng 1000 đỉnh, tầng structures không gi
 test('buildGraph từ chối cặp slot ngoài phạm vi', () => {
   assert.throws(() => build(false, 2, [[0, 2]]), RangeError)
 })
+
+
+test('buildGraph giữ nguyên dạng snapshot, slot và thứ tự kề trong hai chế độ', () => {
+  const pairs = deepFreeze([[0, 2], [2, 0], [0, 1], [0, 2], [1, 1]])
+  const vertices = {
+    v1: { id: 'v1', slot: 0, label: 'A' },
+    v2: { id: 'v2', slot: 1, label: 'B' },
+    v3: { id: 'v3', slot: 2, label: 'C' },
+  }
+
+  assert.deepEqual(build(false, 0, []), { directed: false, vertices: {}, adjacency: {}, nextId: 1 })
+  assert.deepEqual(build(true, 1, [[0, 0]]), {
+    directed: true, vertices: { v1: vertices.v1 }, adjacency: { v1: [] }, nextId: 2,
+  })
+  assert.deepEqual(build(false, 3, pairs), {
+    directed: false, vertices, adjacency: { v1: ['v2', 'v3'], v2: ['v1'], v3: ['v1'] }, nextId: 4,
+  })
+  assert.deepEqual(build(true, 3, pairs), {
+    directed: true, vertices, adjacency: { v1: ['v2', 'v3'], v2: [], v3: ['v1'] }, nextId: 4,
+  })
+
+  const large = build(false, 27, [])
+  assert.deepEqual(large.vertices.v26, { id: 'v26', slot: 25, label: 'Z' })
+  assert.deepEqual(large.vertices.v27, { id: 'v27', slot: 26, label: 'V26' })
+  assert.equal(large.nextId, 28)
+})
+
+function buildThroughPublicOperations(directed, vertexCount, pairs) {
+  let graph = graphModule.createGraph(directed)
+  const ids = []
+  for (let index = 0; index < vertexCount; index++) {
+    const added = graphModule.addVertex(graph)
+    ids.push(added.id)
+    graph = added.graph
+  }
+  for (const [from, to] of pairs) graph = graphModule.addEdge(graph, ids[from], ids[to]).graph
+  return graph
+}
+
+test('buildGraph khớp chuỗi thêm đỉnh và cạnh công khai trên mọi tập cạnh của ba đỉnh', () => {
+  const options = [[0, 1], [1, 0], [0, 2], [2, 0], [1, 2], [2, 1]]
+  for (const directed of [false, true]) {
+    for (let mask = 0; mask < 2 ** options.length; mask++) {
+      const pairs = options.filter((_, index) => (mask & (1 << index)) !== 0)
+      const sequences = [pairs, [...pairs].reverse().concat([[0, 0], [2, 2]], pairs)]
+      for (const sequence of sequences) {
+        const expected = buildThroughPublicOperations(directed, 3, sequence)
+        assert.deepEqual(build(directed, 3, sequence), expected, 'directed=' + directed + ', mask=' + mask)
+      }
+    }
+  }
+})
+
+test('buildGraph giữ phép ép kiểu số đỉnh, tra slot chuỗi và hỗ trợ iterable', () => {
+  function* pair() {
+    yield '0'
+    yield '1'
+  }
+  const pairs = new Set([pair(), ['length', 0], ['map', 1]])
+  assert.deepEqual(build(undefined, '1.5', pairs), build(false, 2, [[0, 1]]))
+  assert.deepEqual(build(false, -1, []), build(false, 0, []))
+  assert.deepEqual(build(false, NaN, []), build(false, 0, []))
+})
+
+test('buildGraph kiểm tra cờ trước iterator và dừng ở cặp lỗi đầu tiên', () => {
+  let opened = false
+  const pairs = {
+    *[Symbol.iterator]() {
+      opened = true
+      yield [0, 0]
+      yield [0, 2]
+      assert.fail('Không được đọc cặp sau cặp ngoài phạm vi.')
+    },
+  }
+
+  assert.throws(() => build('false', 1, pairs), {
+    name: 'TypeError', message: 'Cờ directed của đồ thị phải là boolean.',
+  })
+  assert.equal(opened, false)
+  assert.throws(() => build(false, 1, pairs), {
+    name: 'RangeError', message: 'Cặp slot [0, 2] nằm ngoài 1 đỉnh.',
+  })
+  assert.equal(opened, true)
+  assert.throws(() => build(false, 1, [[0]]), {
+    name: 'RangeError', message: 'Cặp slot [0, undefined] nằm ngoài 1 đỉnh.',
+  })
+  assert.throws(() => build(false, 1, [null]), TypeError)
+  assert.throws(() => build(false, 1, null), TypeError)
+})
+
+test('buildGraph và API chỉnh sửa tạo snapshot riêng ngay cả khi cạnh bị từ chối', () => {
+  const pairs = deepFreeze([[0, 1]])
+  const input = deepFreeze(build(false, 3, pairs))
+  const duplicate = graphModule.addEdge(input, 'v2', 'v1')
+  const missingLoop = graphModule.addEdge(input, 'v99', 'v99')
+  const loop = graphModule.addEdge(input, 'v1', 'v1')
+  const accepted = graphModule.addEdge(input, 'v3', 'v1')
+  const added = graphModule.addVertex(input)
+
+  assert.deepEqual([duplicate.reason, missingLoop.reason, loop.reason, accepted.reason], [
+    'duplicate', 'missing-vertex', 'self-loop', null,
+  ])
+  for (const output of [build(false, 3, pairs), graphModule.cloneGraph(input),
+    duplicate.graph, missingLoop.graph, loop.graph, accepted.graph, added.graph]) {
+    assert.notEqual(output, input)
+    assert.notEqual(output.vertices, input.vertices)
+    assert.notEqual(output.adjacency, input.adjacency)
+    for (const id of Object.keys(input.vertices)) {
+      assert.notEqual(output.vertices[id], input.vertices[id])
+      assert.notEqual(output.adjacency[id], input.adjacency[id])
+    }
+  }
+  assert.deepEqual(input.adjacency, { v1: ['v2'], v2: ['v1'], v3: [] })
+  assert.deepEqual(accepted.graph.adjacency, { v1: ['v2', 'v3'], v2: ['v1'], v3: ['v1'] })
+})
