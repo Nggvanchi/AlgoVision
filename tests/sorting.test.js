@@ -5,7 +5,9 @@ import { readFile } from 'node:fs/promises'
 
 import { generateBubbleSortSteps, bubbleSortPseudocode } from '../src/algorithms/bubbleSort.js'
 import { generateSelectionSortSteps, selectionSortPseudocode } from '../src/algorithms/selectionSort.js'
-import { generateInsertionSortSteps, insertionSortPseudocode } from '../src/algorithms/insertionSort.js'
+import * as insertionSort from '../src/algorithms/insertionSort.js'
+
+const { generateInsertionSortSteps, insertionSortPseudocode } = insertionSort
 
 const algorithms = [
   {
@@ -128,6 +130,48 @@ test('Insertion Sort: đếm chính xác comparisons và shifts', () => {
 
   assert.equal(finalStep.comparisons, 3)
   assert.equal(finalStep.shifts, 3)
+})
+
+test('Insertion Sort: cận và trace cho mảng ba phần tử dò tay', () => {
+  const input = Object.freeze([3, 1, 2])
+  const steps = generateInsertionSortSteps(input)
+
+  assert.equal(steps.length, 9)
+  assert.deepEqual(steps.map(step => step.pseudocodeLine), [null, 4, 5, 7, 4, 5, 4, 7, null])
+  assert.deepEqual(steps.map(step => step.array), [
+    [3, 1, 2], [3, 1, 2], [3, 3, 2], [1, 3, 2], [1, 3, 2],
+    [1, 3, 3], [1, 3, 3], [1, 2, 3], [1, 2, 3],
+  ])
+  assert.deepEqual([steps.at(-1).comparisons, steps.at(-1).shifts, steps.at(-1).swaps], [3, 2, 0])
+  assert.equal(new Set(steps.map(step => step.array)).size, steps.length)
+  assert.deepEqual(steps.filter(step => step.finished), [steps.at(-1)])
+  assert.equal(insertionSort.insertionSortStepLimit(input.length), 10)
+})
+
+test('Insertion Sort: mảng rỗng và một phần tử đều có cận hai bước', () => {
+  for (const input of [[], [7]]) {
+    const steps = generateInsertionSortSteps(input)
+    assert.equal(steps.length, 2)
+    assert.equal(insertionSort.insertionSortStepLimit(input.length), 2)
+  }
+})
+
+test('Insertion Sort: mọi mảng nhỏ có giá trị lặp đều nằm trong cận', () => {
+  let arrays = [[]]
+  for (let length = 1; length <= 5; length++) {
+    arrays = arrays.flatMap(array => [-1, 0, 1].map(value => [...array, value]))
+    const limit = insertionSort.insertionSortStepLimit(length)
+    for (const input of arrays) {
+      assert.ok(generateInsertionSortSteps(input).length <= limit, 'Vượt cận với mảng ' + input.join(', '))
+    }
+  }
+})
+
+test('Insertion Sort: mảng giảm nghiêm ngặt đạt đúng cận bước', () => {
+  for (const length of [2, 3, 5, 24, 100]) {
+    const input = Array.from({ length }, (_, index) => length - index)
+    assert.equal(generateInsertionSortSteps(input).length, insertionSort.insertionSortStepLimit(length))
+  }
 })
 
 test('Insertion Sort: giữ nguyên mảng khi chỉ có một phần tử', () => {
