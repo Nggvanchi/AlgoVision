@@ -1,3 +1,5 @@
+import { assertWithinStepLimit } from './stepLimit.js'
+
 // Mã giả hiển thị trên Learning Panel; pseudocodeLine của mỗi bước đếm từ 1 theo mảng này.
 export const insertionSortPseudocode = [
   'for i = 1 to n - 1',
@@ -9,14 +11,22 @@ export const insertionSortPseudocode = [
   '    A[j + 1] = key',
 ]
 
+// Bước so sánh, dời và chèn ứng với dòng 4, 5 và 7. Bước đầu và cuối không tô dòng.
 const LINE = {
   COMPARE: 4,
   SHIFT: 5,
   INSERT: 7,
 }
 
+// Hai bước đầu/cuối, cộng tối đa i cặp so sánh/dời và một bước chèn ở lượt i.
+// Với n ≥ 1, 2 + tổng (2i + 1) từ i = 1 đến n - 1 bằng n² + 1. Mảng rỗng có 2 bước.
+export function insertionSortStepLimit(n) {
+  return Math.max(2, n * n + 1)
+}
+
 export function generateInsertionSortSteps(inputArray) {
   const array = [...inputArray]
+  const limit = insertionSortStepLimit(array.length)
   const steps = []
 
   let comparisons = 0
@@ -41,6 +51,7 @@ export function generateInsertionSortSteps(inputArray) {
     let j = i - 1
 
     while (j >= 0) {
+      assertWithinStepLimit(steps, limit, 'Insertion Sort')
       comparisons++
 
       steps.push({
