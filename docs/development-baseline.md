@@ -1,6 +1,14 @@
 # Baseline phát triển AlgoVision
 
-Đây là bản ghi số liệu lịch sử R6c–R7, không phải kết quả đo trong phiên hiện tại. Chạy lại các lệnh trên đúng môi trường trước khi kết luận trạng thái hiện nay.
+Tài liệu ghi số liệu lịch sử theo từng mốc. Khi cần xác nhận trạng thái ở một SHA khác, chạy lại các lệnh tương ứng trên môi trường của SHA đó.
+
+## C2-P1a — Baseline đo trên runtime hiện hữu
+
+- BASE `fc9ef744d0991738058297ece069b68f8e659cbe`, tree `3e34bfbca9c0cc622fa73d889e5899eb4aac1eb5`. Local Windows 11 x64, Node 24.21.0. **1.825/1.825 test PASS**, 0 fail, skip, todo và cancelled.
+- Build dùng cấu hình Vite mặc định và chuyển thư mục output ra ngoài repo. Bundle raw **JS 153.440 B / CSS 58.016 B**, gzip mức 9 bằng Node zlib **44.862 B / 10.577 B**. Dư địa raw so với trần 154.000/58.500 B lần lượt là **560/484 B**. Inventory native Rolldown có 57 module, với SHA-256 của asset trùng build canonical.
+- **34 workload** cho Graph, Insertion và Searching. Seed `0xC2`, 5 lượt warmup và 20 mẫu mỗi workload, tổng 680 phép đo. Node dùng `--expose-gc` và `--max-old-space-size=512`, timeout 30 giây mỗi tiến trình. Hồ sơ ghi median, p95, IQR, MAD, delta heap/RSS tại các điểm lấy mẫu và maxRSS suốt vòng đời tiến trình.
+- CPU affinity, power mode, tải nền và metadata CIM vẫn `NOT VERIFIED`. Searching Compare dùng happy-dom. Lượt đo P1a không có QA trình duyệt. Lỗi runner ban đầu và hồ sơ recovery được lưu cùng evidence.
+- Hồ sơ P1a `EDU4-P2-1795777683205/c2-p1a-1795796211680/syntax-recovery-1795797269012` gồm `final-summary.json`, `benchmark-results.json`, `benchmark-commands.json`, `native-module-inventory.json` và log test/build. Closeout tài liệu tái sử dụng 205 mục manifest P1a và 181 mục hồ sơ readiness P1b. Trạng thái trial và các gate nằm ở [checkpoint C2-P1](roadmap.md#c2-p1--checkpoint-baseline-và-closeout-tài-liệu).
 
 ## UI v2-3d.2a — contrast patch, Windows 2026-11-15
 
