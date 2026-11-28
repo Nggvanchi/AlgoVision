@@ -2386,6 +2386,8 @@ button.structure-card:focus-visible,
 
 #linked-list-status[data-type="error"] {
   color: var(--av-danger);
+  background: #FEE2E2;
+  border-color: var(--av-danger);
 }
 
 @media (max-width: 640px) {

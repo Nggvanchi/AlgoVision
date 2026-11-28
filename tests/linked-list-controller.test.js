@@ -177,6 +177,56 @@ test('hiển thị lỗi khi vị trí chèn không hợp lệ', () => {
   }
 })
 
+test('VIS-01: trạng thái lỗi dùng bảng màu lỗi và trở lại màu thông tin sau khi thao tác', async () => {
+  const { window, document, controller } = createVisualizer()
+
+  try {
+    const style = document.createElement('style')
+    style.textContent = readFileSync(new URL('../src/style.css', import.meta.url), 'utf8')
+    document.head.append(style)
+
+    const status = document.querySelector('#linked-list-status')
+    const valueInput = document.querySelector('#linked-list-value')
+    const appendButton = document.querySelector('#linked-list-append')
+    const statusColors = () => {
+      const { color, backgroundColor, borderTopColor } = window.getComputedStyle(status)
+      return { color, backgroundColor, borderTopColor }
+    }
+    assert.equal(status.dataset.type, 'info')
+    const initialColors = statusColors()
+
+    valueInput.value = ''
+    appendButton.click()
+    assert.equal(status.dataset.type, 'error')
+    assert.equal(status.textContent, 'Vui lòng nhập giá trị cần thêm là một số hợp lệ.')
+    assert.ok(document.activeElement === valueInput, 'Lỗi nhập liệu đưa focus về ô giá trị')
+    assert.deepEqual(controller.getValues(), [10, 20, 30])
+    const errorColors = statusColors()
+
+    valueInput.value = '40'
+    appendButton.click()
+    assert.equal(status.dataset.type, 'info')
+    assert.equal(status.textContent, 'Đã thêm 40 vào cuối danh sách.')
+    assert.deepEqual(controller.getValues(), [10, 20, 30, 40])
+    assert.deepEqual(statusColors(), initialColors)
+
+    document.querySelector('#linked-list-reset').click()
+    assert.equal(status.dataset.type, 'info')
+    assert.equal(status.textContent, 'Đã khôi phục danh sách liên kết ban đầu.')
+    assert.deepEqual(controller.getValues(), [10, 20, 30])
+    assert.deepEqual(statusColors(), initialColors)
+    assert.equal(status.getAttribute('role'), 'status')
+    assert.equal(status.getAttribute('aria-live'), 'polite')
+    assert.deepEqual(errorColors, {
+      color: '#B91C1C',
+      backgroundColor: '#FEE2E2',
+      borderTopColor: '#B91C1C',
+    })
+  } finally {
+    await window.happyDOM.close()
+  }
+})
+
 test('khôi phục danh sách và xóa trạng thái nhập', () => {
   const { window, document, controller } = createVisualizer()
 
