@@ -672,8 +672,8 @@ export function initGraph(document, options = {}) {
     degree: $('#graph-degree'),
     readsLabel: $('#graph-reads-label'),
     reads: $('#graph-reads'),
-    dequeuesLabel: $('#graph-traversal-count-label'),
-    dequeues: $('#graph-traversal-count'),
+    traversalCountLabel: $('#graph-traversal-count-label'),
+    traversalCount: $('#graph-traversal-count'),
     stackDepth: $('#graph-stack-depth'),
     result: $('#graph-result'),
   }
@@ -790,8 +790,8 @@ export function initGraph(document, options = {}) {
     setText(stats.reads, String(step.reads))
     // Thẻ thứ năm đếm số lần dequeue (BFS) hoặc số lần gọi (DFS); thẻ độ sâu chỉ có số với DFS.
     const isDfs = step.operation === 'dfs'
-    setText(stats.dequeuesLabel, isDfs ? 'Số lần gọi DFS' : 'Số lần dequeue (BFS)')
-    setText(stats.dequeues, isDfs ? formatCallCount(step) : formatDequeueCount(step))
+    setText(stats.traversalCountLabel, isDfs ? 'Số lần gọi DFS' : 'Số lần dequeue (BFS)')
+    setText(stats.traversalCount, isDfs ? formatCallCount(step) : formatDequeueCount(step))
     setText(stats.stackDepth, isDfs ? String(dfsMaxDepthSoFar(step)) : '—')
     setText(stats.result, formatResult(step))
 
