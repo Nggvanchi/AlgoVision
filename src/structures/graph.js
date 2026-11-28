@@ -154,22 +154,29 @@ export function toAdjacencyMatrix(graph) {
   return { ids, cells }
 }
 
-// Dựng đồ thị từ số đỉnh và các cặp chỉ số slot [[u, v], …] (dùng cho preset và test).
+// Dựng đồ thị từ các cặp slot trên bản nháp riêng trong suốt lần gọi.
 export function buildGraph(directed, vertexCount, pairs) {
-  let graph = createGraph(directed)
+  const graph = createGraph(directed)
   const ids = []
 
-  for (let index = 0; index < vertexCount; index++) {
-    const result = addVertex(graph)
-    graph = result.graph
-    ids.push(result.id)
+  for (let slot = 0; slot < vertexCount; slot++) {
+    const id = `v${graph.nextId}`
+    graph.vertices[id] = { id, slot, label: labelForSlot(slot) }
+    graph.adjacency[id] = []
+    graph.nextId++
+    ids.push(id)
   }
 
   for (const [from, to] of pairs) {
     if (!ids[from] || !ids[to]) {
       throw new RangeError(`Cặp slot [${from}, ${to}] nằm ngoài ${vertexCount} đỉnh.`)
     }
-    graph = addEdge(graph, ids[from], ids[to]).graph
+    const fromId = ids[from]
+    const toId = ids[to]
+    if (edgeRejection(graph, fromId, toId)) continue
+
+    insertBySlot(graph, graph.adjacency[fromId], toId)
+    if (!graph.directed) insertBySlot(graph, graph.adjacency[toId], fromId)
   }
 
   return graph
