@@ -1,5 +1,14 @@
 # Lộ trình AlgoVision
 
+## C2-P1 — Checkpoint baseline và closeout tài liệu
+
+- **EDU-4 đã đóng academic acceptance.** [Hồ sơ Graph](education/edu4-graph-source-evidence.md) và [mapping](education/knowledge-mapping.md) đã công bố qua PR #93 tại `fc9ef744d0991738058297ece069b68f8e659cbe`. Owner đã chấp nhận **40/40 OP** theo hợp đồng thuật toán, giả định và mô hình chi phí đã duyệt. Giữ 8 source ID, 40 OP/80 mapping ID, `source_status`, routing lịch sử 2 READY/38 DEFER và `RIGHTS_NOT_VERIFIED` cho tài liệu bên thứ ba.
+- **C2 đang triển khai.** P1a đã có [baseline đo được](development-baseline.md#c2-p1a--baseline-đo-trên-runtime-hiện-hữu) gồm 34 workload, 1.825 test, bundle raw JS 153.440 B / CSS 58.016 B. Closeout P1 là diff hai tài liệu chờ duyệt commit. Các số liệu được tái sử dụng từ P1a.
+- **P1b — Knip và jscpd `DEFERRED — ENV_BLOCKED`.** Giữ 205 mục artifact P1a, 181 mục readiness P1b và hồ sơ static của 22 package. Runtime trial chưa chạy. Findings và kết quả PASS của hai công cụ chưa có.
+- **P2 chờ phê duyệt từng bản sửa TDD.** Thứ tự là Insertion step-limit, rồi VIS-01 của Linked List. VIS-01 vẫn `PRE_EXISTING / OPEN` cho tới khi nghiệm thu validation, focus và hiển thị trên trình duyệt. Insertion negative control và mutation vẫn bắt buộc ở C3. P3 đơn giản hóa source, P4 tối ưu có số đo và P5 closeout C2 còn chờ kế hoạch tương ứng.
+- **Giới hạn chấp nhận.** Config SHA-256 `0fea0bb95430acc922706ffd39e714241be5cd241b2c9c5cfa077fcddbacf91f` chỉ được chấp nhận cho Git/Node/editor ở worktree C2, trong closeout docs và P2 sau phê duyệt riêng. Manifest và lịch sử checkpoint được giữ. Chính sách luân chuyển hữu hạn áp dụng trong closeout P1 và hết hiệu lực khi closeout hoàn tất. Exact byte/semantic delta, attribution, IPC và runtime overrides vẫn `NOT VERIFIED`.
+- **Residual và release gates.** Giữ EX-03/EX-04, historical config drift `UNKNOWN`, `ARTIFACT_PERSISTENCE_NOT_VERIFIED` lịch sử, giới hạn runtime isolation và cleanup, cùng residual Graph về arithmetic, ID, resource, caller mutation và 8 slot render. G-EDU, G-STRUCT, G-RELEASE và C4 vẫn mở, gồm screen reader, zoom, cross-browser và production QA. Các checkpoint ghi ngày bên dưới giữ trạng thái theo thời điểm của từng hồ sơ.
+
 ## Unified Roadmap — Checkpoint hiện hành, 26/11/2026
 
 **EDU-3A CLOSED; academic docs PUBLISHED/CLOSED qua [#82](https://github.com/Nggvanchi/AlgoVision/pull/82); academic acceptance toàn dự án 20/40 (OP-01–20). EDU-3 toàn giai đoạn vẫn IN_PROGRESS/PARTIAL.** Owner acceptance chỉ trong giả định/mô hình chi phí và phạm vi nội dung AlgoVision tự biên soạn đã duyệt; quyền tài liệu bên thứ ba vẫn RIGHTS_NOT_VERIFIED.
@@ -324,7 +333,7 @@ Bằng chứng: [PR #67](https://github.com/Nggvanchi/AlgoVision/pull/67), merge
   test/build/CI theo gate chung. Mỗi mục C1 có trạng thái đủ/hoãn/không áp dụng và lý do, nguồn.
 - **Rủi ro/exit gate:** khác quy ước thứ tự kề có thể đổi kết quả duyệt hợp lệ; ghi quy ước của code.
   Nghiệm thu học thuật EDU-1–4, không còn nguồn chưa xác minh trong nội dung release.
-  **Trạng thái: CHƯA BẮT ĐẦU.**
+  **Trạng thái hiện hành:** EDU-4 academic acceptance **CLOSED**, OP-33–40 đã công bố qua PR #93 và toàn dự án đạt **40/40** trong phạm vi owner đã duyệt. [Checkpoint C2-P1](#c2-p1--checkpoint-baseline-và-closeout-tài-liệu).
 
 ### C2 — Chuẩn hóa source
 
@@ -342,7 +351,7 @@ Bằng chứng: [PR #67](https://github.com/Nggvanchi/AlgoVision/pull/67), merge
   giới hạn bước, Big-O/nội dung đã duyệt; full test/build/CI và browser cho đường chạy ảnh hưởng.
 - **Rủi ro/exit gate:** clone có thể là nguồn chi phí chính; đo từng phần, không tăng quy mô test mù.
   Nghiệm thu diff nhỏ, benchmark chứng minh mục tiêu đã duyệt và không vượt bundle/giảm số test;
-  lỗi nền hoặc kết quả lệch thì dừng báo. **Trạng thái: CHƯA BẮT ĐẦU.**
+  lỗi nền hoặc kết quả lệch thì dừng báo. **Trạng thái: ĐANG TRIỂN KHAI.** [Checkpoint C2-P1](#c2-p1--checkpoint-baseline-và-closeout-tài-liệu) ghi baseline đã đo, trial đã hoãn và thứ tự hai bản sửa P2 chờ duyệt.
 
 ### C3 — Chuẩn hóa test
 
@@ -442,7 +451,8 @@ Bằng chứng: [PR #67](https://github.com/Nggvanchi/AlgoVision/pull/67), merge
 | Tuyến | Phân loại | Upstream / công cụ | Giới hạn và gate |
 |---|---|---|---|
 | EDU | REFERENCE ONLY | [OpenDSA/OpenDSA](https://github.com/OpenDSA/OpenDSA), [trekhleb/javascript-algorithms](https://github.com/trekhleb/javascript-algorithms), [algorithm-visualizer/algorithm-visualizer](https://github.com/algorithm-visualizer/algorithm-visualizer) | Policy B; không ingestion/copy/dịch, không nâng rights, source_status hoặc academic acceptance |
-| C2 | TRIAL | [webpro-nl/knip](https://github.com/webpro-nl/knip), [kucherenko/jscpd](https://github.com/kucherenko/jscpd), [sverweij/dependency-cruiser](https://github.com/sverweij/dependency-cruiser), [eslint/eslint](https://github.com/eslint/eslint), [stylelint/stylelint](https://github.com/stylelint/stylelint), [btd/rollup-plugin-visualizer](https://github.com/btd/rollup-plugin-visualizer) | Audit/source baseline cách ly; kiểm Vite 8/Rolldown, Node/OS và module resolution trước trial |
+| C2-P1b | DEFERRED — ENV_BLOCKED | Knip, jscpd | Review static đã lưu. Runtime trial chưa chạy. [Checkpoint C2-P1](#c2-p1--checkpoint-baseline-và-closeout-tài-liệu) |
+| C2 | TRIAL | [sverweij/dependency-cruiser](https://github.com/sverweij/dependency-cruiser), [eslint/eslint](https://github.com/eslint/eslint), [stylelint/stylelint](https://github.com/stylelint/stylelint), [btd/rollup-plugin-visualizer](https://github.com/btd/rollup-plugin-visualizer) | Audit/source baseline cách ly; kiểm Vite 8/Rolldown, Node/OS và module resolution trước trial |
 | C2 | DEFER | [SonarSource/SonarJS](https://github.com/SonarSource/SonarJS) | Tránh chồng ESLint/config; tính dependency và chi phí duy trì trước đề xuất lại |
 | C3 | ADOPT | [nodejs/node](https://github.com/nodejs/node): node:test/native coverage; skills hiện hữu `test-profile`, `mutation-test` | Đo profile/coverage và mutation strength; giữ test count, assertions và cách ly state |
 | C3 | TRIAL | [dubzzz/fast-check](https://github.com/dubzzz/fast-check); reuse [jscpd](https://github.com/kucherenko/jscpd) cho tests | Seed/oracle và chi phí phải tái lập; không cài bản jscpd thứ hai hoặc giảm tests |
